@@ -56,6 +56,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-tools input[type=search] { margin: 0; max-width: 320px; }
 .pk-tab { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 14px; }
 .pk-tab[aria-pressed=true] { background: var(--horn); color: #1b1300; border-color: var(--horn); font-weight: 800; }
+.pk-tab:disabled { opacity: .35; cursor: default; }
 .pk-close { border: 0; background: var(--panel); border-radius: 10px; width: 38px; height: 38px; font-size: 18px; }
 .pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 10px; align-content: start;
   grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -72,6 +73,24 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-body.face-grid .lbl { font-size: 14px; }
 .pk-item[aria-pressed=true] .lbl { color: var(--horn); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
+.pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
+.pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--night-2); border-radius: 6px; }
+.pk-note { color: var(--muted); font-size: 13px; margin: 0; }
+.bar button:disabled { opacity: .45; cursor: default; }
+/* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
+   of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
+   blocks go two abreast so all eight share the height, and the picker widens into the spare width with as many
+   columns as fit. Taller screens keep the one-column layout */
+@media (max-height: 1000px) and (min-width: 900px) {
+  .app { --side: 340px; }
+  aside { overflow: hidden; padding: 10px 12px 12px; }
+  h1 { margin-bottom: 8px; }
+  .topics { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(0, 1fr); gap: 8px; }
+  .topic { min-height: 0; padding: 6px 8px 8px; }
+  .picker { width: max(calc(var(--side) * 2), calc((100vw - var(--side)) * .4)); }   /* the hero stands mid-stage: 40 % keeps her in sight */
+  .pk-body { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
+  .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }   /* still big (user), 4 abreast */
+}
 @media (max-width: 760px) {
   .app { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; height: auto; min-height: 100vh; }
   main { order: -1; height: 55vh; }
@@ -94,6 +113,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   </aside>
   <main id="stage">
     <div class="bar">
+      <button type="button" id="undo" title="Ctrl+Z" disabled>ย้อนกลับ</button>
+      <button type="button" id="redo" title="Ctrl+Y" disabled>ทำซ้ำ</button>
       <button type="button" id="resetCam">มุมกล้องเริ่มต้น</button>
       <button type="button" id="shot">บันทึกภาพ</button>
       <button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>
@@ -119,6 +140,9 @@ const LABEL = { wave: "โบกมือ", bow: "ก้มคำนับ", che
 const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; if (l.startsWith("fishing")) return "ตกปลา";
   if (l.startsWith("pose")) return "โพสท่า " + (l.slice(4) || ""); return n; };
 const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
+// a class whose look includes a headpiece: the Cat's "default" hood (user 2026-11-05: "cat head: remove the none option
+// and use default as default"). Its Head slot is never empty: setProp turns "none" into it
+const BASE_HEAD = { cat: "default" };
 const MOUNT = { R: "mount_Hand_R", L: "mount_Hand_L", Head: "Head", Back: "Spine1" };
 
 // ---------- three ----------
@@ -155,7 +179,9 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } c
 const $ = id => document.getElementById(id);
 const status = t => { $("status").textContent = t || ""; };
 function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1500); }
-const getJSON = async p => { const r = await fetch(p); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
+// no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
+// was otherwise served stale from the browser's cache
+const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
 const imgCache = {};
 const loadImage = src => imgCache[src] || (imgCache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = src; }));
 const texLoader = new THREE.TextureLoader();
@@ -181,11 +207,13 @@ async function loadClass(cls) {
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   const L = saved[cls] || {};
-  C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1,
-              face: L.face ?? (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || null, Back: L.Back || null };
+  C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1, edition: L.edition || "",
+              face: L.face ?? (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
+  undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
   await setOutfit(C.state.outfit, C.state.color);
   for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
+  buildSets().then(renderTopics).catch(() => {});    // the set block's icon shows a worn set
   play("root");
   fitCamera();
   status("");
@@ -193,8 +221,11 @@ async function loadClass(cls) {
 function persist() { if (!C) return; saved[C.cls] = { ...C.state }; saved.cls = C.cls; save(); }
 
 // ---------- outfit ----------
-async function composeTexture(o, color, face) {
-  const base = await loadImage(`${DATA}${C.cls}/tex/${o.name}${color}.webp`);
+// the outfit's recolour edition (user 2026-11-05: a set's R / V pieces recolour the outfit too): "" | "R" | "V", when
+// this outfit has it in this colour (wardrobe_editions.py: outfits.json "editions": {R: [colours]})
+const edOf = (o, color, ed) => (ed && o.editions?.[ed]?.includes(color) ? ed : "");
+async function composeTexture(o, color, face, ed = "") {
+  const base = await loadImage(`${DATA}${C.cls}/tex/${o.name}${color}${edOf(o, color, ed)}.webp`);
   const cv = document.createElement("canvas"); cv.width = base.naturalWidth; cv.height = base.naturalHeight;
   const g = cv.getContext("2d");
   g.drawImage(base, 0, 0);
@@ -208,16 +239,32 @@ async function composeTexture(o, color, face) {
   t.anisotropy = 4;
   return t;
 }
-async function setOutfit(name, color) {
+// faces stacked back to back (the same three corners, the opposite winding): the game culls back faces and models a
+// two-sided sheet as two faces; drawn double-sided here, each pair z-fought (user 2026-11-05: "flickering like crazy",
+// the moth / butterfly series: 21 outfit meshes and 8 props). Such a mesh is drawn front-sided, as in the game
+function stacked(pos, idx) {
+  const k = i => Math.round(pos[3 * i] * 1e4) + "," + Math.round(pos[3 * i + 1] * 1e4) + "," + Math.round(pos[3 * i + 2] * 1e4);
+  const seen = new Set();
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = k(idx[t]), b = k(idx[t + 1]), c = k(idx[t + 2]);
+    if (seen.has(a + "|" + c + "|" + b) || seen.has(c + "|" + b + "|" + a) || seen.has(b + "|" + a + "|" + c)) return true;
+    seen.add(a + "|" + b + "|" + c); seen.add(b + "|" + c + "|" + a); seen.add(c + "|" + a + "|" + b);
+  }
+  return false;
+}
+async function setOutfit(name, color, edition = C.state.edition) {
   const o = C.outfits.find(x => x.name === name);
   if (!o) return;
   if (!o.colors.includes(color)) color = o.colors[0];
+  edition = edOf(o, color, edition);
   status("กำลังใส่ชุด " + name + "…");
   const buf = await (await fetch(`${DATA}${C.cls}/o_${name}.bin`)).arrayBuffer();
-  const tex = await composeTexture(o, color, C.state.face);
+  const tex = await composeTexture(o, color, C.state.face, edition);
   for (const m of C.meshes) { C.tri.remove(m); m.geometry.dispose(); }
   C.meshes = [];
   const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.DoubleSide, alphaTest: 0.5 });
+  const front = mat.clone();                 // the same texture, front faces only (stacked meshes)
+  front.side = THREE.FrontSide;
   for (const d of o.meshes) {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(buf, d.pos, d.verts * 3), 3));
@@ -225,8 +272,9 @@ async function setOutfit(name, color) {
     g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(buf, d.uv, d.verts * 2), 2));
     g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(new Uint16Array(buf, d.j, d.verts * 4), 4));
     g.setAttribute("skinWeight", new THREE.BufferAttribute(new Float32Array(buf, d.w, d.verts * 4), 4));
-    g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.idx, d.tris * 3), 1));
-    const mesh = new THREE.SkinnedMesh(g, mat);
+    const idx = new Uint32Array(buf, d.idx, d.tris * 3);
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    const mesh = new THREE.SkinnedMesh(g, stacked(new Float32Array(buf, d.pos, d.verts * 3), idx) ? front : mat);
     mesh.name = "outfit_" + d.name;
     mesh.frustumCulled = false;
     C.tri.add(mesh);
@@ -238,17 +286,21 @@ async function setOutfit(name, color) {
     mesh.bind(new THREE.Skeleton(bones, boneInverses), mesh.matrixWorld.clone());
     C.meshes.push(mesh);
   }
-  C.mat?.map?.dispose(); C.mat?.dispose();
+  C.mat?.map?.dispose(); C.mat?.dispose(); C.matFront?.dispose();
+  C.matFront = front;
   C.mat = mat;
-  C.state.outfit = name; C.state.color = color;
+  C.state.outfit = name; C.state.color = color; C.state.edition = edition;
   persist(); renderOutfitUI(); status("");
 }
-async function setColorOrFace(color, face) {
+async function setColorOrFace(color, face, edition) {
   if (color != null) C.state.color = color;
   if (face != null) C.state.face = face;
   const o = C.outfits.find(x => x.name === C.state.outfit);
-  const tex = await composeTexture(o, C.state.color, C.state.face);
+  if (edition != null) C.state.edition = edition;
+  C.state.edition = edOf(o, C.state.color, C.state.edition);
+  const tex = await composeTexture(o, C.state.color, C.state.face, C.state.edition);
   C.mat.map.dispose(); C.mat.map = tex; C.mat.needsUpdate = true;
+  if (C.matFront) { C.matFront.map = tex; C.matFront.needsUpdate = true; }
   persist(); renderOutfitUI(); renderFacesUI();
 }
 
@@ -300,7 +352,9 @@ function buildProp(p) {
   const objs = [], skins = [];
   p.nodes.forEach((n, i) => {
     let o;
-    if (n.mesh) { const mats = propMaterials(n.mats); o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]); }
+    if (n.mesh) { const mats = propMaterials(n.mats);
+      if (stacked(n.mesh.pos, n.mesh.idx)) mats.forEach(m => { m.side = THREE.FrontSide; });
+      o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]); }
     else o = new THREE.Bone();                          // plain nodes double as the bones an animated prop's skin uses
     o.name = "p" + i;                                   // unique in the prop: its clip tracks bind by these names
     o.userData.label = n.name;
@@ -322,6 +376,7 @@ function finishProp(root) {
     g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(n.skin.j, 4));
     g.setAttribute("skinWeight", new THREE.Float32BufferAttribute(n.skin.w, 4));
     const mats = propMaterials(n.mats);
+    if (stacked(n.skin.pos, n.skin.idx)) mats.forEach(m => { m.side = THREE.FrontSide; });
     const sm = new THREE.SkinnedMesh(g, mats.length > 1 ? mats : mats[0]);
     sm.name = "skin"; sm.frustumCulled = false;
     o.add(sm); sm.updateMatrixWorld(true);              // Unity binds the mesh in its renderer node's space
@@ -359,6 +414,7 @@ function finishProp(root) {
   root.userData.mixer = mixer;
 }
 async function setProp(slot, name) {
+  if (slot === "Head" && !name) name = BASE_HEAD[C.cls] || null;
   const old = C.props[slot];
   if (old) { old.userData.mixer?.stopAllAction(); old.parent?.remove(old); old.traverse(o => { o.geometry?.dispose(); }); delete C.props[slot]; }
   C.state[slot] = name;
@@ -469,8 +525,142 @@ const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trink
 // Panda's paired gloves are props <name>_L / <name>_R: the game adds the hand to the mapped name
 const iconOf = (slot, name) => ICONS[C.cls]?.[slot]?.[name] || ICONS[C.cls]?.[slot]?.[name.replace(/_[LRlr]$/, "")]
   || ICONS.all?.[slot]?.[name.toLowerCase()];                  // shared items: keyed by lower-case name
-const TOPICS = [["class", "อาชีพ"], ["outfit", "ชุด"], ["face", "หน้า"], ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"],
+const TOPICS = [["class", "อาชีพ"], ["set", "ชุดเซ็ต"], ["outfit", "ชุด"], ["face", "หน้า"], ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"],
                 ["Head", "หมวก"], ["Back", "ของประดับหลัง"], ["move", "ท่าทาง"]];
+
+// ---------- sets (user 2026-11-05: "an equip-set button that equips all related equipment in a single press; only
+// sets with 2 or more complementary pieces"). A set's pieces carry its name (hallow + hallowBaby + hallowFlower); a
+// trailing capital is a recolour variant (mothLaternR + mothHatR = moth R). Item codes alone were too noisy to group
+// by: a number is shared by unrelated shared items. Weapons: one code can give two pieces (item_map.json: bow + arrow,
+// lance + shield: the first in the main hand), Panda's gloves are <name>_L / _R, the Wolf carries its sword twice
+// (a "#2" placement and a one-piece code). Slots the set has no piece for keep what they have.
+let ITEMMAP = {};
+function parseItem(n, kind) {
+  let base = n, hand = null, v = "", num = 0, m;
+  if ((m = base.match(/^(.*)_([LRlr])$/))) { base = m[1]; if (kind === "weapons") hand = m[2].toUpperCase(); else v = m[2].toUpperCase(); }
+  if ((m = base.match(/^(.*[a-z])(\d+)$/))) { base = m[1]; num = +m[2]; }
+  if ((m = base.match(/^(.*[a-z0-9])([A-Z])$/))) { base = m[1]; v = m[2] + v; }
+  return { base, hand, v, num };
+}
+const dropWord = s => (s.match(/^(.*?[a-z0-9])[A-Z][a-z0-9]*$/) || [])[1] || null;
+async function buildSets() {
+  if (C.sets) return C.sets;
+  const outfits = C.outfits.map(o => o.name).filter(n => !/none|nude/i.test(n));
+  const items = [];
+  for (const kind of ["weapons", "accessories", "trinkets"]) {
+    const seen = new Set();
+    for (const p of await propList(kind)) {
+      if (seen.has(p.name)) continue;
+      seen.add(p.name);
+      const it = { name: p.name, kind, ...parseItem(p.name, kind) };
+      const o = outfits.filter(o => it.base === o || (it.base.startsWith(o) && /[A-Z]/.test(it.base[o.length]))).sort((a, b) => b.length - a.length)[0];
+      it.theme = o || dropWord(it.base);
+      items.push(it);
+    }
+  }
+  let themes = new Set(items.map(i => i.theme).filter(Boolean));
+  const outfitOf = {};                       // holyRobe -> holy (holyCodex, holyHat), pvpArmor -> pvp
+  for (const o of outfits) { const t = themes.has(o) ? o : dropWord(o); if (t && themes.has(t) && !outfitOf[t]) outfitOf[t] = o; }
+  // second pass, by item code: a set's pieces share the class's own code number (a_shp45 superStar, c_shp45
+  // superStarHat, w_shp45 starMicrophone), shared items (all / fem / mal) excepted. A piece whose name ties it to no
+  // outfit joins the outfit that lacks its slot and whose name-matched pieces carry its number; or an outfit with no
+  // name-matched pieces at all that carries the number itself (fur a_shp5 + sheepDoll w_shp5 + sheepHat c_shp5)
+  const codeNums = (kind, n, own) => (iconOf(kind, n)?.codes || []).map(c => c.match(/^[a-z]_([a-z]+)(\d+)$/))
+    .filter(m => m && (!own || !/^(all|fem|mal)/.test(m[1]))).map(m => +m[2]);     // t_allhlw5 is shared too
+  const nums = (kind, n) => codeNums(kind, n, true);
+  const lone = outfits.filter(o => !Object.values(outfitOf).includes(o));
+  for (const i of items.filter(i => !i.theme || !outfitOf[i.theme])) {
+    const ns = nums(i.kind, i.name);
+    if (!ns.length) continue;
+    const hit = Object.keys(outfitOf).find(t => { const own = items.filter(x => x.theme === t);
+      return !own.some(x => x.kind === i.kind) && own.some(x => nums(x.kind, x.name).some(n => ns.includes(n))); });
+    if (hit) { i.theme = hit; continue; }
+    const o = lone.find(o => nums("outfits", o).some(n => ns.includes(n)));
+    if (o) { i.theme = o; outfitOf[o] = o; }
+  }
+  themes = new Set(items.map(i => i.theme).filter(Boolean));
+  // two-piece weapon codes: the first piece (bow, lance) in the main hand, the second (arrow, shield) in the other.
+  // The game's pairs cross names (Chameleon w_chm10 = heartBow + standardArrow, w_chm61 = standardBow + legendArrow),
+  // so a set takes its own first and second pieces; a set with only a second piece gets the first the game pairs it with
+  const pairOf = {}, firstOf = {};
+  for (const ms of Object.values(ITEMMAP[C.cls]?.weapon || {})) if (ms.length === 2) { pairOf[ms[0]] ??= ms[1]; firstOf[ms[1]] ??= ms[0]; }
+  const dualSame = !!PL.weapons?.[C.cls + "#2"] && !Object.keys(pairOf).length;   // the Wolf: one sword per hand
+  const sets = [];
+  for (const t of themes) {
+    const mine = items.filter(i => i.theme === t);
+    for (const v of ["", ...new Set(mine.map(i => i.v).filter(Boolean))]) {
+      const take = kind => { const c = mine.filter(i => i.kind === kind), own = c.filter(i => i.v === v);
+        return (own.length ? own : c.filter(i => !i.v)).sort((a, b) => a.num - b.num); };
+      const s = { theme: t, v, outfit: outfitOf[t] || null, R: null, L: null,
+                  Head: take("accessories")[0]?.name || null, Back: take("trinkets")[0]?.name || null };
+      const w = take("weapons"), handed = w.filter(i => i.hand);
+      if (handed.length) { s.R = handed.find(i => i.hand === "R")?.name || null; s.L = handed.find(i => i.hand === "L")?.name || null; }
+      else if (w.length) {
+        const first = w.find(i => pairOf[i.name]), second = w.find(i => firstOf[i.name]);
+        if (first || second) { s.R = first ? first.name : firstOf[second.name]; s.L = second ? second.name : pairOf[first.name]; }
+        else { s.R = w[0].name; s.L = dualSame ? w[0].name : null; }
+      }
+      if (v && !mine.some(i => i.v === v && [s.R, s.L, s.Head, s.Back].includes(i.name))) continue;
+      s.pieces = [s.outfit, s.R || s.L, s.Head, s.Back].filter(Boolean).length;   // the second hand is the same weapon
+      s.label = t + (v ? " " + v : "");
+      if (s.pieces < 2) continue;
+      if (!s.outfit) {                       // a set with no outfit: its pieces must share a code number (party hat 7 +
+        const parts = [["weapons", s.R || s.L], ["accessories", s.Head], ["trinkets", s.Back]].filter(p => p[1]);  // whistle 7)
+        const common = parts.map(([k, n]) => new Set(codeNums(k, n.replace(/_[LRlr]$/, ""), false)))
+          .reduce((a, b) => new Set([...a].filter(x => b.has(x))));
+        if (!common.size) continue;
+      }
+      sets.push(s);
+    }
+  }
+  sets.sort((a, b) => (!!b.outfit - !!a.outfit) || (b.pieces - a.pieces) || a.label.localeCompare(b.label));
+  return (C.sets = sets);
+}
+const setEd = s => { const o = C.outfits.find(x => x.name === s.outfit); return o ? edOf(o, C.state.color, s.v) : ""; };
+const setWorn = s => (!s.outfit || (C.state.outfit === s.outfit && (C.state.edition || "") === setEd(s)))
+  && ["R", "L", "Head", "Back"].every(k => !s[k] || C.state[k] === s[k]);
+// an outfit's icon in an edition (icons.json "editions", from BB's code table: bb_item_codes.py)
+const outfitIcon = (name, ed) => { const ic = iconOf("outfits", name); return (ed && ic?.editions?.[ed]) || ic?.icon; };
+const setIcon = s => (s.outfit && outfitIcon(s.outfit, s.v)) || (s.Head && iconOf("accessories", s.Head)?.icon)
+  || ((s.R || s.L) && iconOf("weapons", s.R || s.L)?.icon) || (s.Back && iconOf("trinkets", s.Back)?.icon);
+async function stripAll() {                // ถอดทั้งหมด: the standard outfit, nothing else (the Cat keeps its hood)
+  if (C.state.outfit !== "standard" || C.state.edition) await setOutfit("standard", C.state.color, "");
+  for (const k of ["R", "L", "Head", "Back"]) if ((C.state[k] || null) !== (k === "Head" ? BASE_HEAD[C.cls] || null : null)) await setProp(k, null);
+  toast("ถอดทั้งหมดแล้ว");
+}
+async function equipSet(s) {
+  if (s.outfit && s.outfit !== C.state.outfit) await setOutfit(s.outfit, C.state.color, s.v);
+  else if (s.outfit && (C.state.edition || "") !== setEd(s)) await setColorOrFace(null, null, setEd(s));   // R / V recolour
+  for (const k of ["R", "L", "Head", "Back"]) if (s[k] && C.state[k] !== s[k]) await setProp(k, s[k]);
+  toast("ใส่เซ็ต " + s.label + " แล้ว");
+}
+
+// ---------- undo / redo (the outfit, its colour, the face and the four slots; a set changes up to five at once) ----------
+let undoStack = [], redoStack = [];
+const snap = () => JSON.stringify({ outfit: C.state.outfit, color: C.state.color, edition: C.state.edition || "", face: C.state.face,
+  R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null });
+function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; }
+async function tracked(fn) {               // run a change; remember the loadout before it if anything changed
+  const before = snap();
+  await fn();
+  if (snap() !== before) { undoStack.push(before); if (undoStack.length > 100) undoStack.shift(); redoStack = []; updateUndo(); }
+}
+async function applyState(st) {
+  if (st.outfit !== C.state.outfit) { C.state.face = st.face; await setOutfit(st.outfit, st.color, st.edition); }
+  else if (st.color !== C.state.color || st.face !== C.state.face || st.edition !== (C.state.edition || ""))
+    await setColorOrFace(st.color, st.face, st.edition);
+  for (const k of ["R", "L", "Head", "Back"]) if (st[k] !== (C.state[k] || null)) await setProp(k, st[k]);
+  renderTopics();
+  if (openTopic && openTopic !== "class" && openTopic !== "move") openPicker(openTopic);
+}
+async function step(from, to, msg) {
+  if (!C || !from.length) { toast(msg[1]); return; }
+  to.push(snap());
+  await applyState(JSON.parse(from.pop())).catch(err);
+  updateUndo(); toast(msg[0]);
+}
+const doUndo = () => step(undoStack, redoStack, ["ย้อนกลับแล้ว", "ไม่มีอะไรให้ย้อน"]);
+const doRedo = () => step(redoStack, undoStack, ["ทำซ้ำแล้ว", "ไม่มีอะไรให้ทำซ้ำ"]);
 const capName = s => s[0].toUpperCase() + s.slice(1);
 const faceSrc = n => `${DATA}${C.cls}/faces/${n}.webp`;        // the face overlay itself (user: not the whole texture)
 // an emote's / move's icon: TTO's emotion icons (gamegui/icons/skills/emotion) and the class's skill icons
@@ -492,7 +682,8 @@ const pic = (src, face = false) => src ? `<img loading="lazy" alt="" src="${src.
 function currentIcon(t) {
   if (!C) return null;
   if (t === "class") return UI.heroes?.[C.cls];
-  if (t === "outfit") return iconOf("outfits", C.state.outfit)?.icon;
+  if (t === "set") { const s = (C.sets || []).find(setWorn); return s ? setIcon(s) : null; }
+  if (t === "outfit") return outfitIcon(C.state.outfit, C.state.edition);
   if (t === "face") return faceSrc(C.state.face);
   if (t === "move") return moveIcon(C.cur);
   return C.state[t] ? iconOf(SLOT_KEY[t], C.state[t])?.icon : null;
@@ -512,25 +703,54 @@ async function openPicker(t) {
   openTopic = t; renderTopics();
   const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools"), body = $("pkBody");
   $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false;
+  body.innerHTML = "";                       // the set / prop lists load async: no clicks on the last picker's tiles meanwhile
   body.classList.toggle("face-grid", t === "face");
   // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, refresh the rows
   const pick = (fn, after) => body.querySelectorAll(".pk-item").forEach(b => b.onclick = async () => {
     body.querySelectorAll(".pk-item").forEach(x => x.setAttribute("aria-pressed", x === b));
-    await fn(b); renderTopics(); after?.();
+    if (t === "class" || t === "move") await fn(b); else await tracked(() => fn(b));
+    renderTopics(); after?.();
   });
-  if (t === "class") {
+  if (t === "set") {
+    const sets = await buildSets();
+    // the character's colour lives here (user 2026-11-05: "move character colour selection out from outfit to set
+    // equipment"): a set keeps it when it changes the outfit
+    const drawColors = () => {
+      const o = C.outfits.find(x => x.name === C.state.outfit);
+      tools.innerHTML = `<span>สีตัวละคร</span>` + (o?.colors || []).map(c => `<button type="button" class="pk-tab" data-c="${c}" aria-pressed="${c === C.state.color}">${c}</button>`).join("")
+        + `<span class="pk-note">${sets.length} เซ็ต · กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
+      tools.querySelectorAll(".pk-tab[data-c]").forEach(b => b.onclick = async () => { await tracked(() => setColorOrFace(+b.dataset.c, null)).catch(err); drawColors(); renderTopics(); });
+    };
+    drawColors();
+    const part = (kind, n, ed) => { const ic = n && (kind === "outfits" ? outfitIcon(n, ed) : iconOf(kind, n)?.icon);
+      return ic ? `<img alt="" src="${DATA}${ic}" title="${n}">` : ""; };
+    const bare = C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
+      && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
+    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${bare}" title="ชุดพื้นฐาน (standard) · ถอดอาวุธ หมวก ของประดับหลัง">`
+      + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
+      + (sets.length ? sets.map((s, i) => {
+      const parts = [part("outfits", s.outfit, s.v), part("weapons", s.R || s.L), s.L && s.L !== s.R ? part("weapons", s.L) : "",
+                     part("accessories", s.Head), part("trinkets", s.Back)].join("");
+      const names = [s.outfit, s.R, s.L && s.L !== s.R ? s.L : null, s.Head, s.Back].filter(Boolean).join(" + ");
+      return `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}" title="${names}">` +
+        `<span class="pic">${pic(setIcon(s))}</span><span class="lbl">${s.label} · ${s.pieces} ชิ้น</span><span class="parts">${parts}</span></button>`;
+    }).join("") : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
+    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])).catch(err), drawColors);
+  } else if (t === "class") {
     body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, capName(c.cls), c.cls === C.cls, UI.heroes?.[c.cls])).join("");
     pick(b => loadClass(b.dataset.c).catch(err));
   } else if (t === "outfit") {
-    const drawColors = () => {                                  // each outfit has its own colours
+    const drawEditions = () => {                                // the outfit's R / V edition; the colour is in ชุดเซ็ต
       const o = C.outfits.find(x => x.name === C.state.outfit);
-      tools.innerHTML = `<span>สี</span>` + (o?.colors || []).map(c => `<button type="button" class="pk-tab" data-c="${c}" aria-pressed="${c === C.state.color}">${c}</button>`).join("");
-      tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = async () => { await setColorOrFace(+b.dataset.c, null).catch(err); drawColors(); });
+      const eds = Object.keys(o?.editions || {});
+      tools.innerHTML = eds.length ? `<span>แบบ</span>` + ["", ...eds].map(e => `<button type="button" class="pk-tab" data-e="${e}" aria-pressed="${e === (C.state.edition || "")}"`
+          + `${e && !o.editions[e].includes(C.state.color) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") : "";
+      tools.querySelectorAll(".pk-tab[data-e]").forEach(b => b.onclick = async () => { await tracked(() => setColorOrFace(null, null, b.dataset.e)).catch(err); drawEditions(); renderTopics(); });
     };
-    drawColors();
+    drawEditions();
     body.innerHTML = C.outfits.map(o => { const ic = iconOf("outfits", o.name);
       return item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, o.tto, ic ? `${o.name} (${ic.codes.join(", ")})` : o.name); }).join("");
-    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err), drawColors);
+    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err), drawEditions);
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), f.tto, `หน้า ${f.n}`, true)).join("");
     pick(b => setColorOrFace(null, +b.dataset.f).catch(err));
@@ -550,7 +770,9 @@ async function openPicker(t) {
       const q = inp.value.toLowerCase();
       const items = list.filter(p => t !== "R" || p.mount !== "mount_Hand_L").filter(p => !q || p.name.toLowerCase().includes(q))
                         .sort((a, b) => t === "L" ? (b.mount === "mount_Hand_L") - (a.mount === "mount_Hand_L") : 0);
-      body.innerHTML = item(`data-p=""`, "ไม่ใส่", !C.state[t], null, false) + items.map(p => { const ic = iconOf(SLOT_KEY[t], p.name);
+      const base = t === "Head" && BASE_HEAD[C.cls];
+      if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
+      body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, false)) + items.map(p => { const ic = iconOf(SLOT_KEY[t], p.name);
         return item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, p.tto, ic ? `${p.name} (${ic.codes.join(", ")})` : p.name); }).join("");
       pick(b => setProp(t, b.dataset.p || null).catch(err));
     };
@@ -558,7 +780,15 @@ async function openPicker(t) {
   }
 }
 $("pkClose").onclick = closePicker;
-addEventListener("keydown", e => { if (e.key === "Escape" && openTopic) closePicker(); });
+addEventListener("keydown", e => {
+  if (e.key === "Escape" && openTopic) closePicker();
+  if (!(e.ctrlKey || e.metaKey) || e.target.tagName === "INPUT") return;      // the search box keeps its own undo
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) { e.preventDefault(); doUndo(); }
+  else if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); doRedo(); }
+});
+$("undo").onclick = doUndo;
+$("redo").onclick = doRedo;
 // the outfit / face / prop / move code calls these after a change: they all just refresh the topic rows now
 const renderClassUI = renderTopics, renderOutfitUI = renderTopics, renderFacesUI = renderTopics, renderMovesUI = renderTopics;
 const renderPropUI = () => renderTopics();
@@ -575,7 +805,7 @@ $("resetCam").onclick = () => C && fitCamera();
 $("shot").onclick = () => { const a = document.createElement("a"); a.href = renderer.domElement.toDataURL("image/png"); a.download = `${C.cls}_${C.state.outfit}${C.state.color}.png`; a.click(); };
 $("copy").onclick = async () => {
   const s = C.state;
-  const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
+  const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
     (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${C.cur}` : "");
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว · วางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
@@ -592,6 +822,7 @@ resize();
 meta = await getJSON(DATA + "meta.json");
 ICONS = await getJSON(DATA + "icons.json").catch(() => ({}));
 PL = await getJSON(DATA + "placements.json").catch(() => ({}));
+ITEMMAP = await getJSON(DATA + "item_map.json").catch(() => ({}));
 UI = await getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }));
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
 await loadClass(first).catch(err);
@@ -607,7 +838,7 @@ window.wardrobe = {
     controls.update(); renderer.render(scene, camera);
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
-  setOutfit: (name, color = 1) => setOutfit(name, color),
+  setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
   debug: () => ({ C, THREE, camera, controls, renderer, scene }),   // scripted checks only
 };
 </script>

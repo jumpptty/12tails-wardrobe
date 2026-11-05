@@ -177,13 +177,20 @@ for cls in CLASSES:
         if not meshes:
             continue
         open(os.path.join(od, f"o_{armor}.bin"), "wb").write(bytes(buf))
-        colours = []
+        colours, editions = [], {}
         for c in range(1, 10):
             ta = f"gameassets/characters/heroes/{cls}/armors/materials/{cls}_{low}{c}"
             if ta in addr:
                 webp(get(ta).image, os.path.join(od, "tex", f"{armor}{c}.webp"))
                 colours.append(c)
-        outfits.append({"name": armor, "tto": low not in bb_armors, "colors": colours, "meshes": meshes})
+            # the recolour editions <armor><c>R / V (a set's R / V outfit; 2026-11-05, wardrobe_editions.py did the first
+            # pack from the BB rip). Untested from here: the office PC has no TTO bundles
+            for e in "rv":
+                if ta + e in addr:
+                    webp(get(ta + e).image, os.path.join(od, "tex", f"{armor}{c}{e.upper()}.webp"))
+                    editions.setdefault(e.upper(), []).append(c)
+        outfits.append({"name": armor, "tto": low not in bb_armors, "colors": colours, "meshes": meshes}
+                       | ({"editions": editions} if editions else {}))
     outfits.sort(key=lambda o: (o["name"] != "standard", o["tto"], o["name"].lower()))
     json.dump(outfits, open(os.path.join(od, "outfits.json"), "w"))
     # ---- faces ----
