@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12 Tails Wardrobe</title>
+<style>
+@font-face { font-family: "Prompt"; font-weight: 600; src: url("../fonts/Prompt-SemiBold.ttf") format("truetype"); }
+@font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Prompt"; font-weight: 800; src: url("../fonts/Prompt-ExtraBold.ttf") format("truetype"); }
+:root {
+  --night: #18263a; --night-2: #101b2b; --panel: #213350; --line: #2e4466;
+  --ink: #e9eef5; --muted: #93a4ba; --horn: #f2c230; --tto: #f3a6bc;
+  --stage-top: #f7f3fa; --stage-bottom: #e4dcea;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 600 14px/1.45 "Prompt", system-ui, sans-serif; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--horn); outline-offset: 2px; }
+.app { --side: 236px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
+aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; }
+h1 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
+input[type=search] { width: 100%; background: var(--night-2); border: 1px solid var(--line); border-radius: 7px; padding: 5px 9px; }
+main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
+main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
+.bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
+.bar button { border: 0; background: rgba(16, 27, 43, .82); color: var(--ink); border-radius: 9px; padding: 7px 12px; }
+.bar .primary { background: var(--horn); color: #1b1300; font-weight: 800; }
+.status { position: absolute; left: 14px; bottom: 12px; color: #4a4258; font-size: 13px; }
+.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--horn); color: #1b1300; padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+/* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
+   the blocks share the panel's full height, the ring takes all the room its block has (container units) */
+.topics { flex: 1 0 auto; display: flex; flex-direction: column; gap: 6px; }
+.topic { flex: 1 1 0; min-height: 112px; container-type: size; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; width: 100%; border: 1px solid transparent; background: var(--panel); border-radius: 16px; padding: 7px 10px 10px; }
+.topic:hover { border-color: var(--line); }
+.topic[aria-expanded=true] { border-color: var(--horn); background: #2b3f5e; }
+.topic .tname { flex: none; font-size: 15px; font-weight: 800; line-height: 1.4; text-align: center; }
+.topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
+.ring { flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--night-2); display: grid; place-items: center; overflow: hidden; }
+.ring img { width: 80%; height: 80%; object-fit: contain; }
+.ring.t-class img { width: 100%; height: 100%; }                /* the class portrait is round already */
+.ring.face { background: #f3e4d9; }
+.ring.face img { width: 92%; height: 92%; }
+.ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
+.topic[aria-expanded=true] .ring { border-color: var(--horn); }
+/* the picker: a full-height side panel twice the left panel's width, the 3D view stays in sight beside it */
+.picker { position: absolute; inset: 0 auto 0 0; width: min(calc(var(--side) * 2), 100%); z-index: 6; background: var(--night);
+  border-right: 1px solid var(--line); box-shadow: 10px 0 28px rgba(16, 27, 43, .28); display: flex; flex-direction: column; color: var(--ink); }
+.picker[hidden] { display: none; }
+.pk-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pk-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.pk-tools { display: flex; gap: 8px; align-items: center; flex: 1; flex-wrap: wrap; }
+.pk-tools input[type=search] { margin: 0; max-width: 320px; }
+.pk-tab { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 14px; }
+.pk-tab[aria-pressed=true] { background: var(--horn); color: #1b1300; border-color: var(--horn); font-weight: 800; }
+.pk-close { border: 0; background: var(--panel); border-radius: 10px; width: 38px; height: 38px; font-size: 18px; }
+.pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 10px; align-content: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pk-body.face-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }   /* user: big faces */
+.pk-item { position: relative; border: 2px solid transparent; background: var(--panel); border-radius: 16px; padding: 10px 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.pk-item:hover { border-color: var(--line); }
+.pk-item[aria-pressed=true] { border-color: var(--horn); background: #2b3f5e; }
+.pk-item .pic { width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px; overflow: hidden; container-type: inline-size; }
+.pk-item .pic img { width: 88%; height: 88%; object-fit: contain; }
+.pk-item .pic.face { background: #f3e4d9; border-radius: 50%; }
+.pk-item .pic.face img { width: 94%; height: 94%; }
+.pk-item .pic .none { color: var(--muted); font-size: 30cqw; }
+.pk-item .lbl { font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk-body.face-grid .lbl { font-size: 14px; }
+.pk-item[aria-pressed=true] .lbl { color: var(--horn); }
+.pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; height: auto; min-height: 100vh; }
+  main { order: -1; height: 55vh; }
+  aside { border-right: 0; }
+  .topics { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .topic { min-height: 0; height: 118px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>ห้องแต่งตัว</h1>
+    <nav class="topics" id="topics" aria-label="หัวข้อ"></nav>
+  </aside>
+  <main id="stage">
+    <div class="bar">
+      <button type="button" id="resetCam">มุมกล้องเริ่มต้น</button>
+      <button type="button" id="shot">บันทึกภาพ</button>
+      <button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>
+    </div>
+    <div class="status" id="status">กำลังโหลด…</div>
+    <div class="toast" id="toast" role="status"></div>
+    <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
+      <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
+        <button type="button" class="pk-close" id="pkClose" aria-label="ปิด">✕</button></div>
+      <div class="pk-body" id="pkBody"></div>
+    </section>
+  </main>
+</div>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const DATA = "data/";
+const KEY = "wardrobe_v1";
+const LABEL = { wave: "โบกมือ", bow: "ก้มคำนับ", cheer: "เชียร์", cry: "ร้องไห้", laugh: "หัวเราะ", dance: "เต้น", sit: "นั่ง",
+  sleep: "นอน", talk: "คุย", beg: "คุกเข่าขอร้อง", clap: "ปรบมือ", wai: "ไหว้", cooking: "ทำอาหาร", mining: "ขุดเหมือง",
+  planting: "ปลูกผัก", root: "ยืนพัก", battle: "ตั้งท่าสู้", run: "วิ่ง", ko: "ล้ม", falling: "ร่วง", getup: "ลุกขึ้น" };
+const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; if (l.startsWith("fishing")) return "ตกปลา";
+  if (l.startsWith("pose")) return "โพสท่า " + (l.slice(4) || ""); return n; };
+const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
+const MOUNT = { R: "mount_Hand_R", L: "mount_Hand_L", Head: "Head", Back: "Spine1" };
+
+// ---------- three ----------
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 100);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xf1e8f6, 0x857c95, 1.6));
+const sun = new THREE.DirectionalLight(0xe2e5ff, 2.1);          // V07: the M101 sun colour, from the front left
+sun.position.set(-2.2, 3.2, 3.4);
+scene.add(sun);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false,
+  map: (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d");
+    const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, "rgba(60,40,80,.28)"); r.addColorStop(1, "rgba(60,40,80,0)");
+    g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })() }));
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage);        // window and panel size changes both re-fit the view
+
+// ---------- state ----------
+let meta, C = null;          // C = the loaded class
+let ICONS = {};              // icons.json: per class, outfit / prop name -> {icon, codes}
+let PL = {};                 // placements.json: TTO's per-hero, per-code mounts
+let UI = { heroes: {}, emotion: [], skills: {} };   // ui.json: class portraits, emotion and skill icon names
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
+const $ = id => document.getElementById(id);
+const status = t => { $("status").textContent = t || ""; };
+function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1500); }
+const getJSON = async p => { const r = await fetch(p); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
+const imgCache = {};
+const loadImage = src => imgCache[src] || (imgCache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = src; }));
+const texLoader = new THREE.TextureLoader();
+
+// ---------- class ----------
+async function loadClass(cls) {
+  status("กำลังโหลด " + cls + "…");
+  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }
+  const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
+  const root = new THREE.Group();
+  const tri = new THREE.Object3D();
+  tri.name = "tri";
+  tri.position.fromArray(rig.tri.p); tri.quaternion.fromArray(rig.tri.q); tri.scale.fromArray(rig.tri.s);
+  root.add(tri);
+  const bones = rig.bones.map(b => { const o = new THREE.Bone(); o.name = b.name; o.position.fromArray(b.p); o.quaternion.fromArray(b.q); o.scale.fromArray(b.s); return o; });
+  rig.bones.forEach((b, i) => (b.parent >= 0 ? bones[b.parent] : tri).add(bones[i]));
+  const byName = Object.fromEntries(bones.map(b => [b.name, b]));
+  scene.add(root);
+  root.updateMatrixWorld(true);
+  const mixer = new THREE.AnimationMixer(root);
+  mixer.addEventListener("finished", onFinished);
+  C = { cls, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
+  const meta1 = meta.classes.find(c => c.cls === cls);
+  C.faces = meta1.faces;
+  const L = saved[cls] || {};
+  C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1,
+              face: L.face ?? (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || null, Back: L.Back || null };
+  renderClassUI();
+  await setOutfit(C.state.outfit, C.state.color);
+  for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
+  play("root");
+  fitCamera();
+  status("");
+}
+function persist() { if (!C) return; saved[C.cls] = { ...C.state }; saved.cls = C.cls; save(); }
+
+// ---------- outfit ----------
+async function composeTexture(o, color, face) {
+  const base = await loadImage(`${DATA}${C.cls}/tex/${o.name}${color}.webp`);
+  const cv = document.createElement("canvas"); cv.width = base.naturalWidth; cv.height = base.naturalHeight;
+  const g = cv.getContext("2d");
+  g.drawImage(base, 0, 0);
+  try {
+    const f = await loadImage(`${DATA}${C.cls}/faces/${face}.webp`);
+    // skins.py: the face block = 256 px wide x half the sheet tall, top left
+    g.drawImage(f, 0, 0, 256, 256, 0, 0, Math.min(256, cv.width / 2), cv.height / 2);
+  } catch (e) {}
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+async function setOutfit(name, color) {
+  const o = C.outfits.find(x => x.name === name);
+  if (!o) return;
+  if (!o.colors.includes(color)) color = o.colors[0];
+  status("กำลังใส่ชุด " + name + "…");
+  const buf = await (await fetch(`${DATA}${C.cls}/o_${name}.bin`)).arrayBuffer();
+  const tex = await composeTexture(o, color, C.state.face);
+  for (const m of C.meshes) { C.tri.remove(m); m.geometry.dispose(); }
+  C.meshes = [];
+  const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.DoubleSide, alphaTest: 0.5 });
+  for (const d of o.meshes) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(buf, d.pos, d.verts * 3), 3));
+    g.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(buf, d.nrm, d.verts * 3), 3));
+    g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(buf, d.uv, d.verts * 2), 2));
+    g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(new Uint16Array(buf, d.j, d.verts * 4), 4));
+    g.setAttribute("skinWeight", new THREE.BufferAttribute(new Float32Array(buf, d.w, d.verts * 4), 4));
+    g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.idx, d.tris * 3), 1));
+    const mesh = new THREE.SkinnedMesh(g, mat);
+    mesh.name = "outfit_" + d.name;
+    mesh.frustumCulled = false;
+    C.tri.add(mesh);
+    mesh.updateMatrixWorld(true);
+    // Unity: world = sum w * bone.world * bindpose * v ; three.js: bone.world * boneInverse * bindMatrix * v
+    const inv = mesh.matrixWorld.clone().invert();
+    const bones = d.bones.map(n => C.byName[n]);
+    const boneInverses = d.bones.map((_, i) => new THREE.Matrix4().fromArray(d.ibm, i * 16).multiply(inv));
+    mesh.bind(new THREE.Skeleton(bones, boneInverses), mesh.matrixWorld.clone());
+    C.meshes.push(mesh);
+  }
+  C.mat?.map?.dispose(); C.mat?.dispose();
+  C.mat = mat;
+  C.state.outfit = name; C.state.color = color;
+  persist(); renderOutfitUI(); status("");
+}
+async function setColorOrFace(color, face) {
+  if (color != null) C.state.color = color;
+  if (face != null) C.state.face = face;
+  const o = C.outfits.find(x => x.name === C.state.outfit);
+  const tex = await composeTexture(o, C.state.color, C.state.face);
+  C.mat.map.dispose(); C.mat.map = tex; C.mat.needsUpdate = true;
+  persist(); renderOutfitUI(); renderFacesUI();
+}
+
+// ---------- props ----------
+const unityEuler = (x, y, z) => {          // Unity Quaternion.Euler: z, then x, then y; then mirrored to three.js
+  const d = Math.PI / 180, q = new THREE.Quaternion();
+  q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), y * d)
+   .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), x * d))
+   .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), z * d));
+  return new THREE.Quaternion(q.x, -q.y, -q.z, q.w);
+};
+// see setProp: the code-less public_wing pieces (three.js space); checked on Sheep / Rabbit from back and side
+// (2026-11-04): this one raises the wings from the upper back; its mirror image (0.5, -0.5, 0.5, 0.5) hangs them down
+let WING_ALIGN = [0.5, 0.5, -0.5, 0.5];
+const MOUNT_ROT = { R: new THREE.Quaternion(), L: new THREE.Quaternion(), Head: unityEuler(0, -90, 90), Back: unityEuler(0, -90, 90) };
+async function propList(kind) {
+  if (!C.propLists[kind]) {
+    const own = await getJSON(`${DATA}${C.cls}/props_${kind}.json`).catch(() => []);
+    // the shared items (heroes/all: fashion wings, seals, Halloween headbands) go on every class
+    const shared = kind !== "weapons" ? await getJSON(`${DATA}all/props_${kind}.json`).catch(() => []) : [];
+    C.propLists[kind] = own.concat(shared.map(p => ({ ...p, shared: true })));
+  }
+  return C.propLists[kind];
+}
+function propMaterials(list) {
+  return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
+    const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(m.color[0], m.color[1], m.color[2]), side: THREE.DoubleSide, alphaTest: 0.5 });
+    if (m.tex) {
+      const t = texLoader.load(`../props/tex/${m.tex}`);
+      t.colorSpace = THREE.SRGBColorSpace;
+      // Unity's default wrap is Repeat; three.js clamps. Day-Night Wing's UVs run v -1..0, and clamped they
+      // smeared the edge row over the wing (user 2026-11-04: "this texture was applied correct in the game")
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      mat.map = t;
+    }
+    return mat;
+  });
+}
+function propGeometry(m) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(m.pos, 3));
+  if (m.nrm) g.setAttribute("normal", new THREE.Float32BufferAttribute(m.nrm, 3)); else g.computeVertexNormals();
+  if (m.uv) g.setAttribute("uv", new THREE.Float32BufferAttribute(m.uv, 2));
+  g.setIndex(m.idx);
+  for (const [start, count, mi] of m.groups) g.addGroup(start, count, mi);
+  return g;
+}
+function buildProp(p) {
+  const objs = [], skins = [];
+  p.nodes.forEach((n, i) => {
+    let o;
+    if (n.mesh) { const mats = propMaterials(n.mats); o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]); }
+    else o = new THREE.Bone();                          // plain nodes double as the bones an animated prop's skin uses
+    o.name = "p" + i;                                   // unique in the prop: its clip tracks bind by these names
+    o.userData.label = n.name;
+    o.position.fromArray(n.p); o.quaternion.fromArray(n.q); o.scale.fromArray(n.s);
+    o.visible = n.on !== false;
+    objs.push(o);
+    if (n.parent >= 0) objs[n.parent].add(o);
+    if (n.skin) skins.push({ o, n });
+  });
+  Object.assign(objs[0].userData, { objs, skins, prop: p });
+  return objs[0];
+}
+// after mounting: bind the live skins (the wings, on their own bones) and loop the prop's own clip (they flap)
+function finishProp(root) {
+  root.updateMatrixWorld(true);
+  const { objs, skins, prop } = root.userData;
+  for (const { o, n } of skins) {
+    const g = propGeometry(n.skin);
+    g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(n.skin.j, 4));
+    g.setAttribute("skinWeight", new THREE.Float32BufferAttribute(n.skin.w, 4));
+    const mats = propMaterials(n.mats);
+    const sm = new THREE.SkinnedMesh(g, mats.length > 1 ? mats : mats[0]);
+    sm.name = "skin"; sm.frustumCulled = false;
+    o.add(sm); sm.updateMatrixWorld(true);              // Unity binds the mesh in its renderer node's space
+    const inv = sm.matrixWorld.clone().invert();
+    const boneInverses = n.skin.bones.map((_, i) => new THREE.Matrix4().fromArray(n.skin.ibm, i * 16).multiply(inv));
+    sm.bind(new THREE.Skeleton(n.skin.bones.map(b => objs[b]), boneInverses), sm.matrixWorld.clone());
+  }
+  const a = prop.anim;
+  if (!a) return;
+  const names = Object.keys(a.clips);
+  const pick = names.find(k => /idle/i.test(k)) || (a.clips[a.default] ? a.default : names[0]);
+  const c = a.clips[pick], fps = 30, dur = Math.max(c.len, 1 / fps), n = Math.max(2, Math.round(dur * fps) + 1);
+  const times = Float32Array.from({ length: n }, (_, i) => Math.min(dur, i / fps));
+  const tracks = [];
+  for (const [idx, tr] of Object.entries(c.tracks)) {
+    if (idx === "0") continue;                          // the root carries the mount
+    if (tr.q) {
+      const v = new Float32Array(n * 4), q = new THREE.Quaternion(), prev = new THREE.Quaternion();
+      for (let i = 0; i < n; i++) {
+        q.fromArray(hermite(tr.q, 4, times[i])).normalize();
+        if (i && prev.dot(q) < 0) q.set(-q.x, -q.y, -q.z, -q.w);
+        prev.copy(q); q.toArray(v, i * 4);
+      }
+      tracks.push(new THREE.QuaternionKeyframeTrack(`p${idx}.quaternion`, times, v));
+    }
+    for (const [slot, prop_] of [["p", "position"], ["s", "scale"]]) {
+      if (!tr[slot]) continue;
+      const v = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) v.set(hermite(tr[slot], 3, times[i]), i * 3);
+      tracks.push(new THREE.VectorKeyframeTrack(`p${idx}.${prop_}`, times, v));
+    }
+  }
+  const mixer = new THREE.AnimationMixer(root);
+  mixer.clipAction(new THREE.AnimationClip(pick, dur, tracks)).play();
+  root.userData.mixer = mixer;
+}
+async function setProp(slot, name) {
+  const old = C.props[slot];
+  if (old) { old.userData.mixer?.stopAllAction(); old.parent?.remove(old); old.traverse(o => { o.geometry?.dispose(); }); delete C.props[slot]; }
+  C.state[slot] = name;
+  if (name) {
+    const list = await propList(SLOTS[slot]);
+    const p = list.find(x => x.name === name);
+    // the slot decides the hand: any weapon can go in either; Mole's rig has no Spine1 (UpperBody1 / UpperBody2)
+    const bone = C.byName[MOUNT[slot]] || (slot === "Back" ? C.byName.UpperBody1 || C.byName.Spine2 : null) || C.byName.Head;
+    if (p && bone) {
+      const o = buildProp(p);
+      // TTO's own placement for this hero + item code (wardrobe_placements.py: bone, pos, euler, scale), else BB's rule
+      const table = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" }[slot];
+      const hero = slot === "L" ? C.cls + "#2" : C.cls;
+      const T = PL[table]?.[hero];
+      const codes = iconOf(SLOT_KEY[slot], p.name)?.codes || [];
+      // TTO's PlaceTrinket / PlaceAccessory / PlaceWeapon: the class + code entry, else the class's fallback (TTO1102
+      // 0x1a7a020 / 0x1a79f00 / 0x1a7a390); IsSpecialTrinket only means "no code"
+      let pl = codes.map(c => T?.entries?.[c]).find(Boolean), how = "entry";
+      if (!pl && !codes.length && p.nodes.some(n => /^public_wing_\d+$/.test(n.name)) && T?.entries?.t_all78) {
+        // Devil / Champion Wing: no code, so never placed by TTO; Shade Wing's entry after re-orienting the model:
+        // these two have span x / height y / reach -z where Shade has span z / height x / reach +y (baked bounds)
+        const e = T.entries.t_all78, q = new THREE.Quaternion().fromArray(e.q).multiply(new THREE.Quaternion().fromArray(WING_ALIGN));
+        pl = { ...e, q: q.toArray() }; how = "inferred: Shade Wing's entry, model re-oriented (no code)";
+      }
+      if (!pl && T?.fallback) { pl = T.fallback; how = "class fallback"; }
+      if (!pl && slot === "L") {                       // a second weapon on a one-weapon class: the other hand
+        const main = PL.weapons?.[C.cls]?.fallback?.bone;
+        pl = { bone: main === "mount_Hand_L" ? "mount_Hand_R" : "mount_Hand_L", p: [0, 0, 0], q: [0, 0, 0, 1], s: 1, kwr: false, kps: true };
+        how = "other hand (no second slot in TTO)";
+      }
+      o.userData.placement = how;
+      if (pl) {
+        o.position.fromArray(pl.p);
+        if (!pl.kwr) o.quaternion.fromArray(pl.q);
+        o.scale.copy((pl.kps ? o.scale.clone() : new THREE.Vector3(1, 1, 1)).multiplyScalar(pl.s));
+        (pl.bone ? (C.byName[pl.bone] || bone) : C.root).add(o);     // an empty bone = the character root
+      } else {
+        o.position.set(0, 0, 0);                      // BB: localPosition = zero, localRotation by slot
+        o.quaternion.copy(MOUNT_ROT[slot]);
+        bone.add(o);
+      }
+      finishProp(o);
+      C.props[slot] = o;
+    }
+  }
+  persist(); renderPropUI(slot);
+}
+
+// ---------- animation ----------
+function hermite(keys, n, t) {
+  if (t <= keys[0][0]) return keys[0].slice(1, 1 + n);
+  const last = keys[keys.length - 1];
+  if (t >= last[0]) return last.slice(1, 1 + n);
+  let lo = 0, hi = keys.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (keys[m][0] <= t) lo = m; else hi = m; }
+  const k0 = keys[lo], k1 = keys[hi], dx = k1[0] - k0[0];
+  if (dx <= 0) return k1.slice(1, 1 + n);
+  const u = (t - k0[0]) / dx, u2 = u * u, u3 = u2 * u;
+  const a = 2 * u3 - 3 * u2 + 1, b = u3 - 2 * u2 + u, c = u3 - u2, d = -2 * u3 + 3 * u2;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const m0 = k0[1 + 2 * n + i], m1 = k1[1 + n + i];
+    out.push(Math.abs(m0) >= 1e29 || Math.abs(m1) >= 1e29 ? k0[1 + i] : a * k0[1 + i] + b * m0 * dx + c * m1 * dx + d * k1[1 + i]);
+  }
+  return out;
+}
+function buildClip(name) {
+  if (C.clips[name]) return C.clips[name];
+  const c = C.clipsData[name], fps = 30;
+  const dur = Math.max(c.len, 1 / fps), n = Math.max(2, Math.round(dur * fps) + 1);
+  const times = new Float32Array(n);
+  for (let i = 0; i < n; i++) times[i] = Math.min(dur, i / fps);
+  const tracks = [];
+  for (const [bone, tr] of Object.entries(c.tracks)) {
+    if (!C.byName[bone]) continue;
+    if (tr.q) {
+      const v = new Float32Array(n * 4), q = new THREE.Quaternion(), prev = new THREE.Quaternion();
+      for (let i = 0; i < n; i++) {
+        q.fromArray(hermite(tr.q, 4, times[i])).normalize();
+        if (i && prev.dot(q) < 0) q.set(-q.x, -q.y, -q.z, -q.w);
+        prev.copy(q); q.toArray(v, i * 4);
+      }
+      tracks.push(new THREE.QuaternionKeyframeTrack(bone + ".quaternion", times, v));
+    }
+    for (const [slot, prop] of [["p", "position"], ["s", "scale"]]) {
+      if (!tr[slot]) continue;
+      const v = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) v.set(hermite(tr[slot], 3, times[i]), i * 3);
+      tracks.push(new THREE.VectorKeyframeTrack(bone + "." + prop, times, v));
+    }
+  }
+  return (C.clips[name] = new THREE.AnimationClip(name, dur, tracks));
+}
+function play(name) {
+  if (!C.clipsData[name]) name = Object.keys(C.clipsData).find(k => k.toLowerCase() === "root") || Object.keys(C.clipsData)[0];
+  const act = C.mixer.clipAction(buildClip(name));
+  const loop = C.clipsData[name].loop || name.toLowerCase() === "root";
+  act.reset(); act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); act.clampWhenFinished = !loop;
+  if (C.action && C.action !== act) { act.play(); C.action.crossFadeTo(act, 0.2, false); }      // the game's CrossFade 0.2 s
+  else act.play();
+  C.action = act; C.cur = name;
+  renderMovesUI();
+}
+function onFinished(e) { if (C && e.action === C.action && C.cur.toLowerCase() !== "root") play("root"); }
+
+// ---------- UI: topic rows (name + the current choice's icon in a ring) and a picker over the stage ----------
+const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
+// Panda's paired gloves are props <name>_L / <name>_R: the game adds the hand to the mapped name
+const iconOf = (slot, name) => ICONS[C.cls]?.[slot]?.[name] || ICONS[C.cls]?.[slot]?.[name.replace(/_[LRlr]$/, "")]
+  || ICONS.all?.[slot]?.[name.toLowerCase()];                  // shared items: keyed by lower-case name
+const TOPICS = [["class", "อาชีพ"], ["outfit", "ชุด"], ["face", "หน้า"], ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"],
+                ["Head", "หมวก"], ["Back", "ของประดับหลัง"], ["move", "ท่าทาง"]];
+const capName = s => s[0].toUpperCase() + s.slice(1);
+const faceSrc = n => `${DATA}${C.cls}/faces/${n}.webp`;        // the face overlay itself (user: not the whole texture)
+// an emote's / move's icon: TTO's emotion icons (gamegui/icons/skills/emotion) and the class's skill icons
+const EMO = { wave: "wave", bow: "bow", cheer: "cheer", cry: "cry", laugh: "laugh", dance: "dance", sit: "sit", sleep: "zzz",
+  talk: "chat", beg: "beg", clap: "clap", wai: "wai", cooking: "cook", mining: "mine", planting: "plant", battle: "battle" };
+function moveIcon(name) {
+  if (!name) return null;
+  const l = name.toLowerCase(), e = EMO[l] || (l.startsWith("pose") ? "pose" : null);
+  if (e && UI.emotion?.includes(e)) return `icons/skills/emotion/${e}.webp`;
+  const sk = UI.skills?.[C.cls] || [];
+  const hit = sk.includes(l) ? l : sk.find(s => s.replace(/\d+$/, "") === l.replace(/\d+$/, ""));
+  return hit ? `icons/skills/${C.cls}/${hit}.webp` : null;
+}
+// faces: the overlay webp cropped to where this class's faces draw (ui.json faceBox, in the overlay's 256 px)
+const faceView = () => { const b = UI.faceBox?.[C.cls];
+  return b ? ` style="object-view-box: inset(${b[1]}px ${256 - b[2]}px ${256 - b[3]}px ${b[0]}px)"` : ""; };
+const pic = (src, face = false) => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) ? src : DATA + src}"${face ? faceView() : ""}>`
+  : `<span class="none">—</span>`;
+function currentIcon(t) {
+  if (!C) return null;
+  if (t === "class") return UI.heroes?.[C.cls];
+  if (t === "outfit") return iconOf("outfits", C.state.outfit)?.icon;
+  if (t === "face") return faceSrc(C.state.face);
+  if (t === "move") return moveIcon(C.cur);
+  return C.state[t] ? iconOf(SLOT_KEY[t], C.state[t])?.icon : null;
+}
+let openTopic = null;
+function renderTopics() {
+  $("topics").innerHTML = TOPICS.map(([t, name]) => `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
+    <span class="tname">${name}</span><span class="ring t-${t}${t === "face" ? " face" : ""}">${pic(currentIcon(t), t === "face")}</span></button>`).join("");
+  $("topics").querySelectorAll(".topic").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
+}
+function closePicker() { openTopic = null; $("picker").hidden = true; renderTopics(); }
+const item = (attr, label, pressed, src, tto, title = label, face = false) =>
+  `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
+  `<span class="lbl">${label}</span>${tto ? '<i class="dot"></i>' : ""}</button>`;
+let moveTab = "emote";
+async function openPicker(t) {
+  openTopic = t; renderTopics();
+  const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools"), body = $("pkBody");
+  $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false;
+  body.classList.toggle("face-grid", t === "face");
+  // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, refresh the rows
+  const pick = (fn, after) => body.querySelectorAll(".pk-item").forEach(b => b.onclick = async () => {
+    body.querySelectorAll(".pk-item").forEach(x => x.setAttribute("aria-pressed", x === b));
+    await fn(b); renderTopics(); after?.();
+  });
+  if (t === "class") {
+    body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, capName(c.cls), c.cls === C.cls, UI.heroes?.[c.cls])).join("");
+    pick(b => loadClass(b.dataset.c).catch(err));
+  } else if (t === "outfit") {
+    const drawColors = () => {                                  // each outfit has its own colours
+      const o = C.outfits.find(x => x.name === C.state.outfit);
+      tools.innerHTML = `<span>สี</span>` + (o?.colors || []).map(c => `<button type="button" class="pk-tab" data-c="${c}" aria-pressed="${c === C.state.color}">${c}</button>`).join("");
+      tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = async () => { await setColorOrFace(+b.dataset.c, null).catch(err); drawColors(); });
+    };
+    drawColors();
+    body.innerHTML = C.outfits.map(o => { const ic = iconOf("outfits", o.name);
+      return item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, o.tto, ic ? `${o.name} (${ic.codes.join(", ")})` : o.name); }).join("");
+    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err), drawColors);
+  } else if (t === "face") {
+    body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), f.tto, `หน้า ${f.n}`, true)).join("");
+    pick(b => setColorOrFace(null, +b.dataset.f).catch(err));
+  } else if (t === "move") {
+    tools.innerHTML = [["emote", "ท่าทาง"], ["base", "ท่าพื้นฐาน"], ["skill", "ท่าสกิล"]].map(([g, n]) =>
+      `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("");
+    tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move"); });
+    const names = Object.keys(C.clipsData).filter(k => C.clipsData[k].group === moveTab)
+      .sort((a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || a.localeCompare(b));
+    body.innerHTML = names.map(n => item(`data-m="${n}"`, label(n), n === C.cur, moveIcon(n), C.clipsData[n].tto, n)).join("");
+    pick(b => play(b.dataset.m));
+  } else {                                                      // R, L, Head, Back
+    const list = await propList(SLOTS[t]);
+    tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`;
+    const inp = tools.querySelector("input");
+    const draw = () => {
+      const q = inp.value.toLowerCase();
+      const items = list.filter(p => t !== "R" || p.mount !== "mount_Hand_L").filter(p => !q || p.name.toLowerCase().includes(q))
+                        .sort((a, b) => t === "L" ? (b.mount === "mount_Hand_L") - (a.mount === "mount_Hand_L") : 0);
+      body.innerHTML = item(`data-p=""`, "ไม่ใส่", !C.state[t], null, false) + items.map(p => { const ic = iconOf(SLOT_KEY[t], p.name);
+        return item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, p.tto, ic ? `${p.name} (${ic.codes.join(", ")})` : p.name); }).join("");
+      pick(b => setProp(t, b.dataset.p || null).catch(err));
+    };
+    inp.oninput = draw; draw(); inp.focus();
+  }
+}
+$("pkClose").onclick = closePicker;
+addEventListener("keydown", e => { if (e.key === "Escape" && openTopic) closePicker(); });
+// the outfit / face / prop / move code calls these after a change: they all just refresh the topic rows now
+const renderClassUI = renderTopics, renderOutfitUI = renderTopics, renderFacesUI = renderTopics, renderMovesUI = renderTopics;
+const renderPropUI = () => renderTopics();
+function fitCamera() {
+  const box = new THREE.Box3();
+  for (const m of C.meshes) { m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }
+  const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5);
+  controls.target.set(c.x, c.y, c.z);
+  camera.position.set(c.x + h * 0.55, c.y + h * 0.12, c.z + h * 2.9);
+  controls.update();
+  floor.scale.setScalar(h * 0.42);
+}
+$("resetCam").onclick = () => C && fitCamera();
+$("shot").onclick = () => { const a = document.createElement("a"); a.href = renderer.domElement.toDataURL("image/png"); a.download = `${C.cls}_${C.state.outfit}${C.state.color}.png`; a.click(); };
+$("copy").onclick = async () => {
+  const s = C.state;
+  const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
+    (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${C.cur}` : "");
+  try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว · วางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
+};
+function err(e) { console.error(e); status("โหลดไม่สำเร็จ: " + e.message); }
+
+// ---------- go ----------
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = clock.getDelta();
+  if (C) { C.mixer.update(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
+  controls.update(); renderer.render(scene, camera);
+});
+resize();
+meta = await getJSON(DATA + "meta.json");
+ICONS = await getJSON(DATA + "icons.json").catch(() => ({}));
+PL = await getJSON(DATA + "placements.json").catch(() => ({}));
+UI = await getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }));
+const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
+await loadClass(first).catch(err);
+// for scripted checks (Playwright): wardrobe.show("sheep", {Back: "Shade_Wing"}, 160) -> a loaded view, camera yaw in degrees
+window.wardrobe = {
+  setWingAlign(q) { WING_ALIGN = q; },
+  async show(cls, slots = {}, yaw = 0) {
+    if (!C || C.cls !== cls) await loadClass(cls);
+    for (const [s, n] of Object.entries(slots)) await setProp(s, n);
+    play("root"); C.mixer.setTime(0.5); fitCamera();
+    const off = camera.position.clone().sub(controls.target), r = Math.hypot(off.x, off.z), a = yaw * Math.PI / 180;
+    camera.position.set(controls.target.x + r * Math.sin(a), camera.position.y, controls.target.z + r * Math.cos(a));
+    controls.update(); renderer.render(scene, camera);
+    return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
+  },
+  setOutfit: (name, color = 1) => setOutfit(name, color),
+  debug: () => ({ C, THREE, camera, controls, renderer, scene }),   // scripted checks only
+};
+</script>
+</body>
+</html>
