@@ -53,9 +53,13 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
    narrow box, top and bottom (user: "to give spaces to the color selection"), colour takes the rest of the row */
 .topic { grid-column: span 6; min-width: 0; container-type: size; display: flex; flex-direction: column; align-items: center;
   gap: 4px; width: 100%; border: 1px solid transparent; background: var(--panel); border-radius: 16px; padding: 7px 10px 10px; }
-.topic.duo { grid-column: span 3; }
-.topic[data-t=color] { grid-column: span 9; }
-.topic.duo { padding: 4px; gap: 4px; }
+/* row 1 = one flex row (user 2026-11-07: "bigger icons there please, the column width can be changed as you seem fit"):
+   the class + face column is exactly as wide as its two stacked rings, (row height - padding - gap) / 2 each; colour
+   takes the rest and fitColors() sizes its icons */
+.row1 { grid-column: 1 / -1; display: flex; gap: 8px; min-width: 0; min-height: 0; container-type: size; }
+.topic.duo { flex: none; width: min(40%, calc((100cqh - 12px) / 2 + 8px)); }
+.topic.r1.duo { padding: 4px; gap: 4px; }
+.topic.color { flex: 1 1 0; gap: var(--g, 6px); }
 .duo-b { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: grid; place-items: center; padding: 0;
   border: 1px solid transparent; border-radius: 12px; background: none; }
 .duo-b:hover { border-color: var(--line); }
@@ -64,16 +68,16 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic.r1 { padding: 5px 6px; justify-content: center; }
 .topic.r1 .ring { --d: min(100cqw, 100cqh); }
 /* สี (user 2026-11-07: "the color tab no longer show pop-up, all available colors can be picked directly"): one Recolor
-   Drug icon per colour of the outfit, each a one-tap button, all on one line, and the worn set's ปกติ / R / V chips
-   under them */
-.cswatches { --edh: 0px; display: grid; grid-template-columns: repeat(var(--n), var(--s)); gap: 4px; justify-content: center;
-  --s: min(calc((100cqw - (var(--n) - 1) * 4px) / var(--n)), calc(100cqh - var(--edh)), 48px); }
-.topic.has-eds .cswatches { --edh: 26px; }
-.csw { width: var(--s); height: var(--s); padding: 2px; border: 2px solid var(--line); border-radius: 50%; background: var(--bg); display: grid; place-items: center; }
+   Drug icon per colour of the outfit, each a one-tap button, and the worn set's ปกติ / R / V chips under them. Sizes,
+   columns and gaps come from fitColors() (--s, --cols, --gx, --band, --ch, --chb, --g) */
+.cswatches { display: grid; grid-template-columns: repeat(var(--cols, 5), var(--s, 32px)); grid-auto-rows: var(--band, var(--s, 32px));
+  column-gap: var(--gx, 6px); row-gap: var(--g, 6px); justify-content: center; align-items: center; justify-items: center; }
+.csw { width: var(--s, 32px); height: var(--s, 32px); padding: 2px; border: 2px solid var(--line); border-radius: 50%; background: var(--bg); display: grid; place-items: center; }
 .csw img { width: 100%; height: 100%; object-fit: contain; }
 .csw[aria-pressed=true] { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-soft); }
-.ceds { flex: none; display: flex; gap: 4px; justify-content: center; }
-.ced { height: 22px; border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px; padding: 0 10px; font-size: 12px; line-height: 20px; }
+.ceds { flex: none; display: flex; gap: 6px; justify-content: center; align-items: center; height: var(--chb, 22px); }
+.ced { --c: var(--ch, 22px); height: var(--c); border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px;
+  padding: 0 calc(var(--c) * .45); font-size: calc(var(--c) * .55); line-height: calc(var(--c) - 2px); }   /* scales with the icons */
 .ced[aria-pressed=true] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 800; }
 .ced:disabled { opacity: .35; cursor: default; }
 .topic.set { grid-column: 1 / -1; justify-content: center; }
@@ -159,15 +163,13 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .topic.set { border-image-width: 12px; border-image-outset: 2px; }
   .topic.set .setparts { --d: min(calc(100cqh - 2px), 38px); gap: 4px; margin: 0; min-height: 0; }
   .topic.r1 { padding: 2px 4px; }
-  .topic.color { flex-direction: column; gap: 0; }
-  .topic.duo { flex-direction: column; padding: 3px; gap: 3px; }
-  /* a finger needs 36 px: the colour icons and the chips sit on two 36 px bands, each with a centred 36 px ::after */
-  .cswatches, .ceds { height: 36px; align-items: center; }
-  .cswatches { gap: 6px; --s: min(calc((100cqw - (var(--n) - 1) * 6px) / var(--n)), 30px); }
+  .row1 { gap: 5px; }
+  .topic.color { flex-direction: column; }
+  .topic.duo { flex-direction: column; width: min(40%, calc((100cqh - 9px) / 2 + 6px)); padding: 3px; gap: 3px; }
+  /* a finger needs 36 px: each colour icon and chip has a centred 36 px ::after, on 36 px bands (fitColors) */
   .ceds { gap: 8px; }
   .csw, .ced { position: relative; }
   .csw::after, .ced::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
-  .ced { height: 22px; line-height: 20px; font-size: 11px; padding: 0 10px; }
   .topic.set .setparts .hint { font-size: 11px; }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
@@ -825,11 +827,11 @@ function renderTopics() {
   box.innerHTML = TOPICS.map(([t, name]) => t === "set"
     ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${worn.label}"` : ""}>
     <span class="tname">${name}</span><span class="setparts"${worn ? ` style="--k: ${(setParts(worn).match(/<img/g) || []).length}"` : ""}>${worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`}</span></button>`
-    : t === "color" ? colorTile(name)
-    : t === "face" ? ""
-    : t === "class" ? `<div class="topic r1 duo" role="group">${["class", "face"].map(k => { const nm = TOPICS.find(x => x[0] === k)[1];
+    : t === "color" || t === "face" ? ""
+    : t === "class" ? `<div class="row1"><div class="topic r1 duo" role="group">${["class", "face"].map(k => { const nm = TOPICS.find(x => x[0] === k)[1];
         return `<button type="button" class="duo-b" data-t="${k}" aria-expanded="${openTopic === k}" aria-label="${nm}" title="${nm}">`
-          + `<span class="ring t-${k}${k === "face" ? " face" : ""}">${pic(currentIcon(k), k === "face")}</span></button>`; }).join("")}</div>`
+          + `<span class="ring t-${k}${k === "face" ? " face" : ""}">${pic(currentIcon(k), k === "face")}</span></button>`; }).join("")}</div>${
+        colorTile(TOPICS.find(x => x[0] === "color")[1])}</div>`
     : `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
     <span class="tname">${name}</span><span class="ring t-${t}">${pic(currentIcon(t))}</span></button>`).join("");
   box.querySelectorAll("button.topic, .duo-b").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
@@ -843,8 +845,32 @@ function renderTopics() {
     try { await tracked(() => setEdition(e)); toast(e ? `แบบ ${e} ทั้งชุด` : "แบบปกติทั้งชุด"); } catch (x) { err(x); }
     await afterLook();
   });
+  fitColors();
   if (keep) box.querySelector(keep)?.focus();
 }
+// the สี box's icons as big as the box allows (user 2026-11-07: "bigger icons there please"): one row of all the colours
+// or a 3 + 2 grid, whichever gives the bigger icon in this box; the chips scale with the icons (20 to 30 px). On a touch
+// screen every icon and chip keeps a 36 px band for its ::after hit area, and neighbouring bands do not overlap
+function fitColors() {
+  const t = document.querySelector(".topic.color"), sw = t?.querySelector(".cswatches");
+  if (!sw) return;
+  const n = sw.children.length, eds = !!t.querySelector(".ceds"), hit = matchMedia("(pointer: coarse)").matches ? 36 : 0;
+  const cs = getComputedStyle(t), W = t.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+    H = t.clientHeight - (hit ? 0 : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));   // touch: the hit bands may use the padding
+  const g = hit ? 0 : 6, gx = s => Math.max(hit ? 4 : 6, hit - s), chip = s => Math.min(30, Math.max(20, s * .5));
+  let best = null;
+  for (const cols of new Set([n, Math.min(n, 3)])) {
+    const rows = Math.ceil(n / cols);
+    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * g + (eds ? g + Math.max(chip(s), hit) : 0) <= H;
+    let lo = 0, hi = 120;
+    for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (fits(m)) lo = m; else hi = m; }
+    if (!best || lo > best.s + .5) best = { s: lo, cols };
+  }
+  const s = Math.floor(best.s);
+  sw.style.cssText = `--n: ${n}; --cols: ${best.cols}; --s: ${s}px; --gx: ${gx(s)}px; --band: ${Math.max(s, hit)}px`;
+  t.style.cssText = `--g: ${g}px; --ch: ${chip(s)}px; --chb: ${Math.max(chip(s), hit)}px`;
+}
+new ResizeObserver(() => fitColors()).observe($("topics"));
 function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
 const item = (attr, label, pressed, src, tto, title = label, face = false) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
