@@ -957,6 +957,75 @@ $("pkBody").addEventListener("click", e => {
   else if (act === "up") { skinTarget = { slot, item, tex }; skinFile.value = ""; skinFile.click(); }
   else if (act === "reset") skinReset(slot, item).catch(err);
 });
+// ---------- paste a skin (user 2026-11-07: "Allow pasting Ctrl+V from clipboard for skin texture, work by applying the skin
+// to what the cursor is currently focused on if possible"). The pasted picture takes the tile upload's path (skinUpload).
+// Target: the item tile (or a worn piece's topic tile) under the pointer; else the item tile with keyboard focus; else the
+// worn piece under the pointer on the model (a ray against the outfit and the worn props, cut-outs and hidden parts skipped)
+let pointer = null;
+addEventListener("pointermove", e => { pointer = { x: e.clientX, y: e.clientY }; }, { passive: true });
+document.documentElement.addEventListener("mouseleave", () => { pointer = null; });
+const ray = new THREE.Raycaster(), alphaCache = new WeakMap();
+function alphaAt(map, uv) {              // a texture's alpha where a ray hit it (Repeat wrap); 255 when it can't be read
+  const img = map?.image, fr = x => x - Math.floor(x);
+  if (!img || !uv) return 255;
+  if (img.data) {                        // a skin's DataTexture: its rows are stored bottom up already
+    const x = Math.min(img.width - 1, Math.floor(fr(uv.x) * img.width)), y = Math.min(img.height - 1, Math.floor(fr(uv.y) * img.height));
+    return img.data[(y * img.width + x) * 4 + 3];
+  }
+  let d = alphaCache.get(img);
+  if (!d) { d = pixels(img); alphaCache.set(img, d); }
+  const x = Math.min(d.width - 1, Math.floor(fr(uv.x) * d.width)), y = Math.min(d.height - 1, Math.floor((1 - fr(uv.y)) * d.height));
+  return d.data[(y * d.width + x) * 4 + 3];
+}
+function pieceAt(x, y) {                 // the worn piece under a screen point: { slot, item, tex } or null
+  const r = renderer.domElement.getBoundingClientRect(), roots = [...C.meshes, ...Object.values(C.props)];
+  ray.setFromCamera(new THREE.Vector2((x - r.left) / r.width * 2 - 1, -(y - r.top) / r.height * 2 + 1), camera);
+  // a skinned mesh caches its bounds in the pose of its first ray: drop them so the current pose is tested
+  for (const o of roots) o.traverse(m => { if (m.isSkinnedMesh) { m.boundingSphere = null; m.boundingBox = null; } });
+  const shown = o => { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+  for (const h of ray.intersectObjects(roots, true)) {
+    if (!shown(h.object)) continue;
+    const mat = Array.isArray(h.object.material) ? h.object.material[h.face?.materialIndex ?? 0] : h.object.material;
+    if (alphaAt(mat?.map, h.uv) < 128) continue;            // a cut-out the game's alphaTest 0.5 does not draw
+    if (C.meshes.includes(h.object)) return { slot: "outfit", item: C.state.outfit, tex: "" };
+    const slot = ["R", "L", "Head", "Back"].find(s => { for (let o = h.object; o; o = o.parent) if (o === C.props[s]) return true; return false; });
+    if (slot) return { slot, item: C.state[slot], tex: mat?.userData.tex ?? null };
+  }
+  return null;
+}
+function pasteTarget() {
+  const under = pointer && document.elementFromPoint(pointer.x, pointer.y);
+  const fromEl = el => {                 // an item tile (the texture button under it, if the two-texture choice shows), or a topic tile's worn piece
+    const c = el?.closest?.(".pk-cell");
+    if (c) return { slot: c.dataset.slot, item: c.dataset.item, tex: el.closest(".sk[data-tex]")?.dataset.tex ?? null, cell: c };
+    const s = el?.closest?.("#topics [data-t]")?.dataset.t;
+    if (s === "outfit") return { slot: "outfit", item: C.state.outfit, tex: "" };
+    if (SLOTS[s] && C.state[s]) return { slot: s, item: C.state[s], tex: null };
+    return null;
+  };
+  const focused = document.activeElement?.matches?.(":focus-visible") ? document.activeElement : null;   // keyboard focus only
+  return fromEl(under) || fromEl(focused) || (under === renderer.domElement ? pieceAt(pointer.x, pointer.y) : null);
+}
+document.addEventListener("paste", e => {
+  const a = document.activeElement, cd = e.clipboardData;
+  const file = [...(cd?.files || [])].find(f => f.type.startsWith("image/")) || [...(cd?.items || [])].find(i => i.kind === "file" && i.type.startsWith("image/"))?.getAsFile();
+  // a text field keeps its text paste; a picture alone means nothing to it (a picker opens with its search box focused)
+  if (a && (a.isContentEditable || a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && !/^(button|checkbox|radio|file|range|color|submit|reset)$/i.test(a.type)))
+      && (!file || cd.types.includes("text/plain"))) return;
+  if (!C) return;
+  if (!file) { toast("คลิปบอร์ดไม่มีรูปภาพ · คัดลอกรูปลายก่อน แล้วกด Ctrl+V", 2500); return; }
+  e.preventDefault();
+  const t = pasteTarget();
+  if (!t) { toast("ชี้เมาส์ที่ช่องไอเท็ม หรือที่ชิ้นบนตัวละคร แล้วกด Ctrl+V", 3000); return; }
+  const texs = texsOf(kindOf(t.slot), t.item);
+  if (!texs.length) { toast(`${t.item} ไม่มีลาย`, 2500); return; }
+  const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
+  if (tex == null) {                     // two textures and none chosen: show the choice on its tile
+    if (t.cell) t.cell.querySelector(".sk-ui").innerHTML = skinParts(t.slot, t.item, "up");
+    toast(`${t.item} มี ${texs.length} ลาย · ชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
+  }
+  skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้", 2500); });
+});
 const capName = s => s[0].toUpperCase() + s.slice(1);
 const faceSrc = n => `${DATA}${C.cls}/faces/${n}.webp`;        // the face overlay itself (user: not the whole texture)
 // an emote's / move's icon: TTO's emotion icons (gamegui/icons/skills/emotion) and the class's skill icons
@@ -1183,7 +1252,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt }),   // scripted checks only
 };
 </script>
 </body>
