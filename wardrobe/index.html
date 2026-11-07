@@ -511,7 +511,7 @@ function buildClip(name) {
 function play(name) {
   if (!C.clipsData[name]) name = Object.keys(C.clipsData).find(k => k.toLowerCase() === "root") || Object.keys(C.clipsData)[0];
   const act = C.mixer.clipAction(buildClip(name));
-  const loop = C.clipsData[name].loop || name.toLowerCase() === "root";
+  const loop = C.clipsData[name].loop || C.clipsData[name].group === "emote" || name.toLowerCase() === "root";
   act.reset(); act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); act.clampWhenFinished = !loop;
   if (C.action && C.action !== act) { act.play(); C.action.crossFadeTo(act, 0.2, false); }      // the game's CrossFade 0.2 s
   else act.play();
