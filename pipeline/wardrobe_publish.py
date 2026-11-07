@@ -71,7 +71,8 @@ PROVENANCE = ("wardrobe_data.py and extract_tto_props.py extracted every outfit 
               "(tto flag false) only where each of its 3D files was verified equal to BB's client data in the BB rip: "
               "outfit meshes by vertex positions and triangle count, clips by every key, props by every mesh's vertex "
               "positions and triangle count and an animated prop's clip keys. Every picture was taken again from the BB "
-              "rip. rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
+              "rip, except ui/recolor1-5.webp: 128 px upscales of BB's field/rsc1-5.png, proven by a downscale comparison "
+              "against the BB rip. rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
               "TTO's own mount table (Config/*Placement), kept for the published items' codes only. From TTO itself the "
               "copy holds only the first half of TTO's own faces per class.")
 
@@ -99,7 +100,6 @@ def page_edits(data_dir):
          f'<a class="primary" id="bible" href="{BIBLE_URL}">12 Tails Bible</a>', 1),
         ("fonts", 'url("../fonts/', 'url("fonts/', 0),
         ("prop textures", "texLoader.load(`../props/tex/${m.tex}`)", "texLoader.load(`${DATA}props/tex/${m.tex}`)", 1),
-        ("bar style", "</style>", ".bar a { border-radius: 9px; padding: 7px 12px; text-decoration: none; }\n</style>", 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
     ]
 
@@ -884,6 +884,7 @@ def publish(src, out, bb_rip, data=None):
     remove(previous)
     files = [p for p in out.rglob("*") if p.is_file()]
     return {"files": len(files), "bytes": sum(p.stat().st_size for p in files), "data_dir": data_dir,
+            "ui_files": list(ui_files),
             "dropped": dropped, "tto_faces": tto_faces, "warnings": warnings}
 
 
@@ -1047,6 +1048,7 @@ def main(argv=None):
         os.replace(path, prev_path)
     path.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"{a.out}: {result['files']:,} files, {result['bytes'] / 1e6:.1f} MB, data folder {result['data_dir']}")
+    print("  ui files: " + (", ".join(result["ui_files"]) or "none"))
     for kind, items in sorted(result["dropped"].items()):
         print(f"  dropped {kind}: {len(items)}")
     print("  kept TTO faces: " + ", ".join(f"{cls} {v[0]}-{v[-1]}" if v else f"{cls} none" for cls, v in result["tto_faces"].items()))

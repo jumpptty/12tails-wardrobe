@@ -420,7 +420,9 @@ class PublishTest(unittest.TestCase):
         w = self.world()
         for n in range(1, 6):
             self.recolor(w, n)
-        w.publish()
+        result = w.publish()
+        self.assertEqual(result["ui_files"], [f"recolor{n}.webp" for n in range(1, 6)])
+        self.assertIn("ui/recolor1-5.webp", wp.PROVENANCE)
         for n in range(1, 6):
             self.assertEqual((w.out / "ui" / f"recolor{n}.webp").read_bytes(), (w.src / "ui" / f"recolor{n}.webp").read_bytes())
         self.assertEqual(wp.check(w.out), [])
@@ -473,6 +475,7 @@ class PublishTest(unittest.TestCase):
                 self.assertEqual(json.loads(settings.group(1))["path"], "/wardrobe/")
                 self.assertIn('href="https://jumpptty.github.io/12tails/12t_projects/bible/"', html)
                 self.assertIn('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">', html)
+                self.assertNotIn(".bar a {", html)          # the Bible link is styled by the page itself (before the phone block)
                 self.assertEqual(wp.check(w.out), [])
 
     def test_copy_handler_cut_short_fails_loudly(self):

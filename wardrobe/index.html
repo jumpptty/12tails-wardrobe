@@ -30,7 +30,7 @@
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 600 14px/1.45 "Prompt", system-ui, sans-serif; }
 button, input { font: inherit; color: inherit; }
 button { transition: transform .12s, filter .12s, border-color .12s; }
-@media (hover: hover) { button:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.12); } }   /* a tap on a touch screen left it raised */
+@media (hover: hover) { button:not(:disabled):hover, .bar a:hover { transform: translateY(-1px); filter: brightness(1.12); } }   /* a tap on a touch screen left it raised */
 button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .app { --side: 300px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
@@ -40,14 +40,14 @@ input[type=search] { width: 100%; background: var(--bg); border: 1px solid var(-
 main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
 .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
-.bar button { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; }
+.bar button, .bar a { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; text-decoration: none; transition: transform .12s, filter .12s, border-color .12s; }   /* the published copy's Bible link is an <a> */
 .bar .primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 800; }
 .status { position: absolute; left: 14px; bottom: 12px; color: var(--on-stage); font-size: 13px; }
-.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); text-align: center; background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); }
+.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); text-align: center; background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); z-index: 7; }
 .toast.show { opacity: 1; }
 /* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
 .keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 6px; color: var(--on-stage); font-size: 12px; pointer-events: none; background: rgba(255,255,255,.85); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
-.keyhint kbd { font: 700 11px "JetBrains Mono", monospace; border: 1px solid var(--on-stage); border-radius: 4px; padding: 1px 5px; }
+.keyhint kbd { font: inherit; font-weight: 700; font-size: 11px; border: 1px solid var(--on-stage); border-radius: 4px; padding: 1px 5px; }
 @media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
@@ -64,17 +64,17 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .row1 { grid-column: 1 / -1; display: flex; gap: 8px; min-width: 0; min-height: 0; container-type: size; }
 .topic.duo { flex: none; width: min(40%, calc((100cqh - 12px) / 2 + 8px)); }
 .topic.r1.duo { padding: 4px; gap: 4px; }
-.topic.color { flex: 1 1 0; gap: var(--g, 6px); }
+.topic.color { flex: 1 1 0; gap: 6px; }
 .duo-b { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: grid; place-items: center; padding: 0;
   border: 1px solid transparent; border-radius: 12px; background: none; }
-.duo-b:hover { border-color: var(--line); }
+@media (hover: hover) { .duo-b:hover { border-color: var(--line); } }
 .duo-b[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
 .duo-b[aria-expanded=true] .ring { border-color: var(--gold); }
 .topic.r1 { padding: 5px 6px; justify-content: center; }
 .topic.r1 .ring { --d: min(100cqw, 100cqh); }
 /* สี (user 2026-11-07: "the color tab no longer show pop-up, all available colors can be picked directly"): one Recolor
-   Drug icon per colour of the outfit, each a one-tap button, and the worn set's ปกติ / R / V chips under them. Sizes,
-   columns and gaps come from fitColors() (--s, --cols, --gx, --band, --ch, --chb, --g) */
+   Drug icon per colour of the outfit, each a one-tap button (the ปกติ / R / V editions are picked in the set tab, user
+   2026-11-07). Sizes, columns and gaps come from fitColors() (--s, --cols, --gx, --band) */
 .cswatches { display: grid; grid-template-columns: repeat(var(--cols, 5), var(--s, 32px)); grid-auto-rows: var(--band, var(--s, 32px));
   column-gap: var(--gx, 6px); row-gap: var(--rg, 14px); justify-content: center; align-items: center; justify-items: center; }
 /* the Recolor Drug icons drawn bare (user 2026-11-07: "please remove the circular icon on the recolor drug"): the colour
@@ -85,16 +85,12 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .csw[aria-pressed=true], .csw:focus-visible { opacity: 1; }
 @media (hover: hover) { .csw:hover { opacity: 1; } }
 .csw[aria-pressed=true]::before { content: ""; position: absolute; left: 22%; right: 22%; bottom: -3px; height: 3px; border-radius: 2px; background: var(--gold); }
-.ceds { flex: none; display: flex; gap: 6px; justify-content: center; align-items: center; height: var(--chb, 22px); }
-.ced { --c: var(--ch, 22px); height: var(--c); border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px;
-  padding: 0 calc(var(--c) * .45); font-size: calc(var(--c) * .55); line-height: calc(var(--c) - 2px); }   /* scales with the icons */
-.ced[aria-pressed=true] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 800; }
-.ced:disabled { opacity: .35; cursor: default; }
 .topic.set { grid-column: 1 / -1; justify-content: center; }
 /* the special tile: the Bible's gilded frame (border set with longhands: the shorthand resets border-image), no glow */
 .topic.set { border-style: solid; border-width: 1px; border-color: transparent; border-image: var(--cg-gild) 14 / 14px / 3px stretch;
   border-radius: 3px; background: var(--panel); box-shadow: none; }
-.topic.set:hover, .topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; }
+@media (hover: hover) { .topic.set:hover { border-image-source: var(--cg-gild-hi); border-color: transparent; } }
+.topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; }
 .topic.set[aria-expanded=true] { background: var(--panel-2); box-shadow: none; }
 .topic.set .setparts { --d: min(calc(100cqh - 26px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 84px); flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--d); margin: auto 0; }
 .topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
@@ -146,10 +142,11 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 /* an item tile's own skin tools (task 10): download / upload / give back that item's texture. They are the tile button's
    siblings (a button can't hold buttons), laid over its foot, so a tap on them never equips through the tile */
 .pk-cell { position: relative; min-width: 0; display: grid; }
-.pk-cell > .pk-item { padding-bottom: 44px; }
+.pk-cell > .pk-item { padding-bottom: calc(var(--skh, 28px) + 16px); }
+@media (pointer: coarse) { .pk-cell { --skh: 36px; } }
 .sk-ui { display: contents; }
 .pk-skin { position: absolute; left: 8px; right: 8px; bottom: 9px; display: flex; justify-content: center; gap: 5px; }
-.sk { flex: 0 1 34px; min-width: 0; height: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 1px; padding: 0;
+.sk { flex: 0 1 34px; min-width: 0; height: var(--skh, 28px); display: inline-flex; align-items: center; justify-content: center; gap: 1px; padding: 0;
   border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 800; }
 .sk svg { width: 16px; height: 16px; flex: none; }
 .sk.num { flex-basis: 40px; }
@@ -192,10 +189,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .row1 { gap: 5px; }
   .topic.color { flex-direction: column; }
   .topic.duo { flex-direction: column; width: min(40%, calc((100cqh - 9px) / 2 + 6px)); padding: 3px; gap: 3px; }
-  /* a finger needs 36 px: each colour icon and chip has a centred 36 px ::after, on 36 px bands (fitColors) */
-  .ceds { gap: 8px; }
-  .ced { position: relative; }
-  .csw::after, .ced::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
+  /* a finger needs 36 px: each colour icon has a centred 36 px ::after, on 36 px bands (fitColors) */
+  .csw::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
   .topic.set .setparts .hint { font-size: 11px; }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
@@ -205,7 +200,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .pk-head h2 { font-size: 16px; }
   .pk-close { margin-left: auto; position: sticky; top: 0; flex: none; }
   .pk-body { padding: 10px 12px 20px; gap: 8px; }
-  .pk-cell > .pk-item { padding: 8px 6px 42px; }
+  .pk-cell > .pk-item { padding: 8px 6px calc(var(--skh, 28px) + 14px); }
   .pk-skin { left: 5px; right: 5px; bottom: 7px; gap: 4px; }
   .bar { top: 8px; right: 8px; left: 8px; justify-content: flex-end; gap: 5px; }
   .bar button, .bar a { padding: 6px 8px; font-size: 12px; border-radius: 8px; }
@@ -293,6 +288,9 @@ let saved = {};
 // the visitor's own skins (task 10): key -> { w, h, data: RGBA, top row first, not premultiplied; tex: its texture once
 // a prop wears it }. Kept for the visit only (a reload clears them); never stored, never sent
 const SKINS = new Map();
+// undo keeps a skin by reference: every skin picture has an id, and a snapshot lists key -> id (the pictures stay in SKIN_BY_ID)
+const SKIN_BY_ID = new Map(); let skinSeq = 0;
+const skinId = v => { if (!v.id) { v.id = ++skinSeq; SKIN_BY_ID.set(v.id, v); } return v.id; };
 try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
 const $ = id => document.getElementById(id);
@@ -751,13 +749,6 @@ const edSplit = n => { const m = n.match(/^(.*[a-z0-9])([A-Z])((?:_[LR])?)$/);
 const variantIn = (slot, name, e) => { const stem = edSplit(name).stem;
   return (C.propLists[SLOTS[slot]] || []).find(p => { const s = edSplit(p.name); return s.stem === stem && s.v === e; })?.name || null; };
 const outfitHasEd = e => { const o = C.outfits.find(x => x.name === C.state.outfit); return !e || !!o?.editions?.[e]?.includes(C.state.color); };
-const hasEdition = e => outfitHasEd(e) || ["R", "L", "Head", "Back"].some(k => C.state[k] && variantIn(k, C.state[k], e));
-// the edition the worn set shows: the outfit's, else the first worn piece's variant (the toggle and the สี ring's badge)
-function wornEdition() {
-  if (C.state.edition) return C.state.edition;
-  for (const k of ["R", "L", "Head", "Back"]) { const v = C.state[k] && edSplit(C.state[k]).v; if (v) return v; }
-  return "";
-}
 async function setEdition(e) {             // one tracked() step: the outfit and every worn piece that has the variant
   if (outfitHasEd(e) && (C.state.edition || "") !== e) await setColorOrFace(null, null, e);
   for (const k of ["R", "L", "Head", "Back"]) { const n = C.state[k], v = n && variantIn(k, n, e); if (v && v !== n) await setProp(k, v); }
@@ -790,7 +781,8 @@ async function equipSet(s) {
 // ---------- undo / redo (the outfit, its colour, the face and the four slots; a set changes up to five at once) ----------
 let undoStack = [], redoStack = [];
 const snap = () => JSON.stringify({ outfit: C.state.outfit, color: C.state.color, edition: C.state.edition || "", face: C.state.face,
-  R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null });
+  R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null,
+  sk: [...SKINS].map(([k, v]) => [k, skinId(v)]).sort((a, b) => (a[0] < b[0] ? -1 : 1)) });
 function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; }
 async function tracked(fn) {               // run a change; remember the loadout before it if anything changed
   const before = snap();
@@ -798,10 +790,16 @@ async function tracked(fn) {               // run a change; remember the loadout
   if (snap() !== before) { undoStack.push(before); if (undoStack.length > 100) undoStack.shift(); redoStack = []; updateUndo(); }
 }
 async function applyState(st) {
+  const want = new Map(st.sk.map(([k, id]) => [k, SKIN_BY_ID.get(id)])), skinsMoved = want.size !== SKINS.size || [...want].some(([k, v]) => SKINS.get(k) !== v);
+  if (skinsMoved) { SKINS.clear(); want.forEach((v, k) => SKINS.set(k, v)); }
   if (st.outfit !== C.state.outfit) { C.state.face = st.face; await setOutfit(st.outfit, st.color, st.edition); }
   else if (st.color !== C.state.color || st.face !== C.state.face || st.edition !== (C.state.edition || ""))
     await setColorOrFace(st.color, st.face, st.edition);
   for (const k of ["R", "L", "Head", "Back"]) if (st[k] !== (C.state[k] || null)) await setProp(k, st[k]);
+  if (skinsMoved) {                        // the worn pieces wear the restored skins (or their own textures back)
+    for (const k of ["R", "L", "Head", "Back"]) if (C.state[k] && C.props[k]) skinProp(C.props[k], SLOTS[k], C.state[k]);
+    await setColorOrFace(null, null);
+  }
   renderTopics();
   if (openTopic && openTopic !== "class" && openTopic !== "move") openPicker(openTopic);
 }
@@ -900,24 +898,25 @@ async function skinUpload({ slot, item, tex }, file) {
     for (let i = 3; i < a.length; i += 4) if (a[i] < 255) { keptAlpha = true; break; }
     if (keptAlpha) for (let i = 3; i < a.length; i += 4) data[i] = a[i];
   }
-  const key = skinKey(kind, item, tex), old = SKINS.get(key);
-  SKINS.set(key, { w, h, data });
-  const worn = kind === "outfits" ? C.state.outfit === item : C.state[slot] === item;
-  if (!worn) await tracked(() => (kind === "outfits" ? setOutfit(item, C.state.color) : setProp(slot, item)));   // one undo step
-  else if (kind === "outfits") await setColorOrFace(null, null);
-  if (kind !== "outfits") for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
-  old?.tex?.dispose();
+  const key = skinKey(kind, item, tex), worn = kind === "outfits" ? C.state.outfit === item : C.state[slot] === item;
+  await tracked(async () => {              // one undo step: the skin, and the equip when the tile was not worn (undo keeps the old pictures)
+    SKINS.set(key, { w, h, data });
+    if (!worn) await (kind === "outfits" ? setOutfit(item, C.state.color) : setProp(slot, item));
+    else if (kind === "outfits") await setColorOrFace(null, null);
+    if (kind !== "outfits") for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
+  });
   renderTopics(); syncTiles();
   const stretched = Math.abs(uw * h - uh * w) > 0.01 * uh * w;     // the aspect ratios differ by more than 1 %
   toast([`ใส่ลายใหม่ให้ ${item} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
     .filter(Boolean).join(" · "), stretched || keptAlpha ? 4000 : 2000);
 }
 async function skinReset(slot, item) {
-  const kind = kindOf(slot), old = [];
-  for (const t of texsOf(kind, item)) { const k = skinKey(kind, item, t); if (SKINS.has(k)) { old.push(SKINS.get(k)); SKINS.delete(k); } }
-  if (kind === "outfits") { if (C.state.outfit === item) await setColorOrFace(null, null); }
-  else for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
-  old.forEach(s => s.tex?.dispose());
+  const kind = kindOf(slot);
+  await tracked(async () => {              // one undo step
+    for (const t of texsOf(kind, item)) SKINS.delete(skinKey(kind, item, t));
+    if (kind === "outfits") { if (C.state.outfit === item) await setColorOrFace(null, null); }
+    else for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
+  });
   renderTopics(); syncTiles();
   toast(`คืนลายเดิมให้ ${item} แล้ว`);
 }
@@ -1060,25 +1059,22 @@ function currentIcon(t) {
 }
 let openTopic = null;
 // row 1 (the class + face box, the colour box) has no titles (user 2026-11-07); the names stay as aria-label / title
-// the สี tile: the outfit's colours as one-tap Recolor Drug icons, then the worn set's ปกติ / R / V chips (only when some
-// worn piece has an edition); both changes are one undo step each, as in the old colour picker
+// the สี tile: the outfit's colours as one-tap Recolor Drug icons (one undo step each); the ปกติ / R / V editions are
+// picked in the set tab (user 2026-11-07)
 function colorTile(name) {
   const o = C?.outfits.find(x => x.name === C.state.outfit), cs = o?.colors || [];
-  const eds = C ? edLetters().filter(e => o?.editions?.[e] || ["R", "L", "Head", "Back"].some(k => C.state[k] && variantIn(k, C.state[k], e))) : [];
-  const cur = C ? wornEdition() : "";
   const sw = cs.length ? `<span class="cswatches" style="--n: ${cs.length}">` + cs.map(c =>
       `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${o.name} · ${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</span>`
     : `<span class="ring"><span class="none">—</span></span>`;
-  const ed = eds.length ? `<span class="ceds" role="group" aria-label="แบบ">` + ["", ...eds].map(e => `<button type="button" class="ced" data-e="${e}" aria-pressed="${e === cur}"`
-      + `${e && !hasEdition(e) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") + `</span>` : "";
   const mine = o && SKINS.has(skinKey("outfits", o.name));
-  return `<div class="topic r1 color${ed ? " has-eds" : ""}${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " · ชุดนี้ใส่ลายของคุณอยู่" : ""}">${sw}${ed}</div>`;
+  return `<div class="topic r1 color${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " · ชุดนี้ใส่ลายของคุณอยู่" : ""}">${sw}</div>`;
 }
-async function afterLook() { renderTopics(); if (openTopic === "set") await openPicker("set"); }   // the set tiles show what is worn
+// the open picker shows what is worn: the set list is drawn again, an outfit / item list only moves its pressed tile
+async function afterLook() { renderTopics(); if (openTopic === "set") await openPicker("set"); else syncTiles(); }
 function renderTopics() {
   const worn = C && (C.sets || []).find(setWorn), box = $("topics"), a = document.activeElement;
   // a click re-draws the rows: keep the keyboard focus on the same control
-  const keep = a && box.contains(a) ? (a.dataset.c ? `[data-c="${a.dataset.c}"]` : a.dataset.e != null ? `[data-e="${a.dataset.e}"]` : a.dataset.t ? `[data-t="${a.dataset.t}"]` : null) : null;
+  const keep = a && box.contains(a) ? (a.dataset.c ? `[data-c="${a.dataset.c}"]` : a.dataset.t ? `[data-t="${a.dataset.t}"]` : null) : null;
   box.innerHTML = TOPICS.map(([t, name]) => t === "set"
     ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${worn.label}"` : ""}>
     <span class="tname">${name}</span><span class="setparts"${worn ? ` style="--k: ${(setParts(worn).match(/<img/g) || []).length}"` : ""}>${worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`}</span></button>`
@@ -1096,40 +1092,39 @@ function renderTopics() {
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
     if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่ · คืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
-  box.querySelectorAll(".ced").forEach(b => b.onclick = async () => {
-    const e = b.dataset.e;
-    try { await tracked(() => setEdition(e)); toast(e ? `แบบ ${e} ทั้งชุด` : "แบบปกติทั้งชุด"); } catch (x) { err(x); }
-    await afterLook();
-  });
   fitColors();
   if (keep) box.querySelector(keep)?.focus();
 }
 // the สี box's icons as big as the box allows (user 2026-11-07: "bigger icons there please"): one row of all the colours
-// or a 3 + 2 grid, whichever gives the bigger icon in this box; the chips scale with the icons (20 to 30 px). On a touch
-// screen every icon and chip keeps a 36 px band for its ::after hit area, and neighbouring bands do not overlap
+// or a 3 + 2 grid, whichever gives the bigger icon in this box; On a touch
+// screen every icon keeps a 36 px band for its ::after hit area, and neighbouring bands do not overlap
 function fitColors() {
   const t = document.querySelector(".topic.color"), sw = t?.querySelector(".cswatches");
   if (!sw) return;
-  const n = sw.children.length, eds = !!t.querySelector(".ceds"), hit = matchMedia("(pointer: coarse)").matches ? 36 : 0;
+  const n = sw.children.length, hit = matchMedia("(pointer: coarse)").matches ? 36 : 0;
   const cs = getComputedStyle(t), W = t.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
     H = t.clientHeight - (hit ? 0 : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));   // touch: the hit bands may use the padding
-  // g = icons to chips, rg = icon row to icon row: room for the gold bar (3 px under its icon, 3 px tall) so it reads as
+  // rg = icon row to icon row: room for the gold bar (3 px under its icon, 3 px tall) so it reads as
   // the icon's own; on touch screens the 36 px bands already leave that room
-  const g = hit ? 0 : 8, rg = hit ? 6 : 14, gx = s => Math.max(hit ? 4 : 6, hit - s), chip = s => Math.min(30, Math.max(20, s * .5));
+  const rg = hit ? 6 : 14, gx = s => Math.max(hit ? 4 : 6, hit - s);
   let best = null;
   for (const cols of new Set([n, Math.min(n, 3)])) {
     const rows = Math.ceil(n / cols);
-    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * rg + (eds ? g + Math.max(chip(s), hit) : 7) <= H;
+    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * rg + 7 <= H;
     let lo = 0, hi = 120;
     for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (fits(m)) lo = m; else hi = m; }
     if (!best || lo > best.s + .5) best = { s: lo, cols };
   }
   const s = Math.floor(best.s);
   sw.style.cssText = `--n: ${n}; --cols: ${best.cols}; --s: ${s}px; --gx: ${gx(s)}px; --band: ${Math.max(s, hit)}px`;
-  t.style.cssText = `--g: ${g}px; --rg: ${rg}px; --ch: ${chip(s)}px; --chb: ${Math.max(chip(s), hit)}px`;
+  t.style.cssText = `--rg: ${rg}px`;
 }
 new ResizeObserver(() => fitColors()).observe($("topics"));
-function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
+function closePicker() {
+  const t = openTopic, held = $("picker").contains(document.activeElement);   // Escape with the search box focused
+  openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics();
+  if (held && t) document.querySelector(`#topics [data-t="${t}"]`)?.focus();   // not on a hidden input
+}
 const item = (attr, label, pressed, src, tto, title = label, face = false) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
   `<span class="lbl">${label}</span>${tto ? '<i class="dot"></i>' : ""}</button>`;
