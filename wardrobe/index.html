@@ -92,12 +92,32 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .pk-body { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
   .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }   /* still big (user), 4 abreast */
 }
+.bar button, .bar a { white-space: nowrap; }
+.bar .l-short { display: none; }
 @media (max-width: 760px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; height: auto; min-height: 100vh; }
-  main { order: -1; height: 55vh; }
-  aside { border-right: 0; }
-  .topics { display: grid; grid-template-columns: repeat(4, 1fr); }
-  .topic { min-height: 0; height: 118px; }
+  /* phone (task 7): one screen, no page scroll: the stage on top, the eight topic blocks (4 x 2) compact below; an open
+     picker is a bottom sheet (half the screen) and the stage shrinks to the half above it so the model stays in sight */
+  .app { --sheet: 50dvh; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; height: 100vh; height: 100dvh; overflow: hidden; }
+  main { order: -1; min-height: 0; }
+  aside { border-right: 0; padding: 6px 8px 8px; overflow: hidden; }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  .topics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .topic { min-height: 0; height: 88px; padding: 4px 3px 5px; border-radius: 12px; gap: 2px; }
+  .topic .tname { font-size: 10.5px; line-height: 1.3; white-space: nowrap; max-width: 100%; }
+  .topic .ring { --d: min(100cqw, calc(100cqh - 18px)); }
+  .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
+  .app.picking aside { visibility: hidden; }
+  .picker { position: fixed; inset: auto 0 0 0; width: 100%; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px rgba(16, 27, 43, .28); }
+  .pk-head { padding: 8px 12px; gap: 8px; flex: none; }
+  .pk-head h2 { font-size: 16px; }
+  .pk-close { margin-left: auto; position: sticky; top: 0; flex: none; }
+  .pk-body { padding: 10px 12px 20px; gap: 8px; }
+  .bar { top: 8px; right: 8px; left: 8px; justify-content: flex-end; gap: 5px; }
+  .bar button, .bar a { padding: 6px 8px; font-size: 12px; border-radius: 8px; }
+  .bar .l-full { display: none; }
+  .bar .l-short { display: inline; }
+  .status { left: 10px; bottom: 8px; font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -114,10 +134,10 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   </aside>
   <main id="stage">
     <div class="bar">
-      <button type="button" id="undo" title="Ctrl+Z" disabled>ย้อนกลับ</button>
-      <button type="button" id="redo" title="Ctrl+Y" disabled>ทำซ้ำ</button>
-      <button type="button" id="resetCam">มุมกล้องเริ่มต้น</button>
-      <button type="button" id="shot">บันทึกภาพ</button>
+      <button type="button" id="undo" title="ย้อนกลับ · Ctrl+Z" disabled aria-label="ย้อนกลับ"><span class="l-full">ย้อนกลับ</span><span class="l-short" aria-hidden="true">ย้อน</span></button>
+      <button type="button" id="redo" title="ทำซ้ำ · Ctrl+Y" disabled aria-label="ทำซ้ำ"><span class="l-full">ทำซ้ำ</span><span class="l-short" aria-hidden="true">ซ้ำ</span></button>
+      <button type="button" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><span class="l-full">มุมกล้องเริ่มต้น</span><span class="l-short" aria-hidden="true">กล้อง</span></button>
+      <button type="button" id="shot" title="บันทึกภาพ" aria-label="บันทึกภาพ"><span class="l-full">บันทึกภาพ</span><span class="l-short" aria-hidden="true">บันทึก</span></button>
       <button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>
     </div>
     <div class="status" id="status">กำลังโหลด…</div>
@@ -696,7 +716,7 @@ function renderTopics() {
     <span class="tname">${name}</span><span class="ring t-${t}${t === "face" ? " face" : ""}">${pic(currentIcon(t), t === "face")}</span></button>`).join("");
   $("topics").querySelectorAll(".topic").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
 }
-function closePicker() { openTopic = null; $("picker").hidden = true; renderTopics(); }
+function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
 const item = (attr, label, pressed, src, tto, title = label, face = false) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
   `<span class="lbl">${label}</span>${tto ? '<i class="dot"></i>' : ""}</button>`;
@@ -704,7 +724,7 @@ let moveTab = "emote";
 async function openPicker(t) {
   openTopic = t; renderTopics();
   const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools"), body = $("pkBody");
-  $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false;
+  $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false; document.querySelector(".app").classList.add("picking");
   body.innerHTML = "";                       // the set / prop lists load async: no clicks on the last picker's tiles meanwhile
   body.classList.toggle("face-grid", t === "face");
   // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, refresh the rows
@@ -778,7 +798,8 @@ async function openPicker(t) {
         return item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, p.tto, ic ? `${p.name} (${ic.codes.join(", ")})` : p.name); }).join("");
       pick(b => setProp(t, b.dataset.p || null).catch(err));
     };
-    inp.oninput = draw; draw(); inp.focus();
+    inp.oninput = draw; draw();
+    if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus();   // touch: focusing pops the keyboard over the sheet
   }
 }
 $("pkClose").onclick = closePicker;
