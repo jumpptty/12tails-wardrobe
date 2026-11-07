@@ -71,10 +71,15 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
    Drug icon per colour of the outfit, each a one-tap button, and the worn set's ปกติ / R / V chips under them. Sizes,
    columns and gaps come from fitColors() (--s, --cols, --gx, --band, --ch, --chb, --g) */
 .cswatches { display: grid; grid-template-columns: repeat(var(--cols, 5), var(--s, 32px)); grid-auto-rows: var(--band, var(--s, 32px));
-  column-gap: var(--gx, 6px); row-gap: var(--g, 6px); justify-content: center; align-items: center; justify-items: center; }
-.csw { width: var(--s, 32px); height: var(--s, 32px); padding: 2px; border: 2px solid var(--line); border-radius: 50%; background: var(--bg); display: grid; place-items: center; }
-.csw img { width: 100%; height: 100%; object-fit: contain; }
-.csw[aria-pressed=true] { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-soft); }
+  column-gap: var(--gx, 6px); row-gap: var(--rg, 14px); justify-content: center; align-items: center; justify-items: center; }
+/* the Recolor Drug icons drawn bare (user 2026-11-07: "please remove the circular icon on the recolor drug"): the colour
+   worn has a short gold bar under it (the Bible's chosen-filter mark), the others are dimmed, no glow */
+.csw { position: relative; width: var(--s, 32px); height: var(--s, 32px); padding: 0; border: 0; border-radius: 6px; background: none;
+  display: grid; place-items: center; opacity: .6; transition: opacity .12s; }
+.csw img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.38); }   /* the potion fills ~70 % of its picture's height */
+.csw[aria-pressed=true], .csw:focus-visible { opacity: 1; }
+@media (hover: hover) { .csw:hover { opacity: 1; } }
+.csw[aria-pressed=true]::before { content: ""; position: absolute; left: 22%; right: 22%; bottom: -3px; height: 3px; border-radius: 2px; background: var(--gold); }
 .ceds { flex: none; display: flex; gap: 6px; justify-content: center; align-items: center; height: var(--chb, 22px); }
 .ced { --c: var(--ch, 22px); height: var(--c); border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px;
   padding: 0 calc(var(--c) * .45); font-size: calc(var(--c) * .55); line-height: calc(var(--c) - 2px); }   /* scales with the icons */
@@ -168,7 +173,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .topic.duo { flex-direction: column; width: min(40%, calc((100cqh - 9px) / 2 + 6px)); padding: 3px; gap: 3px; }
   /* a finger needs 36 px: each colour icon and chip has a centred 36 px ::after, on 36 px bands (fitColors) */
   .ceds { gap: 8px; }
-  .csw, .ced { position: relative; }
+  .ced { position: relative; }
   .csw::after, .ced::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
   .topic.set .setparts .hint { font-size: 11px; }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
@@ -857,18 +862,20 @@ function fitColors() {
   const n = sw.children.length, eds = !!t.querySelector(".ceds"), hit = matchMedia("(pointer: coarse)").matches ? 36 : 0;
   const cs = getComputedStyle(t), W = t.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
     H = t.clientHeight - (hit ? 0 : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));   // touch: the hit bands may use the padding
-  const g = hit ? 0 : 6, gx = s => Math.max(hit ? 4 : 6, hit - s), chip = s => Math.min(30, Math.max(20, s * .5));
+  // g = icons to chips, rg = icon row to icon row: room for the gold bar (3 px under its icon, 3 px tall) so it reads as
+  // the icon's own; on touch screens the 36 px bands already leave that room
+  const g = hit ? 0 : 8, rg = hit ? 6 : 14, gx = s => Math.max(hit ? 4 : 6, hit - s), chip = s => Math.min(30, Math.max(20, s * .5));
   let best = null;
   for (const cols of new Set([n, Math.min(n, 3)])) {
     const rows = Math.ceil(n / cols);
-    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * g + (eds ? g + Math.max(chip(s), hit) : 0) <= H;
+    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * rg + (eds ? g + Math.max(chip(s), hit) : 7) <= H;
     let lo = 0, hi = 120;
     for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (fits(m)) lo = m; else hi = m; }
     if (!best || lo > best.s + .5) best = { s: lo, cols };
   }
   const s = Math.floor(best.s);
   sw.style.cssText = `--n: ${n}; --cols: ${best.cols}; --s: ${s}px; --gx: ${gx(s)}px; --band: ${Math.max(s, hit)}px`;
-  t.style.cssText = `--g: ${g}px; --ch: ${chip(s)}px; --chb: ${Math.max(chip(s), hit)}px`;
+  t.style.cssText = `--g: ${g}px; --rg: ${rg}px; --ch: ${chip(s)}px; --chb: ${Math.max(chip(s), hit)}px`;
 }
 new ResizeObserver(() => fitColors()).observe($("topics"));
 function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
