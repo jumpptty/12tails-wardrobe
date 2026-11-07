@@ -10,26 +10,37 @@
 @font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
 @font-face { font-family: "Prompt"; font-weight: 800; src: url("../fonts/Prompt-ExtraBold.ttf") format("truetype"); }
 :root {
-  --night: #18263a; --night-2: #101b2b; --panel: #213350; --line: #2e4466;
-  --ink: #e9eef5; --muted: #93a4ba; --horn: #f2c230; --tto: #f3a6bc;
-  --stage-top: #f7f3fa; --stage-bottom: #e4dcea;
+  color-scheme: dark;
+  /* 12 Tails Bible "Ledger" dark tokens (Bible index.html :root[data-theme=dark]) */
+  --bg: #150f0c; --panel: #1f1712; --panel-2: #271c15; --line: #4a3a26;
+  --text: #ece4d6; --muted: #b0a189; --gold: #c9a227; --gold-soft: rgba(201, 162, 39, .14);
+  --gold-ink: #1b1300;                       /* text on a gold fill: 7.6:1 */
+  --seal: #c2503c;                           /* oxblood: reserved, no wardrobe state uses it yet */
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 20px 44px -22px rgba(0, 0, 0, .75);
+  --shadow-side: 10px 0 28px rgba(0, 0, 0, .45); --shadow-sheet: 0 -8px 24px rgba(0, 0, 0, .45);
+  --tto: #f3a6bc;                            /* the TTO dot: pink on purpose, it marks TTO content */
+  --skin-bg: #f3e4d9;                        /* backing behind the face pictures (their art is made for it) */
+  --stage-top: #2b2018; --stage-bottom: #150f0c;
+  --bar-bg: rgba(31, 23, 18, .88);
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 600 14px/1.45 "Prompt", system-ui, sans-serif; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 600 14px/1.45 "Prompt", system-ui, sans-serif; }
 button, input { font: inherit; color: inherit; }
+button { transition: transform .12s, filter .12s, border-color .12s; }
+button:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.12); }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--horn); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .app { --side: 236px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
 aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; }
 h1 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
-input[type=search] { width: 100%; background: var(--night-2); border: 1px solid var(--line); border-radius: 7px; padding: 5px 9px; }
-main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
+input[type=search] { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 9px; }
+main { position: relative; background: radial-gradient(ellipse 80% 70% at 50% 42%, var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
 .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
-.bar button { border: 0; background: rgba(16, 27, 43, .82); color: var(--ink); border-radius: 9px; padding: 7px 12px; }
-.bar .primary { background: var(--horn); color: #1b1300; font-weight: 800; }
-.status { position: absolute; left: 14px; bottom: 12px; color: #4a4258; font-size: 13px; }
-.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--horn); color: #1b1300; padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.bar button { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; }
+.bar .primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 800; }
+.status { position: absolute; left: 14px; bottom: 12px; color: var(--muted); font-size: 13px; }
+.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .toast.show { opacity: 1; }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
@@ -37,26 +48,26 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic { flex: 1 1 0; min-height: 112px; container-type: size; display: flex; flex-direction: column; align-items: center;
   gap: 4px; width: 100%; border: 1px solid transparent; background: var(--panel); border-radius: 16px; padding: 7px 10px 10px; }
 .topic:hover { border-color: var(--line); }
-.topic[aria-expanded=true] { border-color: var(--horn); background: #2b3f5e; }
+.topic[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
 .topic .tname { flex: none; font-size: 15px; font-weight: 800; line-height: 1.4; text-align: center; }
 .topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
-.ring { flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--night-2); display: grid; place-items: center; overflow: hidden; }
+.ring { flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); display: grid; place-items: center; overflow: hidden; }
 .ring img { width: 80%; height: 80%; object-fit: contain; }
 .ring.t-class img { width: 100%; height: 100%; }                /* the class portrait is round already */
-.ring.face { background: #f3e4d9; }
+.ring.face { background: var(--skin-bg); }
 .ring.face img { width: 92%; height: 92%; }
 .ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
-.topic[aria-expanded=true] .ring { border-color: var(--horn); }
+.topic[aria-expanded=true] .ring { border-color: var(--gold); }
 /* the picker: a full-height side panel twice the left panel's width, the 3D view stays in sight beside it */
-.picker { position: absolute; inset: 0 auto 0 0; width: min(calc(var(--side) * 2), 100%); z-index: 6; background: var(--night);
-  border-right: 1px solid var(--line); box-shadow: 10px 0 28px rgba(16, 27, 43, .28); display: flex; flex-direction: column; color: var(--ink); }
+.picker { position: absolute; inset: 0 auto 0 0; width: min(calc(var(--side) * 2), 100%); z-index: 6; background: var(--bg);
+  border-right: 1px solid var(--line); box-shadow: var(--shadow-side); display: flex; flex-direction: column; color: var(--text); }
 .picker[hidden] { display: none; }
 .pk-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .pk-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
 .pk-tools { display: flex; gap: 8px; align-items: center; flex: 1; flex-wrap: wrap; }
 .pk-tools input[type=search] { margin: 0; max-width: 320px; }
 .pk-tab { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 14px; }
-.pk-tab[aria-pressed=true] { background: var(--horn); color: #1b1300; border-color: var(--horn); font-weight: 800; }
+.pk-tab[aria-pressed=true] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 800; }
 .pk-tab:disabled { opacity: .35; cursor: default; }
 .pk-close { border: 0; background: var(--panel); border-radius: 10px; width: 38px; height: 38px; font-size: 18px; }
 .pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 10px; align-content: start;
@@ -64,18 +75,18 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-body.face-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }   /* user: big faces */
 .pk-item { position: relative; border: 2px solid transparent; background: var(--panel); border-radius: 16px; padding: 10px 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
 .pk-item:hover { border-color: var(--line); }
-.pk-item[aria-pressed=true] { border-color: var(--horn); background: #2b3f5e; }
+.pk-item[aria-pressed=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
 .pk-item .pic { width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px; overflow: hidden; container-type: inline-size; }
 .pk-item .pic img { width: 88%; height: 88%; object-fit: contain; }
-.pk-item .pic.face { background: #f3e4d9; border-radius: 50%; }
+.pk-item .pic.face { background: var(--skin-bg); border-radius: 50%; }
 .pk-item .pic.face img { width: 94%; height: 94%; }
 .pk-item .pic .none { color: var(--muted); font-size: 30cqw; }
 .pk-item .lbl { font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pk-body.face-grid .lbl { font-size: 14px; }
-.pk-item[aria-pressed=true] .lbl { color: var(--horn); }
+.pk-item[aria-pressed=true] .lbl { color: var(--gold); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
-.pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--night-2); border-radius: 6px; }
+.pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--bg); border-radius: 6px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
 .bar button:disabled { opacity: .45; cursor: default; }
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
@@ -108,7 +119,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
   .picker { position: fixed; inset: auto 0 0 0; width: 100%; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
-    border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px rgba(16, 27, 43, .28); }
+    border-radius: 16px 16px 0 0; box-shadow: var(--shadow-sheet); }
   .pk-head { padding: 8px 12px; gap: 8px; flex: none; }
   .pk-head h2 { font-size: 16px; }
   .pk-close { margin-left: auto; position: sticky; top: 0; flex: none; }
@@ -182,7 +193,7 @@ sun.position.set(-2.2, 3.2, 3.4);
 scene.add(sun);
 const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false,
   map: (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d");
-    const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, "rgba(60,40,80,.28)"); r.addColorStop(1, "rgba(60,40,80,0)");
+    const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, "rgba(0,0,0,.5)"); r.addColorStop(1, "rgba(0,0,0,0)");
     g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })() }));
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
