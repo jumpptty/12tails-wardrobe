@@ -402,6 +402,53 @@ class PublishTest(unittest.TestCase):
         """The standard world twice: an LF page (like the real one) and a CRLF page, each in its own folder."""
         return [(label, make_world(self.tmp / label, nl=nl).finish()) for label, nl in NEWLINES]
 
+    def recolor(self, w, n, shade=0, name=None):
+        """BB's Recolor Drug n in the rip (64 px, a gradient with a transparent corner) and the page's 128 px copy of it
+        in src/ui, brightened by `shade` (0 = a faithful upscale)."""
+        bb = Image.new("RGBA", (64, 64))
+        bb.putdata([(40 + 3 * x, 20 + 2 * y, 90 + n * 20, 0 if x < 6 and y < 6 else 255) for y in range(64) for x in range(64)])
+        (w.icon_dir / "items" / "field").mkdir(parents=True, exist_ok=True)
+        bb.save(w.icon_dir / "items" / "field" / f"rsc{n}.png")
+        big = bb.resize((128, 128), Image.LANCZOS)
+        if shade:
+            big = Image.eval(big.convert("RGB"), lambda v: min(255, v + shade)).convert("RGBA")
+        dst = w.src / "ui" / (name or f"recolor{n}.webp")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        big.save(dst, "WEBP", quality=90)
+
+    def test_ui_recolor_icons_carried_when_bb(self):
+        w = self.world()
+        for n in range(1, 6):
+            self.recolor(w, n)
+        w.publish()
+        for n in range(1, 6):
+            self.assertEqual((w.out / "ui" / f"recolor{n}.webp").read_bytes(), (w.src / "ui" / f"recolor{n}.webp").read_bytes())
+        self.assertEqual(wp.check(w.out), [])
+        w.write_page(PAGE.replace("<body>", '<body><img src="ui/recolor1.webp">'))
+        shutil.rmtree(w.out)
+        w.publish()
+        (w.out / "ui" / "recolor1.webp").unlink()
+        self.assertIn("missing: ui/recolor1.webp", wp.check(w.out))
+
+    def test_ui_recolor_icon_that_is_not_bb_fails_loudly(self):
+        w = self.world()
+        self.recolor(w, 1)
+        self.recolor(w, 2, shade=40)                       # a different picture: far from rsc2.png
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("recolor2.webp is not BB's Recolor Drug 2", str(e.exception))
+        self.assertFalse(w.out.exists())
+        self.recolor(w, 2)
+        self.recolor(w, 3, name="recolor7.webp")           # no BB counterpart
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("recolor7.webp", str(e.exception))
+        (w.src / "ui" / "recolor7.webp").unlink()
+        (w.icon_dir / "items" / "field" / "rsc1.png").unlink()      # BB file missing
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("rsc1.png", str(e.exception))
+
     def test_page_rewritten(self):
         for label, w in self.newline_worlds():
             with self.subTest(page=label):

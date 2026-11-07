@@ -47,7 +47,7 @@ import struct
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageChops, ImageStat
 
 ROOT = Path(__file__).resolve().parent.parent
 BB_RIP = Path(r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources")
@@ -58,7 +58,10 @@ PROP_KINDS = {"weapons": "weapons", "accessories": "headpieces", "trinkets": "ba
 SHARED_KINDS = ("accessories", "trinkets")        # the page loads all/props_<kind>.json for these
 ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.json")
 PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
-OUTPUT_NAMES = ("index.html", "fonts", "_headers") + PAGE_FILES   # what a publish writes beside its data-<hash> folder
+UI_DIR = "ui"                                          # <src>/ui/recolor<n>.webp: the page's own pictures (the colour topic)
+UI_ICON = re.compile(r"recolor([1-5])\.webp")          # = BB's Recolor Drug n, gamegui/icons/items/field/rsc<n>.png
+UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at 64 px, over black
+OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES   # what a publish writes beside its data-<hash> folder
 ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket"}    # icons/<folder> = gamegui/icons/items/<folder>
 GOATCOUNTER = ('<script data-goatcounter="https://jumpptty.goatcounter.com/count"\n'
                '        data-goatcounter-settings=\'{"path": "/wardrobe/"}\'\n'
@@ -779,6 +782,37 @@ def remove(path):
         path.unlink()
 
 
+def over_black(im):
+    base = Image.new("RGBA", im.size, (0, 0, 0, 255))
+    base.alpha_composite(im.convert("RGBA"))
+    return base.convert("RGB")
+
+
+def verify_ui_icons(src, bb):
+    """The page's own pictures (src/ui/*.webp) are upscaled copies of BB's Recolor Drug icons (the colour topic): each
+    is shrunk to the BB icon's size and compared with gamegui/icons/items/field/rsc<n>.png over black; a mean absolute
+    difference above UI_MAX_DIFF in any channel, a file with no BB counterpart or a missing BB file stops the publish.
+    Returns the file names."""
+    folder = Path(src) / UI_DIR
+    names = sorted(p.name for p in folder.iterdir()) if folder.is_dir() else []
+    for name in names:
+        m = UI_ICON.fullmatch(name)
+        if not m:
+            raise PublishError(f"{UI_DIR}/{name}: not a BB Recolor Drug icon (recolor1.webp .. recolor5.webp only), "
+                               "so it cannot be proven to be BB's")
+        bb_file = bb.find_rel(bb.icons, f"items/field/rsc{m.group(1)}.png")
+        if bb_file is None:
+            raise PublishError(f"{UI_DIR}/{name}: no BB file gamegui/icons/items/field/rsc{m.group(1)}.png to compare with")
+        with Image.open(bb_file) as ref_im, Image.open(folder / name) as mine_im:
+            ref = over_black(ref_im)
+            mine = over_black(mine_im.resize(ref.size, Image.LANCZOS))
+        diff = ImageStat.Stat(ImageChops.difference(ref, mine)).mean
+        if max(diff) > UI_MAX_DIFF:
+            raise PublishError(f"{UI_DIR}/{name} is not BB's Recolor Drug {m.group(1)}: its mean difference from "
+                               f"rsc{m.group(1)}.png over black is {max(diff):.1f} per channel (limit {UI_MAX_DIFF})")
+    return names
+
+
 def publish(src, out, bb_rip, data=None):
     """Build the public copy of src (wardrobe/: index.html and its icons) with the data in data (default src/data) in
     out. Returns {files, bytes, data_dir, dropped: {kind: [{name, reason}]}, tto_faces: {cls: [kept numbers]},
@@ -800,6 +834,7 @@ def publish(src, out, bb_rip, data=None):
     if not (data / "meta.json").is_file():
         raise PublishError(f"no wardrobe data at {data} (no meta.json); --data names the data folder")
     bb = BBRip(bb_rip)
+    ui_files = verify_ui_icons(src, bb)             # before anything is written
     out.mkdir(parents=True, exist_ok=True)
     stage, previous = out / ".data-staging", out / ".previous"
     remove(stage)
@@ -829,6 +864,8 @@ def publish(src, out, bb_rip, data=None):
         put(data_dir, stage.rename)
         put("index.html", lambda p: p.write_text(rewrite_page(page, data_dir), encoding="utf-8", newline=""))
         put("fonts", copy_fonts)
+        if ui_files:
+            put(UI_DIR, lambda folder: (folder.mkdir(), [shutil.copy2(src / UI_DIR / f, folder / f) for f in ui_files]))
         for f in PAGE_FILES:
             put(f, lambda p: shutil.copy2(src / p.name, p))
         put("_headers", lambda p: p.write_text(headers_text(data_dir), encoding="utf-8", newline="\n"))
@@ -954,7 +991,7 @@ def check(out):
     icons = page_icons(html)
     if not icons:
         problems.append('index.html has no tab icon (<link rel="icon" href="...">)')
-    refs = [f"fonts/{f}" for f in page_fonts(html)] + icons
+    refs = [f"fonts/{f}" for f in page_fonts(html)] + icons + ([f"{UI_DIR}/recolor{n}.webp" for n in range(1, 6)] if "ui/recolor" in html else [])
     refs += [f"{data_dir}/{r}" for r in data_references(out / data_dir, problems)]
     walker = CaseSensitive(out)
     problems += [p for p in (walker.problem(r) for r in dict.fromkeys(refs)) if p]

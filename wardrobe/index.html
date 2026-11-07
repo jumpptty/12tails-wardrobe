@@ -20,7 +20,9 @@
   --shadow-side: 10px 0 28px rgba(0, 0, 0, .45); --shadow-sheet: 0 -8px 24px rgba(0, 0, 0, .45);
   --tto: #f3a6bc;                            /* the TTO dot: pink on purpose, it marks TTO content */
   --skin-bg: #f3e4d9;                        /* backing behind the face pictures (their art is made for it) */
-  --stage-top: #2b2018; --stage-bottom: #150f0c;
+  --stage-top: #ffffff; --stage-bottom: #ffffff;   /* the 3D stage is pure white (user 2026-11-07) */
+  --on-stage: #3b2f20;                       /* text drawn over the white stage: 13.0:1 */
+  --cg-gild:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.6'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23e8c35a' stroke-width='2'/%3E%3C/svg%3E");--cg-gild-hi:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.95'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23ffe08a' stroke-width='2'/%3E%3C/svg%3E");   /* the Bible's gilded frame (double gold line, L corners) */
   --bar-bg: rgba(31, 23, 18, .88);
 }
 * { box-sizing: border-box; }
@@ -30,23 +32,35 @@ button { transition: transform .12s, filter .12s, border-color .12s; }
 button:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.12); }
 button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-.app { --side: 236px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
+.app { --side: 300px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
 aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; }
 h1 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
 input[type=search] { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 9px; }
-main { position: relative; background: radial-gradient(ellipse 80% 70% at 50% 42%, var(--stage-top), var(--stage-bottom)); overflow: hidden; }
+main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
 .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
 .bar button { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; }
 .bar .primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 800; }
-.status { position: absolute; left: 14px; bottom: 12px; color: var(--muted); font-size: 13px; }
-.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.status { position: absolute; left: 14px; bottom: 12px; color: var(--on-stage); font-size: 13px; }
+.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); }
 .toast.show { opacity: 1; }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
-.topics { flex: 1 0 auto; display: flex; flex-direction: column; gap: 6px; }
-.topic { flex: 1 1 0; min-height: 112px; container-type: size; display: flex; flex-direction: column; align-items: center;
+.topics { flex: 1 0 auto; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px;
+  grid-template-rows: minmax(104px, 1fr) minmax(88px, .8fr) repeat(3, minmax(104px, 1fr)); }
+/* rows (user 2026-11-07): 1 = class, colour, face; 2 = the gear set across the full row; 3 = hat + outfit; 4 = weapons; 5 = back + moves */
+.topic { grid-column: span 3; min-width: 0; container-type: size; display: flex; flex-direction: column; align-items: center;
   gap: 4px; width: 100%; border: 1px solid transparent; background: var(--panel); border-radius: 16px; padding: 7px 10px 10px; }
+.topic[data-t=class], .topic[data-t=color], .topic[data-t=face] { grid-column: span 2; }
+.topic.set { grid-column: 1 / -1; justify-content: center; }
+/* the special tile: the Bible's gilded frame (border set with longhands: the shorthand resets border-image), no glow */
+.topic.set { border-style: solid; border-width: 1px; border-color: transparent; border-image: var(--cg-gild) 14 / 14px / 3px stretch;
+  border-radius: 3px; background: var(--panel); box-shadow: none; }
+.topic.set:hover, .topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; }
+.topic.set[aria-expanded=true] { background: var(--panel-2); box-shadow: none; }
+.topic.set .setparts { --d: min(calc(100cqh - 26px), 46px); flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--d); margin: auto 0; }
+.topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+.topic.set .setparts .hint { color: var(--muted); font-size: 12.5px; font-weight: 600; }
 .topic:hover { border-color: var(--line); }
 .topic[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
 .topic .tname { flex: none; font-size: 15px; font-weight: 800; line-height: 1.4; text-align: center; }
@@ -55,6 +69,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .ring img { width: 80%; height: 80%; object-fit: contain; }
 .ring.t-class img { width: 100%; height: 100%; }                /* the class portrait is round already */
 .ring.face { background: var(--skin-bg); }
+.ring.t-color { position: relative; }
+.ring .ed { position: absolute; right: 0; bottom: 0; min-width: 28%; padding: 0 3px; border-radius: 999px 0 0 0; background: var(--gold); color: var(--gold-ink); font-size: calc(var(--d) * .22); font-weight: 800; line-height: 1.3; text-align: center; }
 .ring.face img { width: 92%; height: 92%; }
 .ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
 .topic[aria-expanded=true] .ring { border-color: var(--gold); }
@@ -88,7 +104,9 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
 .pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--bg); border-radius: 6px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
-.bar button:disabled { opacity: .45; cursor: default; }
+.pk-body > .pk-note { grid-column: 1 / -1; }
+/* disabled over the white stage: a pale chip with dim brown text (the old opacity .45 made grey on grey), 5.2:1 */
+.bar button:disabled { background: #ebe3d3; border-color: #cbbd9f; color: #6a5b45; cursor: default; }
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
    of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
    blocks go two abreast so all eight share the height, and the picker widens into the spare width with as many
@@ -97,8 +115,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .app { --side: 340px; }
   aside { overflow: hidden; padding: 10px 12px 12px; }
   h1 { margin-bottom: 8px; }
-  .topics { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(0, 1fr); gap: 8px; }
-  .topic { min-height: 0; padding: 6px 8px 8px; }
+  .topics { flex: 1 1 0; min-height: 0; gap: 8px; grid-template-rows: minmax(0, 1fr) minmax(0, .8fr) repeat(3, minmax(0, 1fr)); }
+  .topic { padding: 6px 8px 8px; }
   .picker { width: max(calc(var(--side) * 2), calc((100vw - var(--side)) * .4)); }   /* the hero stands mid-stage: 40 % keeps her in sight */
   .pk-body { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
   .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }   /* still big (user), 4 abreast */
@@ -112,10 +130,13 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   main { order: -1; min-height: 0; }
   aside { border-right: 0; padding: 6px 8px 8px; overflow: hidden; }
   h1 { font-size: 15px; margin: 0 0 4px; }
-  .topics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-  .topic { min-height: 0; height: 88px; padding: 4px 3px 5px; border-radius: 12px; gap: 2px; }
-  .topic .tname { font-size: 10.5px; line-height: 1.3; white-space: nowrap; max-width: 100%; }
-  .topic .ring { --d: min(100cqw, calc(100cqh - 18px)); }
+  .topics { flex: none; gap: 5px; grid-template-rows: repeat(5, 44px); }
+  .topic { flex-direction: row; justify-content: center; gap: 6px; padding: 3px 4px; border-radius: 12px; }
+  .topic .tname { font-size: 11px; line-height: 1.3; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .topic .ring { --d: min(calc(100cqh - 2px), 100cqw); margin: 0; }
+  .topic.set { border-image-width: 12px; border-image-outset: 2px; }
+  .topic.set .setparts { --d: min(calc(100cqh - 2px), 32px); gap: 4px; margin: 0; min-height: 0; }
+  .topic.set .setparts .hint { font-size: 11px; }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
   .picker { position: fixed; inset: auto 0 0 0; width: 100%; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
@@ -558,8 +579,9 @@ const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trink
 // Panda's paired gloves are props <name>_L / <name>_R: the game adds the hand to the mapped name
 const iconOf = (slot, name) => ICONS[C.cls]?.[slot]?.[name] || ICONS[C.cls]?.[slot]?.[name.replace(/_[LRlr]$/, "")]
   || ICONS.all?.[slot]?.[name.toLowerCase()];                  // shared items: keyed by lower-case name
-const TOPICS = [["class", "อาชีพ"], ["set", "ชุดเซ็ต"], ["outfit", "ชุด"], ["face", "หน้า"], ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"],
-                ["Head", "หมวก"], ["Back", "ของประดับหลัง"], ["move", "ท่าทาง"]];
+// the panel's rows (user 2026-11-07): class / colour / face; the gear set (full row); hat + outfit; weapons; back + moves
+const TOPICS = [["class", "อาชีพ"], ["color", "สี"], ["face", "หน้า"], ["set", "ชุดเซ็ต"], ["Head", "หมวก"], ["outfit", "ชุด"],
+                ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"], ["Back", "ของประดับหลัง"], ["move", "ท่าทาง"]];
 
 // ---------- sets (user 2026-11-05: "an equip-set button that equips all related equipment in a single press; only
 // sets with 2 or more complementary pieces"). A set's pieces carry its name (hallow + hallowBaby + hallowFlower); a
@@ -656,6 +678,13 @@ const setWorn = s => (!s.outfit || (C.state.outfit === s.outfit && (C.state.edit
 const outfitIcon = (name, ed) => { const ic = iconOf("outfits", name); return (ed && ic?.editions?.[ed]) || ic?.icon; };
 const setIcon = s => (s.outfit && outfitIcon(s.outfit, s.v)) || (s.Head && iconOf("accessories", s.Head)?.icon)
   || ((s.R || s.L) && iconOf("weapons", s.R || s.L)?.icon) || (s.Back && iconOf("trinkets", s.Back)?.icon);
+// a set's piece icons (outfit in its edition, weapon(s), hat, back): the set tile shows the worn set's, the picker each set's
+const partImg = (kind, n, ed) => { const ic = n && (kind === "outfits" ? outfitIcon(n, ed) : iconOf(kind, n)?.icon);
+  return ic ? `<img alt="" src="${DATA}${ic}" title="${n}">` : ""; };
+const setParts = s => [partImg("outfits", s.outfit, s.v), partImg("weapons", s.R || s.L), s.L && s.L !== s.R ? partImg("weapons", s.L) : "",
+  partImg("accessories", s.Head), partImg("trinkets", s.Back)].join("");
+// the colour n = BB's Recolor Drug n (f_rsc<n>), upscaled: ui/recolor<n>.webp beside the page (the publish proves each is BB's)
+const colorIcon = c => `ui/recolor${c}.webp`;
 async function stripAll() {                // ถอดทั้งหมด: the standard outfit, nothing else (the Cat keeps its hood)
   if (C.state.outfit !== "standard" || C.state.edition) await setOutfit("standard", C.state.color, "");
   for (const k of ["R", "L", "Head", "Back"]) if ((C.state[k] || null) !== (k === "Head" ? BASE_HEAD[C.cls] || null : null)) await setProp(k, null);
@@ -710,12 +739,13 @@ function moveIcon(name) {
 // faces: the overlay webp cropped to where this class's faces draw (ui.json faceBox, in the overlay's 256 px)
 const faceView = () => { const b = UI.faceBox?.[C.cls];
   return b ? ` style="object-view-box: inset(${b[1]}px ${256 - b[2]}px ${256 - b[3]}px ${b[0]}px)"` : ""; };
-const pic = (src, face = false) => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) ? src : DATA + src}"${face ? faceView() : ""}>`
+const pic = (src, face = false) => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith("ui/") ? src : DATA + src}"${face ? faceView() : ""}>`
   : `<span class="none">—</span>`;
 function currentIcon(t) {
   if (!C) return null;
   if (t === "class") return UI.heroes?.[C.cls];
   if (t === "set") { const s = (C.sets || []).find(setWorn); return s ? setIcon(s) : null; }
+  if (t === "color") { const o = C.outfits.find(x => x.name === C.state.outfit); return o?.colors?.length ? colorIcon(C.state.color) : null; }
   if (t === "outfit") return outfitIcon(C.state.outfit, C.state.edition);
   if (t === "face") return faceSrc(C.state.face);
   if (t === "move") return moveIcon(C.cur);
@@ -723,8 +753,13 @@ function currentIcon(t) {
 }
 let openTopic = null;
 function renderTopics() {
-  $("topics").innerHTML = TOPICS.map(([t, name]) => `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
-    <span class="tname">${name}</span><span class="ring t-${t}${t === "face" ? " face" : ""}">${pic(currentIcon(t), t === "face")}</span></button>`).join("");
+  const worn = C && (C.sets || []).find(setWorn);
+  $("topics").innerHTML = TOPICS.map(([t, name]) => t === "set"
+    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${worn.label}"` : ""}>
+    <span class="tname">${name}</span><span class="setparts">${worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`}</span></button>`
+    : `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
+    <span class="tname">${name}</span><span class="ring t-${t}${t === "face" ? " face" : ""}">${pic(currentIcon(t), t === "face")}${
+      t === "color" && C?.state.edition ? `<i class="ed">${C.state.edition}</i>` : ""}</span></button>`).join("");
   $("topics").querySelectorAll(".topic").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
 }
 function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
@@ -746,44 +781,39 @@ async function openPicker(t) {
   });
   if (t === "set") {
     const sets = await buildSets();
-    // the character's colour lives here (user 2026-11-05: "move character colour selection out from outfit to set
-    // equipment"): a set keeps it when it changes the outfit
-    const drawColors = () => {
-      const o = C.outfits.find(x => x.name === C.state.outfit);
-      tools.innerHTML = `<span>สีตัวละคร</span>` + (o?.colors || []).map(c => `<button type="button" class="pk-tab" data-c="${c}" aria-pressed="${c === C.state.color}">${c}</button>`).join("")
-        + `<span class="pk-note">${sets.length} เซ็ต · กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
-      tools.querySelectorAll(".pk-tab[data-c]").forEach(b => b.onclick = async () => { await tracked(() => setColorOrFace(+b.dataset.c, null)).catch(err); drawColors(); renderTopics(); });
-    };
-    drawColors();
-    const part = (kind, n, ed) => { const ic = n && (kind === "outfits" ? outfitIcon(n, ed) : iconOf(kind, n)?.icon);
-      return ic ? `<img alt="" src="${DATA}${ic}" title="${n}">` : ""; };
+    // the character's colour has its own topic now (สี, user 2026-11-07); a set keeps the colour when it changes the outfit
+    tools.innerHTML = `<span class="pk-note">${sets.length} เซ็ต · กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
     const bare = C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
       && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
     body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${bare}" title="ชุดพื้นฐาน (standard) · ถอดอาวุธ หมวก ของประดับหลัง">`
       + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
       + (sets.length ? sets.map((s, i) => {
-      const parts = [part("outfits", s.outfit, s.v), part("weapons", s.R || s.L), s.L && s.L !== s.R ? part("weapons", s.L) : "",
-                     part("accessories", s.Head), part("trinkets", s.Back)].join("");
+      const parts = setParts(s);
       const names = [s.outfit, s.R, s.L && s.L !== s.R ? s.L : null, s.Head, s.Back].filter(Boolean).join(" + ");
       return `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}" title="${names}">` +
         `<span class="pic">${pic(setIcon(s))}</span><span class="lbl">${s.label} · ${s.pieces} ชิ้น</span><span class="parts">${parts}</span></button>`;
     }).join("") : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
-    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])).catch(err), drawColors);
+    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])).catch(err));
   } else if (t === "class") {
     body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, capName(c.cls), c.cls === C.cls, UI.heroes?.[c.cls])).join("");
     pick(b => loadClass(b.dataset.c).catch(err));
-  } else if (t === "outfit") {
-    const drawEditions = () => {                                // the outfit's R / V edition; the colour is in ชุดเซ็ต
-      const o = C.outfits.find(x => x.name === C.state.outfit);
+  } else if (t === "color") {
+    // the outfit's colours, one tile each = Recolor Drug n's icon (user 2026-11-07); its R / V edition is a toggle up here
+    const o = C.outfits.find(x => x.name === C.state.outfit);
+    const drawEditions = () => {
       const eds = Object.keys(o?.editions || {});
       tools.innerHTML = eds.length ? `<span>แบบ</span>` + ["", ...eds].map(e => `<button type="button" class="pk-tab" data-e="${e}" aria-pressed="${e === (C.state.edition || "")}"`
-          + `${e && !o.editions[e].includes(C.state.color) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") : "";
+          + `${e && !o.editions[e].includes(C.state.color) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") : `<span class="pk-note">${o?.name || ""}</span>`;
       tools.querySelectorAll(".pk-tab[data-e]").forEach(b => b.onclick = async () => { await tracked(() => setColorOrFace(null, null, b.dataset.e)).catch(err); drawEditions(); renderTopics(); });
     };
     drawEditions();
+    body.innerHTML = o?.colors?.length ? o.colors.map(c => item(`data-c="${c}"`, `สี ${c}`, c === C.state.color, colorIcon(c), false, `${o.name} · สี ${c}`)).join("")
+      : `<p class="pk-note">ชุด ${o?.name || ""} ไม่มีสีให้เลือก</p>`;
+    pick(b => setColorOrFace(+b.dataset.c, null).catch(err), drawEditions);
+  } else if (t === "outfit") {
     body.innerHTML = C.outfits.map(o => { const ic = iconOf("outfits", o.name);
       return item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, o.tto, ic ? `${o.name} (${ic.codes.join(", ")})` : o.name); }).join("");
-    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err), drawEditions);
+    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err));
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), f.tto, `หน้า ${f.n}`, true)).join("");
     pick(b => setColorOrFace(null, +b.dataset.f).catch(err));
