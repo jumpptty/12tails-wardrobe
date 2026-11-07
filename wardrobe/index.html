@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>12 Tails Wardrobe</title>
+<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">
 <style>
 @font-face { font-family: "Prompt"; font-weight: 600; src: url("../fonts/Prompt-SemiBold.ttf") format("truetype"); }
 @font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
@@ -207,8 +208,9 @@ async function loadClass(cls) {
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   const L = saved[cls] || {};
+  // a saved face the data no longer has (the online copy keeps half of TTO's faces) falls back to the class default
   C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1, edition: L.edition || "",
-              face: L.face ?? (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
+              face: C.faces.some(f => f.n === L.face) ? L.face : (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
   undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
   await setOutfit(C.state.outfit, C.state.color);

@@ -1,11 +1,15 @@
 r"""The public copy of the 12 Tails Wardrobe, for Cloudflare Pages (plan docs/superpowers/plans/2026-11-07-wardrobe-online.md
 in the Bible repo, Task 1).
 
-  py -3 pipeline/wardrobe_publish.py [--src <repo>\wardrobe] [--out <repo>\wardrobe_dist]
+  py -3 pipeline/wardrobe_publish.py [--src <repo>\wardrobe] [--data <src>\data] [--out <repo>\wardrobe_dist]
                                      [--bb-rip D:\12tails\RippedAssets\ExportedProject\Assets\Resources]
   py -3 pipeline/wardrobe_publish.py --check <dir>
-  -> <out>\index.html, <out>\fonts\, <out>\data-<hash>\, <out>\_headers, and <out>_report.json beside it (every
-     dropped item with the reason, the kept TTO faces, warnings, check problems). Exit 1 when check() finds problems.
+  -> <out>\index.html, its tab icons, <out>\fonts\, <out>\data-<hash>\, <out>\_headers, and <out>_report.json beside it
+     (every dropped item with the reason, the kept TTO faces, warnings, check problems; the previous run's report is
+     kept as <out>_report.prev.json and the count changes against it are printed). Exit 1 when check() finds problems.
+  --src gives the page and its icons, --data the data (default <src>\data): a git worktree publishes its own page
+  with the main checkout's data, with no link to that data inside the worktree (a junction there is emptied by
+  `git worktree remove` / `git clean -x`). The previous copy in --out stays whole until the new one is in place.
 
 The user's content rule (2026-11-07): "BB 3D models only; the only thing you may bring from TTO are face paints, 50% of
 their own face paints." wardrobe_data.py and extract_tto_props.py extract every outfit, clip and prop from TTO's
@@ -29,7 +33,8 @@ data-<first 10 hex of SHA-256 over the published data>/, the fetches drop cache:
 folder, so _headers can make the data immutable), the "copy for Claude" button and its handler give way to a link to
 the Bible, ../fonts/ and ../props/tex/ point inside the copy, and GoatCounter counts the page as /wardrobe/.
 check() then applies Cloudflare Pages' limits (20,000 files a deploy, 25 MiB a file) and compares every path the page
-builds from the JSON with the stored names case-sensitively (a Windows test server hides a case slip, Cloudflare 404s).
+builds from the JSON, its fonts and its tab icon with the stored names case-sensitively (a Windows test server hides
+a case slip, Cloudflare 404s). Outfits with no colours (colors: []) are dropped: the page cannot dress them.
 """
 import argparse
 import hashlib
@@ -52,6 +57,8 @@ MAX_FILE_BYTES = 25 * 1024 * 1024        # and bytes a file
 PROP_KINDS = {"weapons": "weapons", "accessories": "headpieces", "trinkets": "back_trinkets"}   # data file -> report kind
 SHARED_KINDS = ("accessories", "trinkets")        # the page loads all/props_<kind>.json for these
 ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.json")
+PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
+OUTPUT_NAMES = ("index.html", "fonts", "_headers") + PAGE_FILES   # what a publish writes beside its data-<hash> folder
 ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket"}    # icons/<folder> = gamegui/icons/items/<folder>
 GOATCOUNTER = ('<script data-goatcounter="https://jumpptty.goatcounter.com/count"\n'
                '        data-goatcounter-settings=\'{"path": "/wardrobe/"}\'\n'
@@ -111,7 +118,8 @@ def rewrite_page(html, data_dir):
         raise PublishError(f"index.html: the copy handler anchor {start.strip()!r} ... '}};' is missing or repeated; "
                            f"the page has changed, update wardrobe_publish.py")
     html = html[:i] + html[j + len(end):]
-    for left in ("no-cache", "คัดลอกให้ Claude", '$("copy")', "../"):
+    # the cut ends at the first "};" line: a handler that gains one inside leaves its clipboard code behind
+    for left in ("no-cache", "คัดลอกให้ Claude", '$("copy")', "navigator.clipboard", "../"):
         if left in html:
             raise PublishError(f"index.html: {left!r} is still in the published page; update wardrobe_publish.py")
     return html
@@ -119,6 +127,11 @@ def rewrite_page(html, data_dir):
 
 def page_fonts(html):
     return re.findall(r'url\("fonts/([^"/]+)"\)', html)
+
+
+def page_icons(html):
+    """The tab icons the page links (<link rel="icon" href="...">)."""
+    return re.findall(r'<link rel="icon" href="([^"]+)"', html)
 
 
 # ---------------------------------------------------------------- the BB rip (AssetRipper YAML, read as text)
@@ -534,6 +547,9 @@ def publish_outfits(run, cls):
         if o.get("tto"):
             run.drop("outfits", name, "TTO's own outfit (tto flag)")
             continue
+        if not o["colors"]:              # a wardrobe_data.py bug (bat/shirt, mole/steamSuit, wolf/novice); ruling R24
+            run.drop("outfits", name, "no colours: cannot be dressed")
+            continue
         why = run.bb.compare_outfit(cls, o, run.data / cls / f"o_{o['name']}.bin")
         if why:
             run.drop("outfits", name, why)
@@ -552,12 +568,9 @@ def publish_outfits(run, cls):
                     run.drop("colours", f"{name} colour {c}{e}", why)
                 else:
                     editions.setdefault(e, []).append(c)
-        if o["colors"] and not colours:
+        if not colours:
             run.drop("outfits", name, "none of its colour textures has a usable BB file")
             continue
-        if not o["colors"]:
-            run.warnings.append(f"{name}: no colour textures in the data (colors: []), so the page cannot dress it; "
-                                f"a wardrobe_data.py bug, published as it is")
         run.copy(f"{cls}/o_{o['name']}.bin")
         out = {k: v for k, v in o.items() if k != "editions"} | {"colors": colours}
         kept.append(out | ({"editions": editions} if editions else {}))
@@ -761,10 +774,14 @@ def remove(path):
         path.unlink()
 
 
-def publish(src, out, bb_rip):
-    """Build the public copy of src (wardrobe/: index.html + data/) in out. Returns {files, bytes, data_dir,
-    dropped: {kind: [{name, reason}]}, tto_faces: {cls: [kept numbers]}, warnings}."""
+def publish(src, out, bb_rip, data=None):
+    """Build the public copy of src (wardrobe/: index.html and its icons) with the data in data (default src/data) in
+    out. Returns {files, bytes, data_dir, dropped: {kind: [{name, reason}]}, tto_faces: {cls: [kept numbers]},
+    warnings}. The previous copy stays whole until the new data is staged; then its files are moved aside into
+    out/.previous, the new ones put in place and the old ones deleted. On any failure the new files go, the old ones
+    come back and neither .data-staging nor .previous is left in out (wrangler would upload them)."""
     src, out = Path(src), Path(out)
+    data = src / "data" if data is None else Path(data)
     with open(src / "index.html", encoding="utf-8", newline="") as fh:
         page = fh.read()
     fonts = page_fonts(rewrite_page(page, "data-" + "0" * 10))          # a changed page fails before anything is written
@@ -772,21 +789,57 @@ def publish(src, out, bb_rip):
     missing = [f for f in fonts if not (font_dir / f).is_file()]
     if missing:
         raise PublishError(f"the page loads fonts {missing}, not in {font_dir}")
+    missing = [f for f in PAGE_FILES if not (src / f).is_file()]
+    if missing:
+        raise PublishError(f"the page's icon files {missing} are not in {src}")
+    if not (data / "meta.json").is_file():
+        raise PublishError(f"no wardrobe data at {data} (no meta.json); --data names the data folder")
     bb = BBRip(bb_rip)
     out.mkdir(parents=True, exist_ok=True)
-    stage = out / ".data-staging"
+    stage, previous = out / ".data-staging", out / ".previous"
     remove(stage)
-    dropped, tto_faces, warnings = stage_data(src / "data", stage, bb)
-    data_dir = "data-" + tree_hash(stage)
-    for old in list(out.glob("data-*")) + [out / "fonts", out / "index.html", out / "_headers"]:
-        remove(old)
-    stage.rename(out / data_dir)
-    with open(out / "index.html", "w", encoding="utf-8", newline="") as fh:
-        fh.write(rewrite_page(page, data_dir))
-    (out / "fonts").mkdir()
-    for f in fonts:
-        shutil.copy2(font_dir / f, out / "fonts" / f)
-    (out / "_headers").write_text(headers_text(data_dir), encoding="utf-8", newline="\n")
+    remove(previous)                                # a run killed mid-swap: the data rebuilds the copy anyway
+    try:
+        dropped, tto_faces, warnings = stage_data(data, stage, bb)
+        data_dir = "data-" + tree_hash(stage)
+        previous.mkdir()
+    except BaseException:
+        remove(stage)
+        raise
+    old = [p.name for p in out.iterdir() if p.name.startswith("data-") or p.name in OUTPUT_NAMES]
+    moved, written = [], []                         # every old file is moved aside before the first new one is written
+
+    def put(name, write):
+        written.append(name)                        # before the write: a half-written file goes too on a failure
+        write(out / name)
+
+    def copy_fonts(folder):
+        folder.mkdir()
+        for f in fonts:
+            shutil.copy2(font_dir / f, folder / f)
+    try:
+        for name in old:
+            (out / name).rename(previous / name)
+            moved.append(name)
+        put(data_dir, stage.rename)
+        put("index.html", lambda p: p.write_text(rewrite_page(page, data_dir), encoding="utf-8", newline=""))
+        put("fonts", copy_fonts)
+        for f in PAGE_FILES:
+            put(f, lambda p: shutil.copy2(src / p.name, p))
+        put("_headers", lambda p: p.write_text(headers_text(data_dir), encoding="utf-8", newline="\n"))
+    except BaseException as e:
+        try:
+            for name in written:
+                remove(out / name)
+            for name in moved:
+                (previous / name).rename(out / name)
+            remove(previous)
+            remove(stage)
+        except OSError as undo:
+            raise PublishError(f"the publish failed ({e!r}) and putting the previous copy back failed too ({undo}): "
+                               f"the previous copy is in {previous}; move its contents back into {out} by hand") from e
+        raise
+    remove(previous)
     files = [p for p in out.rglob("*") if p.is_file()]
     return {"files": len(files), "bytes": sum(p.stat().st_size for p in files), "data_dir": data_dir,
             "dropped": dropped, "tto_faces": tto_faces, "warnings": warnings}
@@ -893,7 +946,10 @@ def check(out):
     headers = (out / "_headers").read_text(encoding="utf-8") if (out / "_headers").is_file() else ""
     if f"/{data_dir}/*\n" not in headers:
         problems.append(f"_headers has no rule for /{data_dir}/* (the data would not be cached)")
-    refs = [f"fonts/{f}" for f in page_fonts(html)]
+    icons = page_icons(html)
+    if not icons:
+        problems.append('index.html has no tab icon (<link rel="icon" href="...">)')
+    refs = [f"fonts/{f}" for f in page_fonts(html)] + icons
     refs += [f"{data_dir}/{r}" for r in data_references(out / data_dir, problems)]
     walker = CaseSensitive(out)
     problems += [p for p in (walker.problem(r) for r in dict.fromkeys(refs)) if p]
@@ -901,13 +957,30 @@ def check(out):
 
 
 # ---------------------------------------------------------------- command line
-def report_path(out):
-    return Path(out).parent / f"{Path(out).name}_report.json"
+def report_path(out, suffix=""):
+    return Path(out).parent / f"{Path(out).name}_report{suffix}.json"
+
+
+def report_counts(report):
+    """What two runs are compared on: files, bytes, dropped items per kind, kept TTO faces per class."""
+    counts = {"files": report.get("files", 0), "bytes": report.get("bytes", 0)}
+    counts |= {f"dropped {kind}": len(items) for kind, items in (report.get("dropped") or {}).items()}
+    counts |= {f"kept TTO faces {cls}": len(kept) for cls, kept in (report.get("tto_faces") or {}).items()}
+    return counts
+
+
+def count_changes(prev, cur):
+    """'what: old -> new (+-n)' for every count that differs between two reports (a count a report lacks is 0)."""
+    a, b = report_counts(prev), report_counts(cur)
+    keys = ["files", "bytes"] + sorted((a.keys() | b.keys()) - {"files", "bytes"})
+    return [f"{k}: {a.get(k, 0):,} -> {b.get(k, 0):,} ({b.get(k, 0) - a.get(k, 0):+,})"
+            for k in keys if a.get(k, 0) != b.get(k, 0)]
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Publish the 12 Tails Wardrobe for Cloudflare Pages (BB items only).")
-    ap.add_argument("--src", type=Path, default=ROOT / "wardrobe", help="the wardrobe folder (index.html + data/)")
+    ap.add_argument("--src", type=Path, default=ROOT / "wardrobe", help="the wardrobe folder (index.html and its icons)")
+    ap.add_argument("--data", type=Path, help="the wardrobe data folder (default: <src>/data)")
     ap.add_argument("--out", type=Path, default=ROOT / "wardrobe_dist", help="the output folder")
     ap.add_argument("--bb-rip", type=Path, default=BB_RIP, help="BB's rip: ...\\ExportedProject\\Assets\\Resources")
     ap.add_argument("--check", type=Path, metavar="DIR", help="only check an existing output folder")
@@ -917,20 +990,34 @@ def main(argv=None):
         print("\n".join(problems) or "no problems")
         return 1 if problems else 0
     try:
-        result = publish(a.src, a.out, a.bb_rip)
+        result = publish(a.src, a.out, a.bb_rip, a.data)
     except PublishError as e:
         print(f"publish failed: {e}", file=sys.stderr)
         return 1
     problems = check(a.out)
     report = {"provenance": PROVENANCE, **result, "problems": problems}
-    report_path(a.out).write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
+    path, prev_path, prev = report_path(a.out), report_path(a.out, ".prev"), None
+    if path.is_file():                                  # the last run's report becomes <out>_report.prev.json
+        try:
+            prev = json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            prev = "unreadable"
+        os.replace(path, prev_path)
+    path.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"{a.out}: {result['files']:,} files, {result['bytes'] / 1e6:.1f} MB, data folder {result['data_dir']}")
     for kind, items in sorted(result["dropped"].items()):
         print(f"  dropped {kind}: {len(items)}")
     print("  kept TTO faces: " + ", ".join(f"{cls} {v[0]}-{v[-1]}" if v else f"{cls} none" for cls, v in result["tto_faces"].items()))
     for w in result["warnings"]:
         print(f"  warning: {w}")
-    print(f"report: {report_path(a.out)}")
+    if not isinstance(prev, dict):
+        print("changes: " + ("no previous report to compare with" if prev is None else f"{prev_path} could not be read"))
+    else:
+        changes = count_changes(prev, result)
+        print(f"changes since the previous report ({prev_path.name}):" + ("" if changes else " none"))
+        for line in changes:
+            print(f"  {line}")
+    print(f"report: {path}")
     print("\n".join(f"  problem: {p}" for p in problems) or "check: no problems")
     return 1 if problems else 0
 

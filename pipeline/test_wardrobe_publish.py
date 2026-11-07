@@ -3,25 +3,31 @@ meshes, clips and prefabs, PNG pictures) in a temp folder, publishes it and read
 
   cd /d D:\12tails-video\comic-skit && py -3 -m unittest pipeline.test_wardrobe_publish -v
 """
+import contextlib
+import io
 import json
 import math
 import os
 import re
+import shutil
 import struct
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from PIL import Image
 
 from pipeline import wardrobe_publish as wp
 
-# the page's anchors exactly as wardrobe/index.html has them (CRLF, like the real page)
+# the page's anchors exactly as wardrobe/index.html has them (LF, like the real page; the page tests run on a CRLF
+# copy too: NEWLINES)
 PAGE = """<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <title>12 Tails Wardrobe</title>
+<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">
 <style>
 @font-face { font-family: "Prompt"; font-weight: 600; src: url("../fonts/Prompt-SemiBold.ttf") format("truetype"); }
 @font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
@@ -48,7 +54,9 @@ function err(e) { console.error(e); }
 </script>
 </body>
 </html>
-""".replace("\n", "\r\n")
+"""
+NEWLINES = (("LF", "\n"), ("CRLF", "\r\n"))
+PAGE_FILES = {"wardrobe_icon.svg": b'<svg xmlns="http://www.w3.org/2000/svg"></svg>', "wardrobe.ico": b"\0\0\1\0ico"}
 
 TTO_RGBA = (250, 20, 200, 255)     # the data's own (TTO-extracted) pictures
 BB_RGBA = (30, 140, 60, 255)       # the BB rip's pictures
@@ -161,8 +169,8 @@ def prop_mesh(positions, tris):
 class World:
     """A wardrobe source + BB rip for one class (cat), filled by the add_* helpers, written by finish()."""
 
-    def __init__(self, tmp):
-        self.tmp = Path(tmp)
+    def __init__(self, tmp, nl="\n"):
+        self.tmp, self.nl = Path(tmp), nl                # nl: the page's line endings
         self.src = self.tmp / "comic" / "wardrobe"
         self.data = self.src / "data"
         self.rip = self.tmp / "rip" / "Assets" / "Resources"
@@ -297,22 +305,27 @@ class World:
         dump(d / "item_map_tto.json", {"cat": {"armor": {"a_cat99": ["Cat_ttoGown"]}}})   # not used by the page
         (d / "placement_sweep.md").write_text("ttoGown notes", encoding="utf-8")
         self.src.mkdir(parents=True, exist_ok=True)
-        (self.src / "index.html").write_bytes(PAGE.encode("utf-8"))
+        self.write_page(PAGE)
+        for name, b in PAGE_FILES.items():
+            (self.src / name).write_bytes(b)
         for f in ("Prompt-SemiBold.ttf", "Prompt-Bold.ttf"):
             p = self.tmp / "comic" / "fonts" / f
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(b"font " + f.encode())
         return self
 
-    def publish(self):
-        return wp.publish(self.src, self.out, self.rip)
+    def write_page(self, page):
+        (self.src / "index.html").write_bytes(page.replace("\n", self.nl).encode("utf-8"))
+
+    def publish(self, data=None):
+        return wp.publish(self.src, self.out, self.rip, data)
 
 
-def make_world(tmp, tto_faces=(30, 31, 32, 33)):
+def make_world(tmp, tto_faces=(30, 31, 32, 33), nl="\n"):
     """The standard test wardrobe: BB outfit a (colour 1 + edition R), TTO outfit ttoGown, BB clips root + wave, TTO
     emote ttoJig, BB faces 0 + 1 and TTO faces 30-33, BB weapon knife and headpiece hat, TTO trinkets ttoFlag (cat) and
     ttoWing (shared), item icons (two without a BB file), a class portrait, emotion icons wave (BB) and clap (TTO)."""
-    w = World(tmp)
+    w = World(tmp, nl)
     w.add_outfit("a", editions={"R": [1]})
     w.add_outfit("ttoGown", tto=True)
     w.add_clip("root", "base")
@@ -359,6 +372,11 @@ def data_dir(w):
     return dirs[0]
 
 
+def tree(folder):
+    """{relative path: bytes} of every file under folder, and every folder (bytes None)."""
+    return {p.relative_to(folder).as_posix(): (p.read_bytes() if p.is_file() else None) for p in Path(folder).rglob("*")}
+
+
 def dropped_names(result, kind):
     return [d["name"] for d in result["dropped"].get(kind, [])]
 
@@ -379,21 +397,154 @@ class PublishTest(unittest.TestCase):
     def world(self, **kw):
         return make_world(self.tmp, **kw).finish()
 
+    def newline_worlds(self):
+        """The standard world twice: an LF page (like the real one) and a CRLF page, each in its own folder."""
+        return [(label, make_world(self.tmp / label, nl=nl).finish()) for label, nl in NEWLINES]
+
     def test_page_rewritten(self):
+        for label, w in self.newline_worlds():
+            with self.subTest(page=label):
+                result = w.publish()
+                with open(w.out / "index.html", encoding="utf-8", newline="") as fh:
+                    raw = fh.read()
+                if w.nl == "\n":
+                    self.assertNotIn("\r", raw)                   # the page keeps its own line endings
+                else:
+                    self.assertEqual(raw.count("\r\n"), raw.count("\n"))
+                html = raw.replace("\r\n", "\n")
+                self.assertRegex(html, r'const DATA = "data-[0-9a-f]{10}/";')
+                self.assertIn(f'const DATA = "{result["data_dir"]}/";', html)
+                self.assertNotIn("no-cache", html)
+                self.assertNotIn("คัดลอกให้ Claude", html)
+                self.assertNotIn('$("copy")', html)
+                self.assertNotIn("navigator.clipboard", html)
+                self.assertIn("function err(e)", html)               # the code after the copy handler stays
+                self.assertEqual(html.count("data-goatcounter="), 1)
+                settings = re.search(r"data-goatcounter-settings='(\{[^']*\})'", html)
+                self.assertIsNotNone(settings)
+                self.assertEqual(json.loads(settings.group(1))["path"], "/wardrobe/")
+                self.assertIn('href="https://jumpptty.github.io/12tails/12t_projects/bible/"', html)
+                self.assertIn('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">', html)
+                self.assertEqual(wp.check(w.out), [])
+
+    def test_copy_handler_cut_short_fails_loudly(self):
+        """The handler is cut at its first "};" line: one inside it would leave the clipboard code in the page."""
+        for label, w in self.newline_worlds():
+            with self.subTest(page=label):
+                w.write_page(PAGE.replace("  const s = C.state;\n", "  const s = C.state;\n};\nconst later = async () => {\n"))
+                with self.assertRaises(wp.PublishError) as e:
+                    w.publish()
+                self.assertIn("navigator.clipboard", str(e.exception))
+                self.assertFalse(w.out.exists())
+
+    def test_tab_icon_published(self):
         w = self.world()
-        result = w.publish()
-        html = (w.out / "index.html").read_text(encoding="utf-8")
-        self.assertRegex(html, r'const DATA = "data-[0-9a-f]{10}/";')
-        self.assertIn(f'const DATA = "{result["data_dir"]}/";', html)
-        self.assertNotIn("no-cache", html)
-        self.assertNotIn("คัดลอกให้ Claude", html)
-        self.assertNotIn('$("copy")', html)
-        self.assertEqual(html.count("data-goatcounter="), 1)
-        settings = re.search(r"data-goatcounter-settings='(\{[^']*\})'", html)
-        self.assertIsNotNone(settings)
-        self.assertEqual(json.loads(settings.group(1))["path"], "/wardrobe/")
-        self.assertIn('href="https://jumpptty.github.io/12tails/12t_projects/bible/"', html)
+        w.publish()
+        for name, b in PAGE_FILES.items():
+            self.assertEqual((w.out / name).read_bytes(), b, name)        # next to the page, as in wardrobe/
         self.assertEqual(wp.check(w.out), [])
+        (w.out / "wardrobe_icon.svg").unlink()
+        self.assertIn("missing: wardrobe_icon.svg", wp.check(w.out))
+        (w.src / "wardrobe_icon.svg").unlink()
+        shutil.rmtree(w.out)
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("wardrobe_icon.svg", str(e.exception))
+        self.assertFalse(w.out.exists())                                  # nothing is written without the icon
+
+    def test_page_without_tab_icon_is_reported(self):
+        w = self.world()
+        w.publish()
+        page = w.out / "index.html"
+        page.write_text(page.read_text(encoding="utf-8").replace('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">\n', ""),
+                        encoding="utf-8")
+        self.assertTrue(any("no tab icon" in p for p in wp.check(w.out)), wp.check(w.out))
+
+    def test_data_folder_apart_from_the_page(self):
+        """--data: a src folder with no data/ plus a data folder elsewhere gives the combined layout's output."""
+        w = self.world()
+        w.publish()
+        combined = tree(w.out)
+        apart = self.tmp / "elsewhere" / "data"
+        apart.parent.mkdir()
+        shutil.move(str(w.data), str(apart))
+        self.assertFalse((w.src / "data").exists())
+        out2 = self.tmp / "dist2"
+        result = wp.publish(w.src, out2, w.rip, data=apart)
+        self.assertEqual(tree(out2), combined)
+        self.assertEqual(result["data_dir"], data_dir(w).name)
+        self.assertEqual(wp.check(out2), [])
+        with self.assertRaises(wp.PublishError) as e:                  # without --data the src's own data/ is used
+            w.publish()
+        self.assertIn("no wardrobe data", str(e.exception))
+        self.assertEqual(tree(w.out), combined)                          # and the previous copy is left alone
+
+    def test_failed_swap_keeps_previous_output(self):
+        """A failure while the new copy replaces the old one (moving the old page aside, the staging rename, a font
+        copy) puts the old one back and leaves no .data-staging / .previous folder for wrangler to upload."""
+        real_rename, real_copy2 = Path.rename, shutil.copy2
+
+        def rename(self, target):
+            if self.name == ".data-staging":
+                raise OSError("simulated: the staging folder is locked")
+            return real_rename(self, target)
+
+        def rename_old_page(self, target):
+            if self.name == "index.html" and Path(target).parent.name == ".previous":
+                raise OSError("simulated: the old page is open in an editor")
+            return real_rename(self, target)
+
+        def copy2(src, dst, **kw):
+            if Path(dst).parent.name == "fonts":
+                raise OSError("simulated: disk full")
+            return real_copy2(src, dst, **kw)
+        w = self.world()
+        old_dir = w.publish()["data_dir"]
+        before = tree(w.out)
+        (w.data / "cat" / "rig.json").write_text('{"tri": {}, "bones": [], "x": 1}', encoding="utf-8")   # a new hash
+        for what, patch in (("moving the old page aside", mock.patch.object(Path, "rename", rename_old_page)),
+                            ("staging rename", mock.patch.object(Path, "rename", rename)),
+                            ("font copy", mock.patch.object(wp.shutil, "copy2", copy2))):
+            with self.subTest(failure=what):
+                with patch, self.assertRaises(OSError):
+                    w.publish()
+                self.assertEqual(tree(w.out), before)
+        self.assertNotEqual(w.publish()["data_dir"], old_dir)               # the next run goes through
+        self.assertEqual(sorted(p.name for p in w.out.iterdir() if p.name.startswith((".", "data-"))), [data_dir(w).name])
+
+    def test_report_keeps_previous_and_prints_changes(self):
+        w = self.world()
+        args = ["--src", str(w.src), "--data", str(w.data), "--out", str(w.out), "--bb-rip", str(w.rip)]
+        report, prev = self.tmp / "dist_report.json", self.tmp / "dist_report.prev.json"
+        first_out = io.StringIO()
+        with contextlib.redirect_stdout(first_out):
+            self.assertEqual(wp.main(args), 0)
+        self.assertIn("changes: no previous report to compare with", first_out.getvalue())
+        self.assertFalse(prev.exists())
+        first = json.loads(report.read_text(encoding="utf-8"))
+        (w.assets / "Texture2D" / "Cat_hat.png").unlink()             # the hat goes: one headpiece more, one file less
+        second_out = io.StringIO()
+        with contextlib.redirect_stdout(second_out):
+            self.assertEqual(wp.main(args), 0)
+        self.assertEqual(json.loads(prev.read_text(encoding="utf-8")), first)
+        second = json.loads(report.read_text(encoding="utf-8"))
+        text = second_out.getvalue()
+        self.assertIn("changes since the previous report (dist_report.prev.json):\n", text)
+        self.assertIn(f"  files: {first['files']:,} -> {second['files']:,} (-1)\n", text)
+        self.assertIn("  dropped headpieces: 0 -> 1 (+1)\n", text)
+        self.assertNotIn("kept TTO faces cat", text.split("changes since")[1])   # unchanged counts are not listed
+        third_out = io.StringIO()
+        with contextlib.redirect_stdout(third_out):
+            self.assertEqual(wp.main(args), 0)
+        self.assertIn("changes since the previous report (dist_report.prev.json): none\n", third_out.getvalue())
+
+    def test_count_changes(self):
+        prev = {"files": 10, "bytes": 5000, "dropped": {"outfits": [1, 2], "faces": [1]}, "tto_faces": {"cat": [30, 31], "wolf": [23]}}
+        cur = {"files": 9, "bytes": 5000, "dropped": {"outfits": [1, 2, 3], "emotes": [1]}, "tto_faces": {"cat": [30, 31]}}
+        self.assertEqual(wp.count_changes(prev, cur), ["files: 10 -> 9 (-1)", "dropped emotes: 0 -> 1 (+1)",
+                                                       "dropped faces: 1 -> 0 (-1)", "dropped outfits: 2 -> 3 (+1)",
+                                                       "kept TTO faces wolf: 1 -> 0 (-1)"])
+        self.assertEqual(wp.count_changes(cur, cur), [])
 
     def test_hash_changes_with_content(self):
         w = self.world()
@@ -585,38 +736,51 @@ class PublishTest(unittest.TestCase):
         self.assertIn("cat/wing", dropped_names(result, "back_trinkets"))
 
     def test_fonts_and_prop_textures_rewritten(self):
-        w = self.world()
-        w.publish()
-        html = (w.out / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn("../fonts/", html)
-        self.assertNotIn("../props/tex/", html)
-        self.assertIn('url("fonts/Prompt-SemiBold.ttf")', html)
-        self.assertIn("texLoader.load(`${DATA}props/tex/${m.tex}`)", html)
-        for f in ("Prompt-SemiBold.ttf", "Prompt-Bold.ttf"):
-            self.assertEqual((w.out / "fonts" / f).read_bytes(), (self.tmp / "comic" / "fonts" / f).read_bytes())
-        knife = data_dir(w) / "props" / "tex" / "Cat_knife.png"
-        self.assertEqual(knife.read_bytes(), (w.assets / "Texture2D" / "Cat_knife.png").read_bytes())
+        for label, w in self.newline_worlds():
+            with self.subTest(page=label):
+                w.publish()
+                html = (w.out / "index.html").read_text(encoding="utf-8")
+                self.assertNotIn("../fonts/", html)
+                self.assertNotIn("../props/tex/", html)
+                self.assertIn('url("fonts/Prompt-SemiBold.ttf")', html)
+                self.assertIn("texLoader.load(`${DATA}props/tex/${m.tex}`)", html)
+                for f in ("Prompt-SemiBold.ttf", "Prompt-Bold.ttf"):
+                    self.assertEqual((w.out / "fonts" / f).read_bytes(), (w.tmp / "comic" / "fonts" / f).read_bytes())
+                knife = data_dir(w) / "props" / "tex" / "Cat_knife.png"
+                self.assertEqual(knife.read_bytes(), (w.assets / "Texture2D" / "Cat_knife.png").read_bytes())
 
     def test_missing_anchor_fails_loudly(self):
         anchors = ['const DATA = "data/";', 'fetch(p, { cache: "no-cache" })',
                    '<button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>',
                    '$("copy").onclick = async () => {', 'url("../fonts/', "texLoader.load(`../props/tex/${m.tex}`)"]
-        w = self.world()
-        for anchor in anchors:
-            with self.subTest(anchor=anchor):
-                (w.src / "index.html").write_bytes(PAGE.replace(anchor, "changed").encode("utf-8"))
-                with self.assertRaises(wp.PublishError) as e:
-                    w.publish()
-                self.assertIn("anchor", str(e.exception))
-                self.assertFalse(w.out.exists())                     # nothing is written for a changed page
+        for label, w in self.newline_worlds():
+            for anchor in anchors:
+                with self.subTest(page=label, anchor=anchor):
+                    w.write_page(PAGE.replace(anchor, "changed"))
+                    with self.assertRaises(wp.PublishError) as e:
+                        w.publish()
+                    self.assertIn("anchor", str(e.exception))
+                    self.assertFalse(w.out.exists())                 # nothing is written for a changed page
 
-    def test_outfit_without_colours_is_a_warning(self):
+    def test_outfit_without_colours_is_dropped(self):
+        """Ruling R24: an outfit whose colors is [] (a wardrobe_data.py bug) cannot be dressed, so it goes with its
+        files and every reference."""
         w = make_world(self.tmp)
         w.add_outfit("novice", colors=())
+        w.add_icon("cat", "outfits", "novice", "icons/armor/cat5.webp", ["a_cat5"])
+        w.item_map["cat"]["armor"]["a_cat5"] = ["Cat_novice"]
         w.finish()
         result = w.publish()
-        self.assertTrue(any("cat/novice" in x for x in result["warnings"]), result["warnings"])
-        self.assertIn("novice", [o["name"] for o in json.loads((data_dir(w) / "cat" / "outfits.json").read_text())])
+        self.assertEqual([x["reason"] for x in result["dropped"]["outfits"] if x["name"] == "cat/novice"],
+                         ["no colours: cannot be dressed"])
+        self.assertEqual(result["warnings"], [])
+        d = data_dir(w)
+        self.assertEqual([o["name"] for o in json.loads((d / "cat" / "outfits.json").read_text())], ["a"])
+        self.assertFalse((d / "cat" / "o_novice.bin").exists())
+        self.assertFalse((d / "icons" / "armor" / "cat5.webp").exists())
+        for p in d.rglob("*.json"):
+            self.assertNotIn("novice", p.read_text(encoding="utf-8"), p.name)
+            self.assertNotIn("a_cat5", p.read_text(encoding="utf-8"), p.name)
         self.assertEqual(wp.check(w.out), [])
 
 
