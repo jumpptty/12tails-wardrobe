@@ -672,6 +672,26 @@ async function buildSets() {
   return (C.sets = sets);
 }
 const setEd = s => { const o = C.outfits.find(x => x.name === s.outfit); return o ? edOf(o, C.state.color, s.v) : ""; };
+// the R / V toggle (user 2026-11-07: "failed to change the whole set"): an edition is the outfit's recolour AND the same
+// item's trailing-capital variant on every worn piece (mothHatR = mothHat in R; Panda's shinGauntletV_L = shinGauntlet_L
+// in V). A piece with no variant in that edition keeps what it has
+const edLetters = () => [...new Set(C.outfits.flatMap(o => Object.keys(o.editions || {})))].sort();
+const edSplit = n => { const m = n.match(/^(.*[a-z0-9])([A-Z])((?:_[LR])?)$/);
+  return m && edLetters().includes(m[2]) ? { stem: m[1] + m[3], v: m[2] } : { stem: n, v: "" }; };
+const variantIn = (slot, name, e) => { const stem = edSplit(name).stem;
+  return (C.propLists[SLOTS[slot]] || []).find(p => { const s = edSplit(p.name); return s.stem === stem && s.v === e; })?.name || null; };
+const outfitHasEd = e => { const o = C.outfits.find(x => x.name === C.state.outfit); return !e || !!o?.editions?.[e]?.includes(C.state.color); };
+const hasEdition = e => outfitHasEd(e) || ["R", "L", "Head", "Back"].some(k => C.state[k] && variantIn(k, C.state[k], e));
+// the edition the worn set shows: the outfit's, else the first worn piece's variant (the toggle and the สี ring's badge)
+function wornEdition() {
+  if (C.state.edition) return C.state.edition;
+  for (const k of ["R", "L", "Head", "Back"]) { const v = C.state[k] && edSplit(C.state[k]).v; if (v) return v; }
+  return "";
+}
+async function setEdition(e) {             // one tracked() step: the outfit and every worn piece that has the variant
+  if (outfitHasEd(e) && (C.state.edition || "") !== e) await setColorOrFace(null, null, e);
+  for (const k of ["R", "L", "Head", "Back"]) { const n = C.state[k], v = n && variantIn(k, n, e); if (v && v !== n) await setProp(k, v); }
+}
 const setWorn = s => (!s.outfit || (C.state.outfit === s.outfit && (C.state.edition || "") === setEd(s)))
   && ["R", "L", "Head", "Back"].every(k => !s[k] || C.state[k] === s[k]);
 // an outfit's icon in an edition (icons.json "editions", from BB's code table: bb_item_codes.py)
@@ -759,7 +779,7 @@ function renderTopics() {
     <span class="tname">${name}</span><span class="setparts">${worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`}</span></button>`
     : `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
     <span class="tname">${name}</span><span class="ring t-${t}${t === "face" ? " face" : ""}">${pic(currentIcon(t), t === "face")}${
-      t === "color" && C?.state.edition ? `<i class="ed">${C.state.edition}</i>` : ""}</span></button>`).join("");
+      t === "color" && C && wornEdition() ? `<i class="ed">${wornEdition()}</i>` : ""}</span></button>`).join("");
   $("topics").querySelectorAll(".topic").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
 }
 function closePicker() { openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics(); }
@@ -798,13 +818,19 @@ async function openPicker(t) {
     body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, capName(c.cls), c.cls === C.cls, UI.heroes?.[c.cls])).join("");
     pick(b => loadClass(b.dataset.c).catch(err));
   } else if (t === "color") {
-    // the outfit's colours, one tile each = Recolor Drug n's icon (user 2026-11-07); its R / V edition is a toggle up here
+    // the outfit's colours, one tile each = Recolor Drug n's icon (user 2026-11-07); the worn set's R / V edition is a
+    // toggle up here: it switches the outfit and every worn piece that has that variant (one undo step)
     const o = C.outfits.find(x => x.name === C.state.outfit);
     const drawEditions = () => {
-      const eds = Object.keys(o?.editions || {});
-      tools.innerHTML = eds.length ? `<span>แบบ</span>` + ["", ...eds].map(e => `<button type="button" class="pk-tab" data-e="${e}" aria-pressed="${e === (C.state.edition || "")}"`
-          + `${e && !o.editions[e].includes(C.state.color) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") : `<span class="pk-note">${o?.name || ""}</span>`;
-      tools.querySelectorAll(".pk-tab[data-e]").forEach(b => b.onclick = async () => { await tracked(() => setColorOrFace(null, null, b.dataset.e)).catch(err); drawEditions(); renderTopics(); });
+      const eds = edLetters().filter(e => o?.editions?.[e] || ["R", "L", "Head", "Back"].some(k => C.state[k] && variantIn(k, C.state[k], e)));
+      const cur = wornEdition();
+      tools.innerHTML = eds.length ? `<span>แบบ</span>` + ["", ...eds].map(e => `<button type="button" class="pk-tab" data-e="${e}" aria-pressed="${e === cur}"`
+          + `${e && !hasEdition(e) ? " disabled" : ""}>${e || "ปกติ"}</button>`).join("") : `<span class="pk-note">${o?.name || ""}</span>`;
+      tools.querySelectorAll(".pk-tab[data-e]").forEach(b => b.onclick = async () => {
+        const e = b.dataset.e;
+        await tracked(() => setEdition(e)).catch(err); drawEditions(); renderTopics();
+        toast(e ? `แบบ ${e} ทั้งชุด` : "แบบปกติทั้งชุด");
+      });
     };
     drawEditions();
     body.innerHTML = o?.colors?.length ? o.colors.map(c => item(`data-c="${c}"`, `สี ${c}`, c === C.state.color, colorIcon(c), false, `${o.name} · สี ${c}`)).join("")
