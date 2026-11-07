@@ -12,6 +12,7 @@ import re
 import shutil
 import struct
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -642,6 +643,24 @@ class PublishTest(unittest.TestCase):
         result = w.publish()
         self.assertEqual(result["tto_faces"], {"cat": [30]})
         self.assertEqual(sorted(p.name for p in (data_dir(w) / "cat" / "faces").iterdir()), ["0.webp", "1.webp", "30.webp"])
+
+    def test_released_classes_keep_every_tto_face(self):
+        class Run:
+            def __init__(self):
+                self.copied, self.dropped = [], []
+                self.bb = types.SimpleNamespace(heroes=Path("none"))
+            def copy(self, rel):
+                self.copied.append(rel)
+            def drop(self, kind, name, why):
+                self.dropped.append(name)
+        faces = [{"n": n, "tto": True} for n in (30, 31, 32, 33)]
+        out = {}
+        for cls in ("bison", "cat"):
+            run = Run()
+            kept, nums = wp.publish_faces(run, cls, faces)
+            out[cls] = nums
+            self.assertEqual([f["n"] for f in kept], nums)
+        self.assertEqual(out, {"bison": [30, 31, 32, 33], "cat": [30, 31]})
 
     def test_icons_from_bb_rip(self):
         w = self.world()

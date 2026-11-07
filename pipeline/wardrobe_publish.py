@@ -578,10 +578,15 @@ def publish_outfits(run, cls):
     return kept
 
 
+# Classes whose TTO face paints are all released (user 2026-11-07); every other class keeps the first half.
+TTO_FACES_ALL_RELEASED = {"bison", "chameleon", "mole", "monkey", "penguin", "whale"}
+
+
 def publish_faces(run, cls, faces):
-    """BB's faces from the BB rip plus the first half of TTO's own (by number, rounded down)."""
+    """BB's faces from the BB rip plus TTO's own: all of them for TTO_FACES_ALL_RELEASED classes, else the first half
+    (by number, rounded down)."""
     own = sorted(f["n"] for f in faces if f.get("tto"))
-    keep_tto = set(own[:len(own) // 2])
+    keep_tto = set(own if cls in TTO_FACES_ALL_RELEASED else own[:len(own) // 2])
     overlay, kept = run.bb.heroes / cls / "armors" / "overlay", []
     for f in faces:
         rel, name = f"{cls}/faces/{f['n']}.webp", f"{cls}/{f['n']}"
