@@ -11,7 +11,7 @@
 @font-face { font-family: "Prompt"; font-weight: 800; src: url("../fonts/Prompt-ExtraBold.ttf") format("truetype"); }
 :root {
   --night: #18263a; --night-2: #101b2b; --panel: #213350; --line: #2e4466;
-  --ink: #e9eef5; --muted: #93a4ba; --horn: #f2c230; --tto: #f3a6bc;
+  --ink: #e9eef5; --muted: #93a4ba; --horn: #f2c230; --tto: #f3a6bc; --tot: #7cc8f0;
   --stage-top: #f7f3fa; --stage-bottom: #e4dcea;
 }
 * { box-sizing: border-box; }
@@ -74,6 +74,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-body.face-grid .lbl { font-size: 14px; }
 .pk-item[aria-pressed=true] .lbl { color: var(--horn); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
+.pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
 .pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--night-2); border-radius: 6px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
@@ -233,8 +234,9 @@ async function composeTexture(o, color, face, ed = "") {
   g.drawImage(base, 0, 0);
   try {
     const f = await loadImage(`${DATA}${C.cls}/faces/${face}.webp`);
-    // skins.py: the face block = 256 px wide x half the sheet tall, top left
-    g.drawImage(f, 0, 0, 256, 256, 0, 0, Math.min(256, cv.width / 2), cv.height / 2);
+    // skins.py: the face block = 256 px wide x half the sheet tall, top left. ToT's student sheets ("face": "quarter",
+    // wardrobe_tot.py): ToT's TryBlendLegacySkinOverlay stretches the face over the whole top-left quarter
+    g.drawImage(f, 0, 0, 256, 256, 0, 0, o.face === "quarter" ? cv.width / 2 : Math.min(256, cv.width / 2), cv.height / 2);
   } catch (e) {}
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -369,6 +371,22 @@ function buildProp(p) {
   Object.assign(objs[0].userData, { objs, skins, prop: p });
   return objs[0];
 }
+// a prop skinned to the hero's skeleton (ToT's student hats, wardrobe_tot.py "heroSkin"): bound in the tri space with
+// the prefab's bind poses, exactly as setOutfit binds an outfit mesh
+function buildHeroSkin(p) {
+  const s = p.heroSkin, g = propGeometry(s);
+  g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(s.j, 4));
+  g.setAttribute("skinWeight", new THREE.Float32BufferAttribute(s.w, 4));
+  const mats = propMaterials(p.mats);
+  if (stacked(s.pos, s.idx)) mats.forEach(m => { m.side = THREE.FrontSide; });
+  const sm = new THREE.SkinnedMesh(g, mats.length > 1 ? mats : mats[0]);
+  sm.name = "heroSkin_" + p.name; sm.frustumCulled = false;
+  C.tri.add(sm); sm.updateMatrixWorld(true);
+  const inv = sm.matrixWorld.clone().invert();
+  const boneInverses = s.bones.map((_, i) => new THREE.Matrix4().fromArray(s.ibm, i * 16).multiply(inv));
+  sm.bind(new THREE.Skeleton(s.bones.map(n => C.byName[n]), boneInverses), sm.matrixWorld.clone());
+  return sm;
+}
 // after mounting: bind the live skins (the wings, on their own bones) and loop the prop's own clip (they flap)
 function finishProp(root) {
   root.updateMatrixWorld(true);
@@ -425,7 +443,11 @@ async function setProp(slot, name) {
     const p = list.find(x => x.name === name);
     // the slot decides the hand: any weapon can go in either; Mole's rig has no Spine1 (UpperBody1 / UpperBody2)
     const bone = C.byName[MOUNT[slot]] || (slot === "Back" ? C.byName.UpperBody1 || C.byName.Spine2 : null) || C.byName.Head;
-    if (p && bone) {
+    if (p?.heroSkin) {                                  // ToT's student hat: skinned to the hero's own bones, like an outfit
+      const o = buildHeroSkin(p);
+      o.userData.placement = "skinned to the hero";
+      C.props[slot] = o;
+    } else if (p && bone) {
       const o = buildProp(p);
       // TTO's own placement for this hero + item code (wardrobe_placements.py: bone, pos, euler, scale), else BB's rule
       const table = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" }[slot];
@@ -699,7 +721,8 @@ function renderTopics() {
 function closePicker() { openTopic = null; $("picker").hidden = true; renderTopics(); }
 const item = (attr, label, pressed, src, tto, title = label, face = false) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
-  `<span class="lbl">${label}</span>${tto ? '<i class="dot"></i>' : ""}</button>`;
+  `<span class="lbl">${label}</span>${tto ? `<i class="dot${tto === "tot" ? " tot" : ""}"></i>` : ""}</button>`;
+const badge = x => (x.tot ? "tot" : x.tto);           // pink dot = TTO's own, blue = ToT's own (wardrobe_tot.py)
 let moveTab = "emote";
 async function openPicker(t) {
   openTopic = t; renderTopics();
@@ -751,7 +774,7 @@ async function openPicker(t) {
     };
     drawEditions();
     body.innerHTML = C.outfits.map(o => { const ic = iconOf("outfits", o.name);
-      return item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, o.tto, ic ? `${o.name} (${ic.codes.join(", ")})` : o.name); }).join("");
+      return item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, badge(o), ic ? `${o.name} (${ic.codes.join(", ")})` : o.name); }).join("");
     pick(b => setOutfit(b.dataset.o, C.state.color).catch(err), drawEditions);
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), f.tto, `หน้า ${f.n}`, true)).join("");
@@ -775,7 +798,7 @@ async function openPicker(t) {
       const base = t === "Head" && BASE_HEAD[C.cls];
       if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
       body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, false)) + items.map(p => { const ic = iconOf(SLOT_KEY[t], p.name);
-        return item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, p.tto, ic ? `${p.name} (${ic.codes.join(", ")})` : p.name); }).join("");
+        return item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, badge(p), ic ? `${p.name} (${ic.codes.join(", ")})` : p.name); }).join("");
       pick(b => setProp(t, b.dataset.p || null).catch(err));
     };
     inp.oninput = draw; draw(); inp.focus();
