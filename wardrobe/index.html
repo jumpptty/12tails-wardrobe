@@ -45,6 +45,10 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .status { position: absolute; left: 14px; bottom: 12px; color: var(--on-stage); font-size: 13px; }
 .toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); text-align: center; background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); }
 .toast.show { opacity: 1; }
+/* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
+.keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 6px; color: var(--on-stage); font-size: 12px; pointer-events: none; background: rgba(255,255,255,.85); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+.keyhint kbd { font: 700 11px "JetBrains Mono", monospace; border: 1px solid var(--on-stage); border-radius: 4px; padding: 1px 5px; }
+@media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
 .topics { flex: 1 0 auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px;
@@ -232,6 +236,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
     </div>
     <div class="status" id="status">กำลังโหลด…</div>
     <div class="toast" id="toast" role="status"></div>
+    <div class="keyhint" id="keyhint" aria-hidden="true"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
         <button type="button" class="pk-close" id="pkClose" aria-label="ปิด">✕</button></div>
@@ -1215,6 +1220,40 @@ function fitCamera() {
   floor.scale.setScalar(h * 0.42);
 }
 $("resetCam").onclick = () => C && fitCamera();
+// WASD camera (task 12, like the Bible's reach preview): W / S move the look-at point up / down along world Y, A / D strafe on the ground plane;
+// the camera moves with it, so distance and angles stay. 0.3 view-widths per second, each frame closes 12 % of what is left (eased).
+// By e.code so a Thai layout works; Ctrl / Meta / Alt and text fields are ignored; held keys clear on blur; the loop stops when settled.
+const WASD = { KeyW: "f", KeyS: "b", KeyA: "l", KeyD: "r" }, wHeld = new Set(), wPend = new THREE.Vector3();
+let wRaf = 0, wT = 0;
+function wStep(now) {
+  const dt = Math.min(0.1, (now - wT) / 1000); wT = now;
+  const f = (wHeld.has("f") ? 1 : 0) - (wHeld.has("b") ? 1 : 0), rt = (wHeld.has("r") ? 1 : 0) - (wHeld.has("l") ? 1 : 0);
+  if (f || rt) {
+    const fw = controls.target.clone().sub(camera.position).setY(0);
+    if (fw.lengthSq() > 1e-8) {
+      fw.normalize();
+      const dist = camera.position.distanceTo(controls.target), width = 2 * dist * Math.tan(camera.fov * Math.PI / 360) * camera.aspect, sp = 0.3 * width * dt;
+      wPend.y += f * sp;      // W / S: straight up / down along world Y (user 2026-11-07: forward / back read as a zoom)
+      wPend.addScaledVector(new THREE.Vector3(-fw.z, 0, fw.x), rt * sp);
+    }
+  }
+  const d = wPend.clone().multiplyScalar(0.12);
+  wPend.sub(d); controls.target.add(d); camera.position.add(d);
+  const settled = wPend.length() < 0.0005;
+  if (settled) { controls.target.add(wPend); camera.position.add(wPend); wPend.set(0, 0, 0); }
+  wRaf = (wHeld.size || !settled) ? requestAnimationFrame(wStep) : 0;
+}
+function wWake() { if (!wRaf) { wT = performance.now(); wRaf = requestAnimationFrame(wStep); } }
+function wReset() { wHeld.clear(); wPend.set(0, 0, 0); }
+addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const t = e.target, a = WASD[e.code];
+  if (!a || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;
+  e.preventDefault(); wHeld.add(a); wWake();
+});
+addEventListener("keyup", e => { const a = WASD[e.code]; if (a) wHeld.delete(a); });
+addEventListener("blur", () => wHeld.clear());
+$("resetCam").addEventListener("click", wReset);
 $("shot").onclick = () => { const a = document.createElement("a"); a.href = renderer.domElement.toDataURL("image/png"); a.download = `${C.cls}_${C.state.outfit}${C.state.color}.png`; a.click(); };
 $("copy").onclick = async () => {
   const s = C.state;
