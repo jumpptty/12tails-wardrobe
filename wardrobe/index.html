@@ -210,7 +210,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; border-radius: 4px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
 .pk-body > .pk-note { grid-column: 1 / -1; }
-/* an item tile's own skin tools (task 10): download / upload / give back that item's texture. They are the tile button's
+/* an item tile's own skin tools (task 10): download / upload / give back that item's texture, and (task 15) download it as
+   a 3D model (.glb). They are the tile button's
    siblings (a button can't hold buttons), laid over its foot, so a tap on them never equips through the tile */
 .pk-cell { position: relative; min-width: 0; display: grid; }
 .pk-cell > .pk-item { padding-bottom: calc(var(--skh, 28px) + 14px); }
@@ -463,7 +464,7 @@ async function loadClass(cls) {
   root.updateMatrixWorld(true);
   const mixer = new THREE.AnimationMixer(root);
   mixer.addEventListener("finished", onFinished);
-  C = { cls, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
+  C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   const fresh = !saved[cls], L = saved[cls] || {};
@@ -1052,19 +1053,24 @@ function saveBlob(blob, name) {
   const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name.replace(/[\\/:*?"<>|\s]+/g, "_") });
   document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
-// download = the texture as the item shows it: its own (outfit: the current colour / edition), or the visitor's skin
+// a texture as the item shows it: its own (outfit: the current colour / edition), or the visitor's skin, as a PNG.
+// ดาวน์โหลดลาย saves it and a 3D model file embeds it (task 15)
+async function texPNG(kind, item, tex) {
+  const s = SKINS.get(skinKey(kind, item, tex));
+  if (s) return pngOf(s.data, s.w, s.h);
+  const img = await texImage(kind, item, tex);
+  if (kind !== "outfits") {              // a prop texture is a PNG file already: kept byte for byte
+    const r = await fetch(img.src), b = r.ok ? await r.blob() : null;
+    if (b?.type === "image/png") return b;
+  }
+  const id = pixels(img);
+  return pngOf(id.data, id.width, id.height);
+}
 async function skinDownload(slot, item, tex) {
   const kind = kindOf(slot), s = SKINS.get(skinKey(kind, item, tex)), o = kind === "outfits" && C.outfits.find(x => x.name === item);
   const name = `wardrobe_${C.cls}_${item}` + (o ? (s ? "" : "_" + outfitTex(o).tag) : texsOf(kind, item).length > 1 ? "_" + tex.replace(/\.\w+$/, "") : "")
     + (s ? "_custom" : "") + ".png";
-  if (s) return saveBlob(await pngOf(s.data, s.w, s.h), name);
-  const img = await texImage(kind, item, tex);
-  if (!o) {                              // a prop texture is a PNG file already: saved byte for byte
-    const r = await fetch(img.src), b = r.ok ? await r.blob() : null;
-    if (b?.type === "image/png") return saveBlob(b, name);
-  }
-  const id = pixels(img);
-  saveBlob(await pngOf(id.data, id.width, id.height), name);
+  saveBlob(await texPNG(kind, item, tex), name);
 }
 async function decodeImage(file) {       // in the browser: no URL fetched, nothing sent
   if (window.createImageBitmap) return createImageBitmap(file);
@@ -1106,9 +1112,178 @@ async function skinReset(slot, item) {
   renderTopics(); syncTiles();
   toast(`คืนลายเดิมให้ ${humanize(item)} แล้ว`);
 }
-const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม" };
+// ---------- a piece as a 3D model (task 15, user 2026-11-08: "allow the download of 3D models of each component too").
+// A binary glTF (.glb) written by three's GLTFExporter, which loads on the first click only. Built from the data on
+// demand, like ดาวน์โหลดลาย: nothing is equipped, no undo step. A file holds:
+// - the piece's meshes with normals and UVs, in the bind pose, in the page's units, Y up. three.js space and glTF are
+//   both right-handed: the file is the page's own model (NOTES.md: the game's look), never its mirror image;
+// - a skinned piece (an outfit, ToT's hero-skinned hats: the class's whole rig; a prop with its own skin: the prop's
+//   bones) its bones, named as in the rig, posed in the bind pose, with their inverse bind matrices. A skinned mesh sits
+//   at the file's root, in world space (glTF ignores a skinned mesh's own node);
+// - a static prop its node tree in the prop's own space (the mount on the hand / head / back is not part of it);
+// - the texture ดาวน์โหลดลาย saves (texPNG: the colour / edition worn or the visitor's skin; an outfit with the face drawn
+//   on, as the page shows it), embedded as that PNG byte for byte, stored top row first with the UVs' V flipped
+//   (glTF's way); the material a plain standard one (metalness 0, roughness 1: the page's Lambert look, which is lit)
+//   with the page's cut-out (alphaTest 0.5 = glTF MASK) and sides (a stacked mesh front-sided)
+let gltfExporter = null;
+const exporterOf = () => gltfExporter ||= import("three/addons/exporters/GLTFExporter.js")
+  .then(m => m.GLTFExporter, e => { gltfExporter = null; throw Object.assign(e, { exporter: true }); });
+const v3 = a => new THREE.Vector3().fromArray(a), q4 = a => new THREE.Quaternion().fromArray(a);
+const trsOf = t => new THREE.Matrix4().compose(v3(t.p), q4(t.q), v3(t.s));
+// positions and normals through B (into the file's space: B mirroring = the triangles turned), V flipped
+function fileGeometry(m, B = null) {
+  const g = new THREE.BufferGeometry(), idx = Uint32Array.from(m.idx), pos = new THREE.Float32BufferAttribute(Float32Array.from(m.pos), 3);
+  if (B) pos.applyMatrix4(B);
+  g.setAttribute("position", pos);
+  if (m.nrm) { const n = new THREE.Float32BufferAttribute(Float32Array.from(m.nrm), 3); if (B) n.applyNormalMatrix(new THREE.Matrix3().getNormalMatrix(B)); g.setAttribute("normal", n); }
+  if (m.uv) { const uv = Float32Array.from(m.uv); for (let i = 1; i < uv.length; i += 2) uv[i] = 1 - uv[i]; g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); }
+  if (B && B.determinant() < 0) for (let t = 0; t < idx.length; t += 3) [idx[t + 1], idx[t + 2]] = [idx[t + 2], idx[t + 1]];
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  if (!m.nrm) g.computeVertexNormals();
+  for (const [start, count, mi] of m.groups || []) g.addGroup(start, count, mi);
+  if (m.j) { g.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(Uint16Array.from(m.j), 4)); g.setAttribute("skinWeight", new THREE.Float32BufferAttribute(Float32Array.from(m.w), 4)); }
+  return g;
+}
+// a texture for the file: its PNG (pngs: key -> blob, embedded as is by exactPNG); the key only stands in for the picture
+function fileTexture(pngs, blob, repeat, name) {
+  const key = { name }, t = new THREE.Texture(key);
+  t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.name = name;
+  if (repeat) t.wrapS = t.wrapT = THREE.RepeatWrapping;           // as propMaterials sets a prop's (an outfit's clamps)
+  pngs.set(key, blob);
+  return t;
+}
+const fileMaterial = (name, color, map, front) => new THREE.MeshStandardMaterial({ name, color, map, metalness: 0, roughness: 1, alphaTest: 0.5,
+  side: front ? THREE.FrontSide : THREE.DoubleSide });
+// GLTFExporter draws every picture through a canvas again; this plugin hands it the PNG bytes texPNG gave instead
+function exactPNG(writer, pngs) {
+  const draw = writer.processImage.bind(writer);
+  writer.processImage = (image, format, flipY, mimeType) => {
+    const blob = pngs.get(image);
+    if (!blob) return draw(image, format, flipY, mimeType);
+    if (!writer.cache.images.has(image)) writer.cache.images.set(image, {});
+    const memo = writer.cache.images.get(image);
+    if (memo.png == null) {
+      const def = { mimeType: "image/png" };
+      writer.pending.push(writer.processBufferViewImage(blob).then(i => { def.bufferView = i; }));
+      memo.png = (writer.json.images ||= []).push(def) - 1;
+    }
+    return memo.png;
+  };
+  return {};
+}
+// pieces skinned to the hero's own skeleton: the class's whole rig (rig.json) under "Armature" (the page's tri node),
+// every bone posed in the bind pose: tri x ibm^-1 where a piece binds it, else its parent's bind pose x its rest
+// (Monkey's and Panda's bind poses are not their rest poses); one skeleton over all of them, the meshes in world space
+function heroRigFile(K, parts) {   // parts: [{ name, m: { pos, nrm, uv, idx, groups, j, w }, bones: [names], ibm, mat }]
+  const rig = K.rig, M = trsOf(rig.tri), bind = new Map(), W = [];
+  for (const pt of parts) pt.bones.forEach((n, i) => bind.has(n) || bind.set(n, M.clone().multiply(new THREE.Matrix4().fromArray(pt.ibm, i * 16).invert())));
+  const at = i => W[i] ||= bind.get(rig.bones[i].name)?.clone() || (rig.bones[i].parent >= 0 ? at(rig.bones[i].parent) : M).clone().multiply(trsOf(rig.bones[i]));
+  const arm = new THREE.Object3D(), bones = rig.bones.map(b => Object.assign(new THREE.Bone(), { name: b.name }));
+  arm.name = "Armature"; M.decompose(arm.position, arm.quaternion, arm.scale);
+  rig.bones.forEach((b, i) => { (b.parent >= 0 ? at(b.parent) : M).clone().invert().multiply(at(i)).decompose(bones[i].position, bones[i].quaternion, bones[i].scale);
+    (b.parent >= 0 ? bones[b.parent] : arm).add(bones[i]); });
+  const skel = new THREE.Skeleton(bones, bones.map((_, i) => at(i).clone().invert())), index = new Map(rig.bones.map((b, i) => [b.name, i]));
+  const scene = new THREE.Scene();
+  scene.add(arm);
+  for (const pt of parts) {
+    const sm = new THREE.SkinnedMesh(fileGeometry({ ...pt.m, j: Uint16Array.from(pt.m.j, k => index.get(pt.bones[k])) }, M), pt.mat);
+    sm.name = pt.name; sm.bind(skel, new THREE.Matrix4()); scene.add(sm);
+  }
+  return { scene, bones: bones.length };
+}
+async function outfitFile(K, name, pngs) {
+  const o = K.outfits.find(x => x.name === name), res = await fetch(`${DATA}${K.cls}/o_${name}.bin`);
+  if (!o || !res.ok) throw new Error(`o_${name}.bin ${res.status}`);
+  const buf = await res.arrayBuffer();
+  let map = null, tag = "";
+  if (o.colors.length) {                   // the outfit's texture as worn (composeTexture): colour, edition or skin, and the face
+    const color = o.colors.includes(K.state.color) ? K.state.color : o.colors[0], t = await composeTexture(o, color, K.state.face, K.state.edition);
+    tag = `${color}${edOf(o, color, K.state.edition)}`;
+    const blob = await new Promise((ok, no) => t.image.toBlob(b => (b ? ok(b) : no(new Error("png"))), "image/png"));
+    t.dispose();
+    map = fileTexture(pngs, blob, false, name + tag);
+  }
+  const mats = {}, matOf = front => (mats[front] ||= fileMaterial(name + (front ? "_front" : ""), new THREE.Color(1, 1, 1), map, front));
+  const f = heroRigFile(K, o.meshes.map(d => { const pos = new Float32Array(buf, d.pos, d.verts * 3), idx = new Uint32Array(buf, d.idx, d.tris * 3);
+    return { name: d.name, bones: d.bones, ibm: d.ibm, mat: matOf(stacked(pos, idx)),
+      m: { pos, idx, nrm: new Float32Array(buf, d.nrm, d.verts * 3), uv: new Float32Array(buf, d.uv, d.verts * 2), j: new Uint16Array(buf, d.j, d.verts * 4), w: new Float32Array(buf, d.w, d.verts * 4) } }; }));
+  return { ...f, info: { colour: tag || null, skin: SKINS.has(skinKey("outfits", name)), face: K.state.face } };
+}
+async function propFile(K, kind, item, pngs) {
+  const p = (await propList(kind)).find(x => x.name === item);
+  if (!p) throw new Error("prop " + item);
+  const texs = new Map();                  // a texture file once, however many materials use it
+  const matsOf = (list, front) => Promise.all((list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(async m => {
+    const stem = m.tex ? m.tex.replace(/\.\w+$/, "") : item;
+    if (m.tex && !texs.has(m.tex)) texs.set(m.tex, texPNG(kind, item, m.tex).then(b => fileTexture(pngs, b, true, stem)));
+    return fileMaterial(stem, new THREE.Color(m.color[0], m.color[1], m.color[2]), m.tex ? await texs.get(m.tex) : null, front);
+  }));
+  const info = { skin: texsOf(kind, item).some(t => SKINS.has(skinKey(kind, item, t))) };
+  if (p.heroSkin) {                         // ToT's student hats (local copy only): bound to the hero's rig like an outfit
+    const s = p.heroSkin, ms = await matsOf(p.mats, stacked(s.pos, s.idx));
+    return { ...heroRigFile(K, [{ name: item, bones: s.bones, ibm: s.ibm, mat: ms.length > 1 ? ms : ms[0], m: s }]), info };
+  }
+  // the prop's node tree as buildProp makes it, its root at the origin (no mount); hidden nodes stay empty
+  const objs = [], shown = [], joints = new Set(p.nodes.flatMap(n => n.skin?.bones || []));
+  for (const [i, n] of p.nodes.entries()) {
+    shown[i] = n.on !== false && (n.parent < 0 || shown[n.parent]);
+    let o;
+    if (n.mesh && shown[i]) { const ms = await matsOf(n.mats, stacked(n.mesh.pos, n.mesh.idx)); o = new THREE.Mesh(fileGeometry(n.mesh), ms.length > 1 ? ms : ms[0]); }
+    else o = joints.has(i) ? new THREE.Bone() : new THREE.Object3D();
+    o.name = n.name;
+    if (i) { o.position.fromArray(n.p); o.quaternion.fromArray(n.q); o.scale.fromArray(n.s); objs[n.parent].add(o); }
+    objs.push(o);
+  }
+  const root = objs[0], scene = new THREE.Scene();
+  scene.add(root); root.updateMatrixWorld(true);
+  // a live skin (finishProp): its bones moved into the bind pose, B x ibm^-1 (B = its renderer node in the prop, at
+  // rest); the prefab's rest is often an animation frame instead (66 BB props)
+  const skins = p.nodes.flatMap((n, i) => (n.skin && shown[i] ? [{ n, B: objs[i].matrixWorld.clone() }] : []));
+  const posed = new Set(), depth = o => (o.parent ? 1 + depth(o.parent) : 0);
+  for (const s of skins) s.J = s.n.skin.bones.map((b, k) => s.B.clone().multiply(new THREE.Matrix4().fromArray(s.n.skin.ibm, k * 16).invert()));
+  for (const { o, J } of skins.flatMap(s => s.n.skin.bones.map((b, k) => ({ o: objs[b], J: s.J[k] }))).sort((a, b) => depth(a.o) - depth(b.o))) {
+    if (posed.has(o)) continue;
+    posed.add(o); o.parent.updateMatrixWorld(true);
+    o.parent.matrixWorld.clone().invert().multiply(J).decompose(o.position, o.quaternion, o.scale); o.updateMatrixWorld(true);
+  }
+  for (const { n, B, J } of skins) {
+    const ms = await matsOf(n.mats, stacked(n.skin.pos, n.skin.idx));
+    const sm = new THREE.SkinnedMesh(fileGeometry(n.skin, B), ms.length > 1 ? ms : ms[0]);
+    sm.name = n.name + "_skin"; sm.bind(new THREE.Skeleton(n.skin.bones.map(b => objs[b]), J.map(j => j.clone().invert())), new THREE.Matrix4());
+    scene.add(sm);
+  }
+  return { scene, bones: posed.size, info };
+}
+const hasModel = (kind, item) => (kind === "outfits" ? !!C.outfits.find(o => o.name === item)?.meshes?.length
+  : !!(C.propLists[kind] || []).find(x => x.name === item && (x.heroSkin || x.nodes.some(n => n.mesh || n.skin))));
+const fileSize = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB");
+const modelBusy = new Set();
+async function modelDownload(slot, item) {
+  const kind = kindOf(slot), K = C, key = skinKey(kind, item);
+  if (modelBusy.has(key)) return;
+  modelBusy.add(key);
+  toast(`กำลังสร้างโมเดล 3D ของ ${humanize(item)}…`, 15000);
+  let scene = null;
+  try {
+    const pngs = new Map(), [Exporter, f] = await Promise.all([exporterOf(), kind === "outfits" ? outfitFile(K, item, pngs) : propFile(K, kind, item, pngs)]);
+    scene = f.scene; scene.name = item;
+    scene.userData = { source: "12 Tails Wardrobe", class: K.cls, kind, item, ...f.info };   // the file's scene extras
+    const exporter = new Exporter().register(w => exactPNG(w, pngs));
+    const blob = new Blob([await exporter.parseAsync(scene, { binary: true, trs: true })],{ type: "model/gltf-binary" });
+    saveBlob(blob, `12tails_${CLASS_TH[K.cls] || K.cls}_${humanize(item)}.glb`);
+    toast(`ดาวน์โหลดโมเดล 3D ของ ${humanize(item)} แล้ว\nไฟล์ GLB ${fileSize(blob.size)}` + (f.bones ? ` พร้อมโครงกระดูก ${f.bones} ชิ้น` : ""), 3000);
+  } catch (e) {
+    console.error(e);
+    toast(e.exporter ? "โหลดตัวสร้างไฟล์ 3D ไม่สำเร็จ\nตรวจการเชื่อมต่อแล้วลองกดอีกครั้ง" : "ดาวน์โหลดโมเดล 3D ไม่สำเร็จ ลองกดอีกครั้ง", 3000);
+  } finally {
+    modelBusy.delete(key);
+    scene?.traverse(o => { o.geometry?.dispose(); for (const m of [].concat(o.material || [])) { m.map?.dispose(); m.dispose(); } });
+  }
+}
+const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม", glb: "ดาวน์โหลดโมเดล 3D" };
 const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
-  reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6" }).map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
+  reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", glb: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6" })
+  .map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
 // a tile's badge + tools; choose = "dl" | "up" on an item with two textures: one button per texture
 function skinParts(slot, item, choose) {
   const kind = kindOf(slot), texs = texsOf(kind, item), mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
@@ -1119,7 +1294,9 @@ function skinParts(slot, item, choose) {
   const o = kind === "outfits" && texs.length && C.outfits.find(x => x.name === item);
   const one = a => `<button type="button" class="sk${a === "reset" ? " reset" : ""}" data-sk="${a}" aria-label="${SK_LABEL[a]} ${humanize(item)}" title="${
     !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length || a === "reset" ? "" : " disabled"}>${SK_ICON[a]}</button>`;
-  return badge + `<span class="pk-skin">${one("dl")}${one("up")}${mine ? one("reset") : ""}</span>`;
+  const model = hasModel(kind, item), glb = `<button type="button" class="sk" data-sk="glb" aria-label="${SK_LABEL.glb} ${humanize(item)}" title="${
+    model ? SK_LABEL.glb : "ชิ้นนี้ไม่มีโมเดล 3D"}"${model ? "" : " disabled"}>${SK_ICON.glb}</button>`;   // task 15: the piece as a .glb
+  return badge + `<span class="pk-skin">${one("dl")}${one("up")}${glb}${mine ? one("reset") : ""}</span>`;
 }
 const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinParts(slot, name)}</span></div>`;
 function syncTiles() {                   // after an upload / reset: the open picker's pressed tile, badges and tools
@@ -1139,6 +1316,7 @@ $("pkBody").addEventListener("click", e => {
   const { slot, item } = c.dataset, act = b.dataset.sk, texs = texsOf(kindOf(slot), item);
   const redraw = choose => { c.querySelector(".sk-ui").innerHTML = skinParts(slot, item, choose); };
   if (act === "back") return redraw();
+  if (act === "glb") return modelDownload(slot, item);              // every texture of the piece goes in its file
   if ((act === "dl" || act === "up") && b.dataset.tex == null && texs.length > 1) return redraw(act);   // which texture?
   const tex = b.dataset.tex ?? texs[0];
   if (b.dataset.tex != null) redraw();
