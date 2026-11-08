@@ -1802,7 +1802,7 @@ const Showcase = {
     target.set(0, best.y, 0);
     const d = best.d, pos = target.clone().addScaledVector(dir, d), lift = phone ? 0 : vh / 2 - cy;
     this.look.copy(target); this.fitD = d;                                      // scClamp keeps WASD near these
-    const lim = { minDistance: d * 0.4, maxDistance: d * 2.5, minPolarAngle: Math.PI * 0.05, maxPolarAngle: Math.PI * 0.62 };
+    const lim = { minDistance: d * 0.4, maxDistance: d * 2.5, minPolarAngle: 0, maxPolarAngle: Math.PI };   // free orbit, top to bottom (user 2026-11-08)
     this.fitKey = `${vw}x${vh}/${stageInset}`;
     stopTween(this.liftTw);
     if (animate) {                          // a refit in view (a picker opened, the window resized): no jump
@@ -2314,10 +2314,12 @@ function heroFitPose() {
     for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; }
     d = hi;
   }
-  // limits (F5): no flying into the head or out of sight, no orbit under the floor (limitCamera), the look-at point
-  // stays near the hero (clampTarget: right-drag pan and WASD alike)
+  // limits (F5): no flying into the head or out of sight, the look-at point stays near the hero (clampTarget: right-drag
+  // pan and WASD alike). The orbit itself is free, straight down to straight up and from under the floor too (user
+  // 2026-11-08: "lift the limit on left drag rotation, user should be able to freely do with all objects"); the shadow
+  // discs are front-sided, so from below they vanish instead of covering the feet.
   return { pos: target.clone().addScaledVector(FIT_DIR, d), target, h, h0,
-    lim: { minDistance: h * .55, maxDistance: h * 6, minPolarAngle: Math.PI * .08, maxPolarAngle: Math.PI * .56 },
+    lim: { minDistance: h * .55, maxDistance: h * 6, minPolarAngle: 0, maxPolarAngle: Math.PI },
     fitBox: new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5))) };
 }
 let fitAt = null;                         // the pose the last fit put the camera in (autoFit follows only from there)
@@ -2350,11 +2352,6 @@ function applyViewOffset() {
   // ชมชิ้นส่วน on a desktop: the floating piece centred in the stage above its card (task 16)
   const dy = isPhone() ? 22 : -Showcase.lift;
   if (insetNow > 0 || dy) camera.setViewOffset(vw, vh, -insetNow / 2, -dy, vw, vh); else camera.clearViewOffset();
-}
-function limitCamera() {                  // the camera may look up at the hero, but never from under the floor (y 0)
-  if (!fitBox) return;
-  const d = camera.position.distanceTo(controls.target);
-  controls.maxPolarAngle = Math.max(Math.PI * .08, Math.min(Math.PI * .56, Math.acos(THREE.MathUtils.clamp((fitH * .03 - controls.target.y) / d, -1, 1))));
 }
 function clampTarget() {
   if (!fitBox) return;
@@ -2464,7 +2461,7 @@ renderer.setAnimationLoop(() => {
   const S = Showcase;
   if (camStep(dt)) {}
   else if ((S.phase === "on" && S.fitted) || (S.phase === "out" && S.piece)) { controls.update(); scClamp(); }
-  else { limitCamera(); controls.update(); clampTarget(); }
+  else { controls.update(); clampTarget(); }
   renderer.render(scene, camera);
 });
 resize();
