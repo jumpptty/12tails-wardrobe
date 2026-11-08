@@ -4,7 +4,7 @@ in the Bible repo, Task 1).
   py -3 pipeline/wardrobe_publish.py [--src <repo>\wardrobe] [--data <src>\data] [--out <repo>\wardrobe_dist]
                                      [--bb-rip D:\12tails\RippedAssets\ExportedProject\Assets\Resources]
   py -3 pipeline/wardrobe_publish.py --check <dir>
-  -> <out>\index.html, its tab icons, <out>\fonts\, <out>\data-<hash>\, <out>\_headers, and <out>_report.json beside it
+  -> <out>\index.html, its tab icons, <out>\ui-<hash>\, <out>\data-<hash>\, <out>\_headers, and <out>_report.json beside it
      (every dropped item with the reason, the kept TTO faces, warnings, check problems; the previous run's report is
      kept as <out>_report.prev.json and the count changes against it are printed). Exit 1 when check() finds problems.
   --src gives the page and its icons, --data the data (default <src>\data): a git worktree publishes its own page
@@ -24,17 +24,21 @@ bundles, BB's own items included, so an item is published only when
 Every picture is taken again from the BB rip: outfit colour and edition textures (armors/materials), BB's faces 0-22
 (armors/overlay), item icons, class portraits, emote and skill icons (gamegui/icons), prop textures (Assets/Texture2D);
 a picture with no BB file is dropped with whatever needs it (a prop: the prop; an icon: the tile shows no picture).
+The page's own pictures, ui/recolor1-5.webp (the colour topic), are 2x upscales of BB's Recolor Drug icons cropped to
+the potions' square (UI_CROP in BB's 64 px); each is proven against that box of BB's field/rsc<n>.png.
 TTO's own faces: the first half per class by face number, rounded down (plan ruling R8). rig.json (BB's skeleton,
 built from the BB rip by extract.py) is copied as built; placements.json (TTO's own mount table, Config/*Placement)
 keeps only the entries of published items' codes.
 
 The page is rewritten by exact string replacement (a missing anchor = the page changed: PublishError): DATA points at
-data-<first 10 hex of SHA-256 over the published data>/, the fetches drop cache: "no-cache" (a changed file gets a new
-folder, so _headers can make the data immutable), the "copy for Claude" button and its handler give way to a link to
-the Bible, ../fonts/ and ../props/tex/ point inside the copy, and GoatCounter counts the page as /wardrobe/.
+data-<first 10 hex of SHA-256 over the published data>/ and UI_DIR at ui-<10 hex over the ui pictures>/, the fetches
+drop cache: "no-cache" (a changed file gets a new folder, so _headers makes both folders immutable for a year), the
+"copy for Claude" button and its handler go, the Bible mark in the panel's lockup becomes a link to the Bible (new tab),
+../props/tex/ points inside the copy, and GoatCounter counts the page as /wardrobe/. The page loads its fonts from
+Google Fonts (the Bible's own sheet), so no font files are published; a page that still points at ../fonts/ fails.
 check() then applies Cloudflare Pages' limits (20,000 files a deploy, 25 MiB a file) and compares every path the page
-builds from the JSON, its fonts and its tab icon with the stored names case-sensitively (a Windows test server hides
-a case slip, Cloudflare 404s). Outfits with no colours (colors: []) are dropped: the page cannot dress them.
+builds from the JSON, its ui pictures and its tab icon with the stored names case-sensitively (a Windows test server
+hides a case slip, Cloudflare 404s). Outfits with no colours (colors: []) are dropped: the page cannot dress them.
 """
 import argparse
 import hashlib
@@ -60,8 +64,13 @@ ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.
 PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
 UI_DIR = "ui"                                          # <src>/ui/recolor<n>.webp: the page's own pictures (the colour topic)
 UI_ICON = re.compile(r"recolor([1-5])\.webp")          # = BB's Recolor Drug n, gamegui/icons/items/field/rsc<n>.png
-UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at 64 px, over black
-OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES   # what a publish writes beside its data-<hash> folder
+UI_COUNT = 5                                           # the page shows colours 1-5: all five pictures are needed
+UI_CROP = (4, 7, 56, 59)                               # the potions' common square in BB's 64 px icons (task 14b)
+UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at BB's size, over black
+# what a publish writes beside its data-<hash> and ui-<hash> folders; "fonts" and "ui" are what earlier publishes wrote
+# (the self-hosted fonts, the unhashed ui folder): listed so a new publish removes them
+OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES
+HASHED_PREFIXES = ("data-", "ui-")
 ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket"}    # icons/<folder> = gamegui/icons/items/<folder>
 GOATCOUNTER = ('<script data-goatcounter="https://jumpptty.goatcounter.com/count"\n'
                '        data-goatcounter-settings=\'{"path": "/wardrobe/"}\'\n'
@@ -71,14 +80,14 @@ PROVENANCE = ("wardrobe_data.py and extract_tto_props.py extracted every outfit 
               "(tto flag false) only where each of its 3D files was verified equal to BB's client data in the BB rip: "
               "outfit meshes by vertex positions and triangle count, clips by every key, props by every mesh's vertex "
               "positions and triangle count and an animated prop's clip keys. Every picture was taken again from the BB "
-              "rip, except ui/recolor1-5.webp: 128 px upscales of BB's field/rsc1-5.png, proven by a downscale comparison "
-              "against the BB rip. rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
+              "rip, except ui-<hash>/recolor1-5.webp: 2x upscales of BB's field/rsc1-5.png cropped to the potions' square, "
+              "proven by a downscale comparison against the same box of the BB rip. rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
               "TTO's own mount table (Config/*Placement), kept for the published items' codes only. From TTO itself the "
               "copy holds only the first half of TTO's own faces per class.")
 
 
 class PublishError(Exception):
-    """The source cannot be published as it is: a page anchor is missing (the page changed), a font is missing."""
+    """The source cannot be published as it is: a page anchor is missing (the page changed), a ui picture is missing."""
 
 
 class BBDataError(Exception):
@@ -86,28 +95,34 @@ class BBDataError(Exception):
 
 
 # ---------------------------------------------------------------- the page
-def page_edits(data_dir):
+def page_edits(data_dir, ui_dir):
     """(what, old, new, count): the exact replacements; count 1 = exactly once, 0 = at least once."""
     return [
         ("data folder", 'const DATA = "data/";', f'const DATA = "{data_dir}/";', 1),
+        ("ui folder", 'const UI_DIR = "ui/";', f'const UI_DIR = "{ui_dir}/";', 1),
         ("no-cache comment",
          "// no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)\n"
          "// was otherwise served stale from the browser's cache\n",
          "// the published copy (wardrobe_publish.py) keeps its data in a folder named by a hash of the content: a rebuilt\n"
          "// file gets a new address, so the browser may keep every file it has\n", 1),
         ("no-cache fetch", 'fetch(p, { cache: "no-cache" })', "fetch(p)", 1),
-        ("copy button", '<button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>',
-         f'<a class="primary" id="bible" href="{BIBLE_URL}">12 Tails Bible</a>', 1),
-        ("fonts", 'url("../fonts/', 'url("fonts/', 0),
+        # the local copy's toolbar ends with a "copy for Claude" button behind a divider: both go
+        ("copy button", '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
+         "", 1),
+        # the Bible mark in the panel's lockup (task 14b ruling R66) becomes the link to the Bible, in a new tab (the
+        # page's uploaded skins live in its tab only)
+        ("Bible link", '<span class="brand-mark" id="bible">12 Tails Bible</span>',
+         f'<a class="brand-mark" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener">12 Tails Bible</a>', 1),
         ("prop textures", "texLoader.load(`../props/tex/${m.tex}`)", "texLoader.load(`${DATA}props/tex/${m.tex}`)", 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
     ]
 
 
-def rewrite_page(html, data_dir):
-    """The hosted page. Raises PublishError when an anchor is missing or the result still has a local-only part."""
+def rewrite_page(html, data_dir, ui_dir="ui-" + "0" * 10):
+    """The hosted page. Raises PublishError when an anchor is missing or the result still has a local-only part (a
+    ../ path: the self-hosted fonts or anything else outside the copy)."""
     nl = "\r\n" if "\r\n" in html else "\n"
-    for what, old, new, count in page_edits(data_dir):
+    for what, old, new, count in page_edits(data_dir, ui_dir):
         old, new = old.replace("\n", nl), new.replace("\n", nl)
         n = html.count(old)
         if n == 0 or (count == 1 and n != 1):
@@ -126,10 +141,6 @@ def rewrite_page(html, data_dir):
         if left in html:
             raise PublishError(f"index.html: {left!r} is still in the published page; update wardrobe_publish.py")
     return html
-
-
-def page_fonts(html):
-    return re.findall(r'url\("fonts/([^"/]+)"\)', html)
 
 
 def page_icons(html):
@@ -769,10 +780,11 @@ def tree_hash(folder):
     return h.hexdigest()[:10]
 
 
-def headers_text(data_dir):
-    # Cloudflare allows one splat a rule, so the rule names this publish's data folder
-    return (f"/{data_dir}/*\n  Cache-Control: public, max-age=31536000, immutable\n"
-            f"/\n  Cache-Control: no-cache\n")
+def headers_text(data_dir, ui_dir):
+    # Cloudflare allows one splat a rule, so each rule names this publish's folder; both folders are named by a hash of
+    # their content, so a changed file always comes under a new name and the old one may stay cached for a year
+    immutable = "  Cache-Control: public, max-age=31536000, immutable\n"
+    return f"/{data_dir}/*\n{immutable}/{ui_dir}/*\n{immutable}/\n  Cache-Control: no-cache\n"
 
 
 def remove(path):
@@ -789,12 +801,17 @@ def over_black(im):
 
 
 def verify_ui_icons(src, bb):
-    """The page's own pictures (src/ui/*.webp) are upscaled copies of BB's Recolor Drug icons (the colour topic): each
-    is shrunk to the BB icon's size and compared with gamegui/icons/items/field/rsc<n>.png over black; a mean absolute
-    difference above UI_MAX_DIFF in any channel, a file with no BB counterpart or a missing BB file stops the publish.
+    """The page's own pictures (src/ui/*.webp) are BB's Recolor Drug icons (the colour topic), upscaled and cropped to
+    the potions' square: each is shrunk to the size of UI_CROP and compared with that box of
+    gamegui/icons/items/field/rsc<n>.png over black; a mean absolute difference above UI_MAX_DIFF in any channel, a file
+    with no BB counterpart, a missing BB file or a missing picture (the page needs all five) stops the publish.
     Returns the file names."""
     folder = Path(src) / UI_DIR
     names = sorted(p.name for p in folder.iterdir()) if folder.is_dir() else []
+    want = [f"recolor{n}.webp" for n in range(1, UI_COUNT + 1)]
+    missing = [n for n in want if n not in names]
+    if missing:
+        raise PublishError(f"{UI_DIR}/: the page's colour pictures {missing} are missing")
     for name in names:
         m = UI_ICON.fullmatch(name)
         if not m:
@@ -804,30 +821,26 @@ def verify_ui_icons(src, bb):
         if bb_file is None:
             raise PublishError(f"{UI_DIR}/{name}: no BB file gamegui/icons/items/field/rsc{m.group(1)}.png to compare with")
         with Image.open(bb_file) as ref_im, Image.open(folder / name) as mine_im:
-            ref = over_black(ref_im)
+            ref = over_black(ref_im.convert("RGBA").crop(UI_CROP))
             mine = over_black(mine_im.resize(ref.size, Image.LANCZOS))
         diff = ImageStat.Stat(ImageChops.difference(ref, mine)).mean
         if max(diff) > UI_MAX_DIFF:
             raise PublishError(f"{UI_DIR}/{name} is not BB's Recolor Drug {m.group(1)}: its mean difference from "
-                               f"rsc{m.group(1)}.png over black is {max(diff):.1f} per channel (limit {UI_MAX_DIFF})")
+                               f"rsc{m.group(1)}.png (box {UI_CROP}) over black is {max(diff):.1f} per channel (limit {UI_MAX_DIFF})")
     return names
 
 
 def publish(src, out, bb_rip, data=None):
-    """Build the public copy of src (wardrobe/: index.html and its icons) with the data in data (default src/data) in
-    out. Returns {files, bytes, data_dir, dropped: {kind: [{name, reason}]}, tto_faces: {cls: [kept numbers]},
-    warnings}. The previous copy stays whole until the new data is staged; then its files are moved aside into
+    """Build the public copy of src (wardrobe/: index.html, its icons and ui pictures) with the data in data (default
+    src/data) in out. Returns {files, bytes, data_dir, ui_dir, ui_files, dropped: {kind: [{name, reason}]},
+    tto_faces: {cls: [kept numbers]}, warnings}. The previous copy stays whole until the new data is staged; then its files are moved aside into
     out/.previous, the new ones put in place and the old ones deleted. On any failure the new files go, the old ones
     come back and neither .data-staging nor .previous is left in out (wrangler would upload them)."""
     src, out = Path(src), Path(out)
     data = src / "data" if data is None else Path(data)
     with open(src / "index.html", encoding="utf-8", newline="") as fh:
         page = fh.read()
-    fonts = page_fonts(rewrite_page(page, "data-" + "0" * 10))          # a changed page fails before anything is written
-    font_dir = src.parent / "fonts"
-    missing = [f for f in fonts if not (font_dir / f).is_file()]
-    if missing:
-        raise PublishError(f"the page loads fonts {missing}, not in {font_dir}")
+    rewrite_page(page, "data-" + "0" * 10)                   # a changed page fails before anything is written
     missing = [f for f in PAGE_FILES if not (src / f).is_file()]
     if missing:
         raise PublishError(f"the page's icon files {missing} are not in {src}")
@@ -835,6 +848,7 @@ def publish(src, out, bb_rip, data=None):
         raise PublishError(f"no wardrobe data at {data} (no meta.json); --data names the data folder")
     bb = BBRip(bb_rip)
     ui_files = verify_ui_icons(src, bb)             # before anything is written
+    ui_dir = "ui-" + tree_hash(src / UI_DIR)        # its name changes with any of its pictures (a year-long cache)
     out.mkdir(parents=True, exist_ok=True)
     stage, previous = out / ".data-staging", out / ".previous"
     remove(stage)
@@ -846,29 +860,27 @@ def publish(src, out, bb_rip, data=None):
     except BaseException:
         remove(stage)
         raise
-    old = [p.name for p in out.iterdir() if p.name.startswith("data-") or p.name in OUTPUT_NAMES]
+    old = [p.name for p in out.iterdir() if p.name.startswith(HASHED_PREFIXES) or p.name in OUTPUT_NAMES]
     moved, written = [], []                         # every old file is moved aside before the first new one is written
 
     def put(name, write):
         written.append(name)                        # before the write: a half-written file goes too on a failure
         write(out / name)
 
-    def copy_fonts(folder):
+    def copy_ui(folder):
         folder.mkdir()
-        for f in fonts:
-            shutil.copy2(font_dir / f, folder / f)
+        for f in ui_files:
+            shutil.copy2(src / UI_DIR / f, folder / f)
     try:
         for name in old:
             (out / name).rename(previous / name)
             moved.append(name)
         put(data_dir, stage.rename)
-        put("index.html", lambda p: p.write_text(rewrite_page(page, data_dir), encoding="utf-8", newline=""))
-        put("fonts", copy_fonts)
-        if ui_files:
-            put(UI_DIR, lambda folder: (folder.mkdir(), [shutil.copy2(src / UI_DIR / f, folder / f) for f in ui_files]))
+        put("index.html", lambda p: p.write_text(rewrite_page(page, data_dir, ui_dir), encoding="utf-8", newline=""))
+        put(ui_dir, copy_ui)
         for f in PAGE_FILES:
             put(f, lambda p: shutil.copy2(src / p.name, p))
-        put("_headers", lambda p: p.write_text(headers_text(data_dir), encoding="utf-8", newline="\n"))
+        put("_headers", lambda p: p.write_text(headers_text(data_dir, ui_dir), encoding="utf-8", newline="\n"))
     except BaseException as e:
         try:
             for name in written:
@@ -884,7 +896,7 @@ def publish(src, out, bb_rip, data=None):
     remove(previous)
     files = [p for p in out.rglob("*") if p.is_file()]
     return {"files": len(files), "bytes": sum(p.stat().st_size for p in files), "data_dir": data_dir,
-            "ui_files": list(ui_files),
+            "ui_dir": ui_dir, "ui_files": list(ui_files),
             "dropped": dropped, "tto_faces": tto_faces, "warnings": warnings}
 
 
@@ -989,10 +1001,18 @@ def check(out):
     headers = (out / "_headers").read_text(encoding="utf-8") if (out / "_headers").is_file() else ""
     if f"/{data_dir}/*\n" not in headers:
         problems.append(f"_headers has no rule for /{data_dir}/* (the data would not be cached)")
+    ui = re.search(r'const UI_DIR = "([^"]*)/";', html)
+    ui_refs = []
+    if ui and not re.fullmatch(r"ui-[0-9a-f]{10}", ui.group(1)):
+        problems.append(f'index.html has no hashed ui folder (const UI_DIR = "{ui.group(1)}/";)')
+    elif ui:
+        ui_refs = [f"{ui.group(1)}/recolor{n}.webp" for n in range(1, UI_COUNT + 1)]
+        if f"/{ui.group(1)}/*\n" not in headers:
+            problems.append(f"_headers has no rule for /{ui.group(1)}/* (the ui pictures would not be cached)")
     icons = page_icons(html)
     if not icons:
         problems.append('index.html has no tab icon (<link rel="icon" href="...">)')
-    refs = [f"fonts/{f}" for f in page_fonts(html)] + icons + ([f"{UI_DIR}/recolor{n}.webp" for n in range(1, 6)] if "ui/recolor" in html else [])
+    refs = icons + ui_refs
     refs += [f"{data_dir}/{r}" for r in data_references(out / data_dir, problems)]
     walker = CaseSensitive(out)
     problems += [p for p in (walker.problem(r) for r in dict.fromkeys(refs)) if p]
@@ -1048,7 +1068,7 @@ def main(argv=None):
         os.replace(path, prev_path)
     path.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"{a.out}: {result['files']:,} files, {result['bytes'] / 1e6:.1f} MB, data folder {result['data_dir']}")
-    print("  ui files: " + (", ".join(result["ui_files"]) or "none"))
+    print(f"  ui folder {result['ui_dir']}: " + ", ".join(result["ui_files"]))
     for kind, items in sorted(result["dropped"].items()):
         print(f"  dropped {kind}: {len(items)}")
     print("  kept TTO faces: " + ", ".join(f"{cls} {v[0]}-{v[-1]}" if v else f"{cls} none" for cls, v in result["tto_faces"].items()))

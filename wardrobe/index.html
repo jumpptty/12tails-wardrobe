@@ -940,8 +940,10 @@ const setParts = s => [partImg("outfits", s.outfit, setEd(s)), partImg("weapons"
   partImg("accessories", s.Head), partImg("trinkets", s.Back)].join("");
 const setName = s => humanize(s.theme + (s.v || ""));
 const setNameHTML = s => nameHTML(s.theme + (s.v || ""));
-// the colour n = BB's Recolor Drug n (f_rsc<n>), upscaled: ui/recolor<n>.webp beside the page (the publish proves each is BB's)
-const colorIcon = c => `ui/recolor${c}.webp`;
+// the colour n = BB's Recolor Drug n (f_rsc<n>), upscaled and cropped to the potion: ui/recolor<n>.webp beside the page
+// (the publish proves each is BB's and moves them to a folder named by their hash, ui-<hash>/, so they can be cached)
+const UI_DIR = "ui/";
+const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 async function stripAll() {                // ถอดทั้งหมด: the standard outfit, nothing else (the Cat keeps its hood)
   if (C.state.outfit !== "standard" || C.state.edition) await setOutfit("standard", C.state.color, "");
   for (const k of ["R", "L", "Head", "Back"]) if ((C.state[k] || null) !== (k === "Head" ? BASE_HEAD[C.cls] || null : null)) await setProp(k, null);
@@ -1226,7 +1228,7 @@ function moveIcon(name) {
 // faces: the overlay webp cropped to where this class's faces draw (ui.json faceBox, in the overlay's 256 px)
 const faceView = () => { const b = UI.faceBox?.[C.cls];
   return b ? ` style="object-view-box: inset(${b[1]}px ${256 - b[2]}px ${256 - b[3]}px ${b[0]}px)"` : ""; };
-const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith("ui/") ? src : DATA + src}"${face ? faceView() : ""}>`
+const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith(UI_DIR) ? src : DATA + src}"${face ? faceView() : ""}>`
   : fb;
 // F4: an item with no icon = its initials in a well; a move with no icon = its Thai name; an empty slot = the slot's outline
 const noIcon = n => `<span class="noicon" aria-hidden="true">${initials(n)}</span>`;

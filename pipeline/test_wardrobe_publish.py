@@ -27,21 +27,25 @@ PAGE = """<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<title>12 Tails Wardrobe</title>
+<title>ห้องแต่งตัว · 12 Tails</title>
 <link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-@font-face { font-family: "Prompt"; font-weight: 600; src: url("../fonts/Prompt-SemiBold.ttf") format("truetype"); }
-@font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
 .bar button { border: 0; }
 </style>
 </head>
 <body>
+  <aside>
+    <header class="brand"><span class="brand-mark" id="bible">12 Tails Bible</span><h1>ห้องแต่งตัว</h1></header>
+  </aside>
     <div class="bar">
-      <button type="button" id="shot">บันทึกภาพ</button>
-      <button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>
+      <button type="button" class="tb primary" id="shot">บันทึกภาพ</button>
+      <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
 <script type="module">
 const DATA = "data/";
+const UI_DIR = "ui/";
+const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
@@ -84,6 +88,21 @@ def webp(path, rgba=TTO_RGBA):
 def dump(path, obj):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj), encoding="utf-8")
+
+
+def recolor(w, n, shade=0, name=None):
+    """BB's Recolor Drug n in the rip (64 px, a gradient with a transparent corner) and the page's copy of it in src/ui:
+    a 2x upscale cropped to the potions' square (wp.UI_CROP), brightened by `shade` (0 = a faithful copy)."""
+    bb = Image.new("RGBA", (64, 64))
+    bb.putdata([(40 + 3 * x, 20 + 2 * y, 90 + n * 20, 0 if x < 6 and y < 6 else 255) for y in range(64) for x in range(64)])
+    (w.icon_dir / "items" / "field").mkdir(parents=True, exist_ok=True)
+    bb.save(w.icon_dir / "items" / "field" / f"rsc{n}.png")
+    big = bb.resize((128, 128), Image.LANCZOS).crop(tuple(2 * v for v in wp.UI_CROP))
+    if shade:
+        big = Image.eval(big.convert("RGB"), lambda v: min(255, v + shade)).convert("RGBA")
+    dst = w.src / "ui" / (name or f"recolor{n}.webp")
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    big.save(dst, "WEBP", quality=90)
 
 
 def mesh_yaml(name, positions, tris):
@@ -309,10 +328,8 @@ class World:
         self.write_page(PAGE)
         for name, b in PAGE_FILES.items():
             (self.src / name).write_bytes(b)
-        for f in ("Prompt-SemiBold.ttf", "Prompt-Bold.ttf"):
-            p = self.tmp / "comic" / "fonts" / f
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_bytes(b"font " + f.encode())
+        for n in range(1, 6):                           # the colour topic's pictures (the page needs all five)
+            recolor(self, n)
         return self
 
     def write_page(self, page):
@@ -402,54 +419,54 @@ class PublishTest(unittest.TestCase):
         """The standard world twice: an LF page (like the real one) and a CRLF page, each in its own folder."""
         return [(label, make_world(self.tmp / label, nl=nl).finish()) for label, nl in NEWLINES]
 
-    def recolor(self, w, n, shade=0, name=None):
-        """BB's Recolor Drug n in the rip (64 px, a gradient with a transparent corner) and the page's 128 px copy of it
-        in src/ui, brightened by `shade` (0 = a faithful upscale)."""
-        bb = Image.new("RGBA", (64, 64))
-        bb.putdata([(40 + 3 * x, 20 + 2 * y, 90 + n * 20, 0 if x < 6 and y < 6 else 255) for y in range(64) for x in range(64)])
-        (w.icon_dir / "items" / "field").mkdir(parents=True, exist_ok=True)
-        bb.save(w.icon_dir / "items" / "field" / f"rsc{n}.png")
-        big = bb.resize((128, 128), Image.LANCZOS)
-        if shade:
-            big = Image.eval(big.convert("RGB"), lambda v: min(255, v + shade)).convert("RGBA")
-        dst = w.src / "ui" / (name or f"recolor{n}.webp")
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        big.save(dst, "WEBP", quality=90)
-
-    def test_ui_recolor_icons_carried_when_bb(self):
+    def test_ui_pictures_published_in_a_hashed_folder(self):
+        """The colour pictures go to ui-<hash>/ (the page's UI_DIR points there), proven against BB's icons."""
         w = self.world()
-        for n in range(1, 6):
-            self.recolor(w, n)
         result = w.publish()
+        self.assertRegex(result["ui_dir"], r"^ui-[0-9a-f]{10}$")
         self.assertEqual(result["ui_files"], [f"recolor{n}.webp" for n in range(1, 6)])
-        self.assertIn("ui/recolor1-5.webp", wp.PROVENANCE)
+        self.assertIn("ui-<hash>/recolor1-5.webp", wp.PROVENANCE)
         for n in range(1, 6):
-            self.assertEqual((w.out / "ui" / f"recolor{n}.webp").read_bytes(), (w.src / "ui" / f"recolor{n}.webp").read_bytes())
+            self.assertEqual((w.out / result["ui_dir"] / f"recolor{n}.webp").read_bytes(), (w.src / "ui" / f"recolor{n}.webp").read_bytes())
+        self.assertFalse((w.out / "ui").exists())
+        self.assertIn(f'const UI_DIR = "{result["ui_dir"]}/";', (w.out / "index.html").read_text(encoding="utf-8"))
         self.assertEqual(wp.check(w.out), [])
-        w.write_page(PAGE.replace("<body>", '<body><img src="ui/recolor1.webp">'))
-        shutil.rmtree(w.out)
-        w.publish()
-        (w.out / "ui" / "recolor1.webp").unlink()
-        self.assertIn("missing: ui/recolor1.webp", wp.check(w.out))
+        (w.out / result["ui_dir"] / "recolor1.webp").unlink()
+        self.assertIn(f"missing: {result['ui_dir']}/recolor1.webp", wp.check(w.out))
+
+    def test_ui_folder_name_follows_its_pictures(self):
+        """The same pictures give the same folder; a changed one a new folder, and the old folder goes."""
+        w = self.world()
+        first = w.publish()["ui_dir"]
+        self.assertEqual(w.publish()["ui_dir"], first)
+        recolor(w, 3, shade=2)                              # still within the proof's limit, but other bytes
+        second = w.publish()["ui_dir"]
+        self.assertNotEqual(second, first)
+        self.assertEqual([p.name for p in w.out.iterdir() if p.name.startswith("ui")], [second])
 
     def test_ui_recolor_icon_that_is_not_bb_fails_loudly(self):
         w = self.world()
-        self.recolor(w, 1)
-        self.recolor(w, 2, shade=40)                       # a different picture: far from rsc2.png
+        recolor(w, 2, shade=40)                            # a different picture: far from rsc2.png
         with self.assertRaises(wp.PublishError) as e:
             w.publish()
         self.assertIn("recolor2.webp is not BB's Recolor Drug 2", str(e.exception))
         self.assertFalse(w.out.exists())
-        self.recolor(w, 2)
-        self.recolor(w, 3, name="recolor7.webp")           # no BB counterpart
+        recolor(w, 2)
+        recolor(w, 3, name="recolor7.webp")                # no BB counterpart
         with self.assertRaises(wp.PublishError) as e:
             w.publish()
         self.assertIn("recolor7.webp", str(e.exception))
         (w.src / "ui" / "recolor7.webp").unlink()
+        (w.src / "ui" / "recolor4.webp").unlink()          # the page shows five colours: all five are needed
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("recolor4.webp", str(e.exception))
+        recolor(w, 4)
         (w.icon_dir / "items" / "field" / "rsc1.png").unlink()      # BB file missing
         with self.assertRaises(wp.PublishError) as e:
             w.publish()
         self.assertIn("rsc1.png", str(e.exception))
+        self.assertFalse(w.out.exists())
 
     def test_page_rewritten(self):
         for label, w in self.newline_worlds():
@@ -473,9 +490,18 @@ class PublishTest(unittest.TestCase):
                 settings = re.search(r"data-goatcounter-settings='(\{[^']*\})'", html)
                 self.assertIsNotNone(settings)
                 self.assertEqual(json.loads(settings.group(1))["path"], "/wardrobe/")
-                self.assertIn('href="https://jumpptty.github.io/12tails/12t_projects/bible/"', html)
+                # the Bible link (task 14b ruling R66): the mark in the panel's lockup, opening in a new tab; the toolbar
+                # keeps neither a link nor the copy button's divider
+                self.assertIn('<header class="brand"><a class="brand-mark" id="bible" href="https://jumpptty.github.io/12tails/12t_projects/bible/"'
+                              ' target="_blank" rel="noopener">12 Tails Bible</a><h1>', html)
+                self.assertEqual(html.count('id="bible"'), 1)
+                bar = html[html.index('<div class="bar">'):html.index("</div>", html.index('<div class="bar">'))]
+                self.assertNotIn("bible", bar)
+                self.assertNotIn("tb-sep", bar)
+                self.assertNotIn('id="copy"', html)
+                self.assertIn(f'const UI_DIR = "{result["ui_dir"]}/";', html)
+                self.assertIn("https://fonts.googleapis.com/css2?family=Prompt", html)   # the fonts come from Google Fonts
                 self.assertIn('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">', html)
-                self.assertNotIn(".bar a {", html)          # the Bible link is styled by the page itself (before the phone block)
                 self.assertEqual(wp.check(w.out), [])
 
     def test_copy_handler_cut_short_fails_loudly(self):
@@ -531,8 +557,8 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(tree(w.out), combined)                          # and the previous copy is left alone
 
     def test_failed_swap_keeps_previous_output(self):
-        """A failure while the new copy replaces the old one (moving the old page aside, the staging rename, a font
-        copy) puts the old one back and leaves no .data-staging / .previous folder for wrangler to upload."""
+        """A failure while the new copy replaces the old one (moving the old page aside, the staging rename, the tab
+        icon's copy) puts the old one back and leaves no .data-staging / .previous folder for wrangler to upload."""
         real_rename, real_copy2 = Path.rename, shutil.copy2
 
         def rename(self, target):
@@ -546,7 +572,7 @@ class PublishTest(unittest.TestCase):
             return real_rename(self, target)
 
         def copy2(src, dst, **kw):
-            if Path(dst).parent.name == "fonts":
+            if Path(dst).name == "wardrobe_icon.svg":
                 raise OSError("simulated: disk full")
             return real_copy2(src, dst, **kw)
         w = self.world()
@@ -555,13 +581,24 @@ class PublishTest(unittest.TestCase):
         (w.data / "cat" / "rig.json").write_text('{"tri": {}, "bones": [], "x": 1}', encoding="utf-8")   # a new hash
         for what, patch in (("moving the old page aside", mock.patch.object(Path, "rename", rename_old_page)),
                             ("staging rename", mock.patch.object(Path, "rename", rename)),
-                            ("font copy", mock.patch.object(wp.shutil, "copy2", copy2))):
+                            ("icon copy", mock.patch.object(wp.shutil, "copy2", copy2))):
             with self.subTest(failure=what):
                 with patch, self.assertRaises(OSError):
                     w.publish()
                 self.assertEqual(tree(w.out), before)
         self.assertNotEqual(w.publish()["data_dir"], old_dir)               # the next run goes through
         self.assertEqual(sorted(p.name for p in w.out.iterdir() if p.name.startswith((".", "data-"))), [data_dir(w).name])
+
+    def test_republish_removes_an_older_publish_s_fonts_and_ui_folders(self):
+        """An output written before task 14b has fonts/ (the self-hosted Prompt) and an unhashed ui/: both go."""
+        w = self.world()
+        for rel in ("fonts/Prompt-Bold.ttf", "ui/recolor1.webp"):
+            (w.out / rel).parent.mkdir(parents=True, exist_ok=True)
+            (w.out / rel).write_bytes(b"old")
+        result = w.publish()
+        self.assertFalse((w.out / "fonts").exists())
+        self.assertFalse((w.out / "ui").exists())
+        self.assertTrue((w.out / result["ui_dir"] / "recolor1.webp").is_file())
 
     def test_report_keeps_previous_and_prints_changes(self):
         w = self.world()
@@ -625,10 +662,15 @@ class PublishTest(unittest.TestCase):
                 rules[path] = []
             elif line.strip():
                 rules[path].append(line.strip())
-        # one splat per rule (Cloudflare: "You may only include a single splat in the URL"), so the rule names the
-        # current data folder; any data-* folder is immutable
+        # one splat per rule (Cloudflare: "You may only include a single splat in the URL"), so each rule names the
+        # current folder; the data and ui folders are named by their content's hash, so both are immutable for a year
         self.assertEqual(rules[f"/{result['data_dir']}/*"], ["Cache-Control: public, max-age=31536000, immutable"])
+        self.assertEqual(rules[f"/{result['ui_dir']}/*"], ["Cache-Control: public, max-age=31536000, immutable"])
         self.assertEqual(rules["/"], ["Cache-Control: no-cache"])
+        self.assertEqual(len(rules), 3)
+        headers = w.out / "_headers"
+        headers.write_text(headers.read_text(encoding="utf-8").replace(f"/{result['ui_dir']}/*", "/ui/*"), encoding="utf-8")
+        self.assertTrue(any("ui pictures would not be cached" in p for p in wp.check(w.out)), wp.check(w.out))
 
     def test_case_mismatch_is_reported(self):
         w = self.world()
@@ -804,24 +846,32 @@ class PublishTest(unittest.TestCase):
         result = w.publish()
         self.assertIn("cat/wing", dropped_names(result, "back_trinkets"))
 
-    def test_fonts_and_prop_textures_rewritten(self):
+    def test_prop_textures_rewritten_and_no_font_files(self):
+        """The page takes its fonts from Google Fonts (the Bible's sheet, task 14b ruling R65): no fonts/ is written."""
         for label, w in self.newline_worlds():
             with self.subTest(page=label):
                 w.publish()
                 html = (w.out / "index.html").read_text(encoding="utf-8")
-                self.assertNotIn("../fonts/", html)
-                self.assertNotIn("../props/tex/", html)
-                self.assertIn('url("fonts/Prompt-SemiBold.ttf")', html)
+                self.assertNotIn("../", html)
                 self.assertIn("texLoader.load(`${DATA}props/tex/${m.tex}`)", html)
-                for f in ("Prompt-SemiBold.ttf", "Prompt-Bold.ttf"):
-                    self.assertEqual((w.out / "fonts" / f).read_bytes(), (w.tmp / "comic" / "fonts" / f).read_bytes())
+                self.assertFalse((w.out / "fonts").exists())
                 knife = data_dir(w) / "props" / "tex" / "Cat_knife.png"
                 self.assertEqual(knife.read_bytes(), (w.assets / "Texture2D" / "Cat_knife.png").read_bytes())
 
+    def test_page_with_local_fonts_fails_loudly(self):
+        """A page that still loads the self-hosted fonts (../fonts/) would 404 online: the publish stops."""
+        w = self.world()
+        w.write_page(PAGE.replace("<style>\n", '<style>\n@font-face { font-family: "Prompt"; src: url("../fonts/Prompt-Bold.ttf"); }\n'))
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("'../'", str(e.exception))
+        self.assertFalse(w.out.exists())
+
     def test_missing_anchor_fails_loudly(self):
-        anchors = ['const DATA = "data/";', 'fetch(p, { cache: "no-cache" })',
-                   '<button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>',
-                   '$("copy").onclick = async () => {', 'url("../fonts/', "texLoader.load(`../props/tex/${m.tex}`)"]
+        anchors = ['const DATA = "data/";', 'const UI_DIR = "ui/";', 'fetch(p, { cache: "no-cache" })',
+                   '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
+                   '<span class="brand-mark" id="bible">12 Tails Bible</span>',
+                   '$("copy").onclick = async () => {', "texLoader.load(`../props/tex/${m.tex}`)"]
         for label, w in self.newline_worlds():
             for anchor in anchors:
                 with self.subTest(page=label, anchor=anchor):
