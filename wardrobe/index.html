@@ -539,9 +539,9 @@ async function loadClass(cls) {
   Showcase.exit(true);                    // back to the character (at once) before another class takes the stage
   status("กำลังโหลด" + (CLASS_TH[cls] || cls) + "…");
   // the prop lists a saved loadout wears come alongside the rig and clips (F13); the others only after the first picture,
-  // so a first visit (R70: the standard outfit, nothing else) never waits on them
-  const L0 = saved[cls] || {};
-  for (const s of ["R", "L", "Head", "Back"]) if (L0[s] || (s === "Head" && BASE_HEAD[cls])) fetchProps(cls, SLOTS[s]);
+  // so a first visit (R70: the standard outfit) never waits on a prop list
+  const fresh = !saved[cls], L0 = saved[cls] || {};
+  for (const s of ["R", "L", "Head", "Back"]) if (L0[s]) fetchProps(cls, SLOTS[s]);
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
   if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }     // the old class stays on stage until the new one has loaded
   const root = new THREE.Group();
@@ -569,10 +569,15 @@ async function loadClass(cls) {
   undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
   await setOutfit(C.state.outfit, C.state.color);
-  for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
+  if (!fresh) for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
   play("root");
   fitCamera();
   status("");
+  // a first visit to the Cat: its hood (part of its standard look) goes on as soon as its list arrives, unless a hat was
+  // picked meanwhile; the camera follows
+  const K = C;
+  if (fresh && BASE_HEAD[cls]) propList("accessories").then(() => C === K && K.state.Head === BASE_HEAD[cls] && !K.props.Head
+    ? setProp("Head", BASE_HEAD[cls]).then(autoFit) : null).catch(() => {});
   buildSets().then(renderTopics).catch(() => {});    // the set row (it asks for the remaining prop lists now)
 }
 function persist() { if (!C) return; saved[C.cls] = { ...C.state }; saved.cls = C.cls; save(); }
