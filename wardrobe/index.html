@@ -353,7 +353,9 @@ const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; i
 // the class's poses in their numeric order (pose, pose5, pose15 ...), numbered 1 to N (F10: no "โพสท่า " without a number,
 // no 15 before 5)
 const numSort = (a, b) => a.localeCompare(b, undefined, { numeric: true });
-const poseNo = n => (C ? Object.keys(C.clipsData).filter(k => /^pose/i.test(k)).sort(numSort).indexOf(n) + 1 : 0) || n.replace(/^pose/i, "");
+// the move list's order: BB's own first (a local copy's TTO moves after them), then by number
+const moveSort = (a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || numSort(a, b);
+const poseNo = n => (C ? Object.keys(C.clipsData).filter(k => /^pose/i.test(k)).sort(moveSort).indexOf(n) + 1 : 0) || n.replace(/^pose/i, "");
 const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
 // a class whose look includes a headpiece: the Cat's "default" hood (user 2026-11-05: "cat head: remove the none option
 // and use default as default"). Its Head slot is never empty: setProp turns "none" into it
@@ -402,6 +404,7 @@ function shadowDisc(stops, y) {
   return m;
 }
 const floor = shadowDisc([[0, .38], [.35, .16], [1, 0]], 0), floorWide = shadowDisc([[0, .06], [1, 0]], -0.001);
+floor.visible = floorWide.visible = false;      // until fitCamera places the camera (seen edge-on they draw a grey band)
 let vw = 1, vh = 1;                               // the stage's CSS size
 function resize() {
   vw = stage.clientWidth; vh = stage.clientHeight; renderer.setSize(vw, vh, false); camera.aspect = vw / vh; camera.updateProjectionMatrix();
@@ -1422,7 +1425,7 @@ async function openPicker(t, opts = {}) {
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number
     const names = Object.keys(C.clipsData).filter(k => C.clipsData[k].group === moveTab)
-      .sort((a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || numSort(a, b));
+      .sort(moveSort);
     body.innerHTML = names.map(n => item(`data-m="${n}"`, esc(label(n)), n === C.cur, moveIcon(n),
       { dot: C.clipsData[n].tto, fb: moveFb(n), over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" })).join("");
     pick(b => play(b.dataset.m));
@@ -1445,6 +1448,7 @@ async function openPicker(t, opts = {}) {
     if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus({ preventScroll: true });   // touch: focusing pops the keyboard over the sheet
   }
   if (redraw) { body.scrollTop = keepScroll; return; }
+  body.scrollTop = 0;                        // a list emptied and refilled in one task keeps the last picker's scroll
   const worn = body.querySelector(".pk-item[aria-pressed=true]");
   if (worn) { const r = worn.getBoundingClientRect(), v = body.getBoundingClientRect();
     if (r.top < v.top || r.bottom > v.bottom) body.scrollTop += r.top - v.top - (v.height - r.height) / 2; }   // the worn tile mid-list (F8)
@@ -1455,7 +1459,7 @@ $("pkClose").onclick = closePicker;
 {
   const pk = $("picker"), head = pk.querySelector(".pk-head");
   let y0 = null;
-  head.addEventListener("pointerdown", e => { if (isPhone() && !e.target.closest("button, input")) { y0 = e.clientY; pk.classList.add("dragging"); head.setPointerCapture(e.pointerId); } });
+  head.addEventListener("pointerdown", e => { if (isPhone() && !e.target.closest("button, input")) { y0 = e.clientY; pk.classList.add("dragging"); try { head.setPointerCapture(e.pointerId); } catch (x) {} } });
   head.addEventListener("pointermove", e => { if (y0 != null) pk.style.transform = `translateY(${Math.max(0, e.clientY - y0)}px)`; });
   const end = e => { if (y0 == null) return; const dy = e.clientY - y0; y0 = null; pk.classList.remove("dragging"); pk.style.transform = "";
     if (e.type === "pointerup" && dy > 60) closePicker(); };
@@ -1492,7 +1496,7 @@ function fitCamera() {
   fitBox = new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5)));
   fitH = h;
   controls.update();
-  floor.scale.setScalar(h0 * .26); floorWide.scale.setScalar(h0 * .5);
+  floor.scale.setScalar(h0 * .26); floorWide.scale.setScalar(h0 * .5); floor.visible = floorWide.visible = true;
 }
 let fitBox = null, fitH = 1, viewOff = -1;
 // the camera's view offset: x = half the desktop picker's width (F1), y = on a phone, half the toolbar's band (the hero
