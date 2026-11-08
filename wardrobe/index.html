@@ -1542,8 +1542,10 @@ document.addEventListener("paste", e => {
 // character too, like a floating item"): an inspect mode on the same stage. The character fades out and one piece
 // (makePiece, pose "idle") floats in the free part of the stage: a slow turntable (20 deg/s) and a gentle bob (3 % of its
 // size, 3 s) over a soft contact shadow that shrinks and fades a little as it rises. Fit by its bounding sphere (60 % of
-// the free stage's smaller side); a drag orbits and pauses the turntable (it resumes 3 s after the last drag), zoom and
-// orbit limits scale with the piece, no pan, no WASD. Ways in: the cube on an item tile; the toolbar toggle (a tile click
+// the free stage's smaller side); only a left-button (or one-finger) drag pauses the turntable (it resumes 3 s after the
+// drag ends); a click, the wheel, a pinch and WASD leave it spinning (user 2026-11-08: "the only thing stopping the
+// rotation is drag left click"). Zoom and orbit limits scale with the piece, no pan; WASD moves the view but the look-at
+// point stays within the piece's radius (scClamp). Ways in: the cube on an item tile; the toolbar toggle (a tile click
 // in the open picker then shows its piece instead of wearing it); a double-click on a piece of the character. Esc / ✕ /
 // the toggle off: back to the character exactly as it was (camera, limits, visibility). Viewing never adds an undo step
 const VIEW_SLOTS = new Set(["outfit", "R", "L", "Head", "Back"]);
@@ -1663,8 +1665,32 @@ const Showcase = {
   },
 };
 Showcase.group.add(Showcase.pivot, vShadow); Showcase.pivot.add(Showcase.holder);
-controls.addEventListener("start", () => { Showcase.dragging = true; });
-controls.addEventListener("end", () => { Showcase.dragging = false; Showcase.resumeAt = performance.now() + 3000; });
+// The turntable pauses only during a rotate drag: one pointer down, the left mouse button or a finger / pen, moved more
+// than 4 px. OrbitControls' "start" / "end" also fire for the wheel and pinch, so the canvas's own pointer events decide
+// (capture phase, before the controls). A drag that ends resumes after 3 s; a pinch resumes at once.
+const scPtr = new Map(), scCap = { capture: true };
+let scMoved = false;
+function scSync() {
+  const p = scPtr.size === 1 ? [...scPtr.values()][0] : null, rot = !!(p && p.rot && scMoved);
+  if (Showcase.dragging && !rot) Showcase.resumeAt = scPtr.size > 1 ? 0 : performance.now() + 3000;
+  Showcase.dragging = rot;
+}
+renderer.domElement.addEventListener("pointerdown", e => {
+  scPtr.set(e.pointerId, { rot: e.pointerType !== "mouse" || e.button === 0, x: e.clientX, y: e.clientY }); scMoved = false; scSync();
+}, scCap);
+renderer.domElement.addEventListener("pointermove", e => {
+  const p = scPtr.get(e.pointerId);
+  if (p && !scMoved && Math.hypot(e.clientX - p.x, e.clientY - p.y) > 4) { scMoved = true; scSync(); }
+}, scCap);
+for (const ev of ["pointerup", "pointercancel"]) renderer.domElement.addEventListener(ev, e => {
+  if (scPtr.delete(e.pointerId)) { if (!scPtr.size) scMoved = false; scSync(); }
+}, scCap);
+const scOff = new THREE.Vector3();
+function scClamp() {   // WASD in the viewer: the look-at point stays within the piece's radius of its centre (0, h0, 0)
+  scOff.copy(controls.target).sub(new THREE.Vector3(0, Showcase.h0, 0));
+  const len = scOff.length(), R = Showcase.r;
+  if (len > R) { scOff.multiplyScalar(R / len - 1); controls.target.add(scOff); camera.position.add(scOff); }
+}
 // the card (a Ledger slip at the stage's foot; on a phone the bottom area): name, slot, sets, colour, the tools
 const SC_ICON = {
   prev: `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -2079,7 +2105,7 @@ function wReset() { wHeld.clear(); wPend.set(0, 0, 0); }
 addEventListener("keydown", e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target, a = WASD[e.code];
-  if (!a || Showcase.on || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;   // no WASD in the viewer
+  if (!a || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;   // the viewer too (user 2026-11-08), held near the piece by scClamp
   e.preventDefault(); wHeld.add(a); wWake();
 });
 addEventListener("keyup", e => { const a = WASD[e.code]; if (a) wHeld.delete(a); });
@@ -2135,7 +2161,7 @@ renderer.setAnimationLoop(() => {
   insetNow += (stageInset - insetNow) * .2;
   if (Math.abs(stageInset - insetNow) < .5) insetNow = stageInset;
   if (insetNow !== viewOff) applyViewOffset();
-  if (Showcase.on) controls.update(); else { limitCamera(); controls.update(); clampTarget(); }   // the viewer has its own limits
+  if (Showcase.on) { controls.update(); scClamp(); } else { limitCamera(); controls.update(); clampTarget(); }   // the viewer has its own limits
   renderer.render(scene, camera);
 });
 resize();
