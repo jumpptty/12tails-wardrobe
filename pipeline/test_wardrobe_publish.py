@@ -1,7 +1,7 @@
 r"""Tests for wardrobe_publish.py. Each test builds a tiny wardrobe (page + data/) and a tiny BB rip (AssetRipper YAML
 meshes, clips and prefabs, PNG pictures) in a temp folder, publishes it and reads the result.
 
-  cd /d D:\12tails-video\comic-skit && py -3 -m unittest pipeline.test_wardrobe_publish -v
+  cd /d D:\12tails-video && py -3 -m unittest pipeline.test_wardrobe_publish -v
 """
 import contextlib
 import io
