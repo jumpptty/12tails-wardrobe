@@ -32,6 +32,7 @@
   --skin-bg: #f3e4d9;                        /* backing behind the face pictures (their art is made for it) */
   --stage-top: #ffffff; --stage-bottom: #ffffff;   /* the 3D stage is pure white (user 2026-11-07) */
   --on-stage: #3b2f20;                       /* text drawn over the white stage: 13.0:1 */
+  --on-stage-2: #6b5a42;                     /* quieter text over the white stage: 6.6:1 */
   --cg-gild:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.6'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23e8c35a' stroke-width='2'/%3E%3C/svg%3E");--cg-gild-hi:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.95'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23ffe08a' stroke-width='2'/%3E%3C/svg%3E");   /* the Bible's gilded frame (double gold line, L corners) */
   --bar-bg: rgba(31, 25, 20, .94);
   --mono: "JetBrains Mono", "Prompt", monospace;   /* numbers; Prompt behind it keeps any Thai in Prompt (Bible rule) */
@@ -68,16 +69,25 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
 .bar .l-short { display: none; }
-/* --inset = the width the desktop picker covers (F1): the status line stays in the free part of the stage, above the picker */
-.status { position: absolute; left: calc(var(--inset, 0px) + 14px); bottom: 12px; z-index: 7; color: var(--on-stage); font-size: 13px; transition: left .2s; }
+/* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
+   the toasts above it. --inset = the width the desktop picker covers (F1): all of it stays in the free part of the stage */
+.dock { position: absolute; left: calc(var(--inset, 0px) + 16px); right: 160px; bottom: 14px; z-index: 7; display: flex; flex-direction: column;
+  align-items: flex-start; gap: 10px; pointer-events: none; transition: left .2s; }
+.plate { display: flex; flex-direction: column; max-width: 100%; color: var(--on-stage); }
+.plate-cls { font-size: 18px; font-weight: 700; line-height: 1.3; }
+.plate-sub { font-size: 13.5px; font-weight: 500; line-height: 1.45; color: var(--on-stage-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plate-sub:empty, .status:empty { display: none; }
+.plate-n { margin-left: 8px; font-weight: 400; }
+.status { font-size: 12.5px; line-height: 1.45; color: var(--on-stage-2); margin-top: 2px; }
 .status.err { color: var(--seal); font-weight: 500; }
 /* a toast (V11): a Ledger slip, the gold edge on its left; one fact per line */
-.toast { position: absolute; left: calc(var(--inset, 0px) + (100% - var(--inset, 0px)) / 2); bottom: 18px; transform: translateX(-50%);
-  width: max-content; max-width: min(420px, calc(100% - var(--inset, 0px) - 28px)); white-space: pre-line; text-align: left;
-  background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--gold); color: var(--text); padding: 8px 14px 8px 12px;
-  border-radius: 6px; font-weight: 500; line-height: 1.45; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 7;
-  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
-.toast.show { opacity: 1; }
+.toast { max-width: min(420px, 100%); white-space: pre-line; text-align: left; background: var(--panel-2); border: 1px solid var(--line);
+  border-left: 3px solid var(--gold); color: var(--text); padding: 8px 14px 8px 12px; border-radius: 6px; font-weight: 500; line-height: 1.45;
+  opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
+.toast:empty { display: none; }
+.toast.show { opacity: 1; transform: none; }
+/* an edition tag after a name (ruling R61: legendTrinketR = "Legend Trinket" + R) */
+.ed { display: inline-block; margin-left: .35em; padding: 0 .35em; border: 1px solid currentColor; border-radius: 3px; font: 600 .78em/1.35 var(--mono); vertical-align: .08em; opacity: .85; }
 /* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
 .keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 5px; color: var(--on-stage); font-size: 12px; pointer-events: none;
   background: rgba(255, 255, 255, .9); border: 1px solid #e3d8c6; border-radius: 6px; padding: 4px 8px; }
@@ -126,10 +136,19 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic.set:focus-visible { outline-offset: 5px; }   /* clear of the gilded frame, not a second gold line on it (V10) */
 @media (hover: hover) { .topic.set:hover { border-image-source: var(--cg-gild-hi); border-color: transparent; } }
 .topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; background: var(--weave), var(--panel-2); box-shadow: none; }
-.topic.set .setparts { --d: min(calc(100cqh - 26px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 84px); flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--d); margin: auto 0; }
+/* the set row (V10): the worn set's name and piece count on top, its pieces below (40 px or so); no set = "เลือกเซ็ต" and
+   the first sets' outfits as a faint teaser; the whole row opens the picker */
+.topic.set { align-items: stretch; justify-content: center; gap: 6px; padding: 7px 12px 8px; }
+.set-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; line-height: 1.4; }
+.topic.set .set-head .tname { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.set-name { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 700; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.set-name.dim { color: var(--muted); font-weight: 500; }
+.set-meta { flex: none; color: var(--muted); font-size: 12.5px; }
+.topic.set .setparts { --d: min(calc(100cqh - 27px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 56px); display: flex; align-items: center;
+  justify-content: flex-start; gap: 6px; flex: 1 1 auto; min-height: 0; }
 .topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--well); border-radius: 6px; border: 1px solid var(--line); }
 .topic.set .setparts .noicon { width: var(--d); height: var(--d); font-size: calc(var(--d) * .3); }
-.topic.set .setparts .hint { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.topic.set .setparts.teaser > * { opacity: .4; }
 .topic[aria-expanded=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
 .topic .tname { flex: none; font-size: 14px; font-weight: 700; line-height: 1.45; text-align: center; }
 .topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
@@ -173,7 +192,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .noicon { display: grid; place-items: center; width: 70%; aspect-ratio: 1; border-radius: 6px; background: var(--panel-2);
   border: 1px solid var(--line); color: var(--muted); font-weight: 700; line-height: 1; letter-spacing: .02em; }
 .noicon.txt { width: auto; aspect-ratio: auto; padding: .35em .5em; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
-.ring .noicon { font-size: calc(var(--d) * .24); }
+.ring .noicon { width: 56%; font-size: calc(var(--d) * .2); }
 .ring .noicon.txt { font-size: max(11px, calc(var(--d) * .17)); background: none; border: 0; padding: 0; }
 .pk-item .pic .noicon { font-size: 20cqw; }
 .pk-item .pic .noicon.txt { font-size: 12cqw; }
@@ -186,6 +205,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
 .pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
+.pk-item .cnt { font-size: 11.5px; line-height: 1.5; color: var(--muted); padding: 0 6px; border: 1px solid var(--line); border-radius: 4px; }   /* its piece count */
 .pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--well); border-radius: 4px; }
 .pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; border-radius: 4px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
@@ -244,7 +264,6 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .topic.duo { flex-direction: column; width: min(40%, calc((100cqh - 9px) / 2 + 6px)); padding: 3px; gap: 3px; }
   /* a finger needs 36 px: each colour icon has a centred 36 px ::after, on 36 px bands (fitColors) */
   .csw::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
-  .topic.set .setparts .hint { font-size: 11px; }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
   .picker { position: fixed; inset: auto 0 0 0; width: 100%; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
@@ -258,7 +277,9 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .bar { top: 8px; right: 8px; }
   .bar .l-full { display: none; }
   .bar .l-short { display: inline; }
-  .status { left: 10px; bottom: 8px; font-size: 12px; }
+  .dock { left: 10px; right: 10px; bottom: 8px; gap: 6px; }
+  .plate-cls { font-size: 15px; }
+  .plate-sub { font-size: 12px; }
 }
 </style>
 <script type="importmap">
@@ -282,8 +303,10 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
-    <div class="status" id="status">กำลังโหลด…</div>
-    <div class="toast" id="toast" role="status"></div>
+    <div class="dock">
+      <div class="toast" id="toast" role="status"></div>
+      <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
+    </div>
     <div class="keyhint" id="keyhint" aria-hidden="true"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
@@ -302,7 +325,7 @@ const LABEL = { wave: "โบกมือ", bow: "ก้มคำนับ", che
   sleep: "นอน", talk: "คุย", beg: "คุกเข่าขอร้อง", clap: "ปรบมือ", wai: "ไหว้", cooking: "ทำอาหาร", mining: "ขุดเหมือง",
   planting: "ปลูกผัก", root: "ยืนพัก", battle: "ตั้งท่าสู้", run: "วิ่ง", ko: "ล้ม", falling: "ร่วง", getup: "ลุกขึ้น" };
 const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; if (l.startsWith("fishing")) return "ตกปลา";
-  if (l.startsWith("pose")) return "โพสท่า " + poseNo(n); return n; };
+  if (l.startsWith("pose")) return "โพสท่า " + poseNo(n); return humanize(n); };
 // the class's poses in their numeric order (pose, pose5, pose15 ...), numbered 1 to N (F10: no "โพสท่า " without a number,
 // no 15 before 5)
 const numSort = (a, b) => a.localeCompare(b, undefined, { numeric: true });
@@ -323,9 +346,11 @@ function nameParts(n) {
   if ((m = s.match(/^(.*[a-z0-9])([RV])$/))) { s = m[1]; ed = m[2]; }
   const words = s.replace(/[_-]+/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
     .replace(/([A-Za-z])(\d)/g, "$1 $2").trim().split(/\s+/).filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1));
-  return { text: words.join(" ") + (num ? ` แบบ ${num}` : ""), words, num, ed };
+  return { text: words.join(" ") + (num ? ` แบบ ${num}` : ""), base: words.join(" "), words, num, ed };
 }
 const humanize = n => { const p = nameParts(n); return p.text + (p.ed ? " " + p.ed : ""); };
+// the same as HTML: the number in the number face, the edition as a tag
+const nameHTML = n => { const p = nameParts(n); return esc(p.base) + (p.num ? ` แบบ <span class="num">${p.num}</span>` : "") + (p.ed ? ` <span class="ed">${p.ed}</span>` : ""); };
 const initials = n => { const w = nameParts(n).words; return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || "?").slice(0, 2)).toUpperCase(); };
 
 // ---------- three ----------
@@ -342,12 +367,17 @@ scene.add(new THREE.HemisphereLight(0xf1e8f6, 0x857c95, 1.6));
 const sun = new THREE.DirectionalLight(0xe2e5ff, 2.1);          // V07: the M101 sun colour, from the front left
 sun.position.set(-2.2, 3.2, 3.4);
 scene.add(sun);
-const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false,
-  map: (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d");
-    const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, "rgba(0,0,0,.5)"); r.addColorStop(1, "rgba(0,0,0,0)");
-    g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })() }));
-floor.rotation.x = -Math.PI / 2;
-scene.add(floor);
+// the floor (V8): a tight contact shadow under the feet and a faint wide one, not one big grey stain on the white
+function shadowDisc(stops, y) {
+  const c = Object.assign(document.createElement("canvas"), { width: 128, height: 128 }), g = c.getContext("2d");
+  const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  for (const [o, a] of stops) r.addColorStop(o, `rgba(0, 0, 0, ${a})`);
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  const m = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: new THREE.CanvasTexture(c) }));
+  m.rotation.x = -Math.PI / 2; m.position.y = y; scene.add(m);
+  return m;
+}
+const floor = shadowDisc([[0, .38], [.35, .16], [1, 0]], 0), floorWide = shadowDisc([[0, .06], [1, 0]], -0.001);
 let vw = 1, vh = 1;                               // the stage's CSS size
 function resize() {
   vw = stage.clientWidth; vh = stage.clientHeight; renderer.setSize(vw, vh, false); camera.aspect = vw / vh; camera.updateProjectionMatrix();
@@ -409,12 +439,17 @@ async function loadClass(cls) {
   Promise.all(["weapons", "accessories", "trinkets"].map(propList)).catch(() => {});   // all three lists at once (F13)
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
-  const L = saved[cls] || {};
+  const fresh = !saved[cls], L = saved[cls] || {};
   // a saved face the data no longer has (the online copy keeps half of TTO's faces) falls back to the class default
   C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1, edition: L.edition || "",
               face: C.faces.some(f => f.n === L.face) ? L.face : (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
   undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
+  if (fresh) {                // the first visit to this class (R67): it starts in its first set (full outfit sets sort first)
+    const s = (await buildSets().catch(() => []))[0];
+    if (s && C.cls === cls) Object.assign(C.state, { outfit: s.outfit || C.state.outfit, edition: s.v || "", R: s.R, L: s.L,
+      Head: s.Head || BASE_HEAD[cls] || null, Back: s.Back });
+  }
   await setOutfit(C.state.outfit, C.state.color);
   for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
   buildSets().then(renderTopics).catch(() => {});    // the set block's icon shows a worn set
@@ -880,6 +915,7 @@ const partImg = (kind, n, ed) => { if (!n) return ""; const ic = kind === "outfi
 const setParts = s => [partImg("outfits", s.outfit, setEd(s)), partImg("weapons", s.R || s.L), s.L && s.L !== s.R ? partImg("weapons", s.L) : "",
   partImg("accessories", s.Head), partImg("trinkets", s.Back)].join("");
 const setName = s => humanize(s.theme + (s.v || ""));
+const setNameHTML = s => nameHTML(s.theme + (s.v || ""));
 // the colour n = BB's Recolor Drug n (f_rsc<n>), upscaled: ui/recolor<n>.webp beside the page (the publish proves each is BB's)
 const colorIcon = c => `ui/recolor${c}.webp`;
 async function stripAll() {                // ถอดทั้งหมด: the standard outfit, nothing else (the Cat keeps its hood)
@@ -891,7 +927,7 @@ async function equipSet(s) {
   if (s.outfit && s.outfit !== C.state.outfit) await setOutfit(s.outfit, C.state.color, s.v);
   else if (s.outfit && (C.state.edition || "") !== setEd(s)) await setColorOrFace(null, null, setEd(s));   // R / V recolour
   for (const k of ["R", "L", "Head", "Back"]) if (s[k] && C.state[k] !== s[k]) await setProp(k, s[k]);
-  toast("ใส่เซ็ต " + s.label + " แล้ว");
+  toast("ใส่เซ็ต " + setName(s) + " แล้ว");
 }
 
 // ---------- undo / redo (the outfit, its colour, the face and the four slots; a set changes up to five at once) ----------
@@ -1025,7 +1061,7 @@ async function skinUpload({ slot, item, tex }, file) {
   });
   renderTopics(); syncTiles();
   const stretched = Math.abs(uw * h - uh * w) > 0.01 * uh * w;     // the aspect ratios differ by more than 1 %
-  toast([`ใส่ลายใหม่ให้ ${item} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
+  toast([`ใส่ลายใหม่ให้ ${humanize(item)} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
     .filter(Boolean).join("\n"), stretched || keptAlpha ? 4000 : 2000);
 }
 async function skinReset(slot, item) {
@@ -1036,7 +1072,7 @@ async function skinReset(slot, item) {
     else for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
   });
   renderTopics(); syncTiles();
-  toast(`คืนลายเดิมให้ ${item} แล้ว`);
+  toast(`คืนลายเดิมให้ ${humanize(item)} แล้ว`);
 }
 const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม" };
 const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
@@ -1046,10 +1082,10 @@ function skinParts(slot, item, choose) {
   const kind = kindOf(slot), texs = texsOf(kind, item), mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
   const badge = mine ? `<i class="sk-badge">ลายของคุณ</i>` : "";
   if (choose) return badge + `<span class="pk-skin">` + texs.map((t, i) => `<button type="button" class="sk pick" data-sk="${choose}" data-tex="${t}" `
-      + `title="${SK_LABEL[choose]} ลาย ${i + 1}" aria-label="${SK_LABEL[choose]} ${i + 1} ${item}">${SK_ICON[choose]}${i + 1}</button>`).join("")
+      + `title="${SK_LABEL[choose]} ลาย ${i + 1}" aria-label="${SK_LABEL[choose]} ${i + 1} ${humanize(item)}">${SK_ICON[choose]}${i + 1}</button>`).join("")
     + `<button type="button" class="sk" data-sk="back" title="ยกเลิก" aria-label="ยกเลิก">✕</button></span>`;
   const o = kind === "outfits" && texs.length && C.outfits.find(x => x.name === item);
-  const one = a => `<button type="button" class="sk${a === "reset" ? " reset" : ""}" data-sk="${a}" aria-label="${SK_LABEL[a]} ${item}" title="${
+  const one = a => `<button type="button" class="sk${a === "reset" ? " reset" : ""}" data-sk="${a}" aria-label="${SK_LABEL[a]} ${humanize(item)}" title="${
     !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length || a === "reset" ? "" : " disabled"}>${SK_ICON[a]}</button>`;
   return badge + `<span class="pk-skin">${one("dl")}${one("up")}${mine ? one("reset") : ""}</span>`;
 }
@@ -1143,11 +1179,11 @@ document.addEventListener("paste", e => {
   const t = pasteTarget();
   if (!t) { toast("ชี้เมาส์ที่ช่องไอเท็ม หรือที่ชิ้นบนตัวละคร แล้วกด Ctrl+V", 3000); return; }
   const texs = texsOf(kindOf(t.slot), t.item);
-  if (!texs.length) { toast(`${t.item} ไม่มีลาย`, 2500); return; }
+  if (!texs.length) { toast(`${humanize(t.item)} ไม่มีลาย`, 2500); return; }
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
   if (tex == null) {                     // two textures and none chosen: show the choice on its tile
     if (t.cell) t.cell.querySelector(".sk-ui").innerHTML = skinParts(t.slot, t.item, "up");
-    toast(`${t.item} มี ${texs.length} ลาย\nชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
+    toast(`${humanize(t.item)} มี ${texs.length} ลาย\nชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
   }
   skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
 });
@@ -1214,12 +1250,16 @@ function renderTopics() {
   const worn = C && (C.sets || []).find(setWorn), box = $("topics"), a = document.activeElement;
   // a click re-draws the rows: keep the keyboard focus on the same control
   const keep = a && box.contains(a) ? (a.dataset.c ? `[data-c="${a.dataset.c}"]` : a.dataset.t ? `[data-t="${a.dataset.t}"]` : null) : null;
-  // the set row: a neutral line until the sets are known (F13: no false "no set" flash while they load)
-  const setBody = !C?.sets ? `<span class="hint">${C ? "กำลังโหลดเซ็ต…" : ""}</span>`
-    : worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`;
+  // the set row (V10): the worn set's name, count and pieces; no set = an invitation with the first sets' outfits as a
+  // teaser; a neutral line until the sets are known (F13: no false "no set" flash while they load)
+  const sets = C?.sets, teaser = sets && !worn ? sets.filter(x => x.outfit).slice(0, 3) : [];
+  const parts = worn ? setParts(worn) : teaser.map(x => partImg("outfits", x.outfit, setEd(x))).join("");
+  const setHead = !sets ? `<span class="set-name dim">${C ? "กำลังโหลดเซ็ต…" : ""}</span>`
+    : worn ? `<span class="set-name">${setNameHTML(worn)}</span><span class="set-meta"><span class="num">${worn.pieces}</span> ชิ้น</span>`
+    : `<span class="set-name">เลือกเซ็ต</span><span class="set-meta"><span class="num">${sets.length}</span> เซ็ต</span>`;
   box.innerHTML = TOPICS.map(([t, name]) => t === "set"
-    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${setName(worn)}"` : ""}>
-    <span class="tname">${name}</span><span class="setparts"${worn ? ` style="--k: ${(setBody.match(/<img|class="noicon/g) || []).length}"` : ""}>${setBody}</span></button>`
+    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}" aria-label="${name}${worn ? " " + esc(setName(worn)) : ""}">
+    <span class="set-head"><span class="tname">${name}</span>${setHead}</span><span class="setparts${worn ? "" : " teaser"}" style="--k: ${Math.max(3, (parts.match(/<img|class="noicon/g) || []).length)}">${parts}</span></button>`
     : t === "color" || t === "face" ? ""
     : t === "class" ? `<div class="row1"><div class="topic r1 duo" role="group">${["class", "face"].map(k => { const nm = TOPICS.find(x => x[0] === k)[1];
         return `<button type="button" class="duo-b" data-t="${k}" aria-expanded="${openTopic === k}" aria-label="${nm}" title="${nm}">`
@@ -1238,6 +1278,13 @@ function renderTopics() {
     if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nกดคืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
   fitColors();
   if (keep) box.querySelector(keep)?.focus();
+  renderPlate();
+}
+// the nameplate (V6c): the class in Thai, then the set worn (name, edition, pieces) or the outfit's name
+function renderPlate() {
+  $("plateCls").textContent = CLASS_TH[C?.cls || saved.cls || "sheep"] || "";
+  const worn = C && (C.sets || []).find(setWorn);
+  $("plateSub").innerHTML = !C ? "" : worn ? `${setNameHTML(worn)}<span class="plate-n"><span class="num">${worn.pieces}</span> ชิ้น</span>` : nameHTML(C.state.outfit);
 }
 // the สี box's icons as big as the box allows (user 2026-11-07: "bigger icons there please"): one row of all the colours
 // or a 3 + 2 grid, whichever gives the bigger icon in this box; On a touch
@@ -1328,15 +1375,16 @@ async function openPicker(t, opts = {}) {
     body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับหลัง">`
       + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
       + (sets.length ? sets.map((s, i) => `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}">` +
-        `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span><span class="lbl">${s.label} · ${s.pieces} ชิ้น</span><span class="parts">${setParts(s)}</span></button>`).join("")
+        `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span><span class="lbl">${setNameHTML(s)}</span>` +
+        `<span class="cnt"><span class="num">${s.pieces}</span> ชิ้น</span><span class="parts">${setParts(s)}</span></button>`).join("")
         : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
     pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])));
   } else if (t === "class") {
-    body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, c.cls[0].toUpperCase() + c.cls.slice(1), c.cls === C.cls, UI.heroes?.[c.cls], { fb: noIcon(c.cls) })).join("");
+    body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, CLASS_TH[c.cls] || c.cls, c.cls === C.cls, UI.heroes?.[c.cls], { fb: noIcon(c.cls) })).join("");
     pick(b => loadClass(b.dataset.c), "โหลดอาชีพนี้ไม่สำเร็จ ลองกดอีกครั้ง");
   } else if (t === "outfit") {
-    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit,
-      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name) }))).join("");
+    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}"`, nameHTML(o.name), o.name === C.state.outfit,
+      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name) }))).join("");
     pick(b => setOutfit(b.dataset.o, C.state.color));
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า <span class="num">${f.n}</span>`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
@@ -1349,7 +1397,7 @@ async function openPicker(t, opts = {}) {
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number
     const names = Object.keys(C.clipsData).filter(k => C.clipsData[k].group === moveTab)
       .sort((a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || numSort(a, b));
-    body.innerHTML = names.map(n => item(`data-m="${n}"`, label(n), n === C.cur, moveIcon(n),
+    body.innerHTML = names.map(n => item(`data-m="${n}"`, esc(label(n)), n === C.cur, moveIcon(n),
       { dot: C.clipsData[n].tto, fb: moveFb(n), over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" })).join("");
     pick(b => play(b.dataset.m));
   } else {                                                      // R, L, Head, Back
@@ -1359,12 +1407,12 @@ async function openPicker(t, opts = {}) {
     const inp = tools.querySelector("input");
     const draw = () => {
       const q = inp.value.toLowerCase();
-      const items = list.filter(p => t !== "R" || p.mount !== "mount_Hand_L").filter(p => !q || p.name.toLowerCase().includes(q))
+      const items = list.filter(p => t !== "R" || p.mount !== "mount_Hand_L").filter(p => !q || (p.name + " " + humanize(p.name)).toLowerCase().includes(q))
                         .sort((a, b) => t === "L" ? (b.mount === "mount_Hand_L") - (a.mount === "mount_Hand_L") : 0);
       const base = t === "Head" && BASE_HEAD[C.cls];
       if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
       body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, { fb: glyph(t) })) + items.map(p => cell(t, p.name,
-        item(`data-p="${p.name}"`, p.name, p.name === C.state[t], iconOf(SLOT_KEY[t], p.name)?.icon, { dot: badge(p), fb: noIcon(p.name) }))).join("");
+        item(`data-p="${p.name}"`, nameHTML(p.name), p.name === C.state[t], iconOf(SLOT_KEY[t], p.name)?.icon, { dot: badge(p), fb: noIcon(p.name), title: humanize(p.name) }))).join("");
       pick(b => setProp(t, b.dataset.p || null));
     };
     inp.oninput = draw; draw();
@@ -1391,11 +1439,16 @@ $("redo").onclick = doRedo;
 const renderClassUI = renderTopics, renderOutfitUI = renderTopics, renderFacesUI = renderTopics, renderMovesUI = renderTopics;
 const renderPropUI = () => renderTopics();
 function fitCamera() {
-  const box = new THREE.Box3();
-  for (const m of C.meshes) { m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }
+  const body = new THREE.Box3();
+  for (const m of C.meshes) { m.geometry.computeBoundingBox(); body.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }
+  const h0 = Math.max(body.max.y - body.min.y, 0.5), box = body.clone();
+  // big weapons and wings count too (V8), up to 1.4 x the outfit's height
+  C.root.updateMatrixWorld(true);
+  for (const o of Object.values(C.props)) box.union(new THREE.Box3().setFromObject(o));
+  box.intersect(body.clone().expandByScalar(h0 * .2));
   const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5);
-  controls.target.set(c.x, c.y, c.z);
-  camera.position.set(c.x + h * 0.55, c.y + h * 0.12, c.z + h * 2.9);
+  controls.target.set(c.x, c.y - h * .01, c.z);
+  camera.position.set(c.x + h * .48, c.y + h * .1, c.z + h * 2.55);   // the fit box fills about 72 % of the stage's height
   // limits (F5): no flying into the head or out of sight, no orbit under the floor (limitCamera), the look-at point
   // stays near the hero (clampTarget: right-drag pan and WASD alike)
   controls.minDistance = h * .55; controls.maxDistance = h * 6;
@@ -1403,7 +1456,7 @@ function fitCamera() {
   fitBox = new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5)));
   fitH = h;
   controls.update();
-  floor.scale.setScalar(h * 0.42);
+  floor.scale.setScalar(h0 * .26); floorWide.scale.setScalar(h0 * .5);
 }
 let fitBox = null, fitH = 1, viewOff = -1;
 function limitCamera() {                  // the camera may look up at the hero, but never from under the floor (y 0)
@@ -1501,6 +1554,7 @@ renderer.setAnimationLoop(() => {
   limitCamera(); controls.update(); clampTarget(); renderer.render(scene, camera);
 });
 resize();
+renderTopics();                  // the panel's layout at once, empty rings (V6b): nothing pops in when the data arrives
 // the first data in parallel (F13)
 const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.json").catch(e => { err(e, "โหลดห้องแต่งตัวไม่สำเร็จ ลองรีเฟรชหน้านี้"); throw e; }),
   getJSON(DATA + "icons.json").catch(() => ({})), getJSON(DATA + "placements.json").catch(() => ({})),
