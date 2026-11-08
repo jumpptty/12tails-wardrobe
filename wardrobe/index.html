@@ -508,9 +508,12 @@ const texLoader = new THREE.TextureLoader();
 
 // ---------- class ----------
 async function loadClass(cls) {
-  Showcase.exit();                        // back to the character before another class takes the stage
+  Showcase.exit(true);                    // back to the character (at once) before another class takes the stage
   status("กำลังโหลด" + (CLASS_TH[cls] || cls) + "…");
-  for (const k of ["weapons", "accessories", "trinkets"]) fetchProps(cls, k);   // alongside the rig and clips (F13)
+  // the prop lists a saved loadout wears come alongside the rig and clips (F13); the others only after the first picture,
+  // so a first visit (R70: the standard outfit, nothing else) never waits on them
+  const L0 = saved[cls] || {};
+  for (const s of ["R", "L", "Head", "Back"]) if (L0[s] || (s === "Head" && BASE_HEAD[cls])) fetchProps(cls, SLOTS[s]);
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
   if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }     // the old class stays on stage until the new one has loaded
   const root = new THREE.Group();
@@ -528,23 +531,21 @@ async function loadClass(cls) {
   C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
-  const fresh = !saved[cls], L = saved[cls] || {};
-  // a saved face the data no longer has (the online copy keeps half of TTO's faces) falls back to the class default
-  C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : outfits[0].name, color: L.color || 1, edition: L.edition || "",
+  const L = saved[cls] || {};
+  // a class with no saved loadout starts in its standard outfit (R70, user 2026-11-08: "back to standard outfit"): colour 1,
+  // the class's default face, nothing else worn (the Cat keeps its hood); a saved loadout is used as it is. A saved face the
+  // data no longer has (the online copy keeps half of TTO's faces) falls back to the class default
+  const std = (outfits.find(o => o.name === "standard") || outfits[0]).name;
+  C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : std, color: L.color || 1, edition: L.edition || "",
               face: C.faces.some(f => f.n === L.face) ? L.face : (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
   undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
-  if (fresh) {                // the first visit to this class (R67): it starts in its first set (full outfit sets sort first)
-    const s = (await buildSets().catch(() => []))[0];
-    if (s && C.cls === cls) Object.assign(C.state, { outfit: s.outfit || C.state.outfit, edition: s.v || "", R: s.R, L: s.L,
-      Head: s.Head || BASE_HEAD[cls] || null, Back: s.Back });
-  }
   await setOutfit(C.state.outfit, C.state.color);
   for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
-  buildSets().then(renderTopics).catch(() => {});    // the set block's icon shows a worn set
   play("root");
   fitCamera();
   status("");
+  buildSets().then(renderTopics).catch(() => {});    // the set row (it asks for the remaining prop lists now)
 }
 function persist() { if (!C) return; saved[C.cls] = { ...C.state }; saved.cls = C.cls; save(); }
 
@@ -1059,7 +1060,7 @@ async function step(from, to, msg) {
   if (!C || !from.length) { toast(msg[1]); return; }
   to.push(snap());
   await applyState(JSON.parse(from.pop())).catch(err);
-  updateUndo(); toast(msg[0]);
+  updateUndo(); autoFit(); toast(msg[0]);
 }
 const doUndo = () => step(undoStack, redoStack, ["ย้อนกลับแล้ว", "ไม่มีอะไรให้ย้อน"]);
 const doRedo = () => step(redoStack, undoStack, ["ทำซ้ำแล้ว", "ไม่มีอะไรให้ทำซ้ำ"]);
@@ -1164,7 +1165,7 @@ async function skinUpload({ slot, item, tex }, file) {
     else if (kind === "outfits") await setColorOrFace(null, null);
     if (kind !== "outfits") for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
   });
-  renderTopics(); syncTiles(); refreshShowcase(kind, item);
+  renderTopics(); syncTiles(); refreshShowcase(kind, item); autoFit();      // an upload on a tile not worn put it on
   const stretched = Math.abs(uw * h - uh * w) > 0.01 * uh * w;     // the aspect ratios differ by more than 1 %
   toast([`ใส่ลายใหม่ให้ ${humanize(item)} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
     .filter(Boolean).join("\n"), stretched || keptAlpha ? 4000 : 2000);
@@ -1283,13 +1284,14 @@ async function makePiece(slot, item, { pose = "idle" } = {}) {
       for (const t of own) t.dispose();
     } };
 }
-// the box of what is drawn (hidden nodes and their meshes left out; skinned vertices where their bones put them)
-function visibleBox(root) {
+// the box of what is drawn (hidden nodes and their meshes left out; skinned vertices where their bones put them); nothing
+// drawn = a small box at the origin, or an empty box when fallback is off
+function visibleBox(root, fallback = true) {
   const box = new THREE.Box3(), v = new THREE.Vector3();
   root.updateMatrixWorld(true);
   root.traverseVisible(o => { if (!o.isMesh) return; const n = o.geometry.attributes.position.count;
     for (let i = 0; i < n; i++) box.expandByPoint(o.getVertexPosition(i, v).applyMatrix4(o.matrixWorld)); });
-  return box.isEmpty() ? box.setFromCenterAndSize(new THREE.Vector3(), new THREE.Vector3(.2, .2, .2)) : box;
+  return box.isEmpty() && fallback ? box.setFromCenterAndSize(new THREE.Vector3(), new THREE.Vector3(.2, .2, .2)) : box;
 }
 // wait for a piece's textures (alphaTest 0.5 discards everything an unloaded map covers)
 async function texturesReady(obj, ms = 5000) {
@@ -1571,7 +1573,7 @@ const Showcase = {
       this.saved = { pos: camera.position.clone(), target: controls.target.clone(), min: controls.minDistance, max: controls.maxDistance,
         minP: controls.minPolarAngle, maxP: controls.maxPolarAngle, pan: controls.enablePan, fitBox, fitH, floor: floor.visible,
         floorWide: floorWide.visible, root: K.root.visible, cls: K.cls };
-      this.on = true; this.t = 0; wReset();
+      this.on = true; this.t = 0; wReset(); camFinish();
       document.querySelector(".app").classList.add("viewing");
       floor.visible = floorWide.visible = false;
       scene.add(this.group);
@@ -1950,6 +1952,7 @@ async function openPicker(t, opts = {}) {
     b.removeAttribute("aria-busy"); body.removeAttribute("aria-busy");
     if (ok) clearErr();
     renderTopics(); syncPressed();
+    if (ok && t !== "class" && t !== "move") autoFit();       // a taller hat or wider wings: the camera follows (F1)
   });
   if (t === "set") {
     const sets = await buildSets();
@@ -2037,26 +2040,88 @@ $("redo").onclick = doRedo;
 // the outfit / face / prop / move code calls these after a change: they all just refresh the topic rows now
 const renderClassUI = renderTopics, renderOutfitUI = renderTopics, renderFacesUI = renderTopics, renderMovesUI = renderTopics;
 const renderPropUI = () => renderTopics();
-function fitCamera() {
+// the camera on the character (V8, F1): the box of what is drawn (the outfit in its current pose, and the worn pieces,
+// clamped to a box that lets headgear and back pieces rise .65 of the outfit's height above it, a weapon or wings .4 to the
+// side), filling 78 % of the stage's height or 85 % of its width at most, and pulled back until none of the box's corners
+// runs under the toolbar (64 px from the top) or past the stage's foot (12 px)
+const FIT_DIR = new THREE.Vector3(.48, .1, 2.55).normalize();
+function heroFitPose() {
+  C.mixer.update(0); C.root.updateMatrixWorld(true);            // the move playing now, at its current frame
   const body = new THREE.Box3();
-  for (const m of C.meshes) { m.geometry.computeBoundingBox(); body.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }
+  for (const m of C.meshes) body.union(visibleBox(m, false));
+  if (body.isEmpty()) body.setFromCenterAndSize(new THREE.Vector3(0, .5, 0), new THREE.Vector3(.5, 1, .5));
   const h0 = Math.max(body.max.y - body.min.y, 0.5), box = body.clone();
-  // big weapons and wings count too (V8), up to 1.4 x the outfit's height
-  C.root.updateMatrixWorld(true);
-  for (const o of Object.values(C.props)) box.union(new THREE.Box3().setFromObject(o));
-  box.intersect(body.clone().expandByScalar(h0 * .2));
-  const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5);
-  controls.target.set(c.x, c.y - h * .01, c.z);
-  camera.position.set(c.x + h * .48, c.y + h * .1, c.z + h * 2.55);   // the fit box fills about 72 % of the stage's height
+  for (const o of Object.values(C.props)) box.union(visibleBox(o, false));
+  box.intersect(new THREE.Box3(body.min.clone().add(new THREE.Vector3(-h0 * .4, -h0 * .05, -h0 * .4)), body.max.clone().add(new THREE.Vector3(h0 * .4, h0 * .65, h0 * .4))));
+  const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5), target = new THREE.Vector3(c.x, c.y - h * .01, c.z);
+  const t = Math.tan(camera.fov * Math.PI / 360);
+  let d = Math.max(h / (2 * t * .78), (box.max.x - box.min.x) / (2 * t * camera.aspect * .85));
+  // the corners on screen (a phone's view offset puts the character 22 px lower): pull back until they clear the toolbar and the foot
+  const cam = camera.clone(); cam.clearViewOffset(); cam.updateProjectionMatrix();
+  const bar = document.querySelector(".bar").getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
+  const top = Math.max(64, bar + 8), foot = vh - 12, dy = isPhone() ? 22 : 0, v = new THREE.Vector3();
+  const pts = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+  pts.push(new THREE.Vector3(c.x, 0, c.z + h0 * .26));          // the near edge of the contact shadow
+  const fits = dd => { cam.position.copy(target).addScaledVector(FIT_DIR, dd); cam.lookAt(target); cam.updateMatrixWorld();
+    return pts.every(p => { v.copy(p).project(cam); const y = (1 - v.y) / 2 * vh + dy, x = (v.x + 1) / 2 * vw; return y >= top && y <= foot && x >= 6 && x <= vw - 6; }); };
+  if (!fits(d)) {
+    let lo = d, hi = d * 1.25;
+    for (let i = 0; i < 12 && !fits(hi); i++) { lo = hi; hi *= 1.25; }
+    for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; }
+    d = hi;
+  }
   // limits (F5): no flying into the head or out of sight, no orbit under the floor (limitCamera), the look-at point
   // stays near the hero (clampTarget: right-drag pan and WASD alike)
-  controls.minDistance = h * .55; controls.maxDistance = h * 6;
-  controls.minPolarAngle = Math.PI * .08; controls.maxPolarAngle = Math.PI * .56;
-  fitBox = new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5)));
-  fitH = h;
-  controls.update();
-  floor.scale.setScalar(h0 * .26); floorWide.scale.setScalar(h0 * .5); floor.visible = floorWide.visible = true;
+  return { pos: target.clone().addScaledVector(FIT_DIR, d), target, h, h0,
+    lim: { minDistance: h * .55, maxDistance: h * 6, minPolarAngle: Math.PI * .08, maxPolarAngle: Math.PI * .56 },
+    fitBox: new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5))) };
 }
+let fitAt = null;                         // the pose the last fit put the camera in (autoFit follows only from there)
+function setFit(f) {
+  fitBox = f.fitBox; fitH = f.h; fitAt = { pos: f.pos.clone(), target: f.target.clone() };
+  floor.scale.setScalar(f.h0 * .26); floorWide.scale.setScalar(f.h0 * .5);
+}
+function fitCamera(animate = false) {
+  if (!C) return;
+  const f = heroFitPose();
+  setFit(f);
+  if (!Showcase.on) floor.visible = floorWide.visible = true;
+  if (animate) camTo(f.pos, f.target, .4, f.lim);
+  else { camTw = null; Object.assign(controls, f.lim); camera.position.copy(f.pos); controls.target.copy(f.target); controls.update(); }
+}
+const atFit = (pos = camera.position, target = controls.target) => !!fitAt
+  && pos.distanceTo(fitAt.pos) < fitH * 1e-3 + 1e-5 && target.distanceTo(fitAt.target) < fitH * 1e-3 + 1e-5;
+// after a change of what is worn: the camera follows the new bounds, unless the visitor has moved it (F1)
+function autoFit() {
+  if (!C || !fitAt) return;
+  if (Showcase.on) return;
+  if (!camTw && atFit()) fitCamera(true);
+}
+const easeInOut = k => (k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2);
+// the camera glides to a pose (F1's refit); the limits it ends with apply at the end.
+// A drag, the wheel or WASD ends the glide at once
+let camTw = null;
+function camTo(pos, target, dur, lim, done = null) {
+  camTw = null;
+  controls.enableDamping = false; controls.update(); controls.enableDamping = true;     // no orbit left over from a drag
+  camTw = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), t: 0, dur, lim, done };
+  Object.assign(controls, { minDistance: 0, maxDistance: Infinity, minPolarAngle: 0, maxPolarAngle: Math.PI });
+}
+function camFinish() {
+  const w = camTw; if (!w) return; camTw = null;
+  camera.position.copy(w.p1); controls.target.copy(w.t1); Object.assign(controls, w.lim); controls.update();
+  w.done?.();
+}
+function camStep(dt) {
+  const w = camTw; if (!w) return false;
+  w.t = Math.min(w.dur, w.t + dt); const k = easeInOut(w.t / w.dur);
+  camera.position.lerpVectors(w.p0, w.p1, k); controls.target.lerpVectors(w.t0, w.t1, k); controls.update();
+  if (w.t >= w.dur) camFinish();
+  return true;
+}
+renderer.domElement.addEventListener("pointerdown", () => camFinish(), { capture: true });
+renderer.domElement.addEventListener("wheel", () => camFinish(), { capture: true, passive: true });
 let fitBox = null, fitH = 1, viewOff = -1;
 // the camera's view offset: x = half the desktop picker's width (F1), y = on a phone, half the toolbar's band (the hero
 // stands in the part of the small stage the toolbar leaves free)
@@ -2076,7 +2141,7 @@ function clampTarget() {
   const t = controls.target, c = t.clone().clamp(fitBox.min, fitBox.max);
   if (!c.equals(t)) { const d = c.sub(t); t.add(d); camera.position.add(d); }
 }
-$("resetCam").onclick = () => C && (Showcase.on ? Showcase.fit(true) : fitCamera());
+$("resetCam").onclick = () => C && (Showcase.on ? Showcase.fit(true) : fitCamera(true));
 // WASD camera (task 12, like the Bible's reach preview): W / S move the look-at point up / down along world Y, A / D strafe on the ground plane;
 // the camera moves with it, so distance and angles stay. 0.3 view-widths per second, each frame closes 12 % of what is left (eased).
 // By e.code so a Thai layout works; Ctrl / Meta / Alt and text fields are ignored; held keys clear on blur; the loop stops when settled.
@@ -2106,7 +2171,7 @@ addEventListener("keydown", e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target, a = WASD[e.code];
   if (!a || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;   // the viewer too (user 2026-11-08), held near the piece by scClamp
-  e.preventDefault(); wHeld.add(a); wWake();
+  e.preventDefault(); camFinish(); wHeld.add(a); wWake();
 });
 addEventListener("keyup", e => { const a = WASD[e.code]; if (a) wHeld.delete(a); });
 addEventListener("blur", () => wHeld.clear());
@@ -2161,7 +2226,8 @@ renderer.setAnimationLoop(() => {
   insetNow += (stageInset - insetNow) * .2;
   if (Math.abs(stageInset - insetNow) < .5) insetNow = stageInset;
   if (insetNow !== viewOff) applyViewOffset();
-  if (Showcase.on) { controls.update(); scClamp(); } else { limitCamera(); controls.update(); clampTarget(); }   // the viewer has its own limits
+  if (camStep(dt)) {}                       // a camera glide drives the camera itself (F1)
+  else if (Showcase.on) { controls.update(); scClamp(); } else { limitCamera(); controls.update(); clampTarget(); }   // the viewer has its own limits
   renderer.render(scene, camera);
 });
 resize();
