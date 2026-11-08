@@ -435,7 +435,7 @@ const DATA = "data/";
 const KEY = "wardrobe_v1";
 const LABEL = { wave: "โบกมือ", bow: "ก้มคำนับ", cheer: "เชียร์", cry: "ร้องไห้", laugh: "หัวเราะ", dance: "เต้น", sit: "นั่ง",
   sleep: "นอน", talk: "คุย", beg: "คุกเข่าขอร้อง", clap: "ปรบมือ", wai: "ไหว้", cooking: "ทำอาหาร", mining: "ขุดเหมือง",
-  planting: "ปลูกผัก", root: "ยืนพัก", battle: "ตั้งท่าสู้", run: "วิ่ง", ko: "ล้ม", falling: "ร่วง", getup: "ลุกขึ้น" };
+  planting: "ปลูกผัก", root: "ยืนพัก", battle: "ตั้งท่าสู้", run: "วิ่ง", ko: "ล้ม", falling: "ร่วง", getup: "ลุกขึ้น", walk: "เดิน" };
 const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; if (l.startsWith("fishing")) return "ตกปลา";
   if (l.startsWith("pose")) return "โพสท่า " + poseNo(n); return humanize(n); };
 // the class's poses in their numeric order (pose, pose5, pose15 ...), numbered 1 to N (F10: no "โพสท่า " without a number,
@@ -555,8 +555,7 @@ async function loadClass(cls) {
   scene.add(root);
   root.updateMatrixWorld(true);
   const mixer = new THREE.AnimationMixer(root);
-  mixer.addEventListener("finished", onFinished);
-  C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
+  C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null, seq: null, chains: null };
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   const L = saved[cls] || {};
@@ -907,18 +906,108 @@ function buildClip(name) {
   }
   return (C.clips[name] = new THREE.AnimationClip(name, dur, tracks));
 }
+// ---------- moves (user 2026-11-09: every move loops until the next pick, ล้ม stays on the floor, a skill's clips play
+// as the one sequence the game plays them in). SEQ = the skills whose clips the BB code plays one after another (traced
+// in DecompiledSource, NOTES.md "Wardrobe moves"; the TTO-only ones by their names). A step "clip" plays once; "clip*" is
+// the part the game loops (a charge held, a cast bar, a channel), shown for about 1.5 s; "~" / "^" = the game's 0.2 / 0.1 s
+// crossfade into the step (else a cut, as the game's PlayAnimation(x, 0)); "@t" = the next step starts after t s (a combo
+// stage the next press cuts short). Look-alike names that are NOT sequences stay single: Book Bash 1-3 (a random pick),
+// Blade Song 1-3 (one per rank), the Bison's spins cAttack3-6 (one per Improved Swing rank), damageCast (a passive's
+// version of cast). After the last step the sequence starts again with a 0.2 s crossfade.
+const SEQ = {
+  bat: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Drain Life: cAttack1 cAttack2*", "Cast: cast1 cast2* cast3~",
+    "Nightmare: cast1 cast2* cast3~ channel*~", "Guardian of the Night: bigCast1 bigCast2* bigCast3~"],
+  bison: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*~ cAttack3*",
+    "Trample: trample1 trample2*"],
+  cat: ["Normal Attack: nAttack1 nAttack2^ nAttack3 nAttack4", "Charge Attack: cAttack1 cAttack2*",
+    "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2* grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*",
+    "Heart Ripper: heartRipper1 heartRipper2", "Finishing Blow: finishingBlow1 finishingBlow2", "Crescent Eclipse: crescentEclipse1 crescentEclipse2"],
+  chameleon: ["Charge Attack: cAttack1 cAttack2* cAttack3* cAttack4", "Cast: cast1 cast2* cast3~",
+    "Quick Fire: quickFire1 quickFire2* quickFire3", "Slayer: slayer1 slayer2*~ slayer3~", "All Slayer: allSlayer1 allSlayer2* allSlayer3",
+    "Thunder Dragon: thunderDragon1 thunderDragon2*", "Focus Fire: focusFire1 focusFire2", "Venom Phantom: venomPhantom1 venomPhantom2 venomPhantom3"],
+  mole: ["Normal Attack: nAttack1 nAttack2", "Assemble: assemble1 assemble2*", "Flame Turret: flameTurret1 flameTurret2*",
+    "Barrel Railgun: barrelRailgun1 barrelRailgun2* barrelRailgun3 barrelRailgun4"],
+  monkey: ["Normal Attack: nAttack1 nAttack2~", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*~ cast3~",
+    "Damage Cast: damageCast1 damageCast2*~ cast3~", "Sentinel Guard: sentinalGuard1 sentinalGuard2* sentinalGuard0"],
+  panda: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*",
+    "Raijin Ken: cAttack1 cAttack2* raijinKen1 raijinKen2", "Fuujin Ken: fujinKen1 fujinKen2* fujinKen3", "Qi Strike: qiStrike1 qiStrike2~",
+    "Tempest Dance: tempestDance* tempestDanceEnd"],
+  penguin: ["Normal Attack: nAttack1 nAttack2~ nAttack3~", "Charge Attack: cAttack1 cAttack2*~", "Cast: cast1 cast2* cast3",
+    "Cosmic Friday: cast1 cast2* cast3 cosmicFriday*"],
+  rabbit: ["Charge Attack: cAttack1 cAttack2* cAttack3", "Mix: mix1 mix2* mix3~", "Sticky Gum: mix1 mix2* mix4~", "Bounce: bounce1 bounce2",
+    "Mall: mall1* mall2*"],
+  sheep: ["Normal Attack: nAttack1@0.8 nAttack2^ nAttack3", "Charge Attack: cAttack1 cAttack0*~ cAttack2", "Cast: cast1 cast2* cast3~",
+    "Holy Light: holyLight1 holyLight2* holyLight3 holyLight4*", "Lullaby: holyLight1 holyLight2* lullaby*"],
+  whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2* cast3~",
+    "Bowling Whale: bowlingWhale1 bowlingWhale2*", "Grand Tide: grandTide1 grandTide2* grandTide0"],
+  wolf: ["Normal Attack: nAttack1@0.8 nAttack2^@0.96 nAttack3~ nAttack4~", "Charge Attack: cAttack1 cAttack2*~ cAttack3",
+    "Blade Fang: bladeFang1 bladeFang2 bladeFang3", "Counter: counter1 counter2", "Mirror Blade: mirrorCounter1 mirrorCounter2", "Cast: cast1 cast2* cast3"],
+};
+// single moves the game itself loops (wrapMode Loop in the BB code; the data's own loop flag adds the rest)
+const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chameleon: ["silentWalk"], mole: ["advanceRepair"],
+  monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
+const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
+const HOLD_SECS = 1.5;
+// the class's sequences whose clips are all in this copy (the online copy has no TTO clips), parsed once per class
+function chains() {
+  if (C.chains) return C.chains;
+  return (C.chains = (SEQ[C.cls] || []).map(line => {
+    const [name, body] = line.split(": ");
+    const steps = body.split(" ").map(tok => {
+      const m = tok.match(/^(\w+)(\*)?([~^])?(?:@([\d.]+))?$/);
+      return { clip: m[1], hold: !!m[2], fade: m[3] === "~" ? 0.2 : m[3] === "^" ? 0.1 : 0, t: m[4] ? +m[4] : null };
+    });
+    return { id: "@" + name.replace(/\s+/g, ""), name, steps, tto: steps.some(s => C.clipsData[s.clip]?.tto) };
+  }).filter(ch => ch.steps.every(s => C.clipsData[s.clip])));
+}
+const chainOf = id => typeof id === "string" && id.startsWith("@") ? chains().find(c => c.id === id) : null;
+const idleName = () => Object.keys(C.clipsData).find(k => k.toLowerCase() === "root") || Object.keys(C.clipsData)[0];
+// the tab a clip sits in: the Cat's and the Wolf's sneaking walk is a base move
+const moveGroup = n => /^walk$/i.test(n) ? "base" : C.clipsData[n].group;
+// how a single clip plays: loop (the game loops it), hold (ล้ม: once, then lies there), back (ลุกขึ้น: once, then idle),
+// again (anything else: once, then again with the game's 0.2 s crossfade, so a move that ends away from its first pose
+// never snaps back)
+function playMode(n) {
+  const l = n.toLowerCase();
+  if (l === "ko") return "hold";
+  if (l === "getup") return "back";
+  return LOOP_BASE.has(l) || C.clipsData[n].loop || LOOPS[C.cls]?.includes(n) ? "loop" : "again";
+}
+// a clip's twin: the same move started again crossfades from its own last frame, which needs a second action
+function twinClip(n) { return C.clips[n + "#twin"] || (C.clips[n + "#twin"] = buildClip(n).clone()); }
 function play(name) {
-  if (!C.clipsData[name]) name = Object.keys(C.clipsData).find(k => k.toLowerCase() === "root") || Object.keys(C.clipsData)[0];
-  const act = C.mixer.clipAction(buildClip(name));
-  const loop = C.clipsData[name].loop || C.clipsData[name].group === "emote" || name.toLowerCase() === "root";
-  act.reset(); act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); act.clampWhenFinished = !loop;
-  if (C.action && C.action !== act) { act.play(); C.action.crossFadeTo(act, 0.2, false); }      // the game's CrossFade 0.2 s
-  else act.play();
-  C.action = act; C.cur = name;
+  const ch = chainOf(name);
+  if (!ch && !C.clipsData[name]) name = idleName();
+  const mode = ch ? "again" : playMode(name);
+  C.seq = { steps: ch ? ch.steps : [{ clip: name, hold: false, fade: 0.2, t: null }], mode, i: 0, t: 0, dur: Infinity };
+  C.cur = name;
+  startStep(0, 0.2);
   renderMovesUI();
 }
-// a one-shot move ends: back to idle, and an open move picker presses the idle tile again (F9)
-function onFinished(e) { if (C && e.action === C.action && C.cur.toLowerCase() !== "root") { play("root"); if (openTopic === "move") syncPressed(); } }
+function startStep(i, fade) {
+  const S = C.seq, st = S.steps[i], clip = buildClip(st.clip);
+  let act = C.mixer.clipAction(clip);
+  if (act === C.action) act = C.mixer.clipAction(twinClip(st.clip));
+  const loop = st.hold || S.mode === "loop";
+  act.reset(); act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); act.clampWhenFinished = !loop;
+  act.play();
+  if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
+  C.action = act;
+  S.i = i; S.t = 0;
+  S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
+    : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
+}
+// advanced by the render loop: the next step, the sequence again, or (ลุกขึ้น) idle; an open move picker follows (F9)
+function seqTick(dt) {
+  const S = C?.seq;
+  if (!S || S.dur === Infinity || (S.t += dt) < S.dur) return;
+  if (S.mode === "back") { play(idleName()); if (openTopic === "move") syncPressed(); return; }
+  const n = S.i + 1 < S.steps.length ? S.i + 1 : 0;
+  startStep(n, n ? S.steps[n].fade : 0.2);
+}
+// a tile's name, icon and tooltip; a sequence's icon is the skill's own (by its name), else its first clip's that has one
+const moveName = n => chainOf(n)?.name || label(n);
+function moveText(n) { const ch = chainOf(n); return ch ? `${ch.name} (${ch.steps.map(s => s.clip + (s.hold ? " วน" : "")).join(" > ")})` : n; }
 
 // ---------- UI: topic rows (name + the current choice's icon in a ring) and a picker over the stage ----------
 const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
@@ -2011,6 +2100,8 @@ const EMO = { wave: "wave", bow: "bow", cheer: "cheer", cry: "cry", laugh: "laug
   talk: "chat", beg: "beg", clap: "clap", wai: "wai", cooking: "cook", mining: "mine", planting: "plant", battle: "battle" };
 function moveIcon(name) {
   if (!name) return null;
+  const ch = chainOf(name);
+  if (ch) { for (const k of [ch.name.replace(/\s+/g, ""), ...ch.steps.map(s => s.clip)]) { const s = moveIcon(k); if (s) return s; } return null; }
   const l = name.toLowerCase(), e = EMO[l] || (l.startsWith("pose") ? "pose" : null);
   if (e && UI.emotion?.includes(e)) return `icons/skills/emotion/${e}.webp`;
   const sk = UI.skills?.[C.cls] || [];
@@ -2024,7 +2115,7 @@ const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" sr
   : fb;
 // F4: an item with no icon = its initials in a well; a move with no icon = its Thai name; an empty slot = the slot's outline
 const noIcon = n => `<span class="noicon" aria-hidden="true">${initials(n)}</span>`;
-const moveFb = n => { const l = label(n); return /[฀-๿]/.test(l) ? `<span class="noicon txt" aria-hidden="true">${l}</span>` : noIcon(n); };
+const moveFb = n => { if (chainOf(n)) return noIcon(chainOf(n).name); const l = label(n); return /[฀-๿]/.test(l) ? `<span class="noicon txt" aria-hidden="true">${l}</span>` : noIcon(n); };
 const GLYPH = { Head: "M3.5 17.5h17M6.5 17.5V12a5.5 5.5 0 0 1 11 0v5.5",
   outfit: "M8.5 4 4 6.8l1.8 3.7 2.2-1V20h8V9.5l2.2 1 1.8-3.7L15.5 4c-.7 1.3-2 2-3.5 2s-2.8-.7-3.5-2z",
   R: "M14 4h6v6L9.5 20.5l-6-6zM3.5 20.5 6 18M6.5 12l5.5 5.5", Back: "M12 8c-2.2-2.6-5.6-3.8-8.5-3.3.2 5 2.7 8.6 7 9.8M12 8c2.2-2.6 5.6-3.8 8.5-3.3-.2 5-2.7 8.6-7 9.8M12 8v11",
@@ -2222,11 +2313,14 @@ async function openPicker(t, opts = {}) {
       `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("");
     tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move", { fresh: true }); });
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
-    // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number
-    const names = Object.keys(C.clipsData).filter(k => C.clipsData[k].group === moveTab)
-      .sort(moveSort);
-    body.innerHTML = names.map(n => item(`data-m="${n}"`, esc(label(n)), n === C.cur, moveIcon(n),
-      { dot: C.clipsData[n].tto, fb: moveFb(n), over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" })).join("");
+    // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
+    // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
+    const seqs = moveTab === "skill" ? chains() : [], used = new Set(seqs.flatMap(ch => ch.steps.map(s => s.clip)));
+    const names = Object.keys(C.clipsData).filter(k => moveGroup(k) === moveTab && !used.has(k)).sort(moveSort);
+    const tiles = [...seqs.map(ch => ({ id: ch.id, tto: ch.tto, title: esc(moveText(ch.id)) })), ...names.map(n => ({ id: n, tto: C.clipsData[n].tto }))]
+      .sort((a, b) => a.tto - b.tto);
+    body.innerHTML = tiles.map(({ id: n, tto, title }) => item(`data-m="${n}"`, esc(moveName(n)), n === C.cur, moveIcon(n),
+      { dot: tto, fb: moveFb(n), title, over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" })).join("");
     pick(b => play(b.dataset.m));
   } else {                                                      // R, L, Head, Back
     const list = await propList(SLOTS[t]);
@@ -2442,7 +2536,7 @@ addEventListener("beforeunload", e => { if (SKINS.size) { e.preventDefault(); e.
 $("copy").onclick = async () => {
   const s = C.state;
   const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
-    (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${C.cur}` : "");
+    (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${moveText(C.cur)}` : "");
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว\nวางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
 
@@ -2450,7 +2544,7 @@ $("copy").onclick = async () => {
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
-  if (C) { C.mixer.update(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
+  if (C) { C.mixer.update(dt); seqTick(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
   runTweens(dt);
   Showcase.update(dt);
   // the picker's view offset glides in and out (F1)
