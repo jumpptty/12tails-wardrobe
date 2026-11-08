@@ -285,7 +285,6 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .sk svg { width: 16px; height: 16px; flex: none; }
 .sk.pick { flex-basis: 40px; font-family: var(--mono); }
 .sk:disabled { opacity: .4; cursor: default; }
-.sk.reset { color: var(--gold); border-color: var(--gold); }
 /* on a mouse the tools stay quiet until the tile is hovered or focused (V9); a touch screen always shows them */
 @media (hover: hover) {
   .sk { border-color: transparent; background: none; opacity: .5; }
@@ -294,8 +293,11 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .sk:disabled { opacity: .25; }
   .pk-cell:hover .sk:disabled, .pk-cell:focus-within .sk:disabled { opacity: .4; }
 }
-.sk-badge { position: absolute; left: 7px; top: 7px; padding: 0 7px; border-radius: 4px; background: var(--gold); color: var(--gold-ink);
-  font-size: 10.5px; font-weight: 600; font-style: normal; line-height: 1.6; pointer-events: none; }
+/* a tile wearing the visitor's skin (F8): the badge "ลายของคุณ ✕" is the คืนลายเดิม button, so the foot keeps three tools */
+.sk-badge { position: absolute; left: 7px; top: 7px; z-index: 1; display: inline-flex; align-items: center; gap: 4px; padding: 0 7px; border: 0; border-radius: 4px;
+  background: var(--gold); color: var(--gold-ink); font-size: 10.5px; font-weight: 600; line-height: 1.6; }
+.sk-badge .x { font-size: 1.05em; line-height: 1; }
+@media (pointer: coarse) { .sk-badge::after { content: ""; position: absolute; inset: -8px -6px; } }   /* a finger-sized target around the small badge */
 .topic.color.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
    of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
@@ -352,6 +354,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   /* P3: four tiles a row (faces three), so a sheet shows two rows and more */
   .pk-body { padding: 10px 10px 20px; gap: 6px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pk-body.face-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* F8: the pickers whose tiles carry the three tools go three abreast, so a tool is 31 px wide or more and the art keeps room */
+  .pk-body:is([data-topic=outfit], [data-topic=R], [data-topic=L], [data-topic=Head], [data-topic=Back]) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .pk-item { padding: 6px 4px 5px; gap: 3px; }
   .pk-item .lbl { font-size: 11px; }
   .pk-item .pic img { width: 74%; max-height: 74%; }
@@ -1158,11 +1162,17 @@ async function texPNG(kind, item, tex) {
   const id = pixels(img);
   return pngOf(id.data, id.width, id.height);
 }
+// one naming scheme for every download (F12): 12tails_<class in Thai>_<item>, then _สี<colour> for an outfit in its own
+// colour / edition, _ลาย<n> for one texture of a piece that has two, _ลายของคุณ when the visitor's skin is on it
+function dlName(kind, item, ext, tex = null) {
+  const o = kind === "outfits" && C.outfits.find(x => x.name === item), texs = texsOf(kind, item);
+  const mine = (tex != null ? [tex] : texs).some(t => SKINS.has(skinKey(kind, item, t)));
+  return `12tails_${CLASS_TH[C.cls] || C.cls}_${humanize(item)}` + (o && o.colors.length && !mine ? `_สี${outfitTex(o).tag}` : "")
+    + (tex != null && texs.length > 1 ? `_ลาย${texs.indexOf(tex) + 1}` : "") + (mine ? "_ลายของคุณ" : "") + "." + ext;
+}
 async function skinDownload(slot, item, tex) {
-  const kind = kindOf(slot), s = SKINS.get(skinKey(kind, item, tex)), o = kind === "outfits" && C.outfits.find(x => x.name === item);
-  const name = `wardrobe_${C.cls}_${item}` + (o ? (s ? "" : "_" + outfitTex(o).tag) : texsOf(kind, item).length > 1 ? "_" + tex.replace(/\.\w+$/, "") : "")
-    + (s ? "_custom" : "") + ".png";
-  saveBlob(await texPNG(kind, item, tex), name);
+  const kind = kindOf(slot);
+  saveBlob(await texPNG(kind, item, tex), dlName(kind, item, "png", tex));
 }
 async function decodeImage(file) {       // in the browser: no URL fetched, nothing sent
   if (window.createImageBitmap) return createImageBitmap(file);
@@ -1242,6 +1252,15 @@ function poseIdle(K, R) {                 // the idle clip's first frame (the re
   }
   R.tri.updateMatrixWorld(true);
 }
+// the turn a prop has when worn: its mount bone's world turn in the hero's idle pose times its placement (TTO's entry,
+// keep-world-rotation = the prefab root's own turn, or BB's slot rule)
+function wornTurn(K, slot, p) {
+  const Rv = freshRig(K), { pl } = placementOf(slot, p);
+  poseIdle(K, Rv);
+  const bn = pl && !pl.bone ? null : pl && Rv.byName[pl.bone] ? pl.bone : mountBoneName(slot, Rv.byName);
+  const q = bn ? Rv.byName[bn].getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
+  return q.multiply(pl ? q4(pl.kwr ? p.nodes[0].q : pl.q) : MOUNT_ROT[slot].clone());
+}
 async function makePiece(slot, item, { pose = "idle" } = {}) {
   const K = C, kind = kindOf(slot), own = [], skinned = [];
   let object, view = null, R = null, outfitTex = null, tag = "", mixer = null, propMixer = null;
@@ -1278,19 +1297,13 @@ async function makePiece(slot, item, { pose = "idle" } = {}) {
       const sm = new THREE.SkinnedMesh(g, ms.length > 1 ? ms : ms[0]);
       R = freshRig(K); object = R.tri; sm.name = item; bindToRig(sm, R, s.bones, s.ibm); skinned.push(sm);
     } else {
-      object = buildProp(p);               // the prop's own space: no mount (its root at the origin)
-      object.position.set(0, 0, 0); object.quaternion.identity(); object.scale.set(1, 1, 1);
+      // the prop's root at the origin (no mount offset), turned the way it sits on the hero (the hero's idle pose and its
+      // placement): the viewer shows it so, and its 3D file keeps that turn on its root, so a hat opens upright (task 17b)
+      object = buildProp(p);
+      object.position.set(0, 0, 0); object.quaternion.copy(wornTurn(K, slot, p)); object.scale.set(1, 1, 1);
       finishProp(object);                  // binds its live skins; an animated prop loops its own clip (pose "idle" only)
       propMixer = object.userData.mixer || null; mixer = pose === "idle" ? propMixer : null;
       object.traverse(x => { if (x.isSkinnedMesh) skinned.push(x); });
-      if (pose === "idle") {               // the viewer turns it the way it sits on the hero (idle pose, its placement)
-        const Rv = freshRig(K), { pl } = placementOf(slot, p);
-        poseIdle(K, Rv);
-        const bn = pl && !pl.bone ? null : pl && Rv.byName[pl.bone] ? pl.bone : mountBoneName(slot, Rv.byName);
-        const q = bn ? Rv.byName[bn].getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
-        q.multiply(pl ? q4(pl.kwr ? p.nodes[0].q : pl.q) : MOUNT_ROT[slot].clone());
-        view = new THREE.Group(); view.add(object); view.quaternion.copy(q);
-      }
     }
     skinProp(object, kind, item);          // the visitor's skins (shared with a worn copy: never disposed here)
     object.traverse(x => { for (const m of [].concat(x.material || [])) if (m.userData.map0) own.push(m.userData.map0); });
@@ -1333,7 +1346,8 @@ const hasModel = (kind, item) => (kind === "outfits" ? !!C.outfits.find(o => o.n
 // - a skinned piece (an outfit, ToT's hero-skinned hats: the class's whole rig; a prop with its own skin: the prop's
 //   bones) its bones, named as in the rig, posed in the bind pose, with their inverse bind matrices. A skinned mesh sits
 //   at the file's root, in world space (glTF ignores a skinned mesh's own node);
-// - a static prop its node tree in the prop's own space (the mount on the hand / head / back is not part of it);
+// - a prop its node tree with the turn it has when worn on its root (wornTurn: a hat opens upright), at the origin (the
+//   mount's offset on the hand / head / back is not part of it);
 // - the texture ดาวน์โหลดลาย saves (texPNG: the colour / edition worn or the visitor's skin; an outfit with the face drawn
 //   on, as the page shows it), embedded as that PNG byte for byte, stored top row first with the UVs' V flipped
 //   (glTF's way); the material a plain standard one (metalness 0, roughness 1: the page's Lambert look, which is lit)
@@ -1426,7 +1440,7 @@ async function pieceFile(piece, pngs) {
 const fileSize = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB");
 const modelBusy = new Set();
 async function modelDownload(slot, item) {
-  const kind = kindOf(slot), K = C, key = skinKey(kind, item);
+  const kind = kindOf(slot), key = skinKey(kind, item), name = dlName(kind, item, "glb");   // the same scheme as the PNGs (F12)
   if (modelBusy.has(key)) return;
   modelBusy.add(key);
   toast(`กำลังสร้างโมเดล 3D ของ ${humanize(item)}…`, 15000);
@@ -1436,7 +1450,7 @@ async function modelDownload(slot, item) {
     piece = p; file = await pieceFile(piece, pngs);
     const exporter = new Exporter().register(w => exactPNG(w, pngs));
     const blob = new Blob([await exporter.parseAsync(file.scene, { binary: true, trs: true })], { type: "model/gltf-binary" });
-    saveBlob(blob, `12tails_${CLASS_TH[K.cls] || K.cls}_${humanize(item)}.glb`);
+    saveBlob(blob, name);
     toast(`ดาวน์โหลดโมเดล 3D ของ ${humanize(item)} แล้ว\nไฟล์ GLB ${fileSize(blob.size)}` + (piece.bones ? ` พร้อมโครงกระดูก ${piece.bones} ชิ้น` : ""), 3000);
   } catch (e) {
     console.error(e);
@@ -1450,20 +1464,21 @@ const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโ
 const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
   reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", view: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6" })
   .map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
-// a tile's badge + tools; choose = "dl" | "up" on an item with two textures: one button per texture
+// a tile's badge + tools; choose = "dl" | "up" on an item with two textures: one button per texture. A tile wearing the
+// visitor's skin shows the badge "ลายของคุณ ✕", which is the คืนลายเดิม button (F8: the foot never holds four tools)
 function skinParts(slot, item, choose) {
   const kind = kindOf(slot), texs = texsOf(kind, item), mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
-  const badge = mine ? `<i class="sk-badge">ลายของคุณ</i>` : "";
+  const badge = mine ? `<button type="button" class="sk-badge" data-sk="reset" title="${SK_LABEL.reset}" aria-label="${SK_LABEL.reset} ${humanize(item)}">ลายของคุณ<span class="x" aria-hidden="true">✕</span></button>` : "";
   if (choose) return badge + `<span class="pk-skin">` + texs.map((t, i) => `<button type="button" class="sk pick" data-sk="${choose}" data-tex="${t}" `
       + `title="${SK_LABEL[choose]} ลาย ${i + 1}" aria-label="${SK_LABEL[choose]} ${i + 1} ${humanize(item)}">${SK_ICON[choose]}${i + 1}</button>`).join("")
     + `<button type="button" class="sk" data-sk="back" title="ยกเลิก" aria-label="ยกเลิก">✕</button></span>`;
   const o = kind === "outfits" && texs.length && C.outfits.find(x => x.name === item);
-  const one = a => `<button type="button" class="sk${a === "reset" ? " reset" : ""}" data-sk="${a}" aria-label="${SK_LABEL[a]} ${humanize(item)}" title="${
-    !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length || a === "reset" ? "" : " disabled"}>${SK_ICON[a]}</button>`;
+  const one = a => `<button type="button" class="sk" data-sk="${a}" aria-label="${SK_LABEL[a]} ${humanize(item)}" title="${
+    !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length ? "" : " disabled"}>${SK_ICON[a]}</button>`;
   // the cube (tasks 15 / 16): the piece floating on its own (ชมชิ้นส่วน), its 3D file in the viewer's card
   const model = hasModel(kind, item), view = `<button type="button" class="sk" data-sk="view" aria-label="${SK_LABEL.view} ${humanize(item)}" title="${
     model ? SK_LABEL.view : "ชิ้นนี้ไม่มีโมเดล 3D"}"${model ? "" : " disabled"}>${SK_ICON.view}</button>`;
-  return badge + `<span class="pk-skin">${one("dl")}${one("up")}${view}${mine ? one("reset") : ""}</span>`;
+  return badge + `<span class="pk-skin">${one("dl")}${one("up")}${view}</span>`;
 }
 const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinParts(slot, name)}</span></div>`;
 function syncTiles() {                   // after an upload / reset: the open picker's pressed tile, badges and tools
@@ -1478,7 +1493,7 @@ let skinTarget = null;
 skinFile.onchange = () => { const f = skinFile.files[0], t = skinTarget; skinTarget = null;
   if (f && t) skinUpload(t, f).catch(e => { console.error(e); toast("เปิดไฟล์ภาพนี้ไม่ได้\nใช้ไฟล์ PNG, JPG หรือ WebP", 2500); }); };
 $("pkBody").addEventListener("click", e => {
-  const b = e.target.closest(".sk"), c = b?.closest(".pk-cell");
+  const b = e.target.closest(".sk, .sk-badge"), c = b?.closest(".pk-cell");
   if (!c || b.disabled) return;
   const { slot, item } = c.dataset, act = b.dataset.sk, texs = texsOf(kindOf(slot), item);
   const redraw = choose => { c.querySelector(".sk-ui").innerHTML = skinParts(slot, item, choose); };
