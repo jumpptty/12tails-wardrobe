@@ -43,7 +43,9 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
 .bar button, .bar a { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; text-decoration: none; transition: transform .12s, filter .12s, border-color .12s; }   /* the published copy's Bible link is an <a> */
 .bar .primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 800; }
-.status { position: absolute; left: 14px; bottom: 12px; color: var(--on-stage); font-size: 13px; }
+/* --inset = the width the desktop picker covers (F1): the status line stays in the free part of the stage, above the picker */
+.status { position: absolute; left: calc(var(--inset, 0px) + 14px); bottom: 12px; z-index: 7; color: var(--on-stage); font-size: 13px; transition: left .2s; }
+.status.err { color: var(--seal); }
 .toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); text-align: center; background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); z-index: 7; }
 .toast.show { opacity: 1; }
 /* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
@@ -95,6 +97,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic.set[aria-expanded=true] { background: var(--panel-2); box-shadow: none; }
 .topic.set .setparts { --d: min(calc(100cqh - 26px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 84px); flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--d); margin: auto 0; }
 .topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+.topic.set .setparts .noicon { width: var(--d); height: var(--d); font-size: calc(var(--d) * .3); }
 .topic.set .setparts .hint { color: var(--muted); font-size: 12.5px; font-weight: 600; }
 .topic:hover { border-color: var(--line); }
 .topic[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
@@ -107,8 +110,9 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .ring.face img { width: 92%; height: 92%; }
 .ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
 .topic[aria-expanded=true] .ring { border-color: var(--gold); }
-/* the picker: a full-height side panel twice the left panel's width, the 3D view stays in sight beside it */
-.picker { position: absolute; inset: 0 auto 0 0; width: min(calc(var(--side) * 2), 100%); z-index: 6; background: var(--bg);
+/* the picker: a full-height side panel beside the 3D view; 42 % of the stage (440 px at least, twice the left panel at
+   most), and the camera's view offset (F1, setInset) centres the hero in the part of the stage it leaves free */
+.picker { position: absolute; inset: 0 auto 0 0; width: clamp(440px, calc((100vw - var(--side)) * .42), calc(var(--side) * 2)); max-width: 100%; z-index: 6; background: var(--bg);
   border-right: 1px solid var(--line); box-shadow: var(--shadow-side); display: flex; flex-direction: column; color: var(--text); }
 .picker[hidden] { display: none; }
 .pk-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
@@ -130,6 +134,19 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-item .pic.face { background: var(--skin-bg); border-radius: 50%; }
 .pk-item .pic.face img { width: 94%; height: 94%; }
 .pk-item .pic .none { color: var(--muted); font-size: 30cqw; }
+/* a worn item with no icon (F4): its initials in a well, so it never reads as "nothing worn"; an empty slot shows the
+   slot's own faint outline (a hat, a sword...), the way a game's empty equipment slot does */
+.noicon { display: grid; place-items: center; width: 70%; aspect-ratio: 1; border-radius: 6px; background: var(--panel-2);
+  border: 1px solid var(--line); color: var(--muted); font-weight: 700; line-height: 1; letter-spacing: .02em; }
+.noicon.txt { width: auto; aspect-ratio: auto; padding: .35em .5em; border-radius: 6px; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
+.ring .noicon { font-size: calc(var(--d) * .24); }
+.ring .noicon.txt { font-size: max(11px, calc(var(--d) * .17)); }
+.pk-item .pic .noicon { font-size: 20cqw; }
+.pk-item .pic .noicon.txt { font-size: 12cqw; }
+.slot-glyph { width: 46%; height: 46%; color: var(--muted); opacity: .4; }
+.pk-item .pic { position: relative; }
+.pk-item .pic .pic-n { position: absolute; right: 9%; bottom: 7%; font: 700 clamp(14px, 18cqw, 24px)/1 "JetBrains Mono", "Prompt", monospace; color: var(--text); text-shadow: 0 1px 2px rgba(0, 0, 0, .6); font-style: normal; }
+.pk-item[aria-busy=true] { opacity: .5; }
 .pk-item .lbl { font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pk-body.face-grid .lbl { font-size: 14px; }
 .pk-item[aria-pressed=true] .lbl { color: var(--gold); }
@@ -137,6 +154,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
 .pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--bg); border-radius: 6px; }
+.pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
 .pk-body > .pk-note { grid-column: 1 / -1; }
 /* disabled over the white stage: a pale chip with dim brown text (the old opacity .45 made grey on grey), 5.2:1 */
@@ -168,7 +186,6 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   h1 { margin-bottom: 8px; }
   .topics { flex: 1 1 0; min-height: 0; gap: 8px; grid-template-rows: minmax(0, .7fr) minmax(0, 1.1fr) repeat(3, minmax(0, 1fr)); }
   .topic { padding: 6px 8px 8px; }
-  .picker { width: max(calc(var(--side) * 2), calc((100vw - var(--side)) * .4)); }   /* the hero stands mid-stage: 40 % keeps her in sight */
   .pk-body { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
   .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }   /* still big (user), 4 abreast */
 }
@@ -251,12 +268,31 @@ const LABEL = { wave: "โบกมือ", bow: "ก้มคำนับ", che
   sleep: "นอน", talk: "คุย", beg: "คุกเข่าขอร้อง", clap: "ปรบมือ", wai: "ไหว้", cooking: "ทำอาหาร", mining: "ขุดเหมือง",
   planting: "ปลูกผัก", root: "ยืนพัก", battle: "ตั้งท่าสู้", run: "วิ่ง", ko: "ล้ม", falling: "ร่วง", getup: "ลุกขึ้น" };
 const label = n => { const l = n.toLowerCase(); if (LABEL[l]) return LABEL[l]; if (l.startsWith("fishing")) return "ตกปลา";
-  if (l.startsWith("pose")) return "โพสท่า " + (l.slice(4) || ""); return n; };
+  if (l.startsWith("pose")) return "โพสท่า " + poseNo(n); return n; };
+// the class's poses in their numeric order (pose, pose5, pose15 ...), numbered 1 to N (F10: no "โพสท่า " without a number,
+// no 15 before 5)
+const numSort = (a, b) => a.localeCompare(b, undefined, { numeric: true });
+const poseNo = n => (C ? Object.keys(C.clipsData).filter(k => /^pose/i.test(k)).sort(numSort).indexOf(n) + 1 : 0) || n.replace(/^pose/i, "");
 const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
 // a class whose look includes a headpiece: the Cat's "default" hood (user 2026-11-05: "cat head: remove the none option
 // and use default as default"). Its Head slot is never empty: setProp turns "none" into it
 const BASE_HEAD = { cat: "default" };
 const MOUNT = { R: "mount_Hand_R", L: "mount_Hand_L", Head: "Head", Back: "Spine1" };
+// the class names the Bible's gate shows (task 14b ruling R61)
+const CLASS_TH = { bat: "ค้างคาว", bison: "ไบซัน", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
+  penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า" };
+// an asset name read as words (ruling R61: no Thai item names are guessed): hallowSaw_r -> "Hallow Saw", earmuff1 ->
+// "Earmuff" + "แบบ 1", legendTrinketR -> "Legend Trinket" + edition R (Panda's shinGauntletV_L: edition V)
+function nameParts(n) {
+  let s = String(n || "").replace(/_[LRlr]$/, ""), num = "", ed = "", m;
+  if ((m = s.match(/^(.*[A-Za-z])(\d+)$/))) { s = m[1]; num = m[2]; }
+  if ((m = s.match(/^(.*[a-z0-9])([RV])$/))) { s = m[1]; ed = m[2]; }
+  const words = s.replace(/[_-]+/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .replace(/([A-Za-z])(\d)/g, "$1 $2").trim().split(/\s+/).filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1));
+  return { text: words.join(" ") + (num ? ` แบบ ${num}` : ""), words, num, ed };
+}
+const humanize = n => { const p = nameParts(n); return p.text + (p.ed ? " " + p.ed : ""); };
+const initials = n => { const w = nameParts(n).words; return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || "?").slice(0, 2)).toUpperCase(); };
 
 // ---------- three ----------
 const stage = document.getElementById("stage");
@@ -278,7 +314,11 @@ const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasi
     g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })() }));
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
-function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+let vw = 1, vh = 1;                               // the stage's CSS size
+function resize() {
+  vw = stage.clientWidth; vh = stage.clientHeight; renderer.setSize(vw, vh, false); camera.aspect = vw / vh; camera.updateProjectionMatrix();
+  setInset(); viewOff = -1;                       // the picker's width follows the window's
+}
 new ResizeObserver(resize).observe(stage);        // window and panel size changes both re-fit the view
 
 // ---------- state ----------
@@ -296,7 +336,14 @@ const skinId = v => { if (!v.id) { v.id = ++skinSeq; SKIN_BY_ID.set(v.id, v); } 
 try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
 const $ = id => document.getElementById(id);
-const status = t => { $("status").textContent = t || ""; };
+const status = t => { const el = $("status"); el.textContent = t || ""; el.classList.remove("err"); };
+let errT = 0;
+// a failure says what to do, in Thai (F3), and clears after 5 s or on the next success (status)
+function err(e, msg = "โหลดชิ้นนี้ไม่สำเร็จ ลองกดอีกครั้ง") {
+  console.error(e); const el = $("status"); el.textContent = msg; el.classList.add("err");
+  clearTimeout(errT); errT = setTimeout(() => { if (el.classList.contains("err")) status(""); }, 5000);
+}
+const clearErr = () => { if ($("status").classList.contains("err")) status(""); };
 function toast(t, ms = 1500) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), ms); }
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
@@ -307,9 +354,9 @@ const texLoader = new THREE.TextureLoader();
 
 // ---------- class ----------
 async function loadClass(cls) {
-  status("กำลังโหลด " + cls + "…");
-  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }
+  status("กำลังโหลด" + (CLASS_TH[cls] || cls) + "…");
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
+  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }     // the old class stays on stage until the new one has loaded
   const root = new THREE.Group();
   const tri = new THREE.Object3D();
   tri.name = "tri";
@@ -322,7 +369,8 @@ async function loadClass(cls) {
   root.updateMatrixWorld(true);
   const mixer = new THREE.AnimationMixer(root);
   mixer.addEventListener("finished", onFinished);
-  C = { cls, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null };
+  C = { cls, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, propWait: {}, action: null, cur: null };
+  Promise.all(["weapons", "accessories", "trinkets"].map(propList)).catch(() => {});   // all three lists at once (F13)
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   const L = saved[cls] || {};
@@ -380,8 +428,10 @@ async function setOutfit(name, color, edition = C.state.edition) {
   if (!o) return;
   if (!o.colors.includes(color)) color = o.colors[0];
   edition = edOf(o, color, edition);
-  status("กำลังใส่ชุด " + name + "…");
-  const buf = await (await fetch(`${DATA}${C.cls}/o_${name}.bin`)).arrayBuffer();
+  status("กำลังใส่ชุด " + humanize(name) + "…");
+  const res = await fetch(`${DATA}${C.cls}/o_${name}.bin`);
+  if (!res.ok) throw new Error(`o_${name}.bin ${res.status}`);
+  const buf = await res.arrayBuffer();
   const tex = await composeTexture(o, color, C.state.face, edition);
   for (const m of C.meshes) { C.tri.remove(m); m.geometry.dispose(); }
   C.meshes = [];
@@ -439,14 +489,14 @@ const unityEuler = (x, y, z) => {          // Unity Quaternion.Euler: z, then x,
 // (2026-11-04): this one raises the wings from the upper back; its mirror image (0.5, -0.5, 0.5, 0.5) hangs them down
 let WING_ALIGN = [0.5, 0.5, -0.5, 0.5];
 const MOUNT_ROT = { R: new THREE.Quaternion(), L: new THREE.Quaternion(), Head: unityEuler(0, -90, 90), Back: unityEuler(0, -90, 90) };
-async function propList(kind) {
-  if (!C.propLists[kind]) {
-    const own = await getJSON(`${DATA}${C.cls}/props_${kind}.json`).catch(() => []);
+// one request per list, both at once (F13); a second caller waits for the same requests
+function propList(kind) {
+  const K = C;
+  return K.propLists[kind] ? Promise.resolve(K.propLists[kind]) : (K.propWait[kind] ||= Promise.all([
+    getJSON(`${DATA}${K.cls}/props_${kind}.json`).catch(() => []),
     // the shared items (heroes/all: fashion wings, seals, Halloween headbands) go on every class
-    const shared = kind !== "weapons" ? await getJSON(`${DATA}all/props_${kind}.json`).catch(() => []) : [];
-    C.propLists[kind] = own.concat(shared.map(p => ({ ...p, shared: true })));
-  }
-  return C.propLists[kind];
+    kind !== "weapons" ? getJSON(`${DATA}all/props_${kind}.json`).catch(() => []) : []
+  ]).then(([own, shared]) => (K.propLists[kind] = own.concat(shared.map(p => ({ ...p, shared: true }))))));
 }
 function propMaterials(list) {
   return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
@@ -664,7 +714,8 @@ function play(name) {
   C.action = act; C.cur = name;
   renderMovesUI();
 }
-function onFinished(e) { if (C && e.action === C.action && C.cur.toLowerCase() !== "root") play("root"); }
+// a one-shot move ends: back to idle, and an open move picker presses the idle tile again (F9)
+function onFinished(e) { if (C && e.action === C.action && C.cur.toLowerCase() !== "root") { play("root"); if (openTopic === "move") syncPressed(); } }
 
 // ---------- UI: topic rows (name + the current choice's icon in a ring) and a picker over the stage ----------
 const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
@@ -692,11 +743,12 @@ function parseItem(n, kind) {
 const dropWord = s => (s.match(/^(.*?[a-z0-9])[A-Z][a-z0-9]*$/) || [])[1] || null;
 async function buildSets() {
   if (C.sets) return C.sets;
-  const outfits = C.outfits.map(o => o.name).filter(n => !/none|nude/i.test(n));
-  const items = [];
-  for (const kind of ["weapons", "accessories", "trinkets"]) {
+  const K = C, outfits = C.outfits.map(o => o.name).filter(n => !/none|nude/i.test(n));
+  const items = [], kinds = ["weapons", "accessories", "trinkets"], lists = await Promise.all(kinds.map(propList));   // F13
+  if (C !== K) return [];                    // another class was picked meanwhile
+  for (const [ki, kind] of kinds.entries()) {
     const seen = new Set();
-    for (const p of await propList(kind)) {
+    for (const p of lists[ki]) {
       if (seen.has(p.name)) continue;
       seen.add(p.name);
       const it = { name: p.name, kind, ...parseItem(p.name, kind) };
@@ -781,13 +833,17 @@ const setWorn = s => (!s.outfit || (C.state.outfit === s.outfit && (C.state.edit
   && ["R", "L", "Head", "Back"].every(k => !s[k] || C.state[k] === s[k]);
 // an outfit's icon in an edition (icons.json "editions", from BB's code table: bb_item_codes.py)
 const outfitIcon = (name, ed) => { const ic = iconOf("outfits", name); return (ed && ic?.editions?.[ed]) || ic?.icon; };
-const setIcon = s => (s.outfit && outfitIcon(s.outfit, s.v)) || (s.Head && iconOf("accessories", s.Head)?.icon)
+// the outfit's picture in the edition the set really puts on (F6: Wolf's legend has no R outfit, so "legend R" shows the
+// plain legend armour; only its trinket is the R one)
+const setIcon = s => (s.outfit && outfitIcon(s.outfit, setEd(s))) || (s.Head && iconOf("accessories", s.Head)?.icon)
   || ((s.R || s.L) && iconOf("weapons", s.R || s.L)?.icon) || (s.Back && iconOf("trinkets", s.Back)?.icon);
-// a set's piece icons (outfit in its edition, weapon(s), hat, back): the set tile shows the worn set's, the picker each set's
-const partImg = (kind, n, ed) => { const ic = n && (kind === "outfits" ? outfitIcon(n, ed) : iconOf(kind, n)?.icon);
-  return ic ? `<img alt="" src="${DATA}${ic}" title="${n}">` : ""; };
-const setParts = s => [partImg("outfits", s.outfit, s.v), partImg("weapons", s.R || s.L), s.L && s.L !== s.R ? partImg("weapons", s.L) : "",
+// a set's piece icons (outfit in its edition, weapon(s), hat, back): the set tile shows the worn set's, the picker each set's.
+// A piece with no icon gets its initials (F4), so the row counts every piece
+const partImg = (kind, n, ed) => { if (!n) return ""; const ic = kind === "outfits" ? outfitIcon(n, ed) : iconOf(kind, n)?.icon;
+  return ic ? `<img alt="" src="${DATA}${ic}">` : `<span class="noicon part" aria-hidden="true">${initials(n)}</span>`; };
+const setParts = s => [partImg("outfits", s.outfit, setEd(s)), partImg("weapons", s.R || s.L), s.L && s.L !== s.R ? partImg("weapons", s.L) : "",
   partImg("accessories", s.Head), partImg("trinkets", s.Back)].join("");
+const setName = s => humanize(s.theme + (s.v || ""));
 // the colour n = BB's Recolor Drug n (f_rsc<n>), upscaled: ui/recolor<n>.webp beside the page (the publish proves each is BB's)
 const colorIcon = c => `ui/recolor${c}.webp`;
 async function stripAll() {                // ถอดทั้งหมด: the standard outfit, nothing else (the Cat keeps its hood)
@@ -809,9 +865,9 @@ const snap = () => JSON.stringify({ outfit: C.state.outfit, color: C.state.color
   sk: [...SKINS].map(([k, v]) => [k, skinId(v)]).sort((a, b) => (a[0] < b[0] ? -1 : 1)) });
 function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; }
 async function tracked(fn) {               // run a change; remember the loadout before it if anything changed
-  const before = snap();
-  await fn();
-  if (snap() !== before) { undoStack.push(before); if (undoStack.length > 100) undoStack.shift(); redoStack = []; updateUndo(); }
+  const before = snap();                   // (also when a later piece fails: what did change can be undone)
+  try { await fn(); }
+  finally { if (snap() !== before) { undoStack.push(before); if (undoStack.length > 100) undoStack.shift(); redoStack = []; updateUndo(); } }
 }
 async function applyState(st) {
   const want = new Map(st.sk.map(([k, id]) => [k, SKIN_BY_ID.get(id)])), skinsMoved = want.size !== SKINS.size || [...want].some(([k, v]) => SKINS.get(k) !== v);
@@ -888,7 +944,8 @@ function pixels(img, w = img.naturalWidth || img.width, h = img.naturalHeight ||
 const pngOf = (data, w, h) => new Promise((ok, no) => { const cv = Object.assign(document.createElement("canvas"), { width: w, height: h });
   cv.getContext("2d").putImageData(new ImageData(data, w, h), 0, 0); cv.toBlob(b => (b ? ok(b) : no(new Error("png"))), "image/png"); });
 function saveBlob(blob, name) {
-  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name.replace(/[^\w.-]+/g, "_") });
+  // only the characters a file name cannot hold go (a screenshot's name has the Thai class name)
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name.replace(/[\\/:*?"<>|\s]+/g, "_") });
   document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
 // download = the texture as the item shows it: its own (outfit: the current colour / edition), or the visitor's skin
@@ -964,8 +1021,7 @@ const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" dat
 function syncTiles() {                   // after an upload / reset: the open picker's pressed tile, badges and tools
   const t = openTopic, body = $("pkBody");
   if (t !== "outfit" && !SLOTS[t]) return;
-  const cur = t === "outfit" ? C.state.outfit : C.state[t] || "";
-  body.querySelectorAll(".pk-item").forEach(b => { const v = b.dataset.o ?? b.dataset.p; if (v != null) b.setAttribute("aria-pressed", v === cur); });
+  syncPressed();
   body.querySelectorAll(".pk-cell").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinParts(c.dataset.slot, c.dataset.item); });
 }
 const skinFile = Object.assign(document.createElement("input"), { type: "file", accept: "image/png,image/jpeg,image/webp", hidden: true });
@@ -990,8 +1046,10 @@ $("pkBody").addEventListener("click", e => {
 // to what the cursor is currently focused on if possible"). The pasted picture takes the tile upload's path (skinUpload).
 // Target: the item tile (or a worn piece's topic tile) under the pointer; else the item tile with keyboard focus; else the
 // worn piece under the pointer on the model (a ray against the outfit and the worn props, cut-outs and hidden parts skipped)
-let pointer = null;
-addEventListener("pointermove", e => { pointer = { x: e.clientX, y: e.clientY }; }, { passive: true });
+let pointer = null, lastInput = "pointer";
+addEventListener("pointermove", e => { pointer = { x: e.clientX, y: e.clientY }; lastInput = "pointer"; }, { passive: true });
+// keyboard navigation (not Ctrl / V themselves) makes the focused tile the paste target; a mouse move takes it back (F2)
+addEventListener("keydown", e => { if (/^(Tab|Arrow\w+|Enter| )$/.test(e.key)) lastInput = "key"; }, true);
 document.documentElement.addEventListener("mouseleave", () => { pointer = null; });
 const ray = new THREE.Raycaster(), alphaCache = new WeakMap();
 function alphaAt(map, uv) {              // a texture's alpha where a ray hit it (Repeat wrap); 255 when it can't be read
@@ -1032,8 +1090,10 @@ function pasteTarget() {
     if (SLOTS[s] && C.state[s]) return { slot: s, item: C.state[s], tex: null };
     return null;
   };
+  // the stage under the pointer means the model piece there or nothing (F2: never the tile that kept focus after Esc)
+  if (under === renderer.domElement) return pieceAt(pointer.x, pointer.y);
   const focused = document.activeElement?.matches?.(":focus-visible") ? document.activeElement : null;   // keyboard focus only
-  return fromEl(under) || fromEl(focused) || (under === renderer.domElement ? pieceAt(pointer.x, pointer.y) : null);
+  return fromEl(under) || (lastInput === "key" ? fromEl(focused) : null);
 }
 document.addEventListener("paste", e => {
   const a = document.activeElement, cd = e.clipboardData;
@@ -1055,7 +1115,6 @@ document.addEventListener("paste", e => {
   }
   skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้", 2500); });
 });
-const capName = s => s[0].toUpperCase() + s.slice(1);
 const faceSrc = n => `${DATA}${C.cls}/faces/${n}.webp`;        // the face overlay itself (user: not the whole texture)
 // an emote's / move's icon: TTO's emotion icons (gamegui/icons/skills/emotion) and the class's skill icons
 const EMO = { wave: "wave", bow: "bow", cheer: "cheer", cry: "cry", laugh: "laugh", dance: "dance", sit: "sit", sleep: "zzz",
@@ -1071,8 +1130,27 @@ function moveIcon(name) {
 // faces: the overlay webp cropped to where this class's faces draw (ui.json faceBox, in the overlay's 256 px)
 const faceView = () => { const b = UI.faceBox?.[C.cls];
   return b ? ` style="object-view-box: inset(${b[1]}px ${256 - b[2]}px ${256 - b[3]}px ${b[0]}px)"` : ""; };
-const pic = (src, face = false) => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith("ui/") ? src : DATA + src}"${face ? faceView() : ""}>`
-  : `<span class="none">—</span>`;
+const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith("ui/") ? src : DATA + src}"${face ? faceView() : ""}>`
+  : fb;
+// F4: an item with no icon = its initials in a well; a move with no icon = its Thai name; an empty slot = the slot's outline
+const noIcon = n => `<span class="noicon" aria-hidden="true">${initials(n)}</span>`;
+const moveFb = n => { const l = label(n); return /[฀-๿]/.test(l) ? `<span class="noicon txt" aria-hidden="true">${l}</span>` : noIcon(n); };
+const GLYPH = { Head: "M3.5 17.5h17M6.5 17.5V12a5.5 5.5 0 0 1 11 0v5.5",
+  outfit: "M8.5 4 4 6.8l1.8 3.7 2.2-1V20h8V9.5l2.2 1 1.8-3.7L15.5 4c-.7 1.3-2 2-3.5 2s-2.8-.7-3.5-2z",
+  R: "M14 4h6v6L9.5 20.5l-6-6zM3.5 20.5 6 18M6.5 12l5.5 5.5", Back: "M12 8c-2.2-2.6-5.6-3.8-8.5-3.3.2 5 2.7 8.6 7 9.8M12 8c2.2-2.6 5.6-3.8 8.5-3.3-.2 5-2.7 8.6-7 9.8M12 8v11",
+  move: "M12 3.2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM5.5 10.5 12 9l6.5 1.5M12 9v6.2M12 15.2 8.8 21M12 15.2l3.2 5.8" };
+GLYPH.L = GLYPH.R;
+const glyph = slot => `<svg class="slot-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="${GLYPH[slot] || GLYPH.move}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// what a topic ring shows: the current choice's icon, else its stand-in (above); nothing at all before the class loads
+function ringContent(t) {
+  if (!C) return "";
+  const src = currentIcon(t);
+  if (src) return pic(src, t === "face");
+  if (t === "move") return C.cur && C.cur.toLowerCase() !== "root" ? moveFb(C.cur) : `<span class="noicon txt idle" aria-hidden="true">${label("root")}</span>`;
+  if (t === "outfit") return noIcon(C.state.outfit);
+  if (SLOTS[t]) return C.state[t] ? noIcon(C.state[t]) : glyph(t);
+  return "";
+}
 function currentIcon(t) {
   if (!C) return null;
   if (t === "class") return UI.heroes?.[C.cls];
@@ -1087,10 +1165,10 @@ let openTopic = null;
 // the สี tile: the outfit's colours as one-tap Recolor Drug icons (one undo step each); the ปกติ / R / V editions are
 // picked in the set tab (user 2026-11-07)
 function colorTile(name) {
-  const o = C?.outfits.find(x => x.name === C.state.outfit), cs = o?.colors || [];
+  const o = C?.outfits.find(x => x.name === C?.state.outfit), cs = o?.colors || [];
   const sw = cs.length ? `<span class="cswatches" style="--n: ${cs.length}">` + cs.map(c =>
       `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${o.name} · ${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</span>`
-    : `<span class="ring"><span class="none">—</span></span>`;
+    : "";
   const mine = o && SKINS.has(skinKey("outfits", o.name));
   return `<div class="topic r1 color${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " · ชุดนี้ใส่ลายของคุณอยู่" : ""}">${sw}</div>`;
 }
@@ -1100,17 +1178,22 @@ function renderTopics() {
   const worn = C && (C.sets || []).find(setWorn), box = $("topics"), a = document.activeElement;
   // a click re-draws the rows: keep the keyboard focus on the same control
   const keep = a && box.contains(a) ? (a.dataset.c ? `[data-c="${a.dataset.c}"]` : a.dataset.t ? `[data-t="${a.dataset.t}"]` : null) : null;
+  // the set row: a neutral line until the sets are known (F13: no false "no set" flash while they load)
+  const setBody = !C?.sets ? `<span class="hint">${C ? "กำลังโหลดเซ็ต…" : ""}</span>`
+    : worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`;
   box.innerHTML = TOPICS.map(([t, name]) => t === "set"
-    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${worn.label}"` : ""}>
-    <span class="tname">${name}</span><span class="setparts"${worn ? ` style="--k: ${(setParts(worn).match(/<img/g) || []).length}"` : ""}>${worn ? setParts(worn) : `<span class="hint">ยังไม่ได้ใส่เซ็ต · กดเพื่อเลือก</span>`}</span></button>`
+    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}"${worn ? ` title="${setName(worn)}"` : ""}>
+    <span class="tname">${name}</span><span class="setparts"${worn ? ` style="--k: ${(setBody.match(/<img|class="noicon/g) || []).length}"` : ""}>${setBody}</span></button>`
     : t === "color" || t === "face" ? ""
     : t === "class" ? `<div class="row1"><div class="topic r1 duo" role="group">${["class", "face"].map(k => { const nm = TOPICS.find(x => x[0] === k)[1];
         return `<button type="button" class="duo-b" data-t="${k}" aria-expanded="${openTopic === k}" aria-label="${nm}" title="${nm}">`
-          + `<span class="ring t-${k}${k === "face" ? " face" : ""}">${pic(currentIcon(k), k === "face")}</span></button>`; }).join("")}</div>${
+          + `<span class="ring t-${k}${k === "face" ? " face" : ""}">${ringContent(k)}</span></button>`; }).join("")}</div>${
         colorTile(TOPICS.find(x => x[0] === "color")[1])}</div>`
     : `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
-    <span class="tname">${name}</span><span class="ring t-${t}">${pic(currentIcon(t))}</span></button>`).join("");
-  box.querySelectorAll("button.topic, .duo-b").forEach(b => b.onclick = () => (openTopic === b.dataset.t ? closePicker() : openPicker(b.dataset.t)));
+    <span class="tname">${name}</span><span class="ring t-${t}">${ringContent(t)}</span></button>`).join("");
+  // e.detail 0 = a key press (Enter / Space): the picker then takes the focus (F11)
+  box.querySelectorAll("button.topic, .duo-b").forEach(b => b.onclick = e => (!C ? null : openTopic === b.dataset.t ? closePicker()
+    : openPicker(b.dataset.t, { fresh: true, kb: e.detail === 0 })));
   // a colour the outfit's edition lacks drops that edition (edOf): the worn R / V pieces go back to ปกติ in the same
   // undo step, so the outfit, the pieces and the chips agree
   box.querySelectorAll(".csw").forEach(b => b.onclick = async () => {
@@ -1145,63 +1228,97 @@ function fitColors() {
   t.style.cssText = `--rg: ${rg}px`;
 }
 new ResizeObserver(() => fitColors()).observe($("topics"));
+// the desktop picker covers the left of the stage: the camera's view offset centres the hero in the rest (F1), and the
+// status line moves with it. A phone's picker is a bottom sheet under a smaller stage: no offset there
+const isPhone = () => matchMedia("(max-width: 760px)").matches;
+let stageInset = 0, insetNow = 0;
+function setInset() {
+  stageInset = openTopic && !isPhone() ? $("picker").offsetWidth : 0;
+  stage.style.setProperty("--inset", stageInset + "px");
+}
 function closePicker() {
   const t = openTopic, held = $("picker").contains(document.activeElement);   // Escape with the search box focused
-  openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); renderTopics();
+  openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); setInset(); renderTopics();
   if (held && t) document.querySelector(`#topics [data-t="${t}"]`)?.focus();   // not on a hidden input
 }
-const item = (attr, label, pressed, src, tto, title = label, face = false) =>
-  `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}" title="${title}"><span class="pic${face ? " face" : ""}">${pic(src, face)}</span>` +
-  `<span class="lbl">${label}</span>${tto ? `<i class="dot${tto === "tot" ? " tot" : ""}"></i>` : ""}</button>`;
+// a picker tile; o = { title, face, fb: the stand-in when there is no icon, over: drawn over the picture, dot: "tto" | "tot" }
+const item = (attr, lbl, pressed, src, o = {}) =>
+  `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}"${o.title ? ` title="${o.title}"` : ""}><span class="pic${o.face ? " face" : ""}">${pic(src, o.face, o.fb)}${o.over || ""}</span>` +
+  `<span class="lbl">${lbl}</span>${o.dot ? `<i class="dot${o.dot === "tot" ? " tot" : ""}"></i>` : ""}</button>`;
 const badge = x => (x.tot ? "tot" : x.tto);           // pink dot = TTO's own, blue = ToT's own (wardrobe_tot.py)
+const isBare = () => C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
+  && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
+// the open picker's pressed tiles, read from what is worn now (F3: a failed pick never leaves a false selection)
+function syncPressed() {
+  const t = openTopic, body = $("pkBody");
+  if (!t || !C) return;
+  body.querySelectorAll(".pk-item").forEach(b => {
+    const d = b.dataset;
+    const on = d.c != null ? d.c === C.cls : d.o != null ? d.o === C.state.outfit : d.p != null ? d.p === (C.state[t] || "")
+      : d.f != null ? +d.f === C.state.face : d.m != null ? d.m === C.cur
+      : d.s != null ? (d.s === "clear" ? isBare() : !!C.sets?.[+d.s] && setWorn(C.sets[+d.s])) : null;
+    if (on != null) b.setAttribute("aria-pressed", on);
+  });
+}
 let moveTab = "emote";
-async function openPicker(t) {
+// opts.fresh = opened by the visitor (not a redraw after a change): the worn tile is scrolled into view (F8), and a key
+// press (opts.kb) puts the focus in the picker (F11). A redraw keeps the list where it was scrolled
+async function openPicker(t, opts = {}) {
+  const body = $("pkBody"), redraw = !opts.fresh && openTopic === t, keepScroll = redraw ? body.scrollTop : 0;
   openTopic = t; renderTopics();
-  const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools"), body = $("pkBody");
+  const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools");
+  const tab = tools.querySelector(".pk-tab:focus")?.dataset.g;
   $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false; document.querySelector(".app").classList.add("picking");
-  body.innerHTML = "";                       // the set / prop lists load async: no clicks on the last picker's tiles meanwhile
+  setInset();
+  if (!redraw) body.innerHTML = "";          // the set / prop lists load async: no clicks on the last picker's tiles meanwhile
   body.classList.toggle("face-grid", t === "face");
-  // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, refresh the rows
-  const pick = (fn, after) => body.querySelectorAll(".pk-item").forEach(b => b.onclick = async () => {
-    body.querySelectorAll(".pk-item").forEach(x => x.setAttribute("aria-pressed", x === b));
-    if (t === "class" || t === "move") await fn(b); else await tracked(() => fn(b));
-    renderTopics(); after?.();
+  // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, then mark again from
+  // what is really worn (F3); a class switch dims the tapped tile until the class has loaded
+  const pick = (fn, msg) => body.querySelectorAll(".pk-item").forEach(b => b.onclick = async () => {
+    if (t === "class") { if (b.getAttribute("aria-pressed") === "true") return; b.setAttribute("aria-busy", "true"); body.setAttribute("aria-busy", "true"); }
+    else body.querySelectorAll(".pk-item").forEach(x => x.setAttribute("aria-pressed", x === b));
+    let ok = true;
+    try { if (t === "class" || t === "move") await fn(b); else await tracked(() => fn(b)); }
+    catch (e) { ok = false; err(e, msg); }
+    b.removeAttribute("aria-busy"); body.removeAttribute("aria-busy");
+    if (ok) clearErr();
+    renderTopics(); syncPressed();
   });
   if (t === "set") {
     const sets = await buildSets();
+    if (openTopic !== t) return;
     // the character's colour has its own topic now (สี, user 2026-11-07); a set keeps the colour when it changes the outfit
     tools.innerHTML = `<span class="pk-note">${sets.length} เซ็ต · กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
-    const bare = C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
-      && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
-    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${bare}" title="ชุดพื้นฐาน (standard) · ถอดอาวุธ หมวก ของประดับหลัง">`
+    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับหลัง">`
       + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
-      + (sets.length ? sets.map((s, i) => {
-      const parts = setParts(s);
-      const names = [s.outfit, s.R, s.L && s.L !== s.R ? s.L : null, s.Head, s.Back].filter(Boolean).join(" + ");
-      return `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}" title="${names}">` +
-        `<span class="pic">${pic(setIcon(s))}</span><span class="lbl">${s.label} · ${s.pieces} ชิ้น</span><span class="parts">${parts}</span></button>`;
-    }).join("") : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
-    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])).catch(err));
+      + (sets.length ? sets.map((s, i) => `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}">` +
+        `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span><span class="lbl">${s.label} · ${s.pieces} ชิ้น</span><span class="parts">${setParts(s)}</span></button>`).join("")
+        : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
+    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])));
   } else if (t === "class") {
-    body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, capName(c.cls), c.cls === C.cls, UI.heroes?.[c.cls])).join("");
-    pick(b => loadClass(b.dataset.c).catch(err));
+    body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, c.cls[0].toUpperCase() + c.cls.slice(1), c.cls === C.cls, UI.heroes?.[c.cls], { fb: noIcon(c.cls) })).join("");
+    pick(b => loadClass(b.dataset.c), "โหลดอาชีพนี้ไม่สำเร็จ ลองกดอีกครั้ง");
   } else if (t === "outfit") {
-    body.innerHTML = C.outfits.map(o => { const ic = iconOf("outfits", o.name);
-      return cell("outfit", o.name, item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit, ic?.icon, badge(o), ic ? `${o.name} (${ic.codes.join(", ")})` : o.name)); }).join("");
-    pick(b => setOutfit(b.dataset.o, C.state.color).catch(err));
+    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}"`, o.name, o.name === C.state.outfit,
+      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name) }))).join("");
+    pick(b => setOutfit(b.dataset.o, C.state.color));
   } else if (t === "face") {
-    body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), f.tto, `หน้า ${f.n}`, true)).join("");
-    pick(b => setColorOrFace(null, +b.dataset.f).catch(err));
+    body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
+    pick(b => setColorOrFace(null, +b.dataset.f));
   } else if (t === "move") {
     tools.innerHTML = [["emote", "ท่าทาง"], ["base", "ท่าพื้นฐาน"], ["skill", "ท่าสกิล"]].map(([g, n]) =>
       `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("");
-    tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move"); });
+    tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move", { fresh: true }); });
+    if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
+    // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number
     const names = Object.keys(C.clipsData).filter(k => C.clipsData[k].group === moveTab)
-      .sort((a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || a.localeCompare(b));
-    body.innerHTML = names.map(n => item(`data-m="${n}"`, label(n), n === C.cur, moveIcon(n), C.clipsData[n].tto, n)).join("");
+      .sort((a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || numSort(a, b));
+    body.innerHTML = names.map(n => item(`data-m="${n}"`, label(n), n === C.cur, moveIcon(n),
+      { dot: C.clipsData[n].tto, fb: moveFb(n), over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" })).join("");
     pick(b => play(b.dataset.m));
   } else {                                                      // R, L, Head, Back
     const list = await propList(SLOTS[t]);
+    if (openTopic !== t) return;
     tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`;
     const inp = tools.querySelector("input");
     const draw = () => {
@@ -1210,18 +1327,24 @@ async function openPicker(t) {
                         .sort((a, b) => t === "L" ? (b.mount === "mount_Hand_L") - (a.mount === "mount_Hand_L") : 0);
       const base = t === "Head" && BASE_HEAD[C.cls];
       if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
-      body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, false)) + items.map(p => { const ic = iconOf(SLOT_KEY[t], p.name);
-        return cell(t, p.name, item(`data-p="${p.name}"`, p.name, p.name === C.state[t], ic?.icon, badge(p), ic ? `${p.name} (${ic.codes.join(", ")})` : p.name)); }).join("");
-      pick(b => setProp(t, b.dataset.p || null).catch(err));
+      body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, { fb: glyph(t) })) + items.map(p => cell(t, p.name,
+        item(`data-p="${p.name}"`, p.name, p.name === C.state[t], iconOf(SLOT_KEY[t], p.name)?.icon, { dot: badge(p), fb: noIcon(p.name) }))).join("");
+      pick(b => setProp(t, b.dataset.p || null));
     };
     inp.oninput = draw; draw();
-    if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus();   // touch: focusing pops the keyboard over the sheet
+    if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus({ preventScroll: true });   // touch: focusing pops the keyboard over the sheet
   }
+  if (redraw) { body.scrollTop = keepScroll; return; }
+  const worn = body.querySelector(".pk-item[aria-pressed=true]");
+  if (worn) { const r = worn.getBoundingClientRect(), v = body.getBoundingClientRect();
+    if (r.top < v.top || r.bottom > v.bottom) body.scrollTop += r.top - v.top - (v.height - r.height) / 2; }   // the worn tile mid-list (F8)
+  if (opts.kb && !tools.querySelector("input")) (worn || body.querySelector(".pk-item"))?.focus({ preventScroll: true });
 }
 $("pkClose").onclick = closePicker;
 addEventListener("keydown", e => {
   if (e.key === "Escape" && openTopic) closePicker();
-  if (!(e.ctrlKey || e.metaKey) || e.target.tagName === "INPUT") return;      // the search box keeps its own undo
+  // a search box with text keeps its own undo; an empty one (it takes the focus when a prop picker opens) does not (F14)
+  if (!(e.ctrlKey || e.metaKey) || (e.target.tagName === "INPUT" && e.target.value)) return;
   const k = e.key.toLowerCase();
   if (k === "z" && !e.shiftKey) { e.preventDefault(); doUndo(); }
   else if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); doRedo(); }
@@ -1237,8 +1360,25 @@ function fitCamera() {
   const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5);
   controls.target.set(c.x, c.y, c.z);
   camera.position.set(c.x + h * 0.55, c.y + h * 0.12, c.z + h * 2.9);
+  // limits (F5): no flying into the head or out of sight, no orbit under the floor (limitCamera), the look-at point
+  // stays near the hero (clampTarget: right-drag pan and WASD alike)
+  controls.minDistance = h * .55; controls.maxDistance = h * 6;
+  controls.minPolarAngle = Math.PI * .08; controls.maxPolarAngle = Math.PI * .56;
+  fitBox = new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5)));
+  fitH = h;
   controls.update();
   floor.scale.setScalar(h * 0.42);
+}
+let fitBox = null, fitH = 1, viewOff = -1;
+function limitCamera() {                  // the camera may look up at the hero, but never from under the floor (y 0)
+  if (!fitBox) return;
+  const d = camera.position.distanceTo(controls.target);
+  controls.maxPolarAngle = Math.max(Math.PI * .08, Math.min(Math.PI * .56, Math.acos(THREE.MathUtils.clamp((fitH * .03 - controls.target.y) / d, -1, 1))));
+}
+function clampTarget() {
+  if (!fitBox) return;
+  const t = controls.target, c = t.clone().clamp(fitBox.min, fitBox.max);
+  if (!c.equals(t)) { const d = c.sub(t); t.add(d); camera.position.add(d); }
 }
 $("resetCam").onclick = () => C && fitCamera();
 // WASD camera (task 12, like the Bible's reach preview): W / S move the look-at point up / down along world Y, A / D strafe on the ground plane;
@@ -1275,30 +1415,63 @@ addEventListener("keydown", e => {
 addEventListener("keyup", e => { const a = WASD[e.code]; if (a) wHeld.delete(a); });
 addEventListener("blur", () => wHeld.clear());
 $("resetCam").addEventListener("click", wReset);
-$("shot").onclick = () => { const a = document.createElement("a"); a.href = renderer.domElement.toDataURL("image/png"); a.download = `${C.cls}_${C.state.outfit}${C.state.color}.png`; a.click(); };
+// บันทึกภาพ (F7): a transparent PNG (players edit it) of exactly what the screen shows: the hero centred (no picker view
+// offset), the stage's saturate(1.15) baked in, at twice the CSS size or the screen's pixel ratio if higher
+function saturate(g, w, h, s) {
+  const id = g.getImageData(0, 0, w, h), d = id.data;
+  const m = [.213 + .787 * s, .715 - .715 * s, .072 - .072 * s, .213 - .213 * s, .715 + .285 * s, .072 - .072 * s, .213 - .213 * s, .715 - .715 * s, .072 + .928 * s];
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], gg = d[i + 1], b = d[i + 2];
+    d[i] = m[0] * r + m[1] * gg + m[2] * b; d[i + 1] = m[3] * r + m[4] * gg + m[5] * b; d[i + 2] = m[6] * r + m[7] * gg + m[8] * b;
+  }
+  g.putImageData(id, 0, 0);
+}
+const shotName = () => { const s = (C.sets || []).find(setWorn);
+  return `12tails_${CLASS_TH[C.cls] || C.cls}_${s ? setName(s) : humanize(C.state.outfit)}.png`; };
+$("shot").onclick = () => {
+  if (!C) return;
+  const pr = renderer.getPixelRatio(), s = Math.max(2, devicePixelRatio);
+  camera.clearViewOffset(); viewOff = -1;
+  renderer.setPixelRatio(s); renderer.setSize(vw, vh, false); renderer.render(scene, camera);
+  const W = renderer.domElement.width, H = renderer.domElement.height;
+  const cv = Object.assign(document.createElement("canvas"), { width: W, height: H }), g = cv.getContext("2d", { willReadFrequently: true });
+  const native = "filter" in CanvasRenderingContext2D.prototype;
+  if (native) g.filter = "saturate(1.15)";
+  g.drawImage(renderer.domElement, 0, 0);
+  if (!native) saturate(g, W, H, 1.15);
+  renderer.setPixelRatio(pr); renderer.setSize(vw, vh, false);          // back to the screen, in the same frame (no blank flash)
+  if (insetNow > 0) camera.setViewOffset(vw, vh, -insetNow / 2, 0, vw, vh);
+  viewOff = insetNow; renderer.render(scene, camera);
+  cv.toBlob(b => { if (b) { saveBlob(b, shotName()); toast("บันทึกภาพแล้ว"); } else toast("บันทึกภาพไม่สำเร็จ ลองกดอีกครั้ง", 2500); }, "image/png");
+};
+// uploaded skins live in this tab only (F12): leaving with one asks first
+addEventListener("beforeunload", e => { if (SKINS.size) { e.preventDefault(); e.returnValue = ""; } });
 $("copy").onclick = async () => {
   const s = C.state;
   const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
     (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${C.cur}` : "");
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว · วางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
-function err(e) { console.error(e); status("โหลดไม่สำเร็จ: " + e.message); }
 
 // ---------- go ----------
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
   if (C) { C.mixer.update(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
-  controls.update(); renderer.render(scene, camera);
+  // the picker's view offset glides in and out (F1)
+  insetNow += (stageInset - insetNow) * .2;
+  if (Math.abs(stageInset - insetNow) < .5) insetNow = stageInset;
+  if (insetNow !== viewOff) { viewOff = insetNow; if (insetNow > 0) camera.setViewOffset(vw, vh, -insetNow / 2, 0, vw, vh); else camera.clearViewOffset(); }
+  limitCamera(); controls.update(); clampTarget(); renderer.render(scene, camera);
 });
 resize();
-meta = await getJSON(DATA + "meta.json");
-ICONS = await getJSON(DATA + "icons.json").catch(() => ({}));
-PL = await getJSON(DATA + "placements.json").catch(() => ({}));
-ITEMMAP = await getJSON(DATA + "item_map.json").catch(() => ({}));
-UI = await getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }));
+// the first data in parallel (F13)
+const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.json").catch(e => { err(e, "โหลดห้องแต่งตัวไม่สำเร็จ ลองรีเฟรชหน้านี้"); throw e; }),
+  getJSON(DATA + "icons.json").catch(() => ({})), getJSON(DATA + "placements.json").catch(() => ({})),
+  getJSON(DATA + "item_map.json").catch(() => ({})), getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }))]);
+meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
-await loadClass(first).catch(err);
+await loadClass(first).catch(e => err(e, "โหลดอาชีพนี้ไม่สำเร็จ ลองรีเฟรชหน้านี้"));
 // for scripted checks (Playwright): wardrobe.show("sheep", {Back: "Shade_Wing"}, 160) -> a loaded view, camera yaw in degrees
 window.wardrobe = {
   setWingAlign(q) { WING_ALIGN = q; },
