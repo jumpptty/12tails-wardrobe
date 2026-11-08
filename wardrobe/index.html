@@ -86,7 +86,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 13px 0 10px; }
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
-.tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน mode on */
+.tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
 /* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
    the toasts above it. --inset = the width the desktop picker covers (F1): all of it stays in the free part of the stage */
@@ -105,20 +105,24 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
 .toast:empty { display: none; }
 .toast.show { opacity: 1; transform: none; }
-/* ชมชิ้นส่วน (task 16): the card takes the nameplate's place at the stage's foot (toasts stay above it); the WASD hint goes */
+/* ชมชิ้นส่วน (task 16): the card takes the nameplate's place at the stage's foot, centred under the floating piece (F7;
+   toasts stay above it, on the left); the WASD hint goes */
 .app.viewing .plate, .app.viewing .keyhint { display: none; }
-.app.viewing .dock { right: 16px; }
-.showcase { pointer-events: auto; width: min(640px, 100%); display: flex; flex-direction: column; gap: 5px; padding: 9px 12px 10px;
+.app.viewing .dock { right: 16px; align-items: center; }
+.app.viewing .toast { align-self: flex-start; }
+.showcase { pointer-events: auto; width: min(640px, 100%); display: flex; flex-direction: column; gap: 5px; padding: 8px 12px 10px;
   background: var(--weave), var(--panel); border: 1px solid var(--line); border-radius: 6px; color: var(--text); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
 .showcase[hidden] { display: none; }
-.sc-mode { color: var(--gold); font-size: 11.5px; font-weight: 600; line-height: 1.3; }
-.sc-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; line-height: 1.35; }
+/* F2: every button keeps its place: the name and slot on the left, ‹ i / n › together on the right of the first line; the
+   action row always holds the same buttons (worn = ใส่อยู่, disabled), กลับ last */
+.sc-head { display: flex; align-items: center; gap: 8px; min-width: 0; line-height: 1.35; }
 .sc-name { min-width: 0; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-slot { flex: none; color: var(--muted); font-size: 12.5px; font-weight: 500; }
-.sc-count { flex: none; margin-left: auto; color: var(--muted); font-size: 12px; }
+.sc-nav { flex: none; margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.sc-count { color: var(--muted); font-size: 12px; text-align: center; }
 .sc-meta { min-width: 0; color: var(--muted); font-size: 12.5px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-dot { margin: 0 .45em; }
-.sc-acts { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.sc-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; row-gap: 6px; margin-top: 2px; }
 .sc-b { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 10px;
   border: 1px solid var(--line); border-radius: 4px; background: var(--well); color: var(--text); font-size: 13px; font-weight: 500; white-space: nowrap; }
 .sc-b svg { width: 16px; height: 16px; flex: none; }
@@ -126,7 +130,19 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .sc-b[data-primary] { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 600; }
 .sc-b[data-close] { margin-left: auto; }
 .sc-b:disabled { opacity: .4; cursor: default; }
+.sc-b.sc-wear:disabled { opacity: 1; background: none; color: var(--gold); }     /* worn: a state, not a dead button */
+/* two labels in one cell (ใส่ชิ้นนี้ / ใส่อยู่): the button is as wide as the longer one in both states */
+.sc-b .sc-alt { display: inline-grid; }
+.sc-alt > span { grid-area: 1 / 1; text-align: center; }
+.sc-alt > .off { visibility: hidden; }
 .sc-b .l-short { display: none; }
+/* F3: a piece with two textures has one ดาวน์โหลดลาย that turns into ลาย 1 / ลาย 2 in the same place */
+.sc-pick { display: inline-grid; flex: none; }
+.sc-pick > * { grid-area: 1 / 1; }
+.sc-pair { display: flex; gap: 4px; }
+.sc-pair .sc-b { flex: 1 1 0; padding: 0 8px; }
+.sc-pick.choose > .sc-b, .sc-pick:not(.choose) > .sc-pair { visibility: hidden; }
+.sc-hint { display: none; margin: 0; color: var(--muted); font-size: 11.5px; line-height: 1.3; text-align: center; }
 @media (hover: hover) { .sc-b:not(:disabled):not([data-primary]):hover { color: var(--gold); border-color: var(--gold); } }
 /* an edition tag after a name (ruling R61: legendTrinketR = "Legend Trinket" + R) */
 .ed { display: inline-block; margin-left: .35em; padding: 0 .35em; border: 1px solid currentColor; border-radius: 3px; font: 600 .78em/1.35 var(--mono); vertical-align: .08em; opacity: .85; }
@@ -217,6 +233,10 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .pk-tab:disabled { opacity: .35; cursor: default; }
 .pk-close { flex: none; display: grid; place-items: center; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; width: 36px; height: 36px; padding: 0; color: var(--muted); }
 .pk-close svg { width: 16px; height: 16px; }
+/* F4: while ชมชิ้นส่วน is open a tile shows its piece: the header says so in one quiet line, the piece shown is marked */
+.pk-hint { flex: 1 0 100%; margin: -4px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.pk-hint[hidden] { display: none; }
+.pk-item[data-viewing] { outline: 2px dashed var(--gold); outline-offset: -4px; }
 /* the grid (V9): as many 124 px columns as fit; faces stay big (user) */
 .pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 8px; align-content: start;
   grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
@@ -353,11 +373,14 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .app.viewing .dock { right: 10px; }
   .showcase { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; width: auto; height: var(--vcard); justify-content: center; gap: 4px;
     padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border-width: 1px 0 0; border-radius: 12px 12px 0 0; box-shadow: var(--shadow-sheet); }
-  .sc-acts { gap: 4px; margin-top: 4px; }
-  .sc-b { height: 40px; padding: 0 7px; gap: 4px; }   /* the six tools fit a 360 px row */
+  .sc-acts { gap: 4px; margin-top: 2px; }
+  .sc-b { height: 40px; padding: 0 9px; gap: 4px; }   /* the four tools fit a 360 px row, ‹ › sit on the first line */
   .sc-b.nav { width: 40px; }
   .sc-b .l-full { display: none; }
   .sc-b .l-short { display: inline; }
+  .sc-b .l-short.sc-alt { display: inline-grid; }
+  .sc-pair .sc-b { padding: 0 6px; }
+  .sc-hint { display: block; }        /* F9: on a phone the sheet is hidden, so the card says what works there */
   .plate-cls { font-size: 15px; }
   .plate-sub { font-size: 12px; }
 }
@@ -381,7 +404,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
       <button type="button" class="tb" id="redo" title="ทำซ้ำ (Ctrl+Y)" aria-label="ทำซ้ำ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="tb" id="vmode" title="ชมชิ้นส่วน: กดช่องไอเท็มเพื่อชมชิ้นนั้นแทนการใส่" aria-label="ชมชิ้นส่วน" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 19.4 7.5v9L12 20.6 4.6 16.5v-9zM4.6 7.5 12 11.6l7.4-4.1M12 11.6v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="tb" id="vmode" title="ชมชิ้นส่วน" aria-label="ชมชิ้นส่วน" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 19.4 7.5v9L12 20.6 4.6 16.5v-9zM4.6 7.5 12 11.6l7.4-4.1M12 11.6v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
@@ -394,7 +417,8 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
     <div class="keyhint" id="keyhint" aria-hidden="true"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
-        <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+        <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <p class="pk-hint" id="pkHint" hidden>กดช่องเพื่อชมชิ้นนั้น ใส่ได้จากการ์ด</p></div>
       <div class="pk-body" id="pkBody"></div>
     </section>
   </main>
@@ -1422,7 +1446,7 @@ async function modelDownload(slot, item) {
     file?.dispose(); piece?.dispose();
   }
 }
-const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม", view: "ชม 3D" };
+const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม", view: "ชมชิ้นส่วน" };   // one name for the viewer everywhere (F4)
 const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
   reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", view: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6" })
   .map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
@@ -1445,7 +1469,7 @@ const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" dat
 function syncTiles() {                   // after an upload / reset: the open picker's pressed tile, badges and tools
   const t = openTopic, body = $("pkBody");
   if (t !== "outfit" && !SLOTS[t]) return;
-  syncPressed();
+  syncPressed(); syncViewing();
   body.querySelectorAll(".pk-cell").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinParts(c.dataset.slot, c.dataset.item); });
 }
 const skinFile = Object.assign(document.createElement("input"), { type: "file", accept: "image/png,image/jpeg,image/webp", hidden: true });
@@ -1543,18 +1567,81 @@ document.addEventListener("paste", e => {
 // ---------- ชมชิ้นส่วน (task 16, user 2026-11-08: "view and appreciate each piece of the model separately from the
 // character too, like a floating item"): an inspect mode on the same stage. The character fades out and one piece
 // (makePiece, pose "idle") floats in the free part of the stage: a slow turntable (20 deg/s) and a gentle bob (3 % of its
-// size, 3 s) over a soft contact shadow that shrinks and fades a little as it rises. Fit by its bounding sphere (60 % of
-// the free stage's smaller side); only a left-button (or one-finger) drag pauses the turntable (it resumes 3 s after the
-// drag ends); a click, the wheel, a pinch and WASD leave it spinning (user 2026-11-08: "the only thing stopping the
-// rotation is drag left click"). Zoom and orbit limits scale with the piece, no pan; WASD moves the view but the look-at
-// point stays within the piece's radius (scClamp). Ways in: the cube on an item tile; the toolbar toggle (a tile click
-// in the open picker then shows its piece instead of wearing it); a double-click on a piece of the character. Esc / ✕ /
-// the toggle off: back to the character exactly as it was (camera, limits, visibility). Viewing never adds an undo step
+// size, 3 s) over a soft contact shadow that shrinks and fades a little as it rises. Fit by its outline over a whole turn
+// (F5: as big as the band between the toolbar and the card allows, so an outfit floats about as big as it stands on the
+// character); it turns about the centre of the smallest circle around its footprint; only a
+// left-button (or one-finger) drag pauses the turntable (it resumes 3 s after the drag ends); a click, the wheel, a pinch
+// and WASD leave it spinning (user 2026-11-08: "the only thing stopping the rotation is drag left click"). Zoom and orbit
+// limits scale with the piece, no pan; WASD moves the view but the look-at point stays near the piece (scClamp). The
+// open viewer is the mode (F4): while it is open a tile click in the picker shows that tile's piece and
+// never wears it. Ways in: the cube on an item tile; the toolbar's ชมชิ้นส่วน (it opens on the open picker's worn piece, or
+// the outfit, and closes again); a double-click on a piece of the character. Esc / กลับ / the toolbar button: back to the
+// character as it was (camera, limits, visibility). Motion (F6): the character fades into the white stage first, then the
+// piece fades in with a small scale-up; a step fades the old piece out before the next one comes in; leaving fades the
+// piece out, eases the camera back and fades the character in. Viewing never adds an undo step
 const VIEW_SLOTS = new Set(["outfit", "R", "L", "Head", "Back"]);
 const SLOT_TH = Object.fromEntries(TOPICS.filter(([t]) => VIEW_SLOTS.has(t)));
-let viewMode = false;                    // the toolbar toggle: a tile click shows its piece
+const SHOT_TITLE = { hero: "บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)", piece: "บันทึกภาพชิ้นนี้ (PNG พื้นโปร่งใส)" };   // F11
 const vShadow = shadowDisc([[0, .34], [.4, .14], [1, 0]], 0.001);
 vShadow.removeFromParent();
+// timed changes (fades, scale-ins, the card lift) advanced by the render loop: fn(k) with k from 0 to 1, then done()
+const tweens = new Set();
+function tween(dur, fn, done = null) { const tw = { t: 0, dur, fn, done }; tweens.add(tw); fn(0); return tw; }
+function stopTween(tw) { if (tw) tweens.delete(tw); }
+function runTweens(dt) { for (const tw of [...tweens]) { tw.t += dt; const k = Math.min(1, tw.t / tw.dur); tw.fn(k); if (k >= 1 && tweens.delete(tw)) tw.done?.(); } }
+const easeOut = k => 1 - (1 - k) ** 3, easeInOut = k => (k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2);
+// objects fading into the white stage (a = 0: as they are, 1: gone): a lit material's colour goes to black and its glow to
+// white, so whatever fades stays solid (no inside faces showing through, no double image); a see-through shadow loses opacity
+function whiteFader(roots) {
+  const mats = new Map(), W = new THREE.Color(1, 1, 1);
+  for (const r of roots) r.traverse(o => { for (const m of [].concat(o.material || [])) if (!mats.has(m)) mats.set(m, { color: m.color?.clone(), emissive: m.emissive?.clone(), opacity: m.opacity }); });
+  return { a: 0,
+    set(a) { this.a = a; for (const [m, s] of mats) { if (s.emissive && s.color) { m.color.copy(s.color).multiplyScalar(1 - a); m.emissive.copy(s.emissive).lerp(W, a); } else m.opacity = s.opacity * (1 - a); } },
+    restore() { this.a = 0; for (const [m, s] of mats) { if (s.color) m.color.copy(s.color); if (s.emissive) m.emissive.copy(s.emissive); m.opacity = s.opacity; } } };
+}
+// the smallest circle around 2-D points (Welzl's method, the points shuffled): [x, y, r]
+function enclosingCircle(pts) {
+  const P = pts.slice();
+  for (let i = P.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [P[i], P[j]] = [P[j], P[i]]; }
+  const inside = (p, c) => Math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * (1 + 1e-9) + 1e-9;
+  const two = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, Math.hypot(a[0] - b[0], a[1] - b[1]) / 2];
+  const three = (a, b, c) => {
+    const bx = b[0] - a[0], by = b[1] - a[1], cx = c[0] - a[0], cy = c[1] - a[1], d = 2 * (bx * cy - by * cx);
+    if (Math.abs(d) < 1e-12) return [two(a, b), two(a, c), two(b, c)].reduce((m, q) => (q[2] > m[2] ? q : m));   // in a line
+    const ux = (cy * (bx * bx + by * by) - by * (cx * cx + cy * cy)) / d, uy = (bx * (cx * cx + cy * cy) - cx * (bx * bx + by * by)) / d;
+    return [a[0] + ux, a[1] + uy, Math.hypot(ux, uy)];
+  };
+  let c = null;
+  for (let i = 0; i < P.length; i++) if (!c || !inside(P[i], c)) {
+    c = [P[i][0], P[i][1], 0];
+    for (let j = 0; j < i; j++) if (!inside(P[j], c)) {
+      c = two(P[i], P[j]);
+      for (let k = 0; k < j; k++) if (!inside(P[k], c)) c = three(P[i], P[j], P[k]);
+    }
+  }
+  return c || [0, 0, 0];
+}
+// the camera glides to a pose (F1's refit, the viewer's refit and its way back); the limits it ends with apply at the end.
+// A drag, the wheel or WASD ends the glide at once
+let camTw = null;
+function camTo(pos, target, dur, lim, done = null) {
+  camTw = null;
+  controls.enableDamping = false; controls.update(); controls.enableDamping = true;     // no orbit left over from a drag
+  camTw = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), t: 0, dur, lim, done };
+  Object.assign(controls, { minDistance: 0, maxDistance: Infinity, minPolarAngle: 0, maxPolarAngle: Math.PI });
+}
+function camFinish() {
+  const w = camTw; if (!w) return; camTw = null;
+  camera.position.copy(w.p1); controls.target.copy(w.t1); Object.assign(controls, w.lim); controls.update();
+  w.done?.();
+}
+function camStep(dt) {
+  const w = camTw; if (!w) return false;
+  w.t = Math.min(w.dur, w.t + dt); const k = easeInOut(w.t / w.dur);
+  camera.position.lerpVectors(w.p0, w.p1, k); controls.target.lerpVectors(w.t0, w.t1, k); controls.update();
+  if (w.t >= w.dur) camFinish();
+  return true;
+}
 // the open picker's tiles in their order (the search applied), else the slot's whole list as the picker shows it
 async function viewList(slot) {
   if (openTopic === slot) return [...$("pkBody").querySelectorAll(".pk-cell")].map(c => c.dataset.item);
@@ -1562,138 +1649,253 @@ async function viewList(slot) {
   const list = (await propList(SLOTS[slot])).filter(p => slot !== "R" || p.mount !== "mount_Hand_L").map(p => p.name);
   return [...new Set(list)];
 }
+// the open picker marks the piece the viewer shows, and its header says what a tile click does while it is open (F4)
+function syncViewing() {
+  const S = Showcase, body = $("pkBody");
+  body.querySelectorAll(".pk-item[data-viewing]").forEach(b => b.removeAttribute("data-viewing"));
+  if (S.on && S.cur && openTopic === S.cur.slot) body.querySelector(`.pk-cell[data-item="${CSS.escape(S.cur.item)}"] > .pk-item`)?.setAttribute("data-viewing", "");
+  $("pkHint").hidden = !(S.on && VIEW_SLOTS.has(openTopic));
+}
+// phase: "off" | "in" (the character fading out) | "on" | "out" (the piece fading out, then the camera easing back)
 const Showcase = {
-  on: false, token: 0, cur: null, list: [], piece: null, loading: false,
+  on: false, phase: "off", token: 0, cur: null, list: [], piece: null, next: null, loading: false, fitted: false,
   group: new THREE.Group(), pivot: new THREE.Group(), holder: new THREE.Group(),
-  t: 0, r: 1, h0: 1, foot: 1, lift: 0, dragging: false, resumeAt: 0, fade: null, saved: null, fitKey: "",
+  t: 0, r: 1, h0: 1, size: new THREE.Vector3(1, 1, 1), rxz: .5, hull: [], look: new THREE.Vector3(), fitD: 1, foot: 1, lift: 0, shown: 0, dragging: false, resumeAt: 0,
+  hero: null, fx: null, heroTw: null, pieceTw: null, pieceTo: 1, liftTw: null, saved: null, fitKey: "", refitHero: false, pngChoose: false,
   async enter(slot, item, list = null) {
     if (!C || !VIEW_SLOTS.has(slot) || !item) return;
+    if (this.phase === "out") this.finishExit();            // back in while on the way out: that ends at once
     if (!this.on) {
+      camFinish();
       const K = C;
-      this.saved = { pos: camera.position.clone(), target: controls.target.clone(), min: controls.minDistance, max: controls.maxDistance,
-        minP: controls.minPolarAngle, maxP: controls.maxPolarAngle, pan: controls.enablePan, fitBox, fitH, floor: floor.visible,
-        floorWide: floorWide.visible, root: K.root.visible, cls: K.cls };
-      this.on = true; this.t = 0; wReset(); camFinish();
-      document.querySelector(".app").classList.add("viewing");
-      floor.visible = floorWide.visible = false;
-      scene.add(this.group);
-      this.fadeOut();
+      this.saved = { pos: camera.position.clone(), target: controls.target.clone(), lim: { minDistance: controls.minDistance, maxDistance: controls.maxDistance,
+        minPolarAngle: controls.minPolarAngle, maxPolarAngle: controls.maxPolarAngle }, pan: controls.enablePan, fitBox, fitH,
+        floor: floor.visible, floorWide: floorWide.visible, root: K.root.visible, cls: K.cls };
+      this.on = true; this.phase = "in"; this.t = 0; this.fitted = false; this.refitHero = false; wReset();
       controls.enablePan = false;
+      $("vmode").setAttribute("aria-pressed", "true"); $("shot").title = SHOT_TITLE.piece;
+      // the character and its floor shadows fade into the white stage with the camera still on them (0.2 s)
+      this.hero = whiteFader([K.root, floor, floorWide]);
+      this.heroTw = tween(.2, k => this.hero.set(k), () => this.heroGone());
     }
     this.list = list?.length ? list : await viewList(slot);
     if (!this.list.includes(item)) this.list.unshift(item);
+    syncViewing();
     return this.show(slot, item);
+  },
+  heroGone() {                              // the character has gone: the card and the piece take the stage
+    if (this.phase !== "in") return;
+    C.root.visible = false; floor.visible = floorWide.visible = false; this.hero.restore(); this.hero = null;
+    this.phase = "on"; scene.add(this.group); this.group.visible = !!this.piece;
+    document.querySelector(".app").classList.add("viewing"); resize();
+    renderCard(); this.swap();
   },
   async show(slot, item) {
     const tk = ++this.token;
-    this.cur = { slot, item }; this.loading = true; renderCard();
+    this.cur = { slot, item }; this.loading = true; this.pngChoose = false; renderCard(); syncViewing();
     let piece;
     try { piece = await makePiece(slot, item, { pose: "idle" }); await texturesReady(piece.view); }
     catch (e) { if (tk === this.token) { this.loading = false; renderCard(); err(e, "โหลดชิ้นนี้ไม่สำเร็จ ลองกดอีกครั้ง"); } return; }
     if (tk !== this.token || !this.on) { piece.dispose(); return; }            // a newer pick (held →) or the viewer closed
-    this.piece?.dispose();
-    this.piece = piece; this.loading = false;
-    this.holder.add(piece.view); this.holder.position.set(0, 0, 0); this.pivot.position.set(0, 0, 0); this.pivot.rotation.set(0, 0, 0);
+    this.loading = false;
+    this.next?.dispose(); this.next = piece;
+    renderCard(); this.swap();
+  },
+  // the next piece comes in once the character has gone and the old piece has faded out (90 ms)
+  swap() {
+    if (!this.next || this.phase !== "on") return;
+    if (this.piece) {
+      if (!this.pieceTw || this.pieceTo !== 0) this.fadePiece(0, .09, () => { this.piece?.dispose(); this.piece = null; this.fx = null; this.swap(); });
+      return;
+    }
+    const piece = this.next; this.next = null; this.piece = piece;
+    this.holder.add(piece.view); this.holder.position.set(0, 0, 0); this.pivot.position.set(0, 0, 0); this.pivot.rotation.set(0, 0, 0); this.pivot.scale.setScalar(1);
     this.group.updateMatrixWorld(true);
     const box = visibleBox(piece.view), s = box.getBoundingSphere(new THREE.Sphere()), size = box.getSize(new THREE.Vector3());
-    this.r = Math.max(s.radius, 0.02);
-    this.h0 = size.y / 2 + this.r * .22;                                       // its lowest point floats a little over the shadow
-    this.foot = Math.max(Math.hypot(size.x, size.z) / 2, this.r * .3);          // the shadow's radius (it turns: x and z both)
-    this.holder.position.copy(s.center).negate();                               // the centre on the turning axis
-    renderCard(); this.fit(true);
+    this.r = Math.max(s.radius, 0.02); this.size.copy(size);
+    // the turning axis (F5): through the centre of the smallest circle around its footprint, so an uneven piece swings as
+    // little as it can; its outline for the fit: per height band (24) and direction around the axis (12) the farthest vertex
+    const P = [], v = new THREE.Vector3();
+    piece.view.traverseVisible(o => { if (!o.isMesh) return; const n = o.geometry.attributes.position.count;
+      for (let i = 0; i < n; i++) { o.getVertexPosition(i, v).applyMatrix4(o.matrixWorld); P.push([v.x, v.y, v.z]); } });
+    const mec = enclosingCircle(P.map(q => [q[0], q[2]])), centre = new THREE.Vector3(mec[0], s.center.y, mec[1]);
+    const hull = new Map(), y0 = box.min.y - centre.y, yr = Math.max(size.y, 1e-4);
+    const dirs = Array.from({ length: 12 }, (_, k) => [Math.cos(k * Math.PI / 6), Math.sin(k * Math.PI / 6)]);
+    for (const q of P) {
+      const x = q[0] - centre.x, y = q[1] - centre.y, z = q[2] - centre.z, band = Math.min(23, Math.max(0, Math.floor((y - y0) / yr * 24)));
+      dirs.forEach(([c, sn], k) => { const key = band * 12 + k, e = x * c + z * sn, h = hull.get(key); if (!h || e > h[3]) hull.set(key, [x, y, z, e]); });
+      const kt = 400 + band * 2;                                                // the band's lowest and highest points
+      if (!hull.has(kt) || y < hull.get(kt)[1]) hull.set(kt, [x, y, z, 0]);
+      if (!hull.has(kt + 1) || y > hull.get(kt + 1)[1]) hull.set(kt + 1, [x, y, z, 0]);
+    }
+    this.hull = [...hull.values()];
+    this.rxz = Math.max(mec[2], 0.01);                                          // the real turning radius
+    this.h0 = size.y / 2 + this.r * .16;                                        // its lowest point floats a little over the shadow
+    this.foot = Math.max(this.rxz, this.r * .3);                                // the shadow's radius (it turns: x and z both)
+    this.holder.position.copy(centre).negate();                                 // the centre on the turning axis
+    this.fx = whiteFader([piece.view]); this.shown = 0; this.fx.set(1); this.pivot.scale.setScalar(.94);
+    this.group.visible = true;
+    renderCard(); this.fit(!this.fitted); this.fitted = true;
+    this.fadePiece(1, .22, () => this.fx?.restore());
   },
-  // the camera on the piece: target at its centre, distance so the sphere spans 60 % of the free stage's smaller side
-  fit(fresh = false) {
-    if (!this.on || !this.piece) return;
-    // desktop: the card covers the stage's foot, so the free stage is the part above it (the view offset centres it there)
-    const card = isPhone() ? 0 : $("showcase").offsetHeight + 22;
-    this.lift = card / 2; viewOff = -1;
-    const half = Math.tan(camera.fov * Math.PI / 360), side = Math.min(vh - card, Math.max(120, vw - stageInset)), d = this.r * vh / (0.6 * side * half);
+  // the piece in (to 1: out of the white stage, scale .94 to 1, ease-out) or out (to 0)
+  fadePiece(to, dur, done = null) {
+    stopTween(this.pieceTw);
+    const from = this.shown, fx = this.fx; this.pieceTo = to;
+    this.pieceTw = tween(dur, k => { this.shown = from + (to - from) * (to > from ? easeOut(k) : k); fx?.set(1 - this.shown); this.pivot.scale.setScalar(.94 + .06 * this.shown); },
+      () => { this.pieceTw = null; done?.(); });
+  },
+  // the camera on the piece (F5): fitted by what it really covers on screen over a whole turn and both ends of the bob (its
+  // outline points), as big as the free band between the toolbar and the card allows (94 % of its height and of its width),
+  // its shadow's centre inside it too; the same rule on a phone (the band = the stage above the card)
+  fit(fresh = false, animate = false) {
+    if (!this.piece || this.phase !== "on") return;
+    const sr = stage.getBoundingClientRect(), phone = isPhone();
+    const top = document.querySelector(".bar").getBoundingClientRect().bottom - sr.top + 8;
+    const bottom = phone ? vh - 8 : $("showcase").getBoundingClientRect().top - sr.top - 10;
+    const cy = phone ? vh / 2 + 22 : (top + bottom) / 2;             // a phone's view offset puts the picture 22 px lower
+    const half = Math.max(40, Math.min(cy - top, bottom - cy)) * .94, halfW = Math.max(60, (vw - stageInset) / 2 - 12) * .94;
     const dir = fresh ? new THREE.Vector3(0.3, 0.2, 1).normalize() : camera.position.clone().sub(controls.target).normalize();
-    controls.target.set(0, this.h0, 0); camera.position.copy(controls.target).addScaledVector(dir, d);
-    controls.minDistance = d * 0.4; controls.maxDistance = d * 2.5; controls.minPolarAngle = Math.PI * 0.05; controls.maxPolarAngle = Math.PI * 0.62;
+    const cam = camera.clone(), v = new THREE.Vector3(), amp = this.r * .06, target = new THREE.Vector3();
+    cam.clearViewOffset(); cam.updateProjectionMatrix();
+    const turn = Array.from({ length: 16 }, (_, a) => [Math.cos(a * Math.PI / 8), Math.sin(a * Math.PI / 8)]);
+    const fits = d => {
+      cam.position.copy(target).addScaledVector(dir, d); cam.lookAt(target); cam.updateMatrixWorld();
+      if (v.set(0, 0, 0).project(cam).y * -vh / 2 > half) return false;           // the shadow's centre
+      for (const bob of [-amp, amp]) for (const [c, s] of turn) for (const [x, y, z] of this.hull) {
+        v.set(x * c + z * s, this.h0 + bob + y, z * c - x * s).project(cam);              // turned about the axis as the pivot turns it
+        if (Math.abs(v.y) * vh / 2 > half || Math.abs(v.x) * vw / 2 > halfW) return false;
+      }
+      return true;
+    };
+    const nearest = () => {
+      let lo = this.r * .3, hi = this.r * 3;
+      for (let i = 0; i < 16 && !fits(hi); i++) { lo = hi; hi *= 1.6; }
+      for (let i = 0; i < 18; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; }
+      return hi;
+    };
+    // the look-at height: from the piece's centre down to halfway between its top and the shadow; the one that lets it be
+    // largest (a tall piece looks at its middle, a wide flat hat a little lower so its shadow shares the band)
+    const mid = (this.h0 + this.size.y / 2) / 2;
+    let best = null;
+    for (const k of [0, .34, .67, 1]) { target.set(0, this.h0 + (mid - this.h0) * k, 0); const d = nearest(); if (!best || d < best.d - 1e-6) best = { d, y: target.y }; }
+    target.set(0, best.y, 0);
+    const d = best.d, pos = target.clone().addScaledVector(dir, d), lift = phone ? 0 : vh / 2 - cy;
+    this.look.copy(target); this.fitD = d;                                      // scClamp keeps WASD near these
+    const lim = { minDistance: d * 0.4, maxDistance: d * 2.5, minPolarAngle: Math.PI * 0.05, maxPolarAngle: Math.PI * 0.62 };
     this.fitKey = `${vw}x${vh}/${stageInset}`;
-    controls.update();
+    stopTween(this.liftTw);
+    if (animate) {                          // a refit in view (a picker opened, the window resized): no jump
+      camTo(pos, target, .3, lim);
+      const l0 = this.lift; this.liftTw = tween(.3, k => { this.lift = l0 + (lift - l0) * easeInOut(k); viewOff = -1; });
+    } else {
+      camTw = null; this.lift = lift; viewOff = -1;
+      Object.assign(controls, lim); controls.target.copy(target); camera.position.copy(pos); controls.update();
+    }
   },
-  refit() { if (this.on && this.fitKey !== `${vw}x${vh}/${stageInset}`) this.fit(); },
+  refit() { if (this.phase === "on" && this.piece && this.fitKey !== `${vw}x${vh}/${stageInset}`) this.fit(false, true); },
   step(d) {
     if (!this.on || !this.cur || this.list.length < 2) return;
     const n = this.list.length, i = this.list.indexOf(this.cur.item);
     this.show(this.cur.slot, this.list[((i < 0 ? 0 : i) + d + n) % n]);
   },
-  // the character fades out (0.25 s), then hides; its materials get their own settings back
-  fadeOut() {
-    const mats = new Map();
-    C.root.traverse(o => { for (const m of [].concat(o.material || [])) if (!mats.has(m)) mats.set(m, { transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite }); });
-    for (const m of mats.keys()) { m.transparent = true; m.depthWrite = false; }
-    this.fade = { t: 0, mats };
+  exit(instant = false) {
+    if (!this.on) { if (instant && this.phase === "out") this.finishExit(); return; }
+    this.token++; this.on = false; this.loading = false; this.next?.dispose(); this.next = null; this.pngChoose = false;
+    this.phase = "out";
+    $("vmode").setAttribute("aria-pressed", "false"); $("shot").title = SHOT_TITLE.hero;
+    syncViewing();
+    if (instant || !C || C.cls !== this.saved.cls) return this.finishExit();
+    stopTween(this.heroTw);
+    if (this.piece) this.fadePiece(0, .15, () => this.back()); else this.back();       // the piece fades out (0.15 s)
   },
-  endFade() {
-    if (!this.fade) return;
-    for (const [m, s] of this.fade.mats) Object.assign(m, s);
-    this.fade = null;
-  },
-  exit() {
-    if (!this.on) return;
-    this.token++; this.on = false; this.loading = false;
-    this.endFade();
-    this.piece?.dispose(); this.piece = null; this.cur = null;
-    scene.remove(this.group);
+  // the piece has gone: the camera eases back (0.3 s) while the character fades in (0.25 s)
+  back() {
+    if (this.phase !== "out") return;
+    this.piece?.dispose(); this.piece = null; this.fx = null; this.cur = null; scene.remove(this.group);
+    document.querySelector(".app").classList.remove("viewing"); renderCard(); resize();
     const S = this.saved;
-    if (C && C.cls === S.cls) C.root.visible = S.root;
+    C.root.visible = S.root; floor.visible = S.floor; floorWide.visible = S.floorWide;
+    if (!this.hero) { this.hero = whiteFader([C.root, floor, floorWide]); this.hero.set(1); }
+    const a0 = this.hero.a;
+    this.heroTw = tween(.25, k => this.hero?.set(a0 * (1 - k)), () => { this.hero?.restore(); this.hero = null; });
+    const l0 = this.lift; stopTween(this.liftTw);
+    this.liftTw = tween(.3, k => { this.lift = l0 * (1 - easeInOut(k)); viewOff = -1; });
+    // the character changed while it was hidden (ใส่ชิ้นนี้, undo) and its camera was the fitted one: back to its new fit (F1)
+    if (this.refitHero && atFit(S.pos, S.target)) {
+      const f = heroFitPose(); setFit(f);
+      Object.assign(S, { pos: f.pos, target: f.target, lim: f.lim, fitBox: f.fitBox, fitH: f.h });
+    }
+    this.refitHero = false;
+    camTo(S.pos, S.target, .3, S.lim, () => this.finishExit());
+  },
+  finishExit() {                            // the end of the way out, exactly (also at once: a class switch, a quick way back in)
+    stopTween(this.heroTw); stopTween(this.pieceTw); stopTween(this.liftTw);
+    this.piece?.dispose(); this.piece = null; this.fx = null; this.next?.dispose(); this.next = null; this.cur = null;
+    scene.remove(this.group);
+    this.hero?.restore(); this.hero = null;
+    const S = this.saved, same = C && C.cls === S.cls;
+    if (same) C.root.visible = S.root;
     floor.visible = S.floor; floorWide.visible = S.floorWide;
-    // no orbit left over from a drag in the viewer: one undamped update clears it, then the camera exactly as it was
+    camTw = null;
     controls.enableDamping = false; controls.update();
-    Object.assign(controls, { minDistance: S.min, maxDistance: S.max, minPolarAngle: S.minP, maxPolarAngle: S.maxP, enablePan: S.pan });
+    Object.assign(controls, S.lim, { enablePan: S.pan });
     camera.position.copy(S.pos); controls.target.copy(S.target); controls.update(); controls.enableDamping = true;
     fitBox = S.fitBox; fitH = S.fitH; this.lift = 0; viewOff = -1;
-    document.querySelector(".app").classList.remove("viewing");
-    renderCard();
+    const refit = same && this.refitHero && atFit(S.pos, S.target);
+    this.phase = "off"; this.on = false; this.refitHero = false;
+    document.querySelector(".app").classList.remove("viewing"); renderCard(); syncViewing();
+    if (refit) fitCamera(true);             // the character changed on the way out
   },
   update(dt) {
-    if (!this.on) return;
+    if (!this.piece) return;
     this.t += dt;
-    if (this.fade) {
-      this.fade.t += dt;
-      const a = Math.max(0, 1 - this.fade.t / 0.25);
-      for (const [m, s] of this.fade.mats) m.opacity = s.opacity * a;
-      if (a <= 0) { C.root.visible = false; this.endFade(); }
-    }
     if (!this.dragging && performance.now() > this.resumeAt) this.pivot.rotation.y += dt * Math.PI / 9;     // 20 deg/s
     const up = (Math.sin(this.t * Math.PI * 2 / 3) + 1) / 2;                 // 0 at the bottom of the bob, 1 at the top
     this.pivot.position.y = this.h0 + (up - .5) * 2 * this.r * .06;           // amplitude 3 % of the piece's size (2r)
-    vShadow.scale.setScalar(this.foot * (1 - .14 * up)); vShadow.material.opacity = 1 - .3 * up;
-    this.piece?.mixer?.update(dt);                                             // wings flap, as on the character
+    vShadow.scale.setScalar(this.foot * (1 - .14 * up)); vShadow.material.opacity = (1 - .3 * up) * this.shown;
+    this.piece.mixer?.update(dt);                                              // wings flap, as on the character
   },
 };
 Showcase.group.add(Showcase.pivot, vShadow); Showcase.pivot.add(Showcase.holder);
 // The turntable pauses only during a rotate drag: one pointer down, the left mouse button or a finger / pen, moved more
 // than 4 px. OrbitControls' "start" / "end" also fire for the wheel and pinch, so the canvas's own pointer events decide
-// (capture phase, before the controls). A drag that ends resumes after 3 s; a pinch resumes at once.
+// (capture phase, before the controls). A drag that ends resumes after 3 s; a pinch resumes at once, and the finger left
+// down when a pinch ends is not a drag (scMulti, until every finger is up). Any of them ends a camera glide first
 const scPtr = new Map(), scCap = { capture: true };
-let scMoved = false;
+let scMoved = false, scMulti = false;
 function scSync() {
-  const p = scPtr.size === 1 ? [...scPtr.values()][0] : null, rot = !!(p && p.rot && scMoved);
+  const p = scPtr.size === 1 ? [...scPtr.values()][0] : null, rot = !!(p && p.rot && scMoved && !scMulti);
   if (Showcase.dragging && !rot) Showcase.resumeAt = scPtr.size > 1 ? 0 : performance.now() + 3000;
   Showcase.dragging = rot;
 }
 renderer.domElement.addEventListener("pointerdown", e => {
-  scPtr.set(e.pointerId, { rot: e.pointerType !== "mouse" || e.button === 0, x: e.clientX, y: e.clientY }); scMoved = false; scSync();
+  camFinish();
+  scPtr.set(e.pointerId, { rot: e.pointerType !== "mouse" || e.button === 0, x: e.clientX, y: e.clientY }); scMoved = false;
+  if (scPtr.size > 1) scMulti = true;
+  scSync();
 }, scCap);
+renderer.domElement.addEventListener("wheel", () => camFinish(), { capture: true, passive: true });
 renderer.domElement.addEventListener("pointermove", e => {
   const p = scPtr.get(e.pointerId);
   if (p && !scMoved && Math.hypot(e.clientX - p.x, e.clientY - p.y) > 4) { scMoved = true; scSync(); }
 }, scCap);
 for (const ev of ["pointerup", "pointercancel"]) renderer.domElement.addEventListener(ev, e => {
-  if (scPtr.delete(e.pointerId)) { if (!scPtr.size) scMoved = false; scSync(); }
+  if (scPtr.delete(e.pointerId)) { if (!scPtr.size) scMoved = scMulti = false; scSync(); }
 }, scCap);
 const scOff = new THREE.Vector3();
-function scClamp() {   // WASD in the viewer: the look-at point stays within the piece's radius of its centre (0, h0, 0)
-  scOff.copy(controls.target).sub(new THREE.Vector3(0, Showcase.h0, 0));
-  const len = scOff.length(), R = Showcase.r;
+// WASD in the viewer: the look-at point stays near the fit's (a quarter of the piece's radius at the fitted distance, more
+// when zoomed in), so the piece can be looked over but never pushed out of view
+function scClamp() {
+  const S = Showcase, dist = camera.position.distanceTo(controls.target);
+  scOff.copy(controls.target).sub(S.look);
+  const len = scOff.length(), R = S.r * Math.min(1, .25 * Math.max(1, S.fitD / Math.max(dist, 1e-6)));
   if (len > R) { scOff.multiplyScalar(R / len - 1); controls.target.add(scOff); camera.position.add(scOff); }
 }
-// the card (a Ledger slip at the stage's foot; on a phone the bottom area): name, slot, sets, colour, the tools
+// the card (a Ledger slip centred under the piece; on a phone the bottom area). F2: its buttons never move: the name and
+// ‹ i / n › on the first line, the slot / sets / colour line (never empty: the slot is always there), then the action row
+// with the same buttons for every piece (worn = ใส่อยู่, disabled; two textures = one ดาวน์โหลดลาย that turns into
+// ลาย 1 / ลาย 2 in place), กลับ last
 const SC_ICON = {
   prev: `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   next: `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -1701,42 +1903,55 @@ const SC_ICON = {
   wear: `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` };
 function renderCard() {
   const el = $("showcase"), S = Showcase;
-  if (!S.on || !S.cur || !C) { el.hidden = true; el.innerHTML = ""; return; }
+  if (S.phase === "out" && S.piece) return;                   // on the way out the card stays until the piece has gone
+  if (!S.on || !S.cur || !C || S.phase !== "on") { el.hidden = true; el.innerHTML = ""; return; }
   const { slot, item } = S.cur, kind = kindOf(slot), worn = slot === "outfit" ? C.state.outfit === item : C.state[slot] === item;
   const sets = (C.sets || []).filter(s => [s.outfit, s.R, s.L, s.Head, s.Back].includes(item));
   const o = kind === "outfits" && C.outfits.find(x => x.name === item), texs = texsOf(kind, item);
   const mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
   const c = o && o.colors.length ? (o.colors.includes(C.state.color) ? C.state.color : o.colors[0]) : null, e = c && edOf(o, c, C.state.edition);
-  const meta = [sets.length && `เซ็ต ${sets.slice(0, 2).map(setNameHTML).join(" · ")}${sets.length > 2 ? ` · อีก <span class="num">${sets.length - 2}</span>` : ""}`,
+  const meta = [`<span class="sc-slot">${SLOT_TH[slot]}</span>`,
+    sets.length && `เซ็ต ${sets.slice(0, 2).map(setNameHTML).join(" · ")}${sets.length > 2 ? ` · อีก <span class="num">${sets.length - 2}</span>` : ""}`,
     mine ? "ลายของคุณ" : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`, S.loading && "กำลังโหลด…"].filter(Boolean);
   const i = S.list.indexOf(item), n = S.list.length;
   const b = (a, label, short, icon, extra = "", title = label) => `<button type="button" class="sc-b" data-a="${a}" title="${title}" aria-label="${label}"${extra}>${icon || ""}`
     + `<span class="l-full">${label}</span><span class="l-short">${short}</span></button>`;
+  const nav = (a, label, key) => `<button type="button" class="sc-b nav" data-a="${a}" title="${label} (${key})" aria-label="${label}"${n > 1 ? "" : " disabled"}>${SC_ICON[a]}</button>`;
+  const alt = (cls, on, x, y) => `<span class="sc-alt ${cls}"><span${on ? "" : ' class="off"'}>${x}</span><span${on ? ' class="off"' : ""}>${y}</span></span>`;
+  const wearLbl = worn ? "ใส่อยู่" : "ใส่ชิ้นนี้";
+  const wear = `<button type="button" class="sc-b sc-wear" data-a="wear" title="${wearLbl}" aria-label="${wearLbl}"${worn ? " disabled" : ' data-primary="1"'}>${SC_ICON.wear}`
+    + alt("l-full", !worn, "ใส่ชิ้นนี้", "ใส่อยู่") + alt("l-short", !worn, "ใส่", "ใส่อยู่") + `</button>`;
+  const model = hasModel(kind, item);
+  const glb = b("glb", "ดาวน์โหลดโมเดล 3D", "3D", SK_ICON.dl, model ? "" : " disabled", model ? "ดาวน์โหลดโมเดล 3D (.glb)" : "ชิ้นนี้ไม่มีโมเดล 3D");
   const png = !texs.length ? b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, " disabled", "ชิ้นนี้ไม่มีลาย")
-    : texs.map((t, k) => b("png", texs.length > 1 ? `ดาวน์โหลดลาย ${k + 1}` : "ดาวน์โหลดลาย", texs.length > 1 ? `ลาย ${k + 1}` : "ลาย", SK_ICON.dl, ` data-tex="${t}"`)).join("");
-  el.innerHTML = `${viewMode ? `<span class="sc-mode">โหมดชมชิ้นส่วน · กดช่องไอเท็มเพื่อชม</span>` : ""}`
-    + `<div class="sc-head"><b class="sc-name">${nameHTML(item)}</b><span class="sc-slot">${SLOT_TH[slot]}${worn ? " · ใส่อยู่" : ""}</span>`
-    + (n > 1 ? `<span class="sc-count num">${i + 1} / ${n}</span>` : "") + `</div>`
-    + `<div class="sc-meta">${meta.join(`<span class="sc-dot" aria-hidden="true">·</span>`) || "&nbsp;"}</div>`
-    + `<div class="sc-acts">`
-    + `<button type="button" class="sc-b nav" data-a="prev" title="ชิ้นก่อนหน้า (←)" aria-label="ชิ้นก่อนหน้า"${n > 1 ? "" : " disabled"}>${SC_ICON.prev}</button>`
-    + (worn ? "" : b("wear", "ใส่ชิ้นนี้", "ใส่", SC_ICON.wear, ' data-primary="1"'))
-    + b("glb", "ดาวน์โหลดโมเดล 3D", "3D", SK_ICON.dl, hasModel(kind, item) ? "" : " disabled", hasModel(kind, item) ? "ดาวน์โหลดโมเดล 3D (.glb)" : "ชิ้นนี้ไม่มีโมเดล 3D") + png
-    + `<button type="button" class="sc-b nav" data-a="next" title="ชิ้นถัดไป (→)" aria-label="ชิ้นถัดไป"${n > 1 ? "" : " disabled"}>${SC_ICON.next}</button>`
-    + b("close", "กลับ", "กลับ", SC_ICON.close, ' data-close="1"', "กลับไปที่ตัวละคร (Esc)") + `</div>`;
+    : texs.length === 1 ? b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, ` data-tex="${texs[0]}"`)
+    : `<span class="sc-pick${S.pngChoose ? " choose" : ""}">` + b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, S.pngChoose ? ' tabindex="-1"' : "", `ดาวน์โหลดลาย (ชิ้นนี้มี ${texs.length} ลาย)`)
+      + `<span class="sc-pair">` + texs.map((t, k) => `<button type="button" class="sc-b" data-a="png" data-tex="${t}" title="ดาวน์โหลดลาย ${k + 1}" aria-label="ดาวน์โหลดลาย ${k + 1}"${S.pngChoose ? "" : ' tabindex="-1"'}>`
+        + `${SK_ICON.dl}<span class="l-full">ลาย <span class="num">${k + 1}</span></span><span class="l-short num">${k + 1}</span></button>`).join("") + `</span></span>`;
+  el.innerHTML = `<div class="sc-head"><b class="sc-name">${nameHTML(item)}</b><span class="sc-nav">${nav("prev", "ชิ้นก่อนหน้า", "←")}`
+    + `<span class="sc-count num" style="min-width: ${String(n).length * 2 + 3}ch">${i + 1} / ${n}</span>${nav("next", "ชิ้นถัดไป", "→")}</span></div>`
+    + `<div class="sc-meta">${meta.join(`<span class="sc-dot" aria-hidden="true">·</span>`)}</div>`
+    + `<div class="sc-acts">${wear}${glb}${png}${b("close", "กลับ", "กลับ", SC_ICON.close, ' data-close="1"', "กลับไปที่ตัวละคร (Esc)")}</div>`
+    + (n > 1 ? `<p class="sc-hint">ปัดซ้ายหรือขวาเพื่อดูชิ้นอื่น</p>` : "");
   el.hidden = false;
 }
 $("showcase").addEventListener("click", async e => {
   const btn = e.target.closest(".sc-b"), S = Showcase;
-  if (!btn || btn.disabled || !S.cur) return;
+  if (!btn || btn.disabled || !S.cur || !S.on) return;
   const { slot, item } = S.cur, a = btn.dataset.a;
   if (a === "close") return S.exit();
   if (a === "prev" || a === "next") return S.step(a === "next" ? 1 : -1);
   if (a === "glb") return modelDownload(slot, item);
-  if (a === "png") return skinDownload(slot, item, btn.dataset.tex).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+  if (a === "png") {
+    if (btn.dataset.tex == null && texsOf(kindOf(slot), item).length > 1) {      // which texture? (F3: in the same place)
+      S.pngChoose = true; renderCard(); $("showcase").querySelector(".sc-pair .sc-b")?.focus(); return;
+    }
+    if (S.pngChoose) { S.pngChoose = false; renderCard(); }
+    return skinDownload(slot, item, btn.dataset.tex).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+  }
   if (a === "wear") {                    // one undo step, like a pick in the picker
     await tracked(() => (slot === "outfit" ? setOutfit(item, C.state.color) : setProp(slot, item))).catch(err);
-    renderTopics(); syncPressed(); renderCard(); toast(`ใส่ ${humanize(item)} แล้ว`);
+    renderTopics(); syncPressed(); renderCard(); autoFit(); toast(`ใส่ ${humanize(item)} แล้ว`);
   }
 });
 // the piece the viewer shows wears a new skin, colour or face at once
@@ -1744,11 +1959,14 @@ function refreshShowcase(kind, item) {
   const S = Showcase;
   if (S.on && S.cur && kindOf(S.cur.slot) === kind && (item == null || S.cur.item === item)) S.show(S.cur.slot, S.cur.item);
 }
-$("vmode").onclick = () => {
-  viewMode = !viewMode;
-  $("vmode").setAttribute("aria-pressed", viewMode);
-  if (!viewMode) Showcase.exit(); else renderCard();
-  toast(viewMode ? "โหมดชมชิ้นส่วน\nกดช่องไอเท็มในหัวข้อเพื่อชมชิ้นนั้น" : "ปิดโหมดชมชิ้นส่วนแล้ว", 2500);
+// the toolbar's ชมชิ้นส่วน (F4): it opens the viewer on the open item picker's worn piece (else that picker's first), or on
+// the outfit, and closes it again; its pressed state is the viewer's (enter / exit set it)
+$("vmode").onclick = async () => {
+  if (Showcase.on) return Showcase.exit();
+  if (!C) return;
+  const t = VIEW_SLOTS.has(openTopic) ? openTopic : "outfit", list = await viewList(t);
+  const it = (t === "outfit" ? C.state.outfit : C.state[t]) || list[0];
+  if (it) Showcase.enter(t, it, list); else Showcase.enter("outfit", C.state.outfit);
 };
 // a double-click on a piece of the character (the ray Ctrl+V uses)
 renderer.domElement.addEventListener("dblclick", e => {
@@ -1853,6 +2071,7 @@ function renderTopics() {
   // a colour the outfit's edition lacks drops that edition (edOf): the worn R / V pieces go back to ปกติ in the same
   // undo step, so the outfit, the pieces and the chips agree
   box.querySelectorAll(".csw").forEach(b => b.onclick = async () => {
+    if (Showcase.on && Showcase.cur?.slot !== "outfit") Showcase.exit();     // a colour shows on the character (or the floating outfit)
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
     if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nกดคืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
@@ -1902,7 +2121,7 @@ function setInset() {
 }
 function closePicker() {
   const t = openTopic, held = $("picker").contains(document.activeElement);   // Escape with the search box focused
-  openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); setInset(); renderTopics();
+  openTopic = null; $("picker").hidden = true; document.querySelector(".app").classList.remove("picking"); setInset(); renderTopics(); syncViewing();
   if (held && t) document.querySelector(`#topics [data-t="${t}"]`)?.focus();   // not on a hidden input
 }
 // a picker tile; o = { title, face, fb: the stand-in when there is no icon, over: drawn over the picture, dot: "tto" | "tot" }
@@ -1939,11 +2158,13 @@ async function openPicker(t, opts = {}) {
   // picking keeps the panel open (user: "I should be able to swap easily"): mark the tile, apply, then mark again from
   // what is really worn (F3); a class switch dims the tapped tile until the class has loaded
   const pick = (fn, msg) => body.querySelectorAll(".pk-item").forEach(b => b.onclick = async () => {
-    if (viewMode && VIEW_SLOTS.has(t)) {   // ชมชิ้นส่วน mode: the tile's piece floats instead of being worn (no undo step)
+    if (Showcase.on && VIEW_SLOTS.has(t)) {   // the open viewer is the mode (F4): the tile's piece floats, nothing is worn
       const it = b.closest(".pk-cell")?.dataset.item;
       if (it) Showcase.enter(t, it, await viewList(t)); else toast("ช่องนี้ไม่มีชิ้นให้ชม");
       return;
     }
+    // a set, a move, or a face while a hat or a weapon floats, shows on the character: the viewer gives the stage back first
+    if (Showcase.on && t !== "class" && !(t === "face" && Showcase.cur?.slot === "outfit")) Showcase.exit();
     if (t === "class") { if (b.getAttribute("aria-pressed") === "true") return; b.setAttribute("aria-busy", "true"); body.setAttribute("aria-busy", "true"); }
     else body.querySelectorAll(".pk-item").forEach(x => x.setAttribute("aria-pressed", x === b));
     let ok = true;
@@ -2001,10 +2222,12 @@ async function openPicker(t, opts = {}) {
       body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !C.state[t], null, { fb: glyph(t) })) + items.map(p => cell(t, p.name,
         item(`data-p="${p.name}"`, nameHTML(p.name), p.name === C.state[t], iconOf(SLOT_KEY[t], p.name)?.icon, { dot: badge(p), fb: noIcon(p.name), title: humanize(p.name) }))).join("");
       pick(b => setProp(t, b.dataset.p || null));
+      syncViewing();
     };
     inp.oninput = draw; draw();
     if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus({ preventScroll: true });   // touch: focusing pops the keyboard over the sheet
   }
+  syncViewing();
   if (redraw) { body.scrollTop = keepScroll; return; }
   body.scrollTop = 0;                        // a list emptied and refilled in one task keeps the last picker's scroll
   const worn = body.querySelector(".pk-item[aria-pressed=true]");
@@ -2092,43 +2315,20 @@ function fitCamera(animate = false) {
 }
 const atFit = (pos = camera.position, target = controls.target) => !!fitAt
   && pos.distanceTo(fitAt.pos) < fitH * 1e-3 + 1e-5 && target.distanceTo(fitAt.target) < fitH * 1e-3 + 1e-5;
-// after a change of what is worn: the camera follows the new bounds, unless the visitor has moved it (F1)
+// after a change of what is worn: the camera follows the new bounds, unless the visitor has moved it (F1). While the
+// viewer is open the character's camera is refitted when it comes back
 function autoFit() {
   if (!C || !fitAt) return;
-  if (Showcase.on) return;
+  if (Showcase.phase !== "off") { Showcase.refitHero = true; return; }
   if (!camTw && atFit()) fitCamera(true);
 }
-const easeInOut = k => (k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2);
-// the camera glides to a pose (F1's refit); the limits it ends with apply at the end.
-// A drag, the wheel or WASD ends the glide at once
-let camTw = null;
-function camTo(pos, target, dur, lim, done = null) {
-  camTw = null;
-  controls.enableDamping = false; controls.update(); controls.enableDamping = true;     // no orbit left over from a drag
-  camTw = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), t: 0, dur, lim, done };
-  Object.assign(controls, { minDistance: 0, maxDistance: Infinity, minPolarAngle: 0, maxPolarAngle: Math.PI });
-}
-function camFinish() {
-  const w = camTw; if (!w) return; camTw = null;
-  camera.position.copy(w.p1); controls.target.copy(w.t1); Object.assign(controls, w.lim); controls.update();
-  w.done?.();
-}
-function camStep(dt) {
-  const w = camTw; if (!w) return false;
-  w.t = Math.min(w.dur, w.t + dt); const k = easeInOut(w.t / w.dur);
-  camera.position.lerpVectors(w.p0, w.p1, k); controls.target.lerpVectors(w.t0, w.t1, k); controls.update();
-  if (w.t >= w.dur) camFinish();
-  return true;
-}
-renderer.domElement.addEventListener("pointerdown", () => camFinish(), { capture: true });
-renderer.domElement.addEventListener("wheel", () => camFinish(), { capture: true, passive: true });
 let fitBox = null, fitH = 1, viewOff = -1;
 // the camera's view offset: x = half the desktop picker's width (F1), y = on a phone, half the toolbar's band (the hero
 // stands in the part of the small stage the toolbar leaves free)
 function applyViewOffset() {
   viewOff = insetNow;
   // ชมชิ้นส่วน on a desktop: the floating piece centred in the stage above its card (task 16)
-  const dy = isPhone() ? 22 : Showcase.on ? -Showcase.lift : 0;
+  const dy = isPhone() ? 22 : -Showcase.lift;
   if (insetNow > 0 || dy) camera.setViewOffset(vw, vh, -insetNow / 2, -dy, vw, vh); else camera.clearViewOffset();
 }
 function limitCamera() {                  // the camera may look up at the hero, but never from under the floor (y 0)
@@ -2141,7 +2341,7 @@ function clampTarget() {
   const t = controls.target, c = t.clone().clamp(fitBox.min, fitBox.max);
   if (!c.equals(t)) { const d = c.sub(t); t.add(d); camera.position.add(d); }
 }
-$("resetCam").onclick = () => C && (Showcase.on ? Showcase.fit(true) : fitCamera(true));
+$("resetCam").onclick = () => C && (Showcase.on ? Showcase.fit(true, true) : fitCamera(true));
 // WASD camera (task 12, like the Bible's reach preview): W / S move the look-at point up / down along world Y, A / D strafe on the ground plane;
 // the camera moves with it, so distance and angles stay. 0.3 view-widths per second, each frame closes 12 % of what is left (eased).
 // By e.code so a Thai layout works; Ctrl / Meta / Alt and text fields are ignored; held keys clear on blur; the loop stops when settled.
@@ -2187,9 +2387,21 @@ function saturate(g, w, h, s) {
   }
   g.putImageData(id, 0, 0);
 }
-const shotName = () => { const s = (C.sets || []).find(setWorn);
-  if (Showcase.on && Showcase.cur) return `12tails_${CLASS_TH[C.cls] || C.cls}_${humanize(Showcase.cur.item)}.png`;   // the floating piece
-  return `12tails_${CLASS_TH[C.cls] || C.cls}_${s ? setName(s) : humanize(C.state.outfit)}.png`; };
+// the floating piece's file carries its slot (F11: 12tails_แกะ_หมวก_Cake_Hat.png), the character's its set or outfit
+const shotName = () => { const s = (C.sets || []).find(setWorn), cls = CLASS_TH[C.cls] || C.cls;
+  if (Showcase.on && Showcase.cur) return `12tails_${cls}_${SLOT_TH[Showcase.cur.slot]}_${humanize(Showcase.cur.item)}.png`;
+  return `12tails_${cls}_${s ? setName(s) : humanize(C.state.outfit)}.png`; };
+// the viewer's picture (F11): cut to what is drawn plus a 6 % margin (of its longer side) all round, still transparent
+function cropToAlpha(cv) {
+  const W = cv.width, H = cv.height, d = cv.getContext("2d", { willReadFrequently: true }).getImageData(0, 0, W, H).data;
+  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (let y = 0; y < H; y++) for (let x = 0, i = y * W * 4 + 3; x < W; x++, i += 4) if (d[i] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 < 0) return cv;
+  const w = x1 - x0 + 1, h = y1 - y0 + 1, m = Math.round(Math.max(w, h) * .06);
+  const out = Object.assign(document.createElement("canvas"), { width: w + 2 * m, height: h + 2 * m });
+  out.getContext("2d").drawImage(cv, x0, y0, w, h, m, m, w, h);
+  return out;
+}
 $("shot").onclick = () => {
   if (!C) return;
   const pr = renderer.getPixelRatio(), s = Math.max(2, devicePixelRatio);
@@ -2205,7 +2417,8 @@ $("shot").onclick = () => {
   if (!native) saturate(g, W, H, 1.15);
   renderer.setPixelRatio(pr); renderer.setSize(vw, vh, false);          // back to the screen, in the same frame (no blank flash)
   applyViewOffset(); renderer.render(scene, camera);
-  cv.toBlob(b => { if (b) { saveBlob(b, shotName()); toast("บันทึกภาพแล้ว"); } else toast("บันทึกภาพไม่สำเร็จ ลองกดอีกครั้ง", 2500); }, "image/png");
+  const out = Showcase.on && Showcase.piece ? cropToAlpha(cv) : cv;
+  out.toBlob(b => { if (b) { saveBlob(b, shotName()); toast("บันทึกภาพแล้ว"); } else toast("บันทึกภาพไม่สำเร็จ ลองกดอีกครั้ง", 2500); }, "image/png");
 };
 // uploaded skins live in this tab only (F12): leaving with one asks first
 addEventListener("beforeunload", e => { if (SKINS.size) { e.preventDefault(); e.returnValue = ""; } });
@@ -2221,13 +2434,17 @@ const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
   if (C) { C.mixer.update(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
+  runTweens(dt);
   Showcase.update(dt);
   // the picker's view offset glides in and out (F1)
   insetNow += (stageInset - insetNow) * .2;
   if (Math.abs(stageInset - insetNow) < .5) insetNow = stageInset;
   if (insetNow !== viewOff) applyViewOffset();
-  if (camStep(dt)) {}                       // a camera glide drives the camera itself (F1)
-  else if (Showcase.on) { controls.update(); scClamp(); } else { limitCamera(); controls.update(); clampTarget(); }   // the viewer has its own limits
+  // a camera glide drives the camera itself; the viewer has its own limits; the character's camera keeps to its own
+  const S = Showcase;
+  if (camStep(dt)) {}
+  else if ((S.phase === "on" && S.fitted) || (S.phase === "out" && S.piece)) { controls.update(); scClamp(); }
+  else { limitCamera(); controls.update(); clampTarget(); }
   renderer.render(scene, camera);
 });
 resize();
