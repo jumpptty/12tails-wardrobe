@@ -42,17 +42,35 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
 button, input { font: inherit; color: inherit; }
 button { transition: transform .12s, filter .12s, border-color .12s, opacity .12s; -webkit-tap-highlight-color: transparent; }
 /* hover = a small lift and a little light, never a glow (Bible rule); a tap on a touch screen would leave it raised */
-@media (hover: hover) { button:not(:disabled):hover, a.brand-mark:hover { transform: translateY(-1px); filter: brightness(1.1); } }
+@media (hover: hover) { button:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.1); } }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .app { --side: 300px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
 aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column;
   scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-/* the panel's lockup (ruling R66): the Bible's mark (a link in the public copy, wardrobe_publish.py) over the page name */
-.brand { display: flex; flex-direction: column; align-items: flex-start; margin: 0 0 10px; }
-.brand-mark { font-size: 11.5px; font-weight: 700; line-height: 1.3; letter-spacing: .04em; color: var(--gold); text-decoration: none; transition: transform .12s, filter .12s; }
-h1 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; }
+/* the panel's lockup (user 2026-11-08: "use the brand icon and the tool name in a single row"): the Bible's own logo (the
+   link to the Bible, a new tab, in the public copy: wardrobe_publish.py), a hairline, then ห้องแต่งตัว, centred on one row */
+.lockup { display: flex; align-items: center; gap: 11px; margin: 0 0 10px; min-width: 0; }
+.lockup-rule { flex: none; align-self: stretch; width: 1px; margin: 3px 0; background: var(--line); }
+/* the logo, copied from the 12 Tails Bible (its .brand rules and markup, checked 2026-11-08): the gold "12" mark, the gold
+   spine, TAILS over BIBLE; 15 px here (the Bible's bar uses 19): the TAILS / BIBLE pair is then as tall as the title's
+   letters (16.5 px against ห้องแต่งตัว's 16 px, cap height 14 px at 20 px) */
+.brand { display: inline-flex; align-items: center; gap: .22em; flex: none; text-decoration: none; font-family: 'Prompt', sans-serif;
+  font-size: 15px; font-weight: 700; line-height: 1; }
+.brand-mark { display: block; flex: none; width: auto; height: 1.7em; }
+.brand-spine { flex: none; align-self: stretch; width: .06em; margin: .1em .06em; background: linear-gradient(transparent, #d4af37 18%, #d4af37 82%, transparent); }
+.brand-word { display: flex; flex-direction: column; gap: .24em; font-size: .66em; }
+.brand-word span { display: block; white-space: nowrap; text-box: trim-both cap alphabetic; }
+.brand-word span:first-child { color: #f4ecdc; letter-spacing: .015em; margin-right: -.015em; }   /* spaced to BIBLE's width */
+.brand-word span:last-child { background: linear-gradient(180deg, #f6df98 10%, #d4af37 55%, #a07c26 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* the Bible's hover: the logo's parts lift a little and brighten, no glow; the link itself stays put (no cursor flicker at
+   its edge). Mouse devices only, like the page's other hovers (a tap would leave it raised) */
+.brand-mark, .brand-spine, .brand-word { transition: translate .2s ease, filter .2s ease; }
+@media (hover: hover) { .brand:hover :is(.brand-mark, .brand-spine, .brand-word) { translate: 0 -1.5px; filter: brightness(1.15); } }
+.brand:focus-visible :is(.brand-mark, .brand-spine, .brand-word) { translate: 0 -1.5px; filter: brightness(1.15); }
+.brand:active :is(.brand-mark, .brand-spine, .brand-word) { translate: 0 0; transition-duration: .06s; }
+h1 { margin: 0; min-width: 0; font-size: 20px; font-weight: 700; line-height: 1.3; white-space: nowrap; }
 input[type=search] { width: 100%; background: var(--well); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; outline-offset: 0; }
 input[type=search]:focus { border-color: var(--gold); }
 main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
@@ -241,7 +259,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 @media (max-height: 1000px) and (min-width: 900px) {
   .app { --side: 340px; }
   aside { overflow: hidden; padding: 10px 12px 12px; }
-  .brand { margin-bottom: 8px; }
+  .lockup { margin-bottom: 8px; }
   .topics { flex: 1 1 0; min-height: 0; gap: 8px; grid-template-rows: minmax(0, 1.1fr) minmax(0, .8fr) repeat(3, minmax(0, 1fr)); }
   .topic { padding: 6px 8px 8px; }
 }
@@ -251,10 +269,11 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .app { --sheet: 55dvh; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; height: 100vh; height: 100dvh; overflow: hidden; }
   main { order: -1; min-height: 0; }
   aside { border-right: 0; padding: 6px 8px 8px; overflow: hidden; }
-  /* P1: no page title row on a phone (the nameplate names the hero); the Bible mark sits on the stage's top left */
-  .brand { position: fixed; top: 17px; left: 8px; z-index: 5; margin: 0; }
-  .brand h1 { display: none; }
-  .brand-mark { display: block; padding: 4px 9px; font-size: 12px; background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; }
+  /* P1: no page title row on a phone (the nameplate names the hero); the Bible's logo sits on the stage's top left as a chip
+     level with the toolbar: 44 px tall, so the whole chip is the 44 px tap target */
+  .lockup { position: fixed; top: 8px; left: 8px; z-index: 5; margin: 0; }
+  .lockup h1, .lockup-rule { display: none; }
+  .brand { height: 44px; padding: 0 10px 0 8px; font-size: 14px; background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; }
   .tb-sep:has(+ #copy), #copy { display: none; }   /* the local copy's Claude button: no room on a phone */
   /* P1 / P7: taller rows; a topic = its ring (44 px at most) with the name beside it, left-aligned */
   .topics { flex: none; gap: 5px; grid-template-rows: 96px 40px repeat(3, 46px); }
@@ -315,7 +334,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 <body>
 <div class="app">
   <aside>
-    <header class="brand"><span class="brand-mark" id="bible">12 Tails Bible</span><h1>ห้องแต่งตัว</h1></header>
+    <header class="lockup"><a class="brand" id="bible" aria-label="12 Tails Bible"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><defs><linearGradient id="wdBrandGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6df98"/><stop offset=".55" stop-color="#d4af37"/><stop offset="1" stop-color="#9a7622"/></linearGradient></defs><g fill="none" stroke="url(#wdBrandGold)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24 L30 12 L30 78"/><path d="M48 30 C48 12 78 10 80 28 C82 44 60 54 48 78 L82 78 C98 78 106 66 102 52"/></g><path d="M102 52 C96 40 102 26 116 22 C110 34 114 44 102 52Z" fill="url(#wdBrandGold)"/></svg><span class="brand-spine" aria-hidden="true"></span><span class="brand-word" aria-hidden="true"><span>TAILS</span><span>BIBLE</span></span></a><span class="lockup-rule" aria-hidden="true"></span><h1>ห้องแต่งตัว</h1></header>
     <nav class="topics" id="topics" aria-label="หัวข้อ"></nav>
   </aside>
   <main id="stage">

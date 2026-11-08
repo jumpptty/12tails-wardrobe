@@ -33,7 +33,7 @@ keeps only the entries of published items' codes.
 The page is rewritten by exact string replacement (a missing anchor = the page changed: PublishError): DATA points at
 data-<first 10 hex of SHA-256 over the published data>/ and UI_DIR at ui-<10 hex over the ui pictures>/, the fetches
 drop cache: "no-cache" (a changed file gets a new folder, so _headers makes both folders immutable for a year), the
-"copy for Claude" button and its handler go, the Bible mark in the panel's lockup becomes a link to the Bible (new tab),
+"copy for Claude" button and its handler go, the Bible's logo in the panel's lockup becomes a link to the Bible (new tab),
 ../props/tex/ points inside the copy, and GoatCounter counts the page as /wardrobe/. The page loads its fonts from
 Google Fonts (the Bible's own sheet), so no font files are published; a page that still points at ../fonts/ fails.
 check() then applies Cloudflare Pages' limits (20,000 files a deploy, 25 MiB a file) and compares every path the page
@@ -109,10 +109,10 @@ def page_edits(data_dir, ui_dir):
         # the local copy's toolbar ends with a "copy for Claude" button behind a divider: both go
         ("copy button", '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
          "", 1),
-        # the Bible mark in the panel's lockup (task 14b ruling R66) becomes the link to the Bible, in a new tab (the
-        # page's uploaded skins live in its tab only)
-        ("Bible link", '<span class="brand-mark" id="bible">12 Tails Bible</span>',
-         f'<a class="brand-mark" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener">12 Tails Bible</a>', 1),
+        # the Bible's logo in the panel's lockup (task 14b ruling R66; the logo itself since task 15) becomes the link to
+        # the Bible, in a new tab (the page's uploaded skins live in its tab only): only its opening tag changes
+        ("Bible link", '<a class="brand" id="bible" aria-label="12 Tails Bible">',
+         f'<a class="brand" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener" aria-label="12 Tails Bible">', 1),
         ("prop textures", "texLoader.load(`../props/tex/${m.tex}`)", "texLoader.load(`${DATA}props/tex/${m.tex}`)", 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
     ]

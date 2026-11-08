@@ -36,7 +36,7 @@ PAGE = """<!doctype html>
 </head>
 <body>
   <aside>
-    <header class="brand"><span class="brand-mark" id="bible">12 Tails Bible</span><h1>ห้องแต่งตัว</h1></header>
+    <header class="lockup"><a class="brand" id="bible" aria-label="12 Tails Bible"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><path d="M14 24 L30 12 L30 78"/></svg><span class="brand-spine" aria-hidden="true"></span><span class="brand-word" aria-hidden="true"><span>TAILS</span><span>BIBLE</span></span></a><span class="lockup-rule" aria-hidden="true"></span><h1>ห้องแต่งตัว</h1></header>
   </aside>
     <div class="bar">
       <button type="button" class="tb primary" id="shot">บันทึกภาพ</button>
@@ -490,11 +490,14 @@ class PublishTest(unittest.TestCase):
                 settings = re.search(r"data-goatcounter-settings='(\{[^']*\})'", html)
                 self.assertIsNotNone(settings)
                 self.assertEqual(json.loads(settings.group(1))["path"], "/wardrobe/")
-                # the Bible link (task 14b ruling R66): the mark in the panel's lockup, opening in a new tab; the toolbar
-                # keeps neither a link nor the copy button's divider
-                self.assertIn('<header class="brand"><a class="brand-mark" id="bible" href="https://jumpptty.github.io/12tails/12t_projects/bible/"'
-                              ' target="_blank" rel="noopener">12 Tails Bible</a><h1>', html)
+                # the Bible link (task 14b ruling R66): the Bible's logo in the panel's lockup (one row with the page name,
+                # task 15), opening in a new tab; the logo's markup stays whole; the toolbar keeps neither a link nor the
+                # copy button's divider
+                self.assertIn('<header class="lockup"><a class="brand" id="bible" href="https://jumpptty.github.io/12tails/12t_projects/bible/"'
+                              ' target="_blank" rel="noopener" aria-label="12 Tails Bible"><svg class="brand-mark"', html)
+                self.assertIn('<span>TAILS</span><span>BIBLE</span></span></a><span class="lockup-rule" aria-hidden="true"></span><h1>', html)
                 self.assertEqual(html.count('id="bible"'), 1)
+                self.assertEqual(html.count("<a "), 1)
                 bar = html[html.index('<div class="bar">'):html.index("</div>", html.index('<div class="bar">'))]
                 self.assertNotIn("bible", bar)
                 self.assertNotIn("tb-sep", bar)
@@ -870,7 +873,7 @@ class PublishTest(unittest.TestCase):
     def test_missing_anchor_fails_loudly(self):
         anchors = ['const DATA = "data/";', 'const UI_DIR = "ui/";', 'fetch(p, { cache: "no-cache" })',
                    '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
-                   '<span class="brand-mark" id="bible">12 Tails Bible</span>',
+                   '<a class="brand" id="bible" aria-label="12 Tails Bible">',
                    '$("copy").onclick = async () => {', "texLoader.load(`../props/tex/${m.tex}`)"]
         for label, w in self.newline_worlds():
             for anchor in anchors:
