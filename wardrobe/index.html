@@ -3,20 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>12 Tails Wardrobe</title>
+<title>ห้องแต่งตัว · 12 Tails</title>
+<meta name="description" content="ลองชุด หมวก อาวุธ และสีของทั้ง 12 อาชีพใน 12 Tails Online บนตัวละครสามมิติ">
+<meta name="theme-color" content="#150f0c">
+<meta property="og:title" content="ห้องแต่งตัว · 12 Tails">
+<meta property="og:description" content="ลองชุด หมวก อาวุธ และสีของทั้ง 12 อาชีพใน 12 Tails Online บนตัวละครสามมิติ">
 <link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">
+<!-- the Bible's own font sheet (ruling R65): Prompt for text, JetBrains Mono (with Prompt behind it) for numbers -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,600;1,700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-@font-face { font-family: "Prompt"; font-weight: 600; src: url("../fonts/Prompt-SemiBold.ttf") format("truetype"); }
-@font-face { font-family: "Prompt"; font-weight: 700; src: url("../fonts/Prompt-Bold.ttf") format("truetype"); }
-@font-face { font-family: "Prompt"; font-weight: 800; src: url("../fonts/Prompt-ExtraBold.ttf") format("truetype"); }
 :root {
   color-scheme: dark;
-  /* 12 Tails Bible "Ledger" dark tokens (Bible index.html :root[data-theme=dark]) */
-  --bg: #150f0c; --panel: #1f1712; --panel-2: #271c15; --line: #4a3a26;
-  --text: #ece4d6; --muted: #b0a189; --gold: #c9a227; --gold-soft: rgba(201, 162, 39, .14);
-  --gold-ink: #1b1300;                       /* text on a gold fill: 7.6:1 */
-  --seal: #c2503c;                           /* oxblood: reserved, no wardrobe state uses it yet */
-  --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 20px 44px -22px rgba(0, 0, 0, .75);
+  /* the 12 Tails Bible's BB look ("og" theme block in the Bible's index.html, checked 2026-11-08): warm brown panels,
+     hairline gold-brown edges, the harlequin weave; the page ground stays the wardrobe's own near-black brown */
+  --bg: #150f0c; --panel: #1f1914; --panel-2: #2a2118; --line: #5b4426;
+  --text: #f3e7d3; --muted: #bfae8e; --gold: #d0913e; --gold-soft: rgba(208, 145, 62, .14);
+  --gold-ink: #1b1300;                       /* text on a gold fill: 6.8:1 */
+  --well: #120d0a;                           /* the inside of a ring or an icon well */
+  --ring-edge: color-mix(in srgb, var(--gold) 45%, var(--line));   /* a ring's edge reads at about 3:1 on the panel */
+  --weave: repeating-linear-gradient(45deg, transparent 0 14px, rgba(208, 145, 62, .035) 14px 28px),
+           repeating-linear-gradient(-45deg, transparent 0 14px, rgba(208, 145, 62, .035) 14px 28px);
+  --seal: #b2442f;                           /* oxblood: an error line over the white stage, 5.6:1 */
   --shadow-side: 10px 0 28px rgba(0, 0, 0, .45); --shadow-sheet: 0 -8px 24px rgba(0, 0, 0, .45);
   --tto: #f3a6bc;                            /* the TTO dot: pink on purpose, it marks TTO content */
   --tot: #7cc8f0;                            /* the ToT dot: blue, ToT's own pieces (wardrobe_tot.py, local copy only) */
@@ -24,33 +33,55 @@
   --stage-top: #ffffff; --stage-bottom: #ffffff;   /* the 3D stage is pure white (user 2026-11-07) */
   --on-stage: #3b2f20;                       /* text drawn over the white stage: 13.0:1 */
   --cg-gild:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.6'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23e8c35a' stroke-width='2'/%3E%3C/svg%3E");--cg-gild-hi:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.95'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23ffe08a' stroke-width='2'/%3E%3C/svg%3E");   /* the Bible's gilded frame (double gold line, L corners) */
-  --bar-bg: rgba(31, 23, 18, .88);
-  --disabled-bg: #ebe3d3; --disabled-line: #cbbd9f; --disabled-ink: #6a5b45;   /* a disabled bar button over the white stage: 5.2:1 */
+  --bar-bg: rgba(31, 25, 20, .94);
+  --mono: "JetBrains Mono", "Prompt", monospace;   /* numbers; Prompt behind it keeps any Thai in Prompt (Bible rule) */
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 600 14px/1.45 "Prompt", system-ui, sans-serif; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 400 14px/1.5 "Prompt", sans-serif; }
 button, input { font: inherit; color: inherit; }
-button { transition: transform .12s, filter .12s, border-color .12s; }
-@media (hover: hover) { button:not(:disabled):hover, .bar a:hover { transform: translateY(-1px); filter: brightness(1.12); } }   /* a tap on a touch screen left it raised */
+button { transition: transform .12s, filter .12s, border-color .12s, opacity .12s; -webkit-tap-highlight-color: transparent; }
+/* hover = a small lift and a little light, never a glow (Bible rule); a tap on a touch screen would leave it raised */
+@media (hover: hover) { button:not(:disabled):hover, a.brand-mark:hover { transform: translateY(-1px); filter: brightness(1.1); } }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .app { --side: 300px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
-aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; }
-h1 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
-input[type=search] { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 9px; }
+aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+/* the panel's lockup (ruling R66): the Bible's mark (a link in the public copy, wardrobe_publish.py) over the page name */
+.brand { display: flex; flex-direction: column; align-items: flex-start; margin: 0 0 10px; }
+.brand-mark { font-size: 11.5px; font-weight: 700; line-height: 1.3; letter-spacing: .04em; color: var(--gold); text-decoration: none; transition: transform .12s, filter .12s; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; }
+input[type=search] { width: 100%; background: var(--well); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; outline-offset: 0; }
+input[type=search]:focus { border-color: var(--gold); }
 main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
-.bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
-.bar button, .bar a { border: 1px solid var(--line); background: var(--bar-bg); color: var(--text); border-radius: 9px; padding: 7px 12px; text-decoration: none; transition: transform .12s, filter .12s, border-color .12s; }   /* the published copy's Bible link is an <a> */
-.bar .primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 800; }
+/* one floating toolbar (V5): undo / redo | camera | the gold บันทึกภาพ, icon buttons with Thai names */
+.bar { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 3px;
+  background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 10px 24px -14px rgba(0, 0, 0, .45); }
+.tb { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; min-width: 36px; padding: 0 8px;
+  border: 0; border-radius: 4px; background: none; color: var(--text); white-space: nowrap; }
+.tb svg { width: 19px; height: 19px; flex: none; }
+.tb:disabled { cursor: default; }
+.tb:disabled svg { opacity: .35; }
+.tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 13px 0 10px; }
+.tb.txt { font-weight: 500; padding: 0 10px; }
+.tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
+.bar .l-short { display: none; }
 /* --inset = the width the desktop picker covers (F1): the status line stays in the free part of the stage, above the picker */
 .status { position: absolute; left: calc(var(--inset, 0px) + 14px); bottom: 12px; z-index: 7; color: var(--on-stage); font-size: 13px; transition: left .2s; }
-.status.err { color: var(--seal); }
-.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); text-align: center; background: var(--gold); color: var(--gold-ink); padding: 7px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: var(--shadow); z-index: 7; }
+.status.err { color: var(--seal); font-weight: 500; }
+/* a toast (V11): a Ledger slip, the gold edge on its left; one fact per line */
+.toast { position: absolute; left: calc(var(--inset, 0px) + (100% - var(--inset, 0px)) / 2); bottom: 18px; transform: translateX(-50%);
+  width: max-content; max-width: min(420px, calc(100% - var(--inset, 0px) - 28px)); white-space: pre-line; text-align: left;
+  background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--gold); color: var(--text); padding: 8px 14px 8px 12px;
+  border-radius: 6px; font-weight: 500; line-height: 1.45; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 7;
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
 .toast.show { opacity: 1; }
 /* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
-.keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 6px; color: var(--on-stage); font-size: 12px; pointer-events: none; background: rgba(255,255,255,.85); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
-.keyhint kbd { font: inherit; font-weight: 700; font-size: 11px; border: 1px solid var(--on-stage); border-radius: 4px; padding: 1px 5px; }
+.keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 5px; color: var(--on-stage); font-size: 12px; pointer-events: none;
+  background: rgba(255, 255, 255, .9); border: 1px solid #e3d8c6; border-radius: 6px; padding: 4px 8px; }
+.keyhint kbd { font: inherit; font-weight: 600; font-size: 11px; line-height: 1.5; border: 1px solid #cdbfa8; border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
 @media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
@@ -59,8 +90,9 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 /* rows (user 2026-11-07): 1 = class, colour, face; 2 = the gear set across the full row; 3 = hat + outfit; 4 = weapons; 5 = back + moves.
    Row 1 has no titles (user: "self explanatory") and gives part of its height to the set row; class and face share one
    narrow box, top and bottom (user: "to give spaces to the color selection"), colour takes the rest of the row */
+/* the Ledger material (V4): a 6 px corner, a hairline gold-brown edge and the faint weave, no shadow */
 .topic { grid-column: span 6; min-width: 0; container-type: size; display: flex; flex-direction: column; align-items: center;
-  gap: 4px; width: 100%; border: 1px solid transparent; background: var(--panel); border-radius: 16px; padding: 7px 10px 10px; }
+  gap: 4px; width: 100%; border: 1px solid var(--line); background: var(--weave), var(--panel); border-radius: 6px; padding: 7px 10px 10px; }
 /* row 1 = one flex row (user 2026-11-07: "bigger icons there please, the column width can be changed as you seem fit"):
    the class + face column is exactly as wide as its two stacked rings, (row height - padding - gap) / 2 each; colour
    takes the rest and fitColors() sizes its icons */
@@ -69,8 +101,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic.r1.duo { padding: 4px; gap: 4px; }
 .topic.color { flex: 1 1 0; gap: 6px; }
 .duo-b { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: grid; place-items: center; padding: 0;
-  border: 1px solid transparent; border-radius: 12px; background: none; }
-@media (hover: hover) { .duo-b:hover { border-color: var(--line); } }
+  border: 1px solid transparent; border-radius: 6px; background: none; }
 .duo-b[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
 .duo-b[aria-expanded=true] .ring { border-color: var(--gold); }
 .topic.r1 { padding: 5px 6px; justify-content: center; }
@@ -91,19 +122,18 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .topic.set { grid-column: 1 / -1; justify-content: center; }
 /* the special tile: the Bible's gilded frame (border set with longhands: the shorthand resets border-image), no glow */
 .topic.set { border-style: solid; border-width: 1px; border-color: transparent; border-image: var(--cg-gild) 14 / 14px / 3px stretch;
-  border-radius: 3px; background: var(--panel); box-shadow: none; }
+  border-radius: 3px; background: var(--weave), var(--panel); box-shadow: none; }
+.topic.set:focus-visible { outline-offset: 5px; }   /* clear of the gilded frame, not a second gold line on it (V10) */
 @media (hover: hover) { .topic.set:hover { border-image-source: var(--cg-gild-hi); border-color: transparent; } }
-.topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; }
-.topic.set[aria-expanded=true] { background: var(--panel-2); box-shadow: none; }
+.topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; background: var(--weave), var(--panel-2); box-shadow: none; }
 .topic.set .setparts { --d: min(calc(100cqh - 26px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 84px); flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--d); margin: auto 0; }
-.topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+.topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--well); border-radius: 6px; border: 1px solid var(--line); }
 .topic.set .setparts .noicon { width: var(--d); height: var(--d); font-size: calc(var(--d) * .3); }
-.topic.set .setparts .hint { color: var(--muted); font-size: 12.5px; font-weight: 600; }
-.topic:hover { border-color: var(--line); }
-.topic[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
-.topic .tname { flex: none; font-size: 15px; font-weight: 800; line-height: 1.4; text-align: center; }
+.topic.set .setparts .hint { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.topic[aria-expanded=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
+.topic .tname { flex: none; font-size: 14px; font-weight: 700; line-height: 1.45; text-align: center; }
 .topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
-.ring { flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); display: grid; place-items: center; overflow: hidden; }
+.ring { flex: none; border-radius: 50%; border: 1px solid var(--ring-edge); background: var(--well); display: grid; place-items: center; overflow: hidden; }
 .ring img { width: 80%; height: 80%; object-fit: contain; }
 .ring.t-class img { width: 100%; height: 100%; }                /* the class portrait is round already */
 .ring.face { background: var(--skin-bg); }
@@ -115,21 +145,25 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .picker { position: absolute; inset: 0 auto 0 0; width: clamp(440px, calc((100vw - var(--side)) * .42), calc(var(--side) * 2)); max-width: 100%; z-index: 6; background: var(--bg);
   border-right: 1px solid var(--line); box-shadow: var(--shadow-side); display: flex; flex-direction: column; color: var(--text); }
 .picker[hidden] { display: none; }
-.pk-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.pk-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
-.pk-tools { display: flex; gap: 8px; align-items: center; flex: 1; flex-wrap: wrap; }
-.pk-tools input[type=search] { margin: 0; max-width: 320px; }
-.pk-tab { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 14px; }
-.pk-tab[aria-pressed=true] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 800; }
+.pk-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pk-head h2 { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.4; }
+.pk-tools { display: flex; gap: 4px 14px; align-items: center; flex: 1; flex-wrap: wrap; min-width: 0; }
+.pk-tools input[type=search] { margin: 0; max-width: 280px; }
+/* move tabs: the chosen one carries the short gold bar, like the colour icons */
+.pk-tab { position: relative; border: 0; background: none; color: var(--muted); padding: 6px 2px; font-weight: 500; }
+.pk-tab[aria-pressed=true] { color: var(--text); font-weight: 600; }
+.pk-tab[aria-pressed=true]::after { content: ""; position: absolute; left: 20%; right: 20%; bottom: 1px; height: 3px; border-radius: 2px; background: var(--gold); }
 .pk-tab:disabled { opacity: .35; cursor: default; }
-.pk-close { border: 0; background: var(--panel); border-radius: 10px; width: 38px; height: 38px; font-size: 18px; }
-.pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 10px; align-content: start;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.pk-body.face-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }   /* user: big faces */
-.pk-item { position: relative; border: 2px solid transparent; background: var(--panel); border-radius: 16px; padding: 10px 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
-.pk-item:hover { border-color: var(--line); }
-.pk-item[aria-pressed=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft), var(--shadow); }
-.pk-item .pic { width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px; overflow: hidden; container-type: inline-size; }
+.pk-close { flex: none; display: grid; place-items: center; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; width: 36px; height: 36px; padding: 0; color: var(--muted); }
+.pk-close svg { width: 16px; height: 16px; }
+/* the grid (V9): as many 124 px columns as fit; faces stay big (user) */
+.pk-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; display: grid; gap: 8px; align-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.pk-item { position: relative; border: 1px solid var(--line); background: var(--weave), var(--panel); border-radius: 6px; padding: 8px 8px 7px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+.pk-item[aria-pressed=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
+.pk-item .pic { position: relative; width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 4px; overflow: hidden; container-type: inline-size; }
 .pk-item .pic img { width: 88%; height: 88%; object-fit: contain; }
 .pk-item .pic.face { background: var(--skin-bg); border-radius: 50%; }
 .pk-item .pic.face img { width: 94%; height: 94%; }
@@ -138,68 +172,68 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
    slot's own faint outline (a hat, a sword...), the way a game's empty equipment slot does */
 .noicon { display: grid; place-items: center; width: 70%; aspect-ratio: 1; border-radius: 6px; background: var(--panel-2);
   border: 1px solid var(--line); color: var(--muted); font-weight: 700; line-height: 1; letter-spacing: .02em; }
-.noicon.txt { width: auto; aspect-ratio: auto; padding: .35em .5em; border-radius: 6px; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
+.noicon.txt { width: auto; aspect-ratio: auto; padding: .35em .5em; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
 .ring .noicon { font-size: calc(var(--d) * .24); }
-.ring .noicon.txt { font-size: max(11px, calc(var(--d) * .17)); }
+.ring .noicon.txt { font-size: max(11px, calc(var(--d) * .17)); background: none; border: 0; padding: 0; }
 .pk-item .pic .noicon { font-size: 20cqw; }
 .pk-item .pic .noicon.txt { font-size: 12cqw; }
 .slot-glyph { width: 46%; height: 46%; color: var(--muted); opacity: .4; }
-.pk-item .pic { position: relative; }
-.pk-item .pic .pic-n { position: absolute; right: 9%; bottom: 7%; font: 700 clamp(14px, 18cqw, 24px)/1 "JetBrains Mono", "Prompt", monospace; color: var(--text); text-shadow: 0 1px 2px rgba(0, 0, 0, .6); font-style: normal; }
+.pk-item .pic .pic-n { position: absolute; right: 9%; bottom: 7%; font: 700 clamp(14px, 18cqw, 24px)/1 var(--mono); color: var(--text); text-shadow: 0 1px 2px rgba(0, 0, 0, .6); font-style: normal; }
 .pk-item[aria-busy=true] { opacity: .5; }
-.pk-item .lbl { font-size: 13px; line-height: 1.25; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pk-body.face-grid .lbl { font-size: 14px; }
+.pk-item .lbl { font-size: 12.5px; font-weight: 500; line-height: 1.3; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk-body.face-grid .lbl { font-size: 13px; }
 .pk-item[aria-pressed=true] .lbl { color: var(--gold); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
 .pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
 .pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
-.pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--bg); border-radius: 6px; }
-.pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; }
+.pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--well); border-radius: 4px; }
+.pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; border-radius: 4px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
 .pk-body > .pk-note { grid-column: 1 / -1; }
-/* disabled over the white stage: a pale chip with dim brown text (the old opacity .45 made grey on grey), 5.2:1 */
-.bar button:disabled { background: var(--disabled-bg); border-color: var(--disabled-line); color: var(--disabled-ink); cursor: default; }
 /* an item tile's own skin tools (task 10): download / upload / give back that item's texture. They are the tile button's
    siblings (a button can't hold buttons), laid over its foot, so a tap on them never equips through the tile */
 .pk-cell { position: relative; min-width: 0; display: grid; }
-.pk-cell > .pk-item { padding-bottom: calc(var(--skh, 28px) + 16px); }
+.pk-cell > .pk-item { padding-bottom: calc(var(--skh, 28px) + 14px); }
 @media (pointer: coarse) { .pk-cell { --skh: 36px; } }
 .sk-ui { display: contents; }
-.pk-skin { position: absolute; left: 8px; right: 8px; bottom: 9px; display: flex; justify-content: center; gap: 5px; }
+.pk-skin { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; justify-content: center; gap: 4px; }
 .sk { flex: 0 1 34px; min-width: 0; height: var(--skh, 28px); display: inline-flex; align-items: center; justify-content: center; gap: 1px; padding: 0;
-  border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 800; }
+  border: 1px solid var(--line); border-radius: 4px; background: var(--well); color: var(--muted); font-size: 12px; font-weight: 600; }
 .sk svg { width: 16px; height: 16px; flex: none; }
-.sk.num { flex-basis: 40px; }
+.sk.pick { flex-basis: 40px; font-family: var(--mono); }
 .sk:disabled { opacity: .4; cursor: default; }
 .sk.reset { color: var(--gold); border-color: var(--gold); }
-@media (hover: hover) { .sk:not(:disabled):hover { color: var(--gold); border-color: var(--gold); } }
-.sk-badge { position: absolute; left: 7px; top: 7px; padding: 0 7px; border-radius: 999px; background: var(--gold); color: var(--gold-ink);
-  font-size: 10.5px; font-weight: 800; font-style: normal; line-height: 1.6; pointer-events: none; }
+/* on a mouse the tools stay quiet until the tile is hovered or focused (V9); a touch screen always shows them */
+@media (hover: hover) {
+  .sk { border-color: transparent; background: none; opacity: .5; }
+  .pk-cell:hover .sk, .pk-cell:focus-within .sk { opacity: 1; border-color: var(--line); background: var(--well); }
+  .sk:not(:disabled):hover { color: var(--gold); border-color: var(--gold); }
+  .sk:disabled { opacity: .25; }
+  .pk-cell:hover .sk:disabled, .pk-cell:focus-within .sk:disabled { opacity: .4; }
+}
+.sk-badge { position: absolute; left: 7px; top: 7px; padding: 0 7px; border-radius: 4px; background: var(--gold); color: var(--gold-ink);
+  font-size: 10.5px; font-weight: 600; font-style: normal; line-height: 1.6; pointer-events: none; }
 .topic.color.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
    of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
-   blocks go two abreast so all eight share the height, and the picker widens into the spare width with as many
-   columns as fit. Taller screens keep the one-column layout */
+   blocks go two abreast so all eight share the height. Taller screens keep the one-column layout */
 @media (max-height: 1000px) and (min-width: 900px) {
   .app { --side: 340px; }
   aside { overflow: hidden; padding: 10px 12px 12px; }
-  h1 { margin-bottom: 8px; }
+  .brand { margin-bottom: 8px; }
   .topics { flex: 1 1 0; min-height: 0; gap: 8px; grid-template-rows: minmax(0, .7fr) minmax(0, 1.1fr) repeat(3, minmax(0, 1fr)); }
   .topic { padding: 6px 8px 8px; }
-  .pk-body { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
-  .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }   /* still big (user), 4 abreast */
 }
-.bar button, .bar a { white-space: nowrap; }
-.bar .l-short { display: none; }
 @media (max-width: 760px) {
   /* phone (task 7): one screen, no page scroll: the stage on top, the eight topic blocks (4 x 2) compact below; an open
      picker is a bottom sheet (half the screen) and the stage shrinks to the half above it so the model stays in sight */
   .app { --sheet: 50dvh; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; height: 100vh; height: 100dvh; overflow: hidden; }
   main { order: -1; min-height: 0; }
   aside { border-right: 0; padding: 6px 8px 8px; overflow: hidden; }
-  h1 { font-size: 15px; margin: 0 0 4px; }
+  .brand { flex-direction: row; align-items: baseline; gap: 8px; margin: 0 0 4px; }
+  h1 { font-size: 15px; }
   .topics { flex: none; gap: 5px; grid-template-rows: 76px 44px repeat(3, 40px); }
-  .topic { flex-direction: row; justify-content: center; gap: 6px; padding: 3px 4px; border-radius: 12px; }
+  .topic { flex-direction: row; justify-content: center; gap: 6px; padding: 3px 4px; }
   .topic .tname { font-size: 11px; line-height: 1.3; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .topic .ring { --d: min(calc(100cqh - 2px), 100cqw); margin: 0; }
   .topic.set { border-image-width: 12px; border-image-outset: 2px; }
@@ -214,20 +248,18 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
   .picker { position: fixed; inset: auto 0 0 0; width: 100%; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
-    border-radius: 16px 16px 0 0; box-shadow: var(--shadow-sheet); }
+    border-radius: 12px 12px 0 0; box-shadow: var(--shadow-sheet); }
   .pk-head { padding: 8px 12px; gap: 8px; flex: none; }
   .pk-head h2 { font-size: 16px; }
-  .pk-close { margin-left: auto; position: sticky; top: 0; flex: none; }
+  .pk-close { margin-left: auto; position: sticky; top: 0; }
   .pk-body { padding: 10px 12px 20px; gap: 8px; }
   .pk-cell > .pk-item { padding: 8px 6px calc(var(--skh, 28px) + 14px); }
   .pk-skin { left: 5px; right: 5px; bottom: 7px; gap: 4px; }
-  .bar { top: 8px; right: 8px; left: 8px; justify-content: flex-end; gap: 5px; }
-  .bar button, .bar a { padding: 6px 8px; font-size: 12px; border-radius: 8px; }
+  .bar { top: 8px; right: 8px; }
   .bar .l-full { display: none; }
   .bar .l-short { display: inline; }
   .status { left: 10px; bottom: 8px; font-size: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -237,23 +269,25 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 <body>
 <div class="app">
   <aside>
-    <h1>ห้องแต่งตัว</h1>
+    <header class="brand"><span class="brand-mark" id="bible">12 Tails Bible</span><h1>ห้องแต่งตัว</h1></header>
     <nav class="topics" id="topics" aria-label="หัวข้อ"></nav>
   </aside>
   <main id="stage">
-    <div class="bar">
-      <button type="button" id="undo" title="ย้อนกลับ · Ctrl+Z" disabled aria-label="ย้อนกลับ"><span class="l-full">ย้อนกลับ</span><span class="l-short" aria-hidden="true">ย้อน</span></button>
-      <button type="button" id="redo" title="ทำซ้ำ · Ctrl+Y" disabled aria-label="ทำซ้ำ"><span class="l-full">ทำซ้ำ</span><span class="l-short" aria-hidden="true">ซ้ำ</span></button>
-      <button type="button" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><span class="l-full">มุมกล้องเริ่มต้น</span><span class="l-short" aria-hidden="true">กล้อง</span></button>
-      <button type="button" id="shot" title="บันทึกภาพ" aria-label="บันทึกภาพ"><span class="l-full">บันทึกภาพ</span><span class="l-short" aria-hidden="true">บันทึก</span></button>
-      <button type="button" class="primary" id="copy">คัดลอกให้ Claude</button>
+    <div class="bar" role="toolbar" aria-label="เครื่องมือ">
+      <button type="button" class="tb" id="undo" title="ย้อนกลับ (Ctrl+Z)" aria-label="ย้อนกลับ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="tb" id="redo" title="ทำซ้ำ (Ctrl+Y)" aria-label="ทำซ้ำ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
+      <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
     <div class="status" id="status">กำลังโหลด…</div>
     <div class="toast" id="toast" role="status"></div>
     <div class="keyhint" id="keyhint" aria-hidden="true"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
-        <button type="button" class="pk-close" id="pkClose" aria-label="ปิด">✕</button></div>
+        <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
       <div class="pk-body" id="pkBody"></div>
     </section>
   </main>
@@ -344,7 +378,9 @@ function err(e, msg = "โหลดชิ้นนี้ไม่สำเร็
   clearTimeout(errT); errT = setTimeout(() => { if (el.classList.contains("err")) status(""); }, 5000);
 }
 const clearErr = () => { if ($("status").classList.contains("err")) status(""); };
-function toast(t, ms = 1500) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), ms); }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+// a toast: one fact per line (V11), its numbers in the number face
+function toast(t, ms = 1500) { const el = $("toast"); el.innerHTML = esc(t).replace(/\d+(?:[×.]\d+)*/g, '<span class="num">$&</span>'); el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), ms); }
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
@@ -990,7 +1026,7 @@ async function skinUpload({ slot, item, tex }, file) {
   renderTopics(); syncTiles();
   const stretched = Math.abs(uw * h - uh * w) > 0.01 * uh * w;     // the aspect ratios differ by more than 1 %
   toast([`ใส่ลายใหม่ให้ ${item} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
-    .filter(Boolean).join(" · "), stretched || keptAlpha ? 4000 : 2000);
+    .filter(Boolean).join("\n"), stretched || keptAlpha ? 4000 : 2000);
 }
 async function skinReset(slot, item) {
   const kind = kindOf(slot);
@@ -1009,12 +1045,12 @@ const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10
 function skinParts(slot, item, choose) {
   const kind = kindOf(slot), texs = texsOf(kind, item), mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
   const badge = mine ? `<i class="sk-badge">ลายของคุณ</i>` : "";
-  if (choose) return badge + `<span class="pk-skin">` + texs.map((t, i) => `<button type="button" class="sk num" data-sk="${choose}" data-tex="${t}" `
-      + `title="${SK_LABEL[choose]} ${i + 1} · ${t}" aria-label="${SK_LABEL[choose]} ${i + 1} ${item}">${SK_ICON[choose]}${i + 1}</button>`).join("")
+  if (choose) return badge + `<span class="pk-skin">` + texs.map((t, i) => `<button type="button" class="sk pick" data-sk="${choose}" data-tex="${t}" `
+      + `title="${SK_LABEL[choose]} ลาย ${i + 1}" aria-label="${SK_LABEL[choose]} ${i + 1} ${item}">${SK_ICON[choose]}${i + 1}</button>`).join("")
     + `<button type="button" class="sk" data-sk="back" title="ยกเลิก" aria-label="ยกเลิก">✕</button></span>`;
   const o = kind === "outfits" && texs.length && C.outfits.find(x => x.name === item);
   const one = a => `<button type="button" class="sk${a === "reset" ? " reset" : ""}" data-sk="${a}" aria-label="${SK_LABEL[a]} ${item}" title="${
-    !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} · สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length || a === "reset" ? "" : " disabled"}>${SK_ICON[a]}</button>`;
+    !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length || a === "reset" ? "" : " disabled"}>${SK_ICON[a]}</button>`;
   return badge + `<span class="pk-skin">${one("dl")}${one("up")}${mine ? one("reset") : ""}</span>`;
 }
 const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinParts(slot, name)}</span></div>`;
@@ -1028,7 +1064,7 @@ const skinFile = Object.assign(document.createElement("input"), { type: "file", 
 document.body.append(skinFile);
 let skinTarget = null;
 skinFile.onchange = () => { const f = skinFile.files[0], t = skinTarget; skinTarget = null;
-  if (f && t) skinUpload(t, f).catch(e => { console.error(e); toast("เปิดไฟล์ภาพนี้ไม่ได้", 2500); }); };
+  if (f && t) skinUpload(t, f).catch(e => { console.error(e); toast("เปิดไฟล์ภาพนี้ไม่ได้\nใช้ไฟล์ PNG, JPG หรือ WebP", 2500); }); };
 $("pkBody").addEventListener("click", e => {
   const b = e.target.closest(".sk"), c = b?.closest(".pk-cell");
   if (!c || b.disabled) return;
@@ -1038,7 +1074,7 @@ $("pkBody").addEventListener("click", e => {
   if ((act === "dl" || act === "up") && b.dataset.tex == null && texs.length > 1) return redraw(act);   // which texture?
   const tex = b.dataset.tex ?? texs[0];
   if (b.dataset.tex != null) redraw();
-  if (act === "dl") skinDownload(slot, item, tex).catch(e2 => { console.error(e2); toast("ดาวน์โหลดลายไม่สำเร็จ", 2500); });
+  if (act === "dl") skinDownload(slot, item, tex).catch(e2 => { console.error(e2); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
   else if (act === "up") { skinTarget = { slot, item, tex }; skinFile.value = ""; skinFile.click(); }
   else if (act === "reset") skinReset(slot, item).catch(err);
 });
@@ -1102,7 +1138,7 @@ document.addEventListener("paste", e => {
   if (a && (a.isContentEditable || a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && !/^(button|checkbox|radio|file|range|color|submit|reset)$/i.test(a.type)))
       && (!file || cd.types.includes("text/plain"))) return;
   if (!C) return;
-  if (!file) { toast("คลิปบอร์ดไม่มีรูปภาพ · คัดลอกรูปลายก่อน แล้วกด Ctrl+V", 2500); return; }
+  if (!file) { toast("คลิปบอร์ดไม่มีรูปภาพ\nคัดลอกรูปลายก่อน แล้วกด Ctrl+V", 2500); return; }
   e.preventDefault();
   const t = pasteTarget();
   if (!t) { toast("ชี้เมาส์ที่ช่องไอเท็ม หรือที่ชิ้นบนตัวละคร แล้วกด Ctrl+V", 3000); return; }
@@ -1111,9 +1147,9 @@ document.addEventListener("paste", e => {
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
   if (tex == null) {                     // two textures and none chosen: show the choice on its tile
     if (t.cell) t.cell.querySelector(".sk-ui").innerHTML = skinParts(t.slot, t.item, "up");
-    toast(`${t.item} มี ${texs.length} ลาย · ชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
+    toast(`${t.item} มี ${texs.length} ลาย\nชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
   }
-  skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้", 2500); });
+  skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
 });
 const faceSrc = n => `${DATA}${C.cls}/faces/${n}.webp`;        // the face overlay itself (user: not the whole texture)
 // an emote's / move's icon: TTO's emotion icons (gamegui/icons/skills/emotion) and the class's skill icons
@@ -1167,10 +1203,10 @@ let openTopic = null;
 function colorTile(name) {
   const o = C?.outfits.find(x => x.name === C?.state.outfit), cs = o?.colors || [];
   const sw = cs.length ? `<span class="cswatches" style="--n: ${cs.length}">` + cs.map(c =>
-      `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${o.name} · ${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</span>`
+      `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</span>`
     : "";
   const mine = o && SKINS.has(skinKey("outfits", o.name));
-  return `<div class="topic r1 color${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " · ชุดนี้ใส่ลายของคุณอยู่" : ""}">${sw}</div>`;
+  return `<div class="topic r1 color${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " (ชุดนี้ใส่ลายของคุณอยู่)" : ""}">${sw}</div>`;
 }
 // the open picker shows what is worn: the set list is drawn again, an outfit / item list only moves its pressed tile
 async function afterLook() { renderTopics(); if (openTopic === "set") await openPicker("set"); else syncTiles(); }
@@ -1199,7 +1235,7 @@ function renderTopics() {
   box.querySelectorAll(".csw").forEach(b => b.onclick = async () => {
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
-    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่ · คืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
+    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nกดคืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
   fitColors();
   if (keep) box.querySelector(keep)?.focus();
 }
@@ -1244,7 +1280,7 @@ function closePicker() {
 // a picker tile; o = { title, face, fb: the stand-in when there is no icon, over: drawn over the picture, dot: "tto" | "tot" }
 const item = (attr, lbl, pressed, src, o = {}) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}"${o.title ? ` title="${o.title}"` : ""}><span class="pic${o.face ? " face" : ""}">${pic(src, o.face, o.fb)}${o.over || ""}</span>` +
-  `<span class="lbl">${lbl}</span>${o.dot ? `<i class="dot${o.dot === "tot" ? " tot" : ""}"></i>` : ""}</button>`;
+  `<span class="lbl">${lbl}</span>${o.dot ? `<i class="dot${o.dot === "tot" ? " tot" : ""}" title="${o.dot === "tot" ? "ของจาก ToT" : o.face ? "หน้าจาก TTO" : "ของจาก TTO"}"></i>` : ""}</button>`;
 const badge = x => (x.tot ? "tot" : x.tto);           // pink dot = TTO's own, blue = ToT's own (wardrobe_tot.py)
 const isBare = () => C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
   && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
@@ -1288,7 +1324,7 @@ async function openPicker(t, opts = {}) {
     const sets = await buildSets();
     if (openTopic !== t) return;
     // the character's colour has its own topic now (สี, user 2026-11-07); a set keeps the colour when it changes the outfit
-    tools.innerHTML = `<span class="pk-note">${sets.length} เซ็ต · กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
+    tools.innerHTML = `<span class="pk-note"><span class="num">${sets.length}</span> เซ็ต กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
     body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับหลัง">`
       + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
       + (sets.length ? sets.map((s, i) => `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}">` +
@@ -1303,10 +1339,10 @@ async function openPicker(t, opts = {}) {
       iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name) }))).join("");
     pick(b => setOutfit(b.dataset.o, C.state.color));
   } else if (t === "face") {
-    body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า ${f.n}`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
+    body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า <span class="num">${f.n}</span>`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
     pick(b => setColorOrFace(null, +b.dataset.f));
   } else if (t === "move") {
-    tools.innerHTML = [["emote", "ท่าทาง"], ["base", "ท่าพื้นฐาน"], ["skill", "ท่าสกิล"]].map(([g, n]) =>
+    tools.innerHTML = [["emote", "อีโมต"], ["base", "ท่าพื้นฐาน"], ["skill", "ท่าสกิล"]].map(([g, n]) =>
       `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("");
     tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move", { fresh: true }); });
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
@@ -1450,7 +1486,7 @@ $("copy").onclick = async () => {
   const s = C.state;
   const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
     (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${C.cur}` : "");
-  try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว · วางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
+  try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว\nวางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
 
 // ---------- go ----------
