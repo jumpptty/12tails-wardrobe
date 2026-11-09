@@ -751,3 +751,14 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   mode) counted Space as navigation and ran first, so the Space handler saw "keyboard navigation on a button" and let
   Space press the tile: the skill restarted. Now only Tab / arrows count as navigation, and the key-up of a Space taken
   for pause is swallowed too (a focused button is pressed on key-up). Not deployed yet.
+- **2026-11-09, the effects online, and the hand-over to the office** (user: "life the restriction on sfx and vfx on
+  the public deploy, we have finished Wolf", "deploy when done", "after deployment make sure I can pull from work PC and
+  continue working on the wardrobe"). The publish keeps FX_ON and the sound button, copies `fx_cues/` and `fxparts/`
+  beside the page (`_headers`: no-cache, their names never change) and each class's `fx.json`, the textures its materials
+  and emblems name and its `sfx/` into the data folder (`publish_fx`); 39 publish tests. Built: 7,480 files,
+  `data-1669a2addd`; a no-browser check of the copy: all 241 Wolf cues have their effect / voice / sound files, every
+  cue key is an online clip. Deployed from a fresh empty folder: 174 uploaded, version
+  `00f769bf-f6ad-4766-b829-10800f0307d4`; live: FX_ON true, `fx_cues/wolf.json` / `fxparts/*.js` (text/javascript) /
+  the Wolf's fx.json and sounds 200. Space mid-skill fix (06dec0e) went with it. Office: `transfer_to_drive.ps1 -Dest
+  C:\Users\Jump\Desktop\12tails-wardrobe-transfer` (362 MB tar, 8,107 files, checked for the effects, sounds, TTO
+  textures and icons/hd); HANDOFF "Office PC" has the pull + restore steps.

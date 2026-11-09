@@ -12,10 +12,20 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Office PC
 
-- **The Wolf's effects data** (2026-11-09, home): `wardrobe\data\wolf\fx.json`, `wardrobe\data\wolf\sfx\` and
-  `wardrobe\data\fx\tex\` were rebuilt for every Wolf skill, TTO's three included (not in git; the TTO effects are built at home only: pipeline/wardrobe_fx_tto.py reads the video folder's tto_assets). Carry a fresh data tar from home
-  (`pipeline\transfer_to_drive.ps1`), or rebuild at the office:
-  `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf`.
+- **Pick up the home PC's work of 2026-11-09 (night)** (the user: "make sure I can pull from work PC and continue working
+  on the wardrobe"). Code: `cd C:\work\12tails-wardrobe ; git pull` (everything is pushed). Data: the home PC wrote a
+  fresh transfer (`C:\Users\Jump\Desktop\12tails-wardrobe-transfer`: `wardrobe_data.tar` 362 MB, 8,107 files, plus
+  `README.txt`); the user uploads that folder to Google Drive and downloads it at the office. Then, in PowerShell:
+  `Move-Item C:\work\12tails-wardrobe\wardrobe\data C:\work\12tails-wardrobe\wardrobe_data_old` (git ignores it there),
+  then `tar.exe -xf <download folder>\wardrobe_data.tar -C C:\work\12tails-wardrobe`. It carries what git can't: the
+  Wolf's effects and sounds (`data\wolf\fx.json`, `data\wolf\sfx\`, `data\fx\tex\`, TTO's included), the Bible's skill
+  icons (`data\icons\hd\`), the rebuilt item map. Check: run `wardrobe.cmd`, pick the Wolf, play Cross Break with
+  เสียงท่าทาง on. Delete `wardrobe_data_old` once happy. (No adopt step: the office did it on 2026-11-09.)
+- The TTO effects (`pipeline\wardrobe_fx_tto.py`) build at home only (it reads the video folder's
+  `tto_assets\2026-11-04`); the BB effects (`pipeline\wardrobe_fx.py <cls>`) and the skill icons
+  (`pipeline\wardrobe_skill_icons.py`) build on either PC.
+- The online copy was deployed from home on 2026-11-09 (effects on, version 00f769bf); publishing from the office still
+  drops 4 Monkey back items (its damaged rip), so publish from home (Home PC section).
 
 ## Video repo (either PC)
 
