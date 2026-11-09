@@ -254,7 +254,9 @@ copy of that folder).
   orbits and pauses the turntable (it resumes 3 s after the drag); zoom / orbit limits scale with the piece, no pan,
   WASD within reach of the piece. The card (the nameplate's place; a phone's bottom area): name, ‹ i / n ›, slot, sets,
   colour or ลายของคุณ, ใส่ชิ้นนี้ / ใส่อยู่ (one undo step), ดาวน์โหลดโมเดล 3D (the .glb), ดาวน์โหลดลาย, ✕ กลับ.
-  - Ways in: the cube on every tile (`title` ชมชิ้นส่วน; tiles keep ดาวน์โหลดลาย / อัปโหลดลาย / the cube); the toolbar
+  - **Superseded 2026-11-09 by the piece menu** (session log "the piece menu"): the tile tools, the toolbar button and the
+    card's two download buttons are gone; the way in is the menu's ดูชิ้นนี้อย่างเดียว or a double-click on a piece.
+    Until then: ways in: the cube on every tile (`title` ชมชิ้นส่วน; tiles keep ดาวน์โหลดลาย / อัปโหลดลาย / the cube); the toolbar
     button ชมชิ้นส่วน (`aria-pressed` = the viewer open; while open a tile click shows its piece instead of wearing
     it); a double-click on a piece of the character (the Ctrl+V ray).
   - Keys: Esc closes the viewer first, ← / → step through the open picker's list (else the slot's whole list), Enter on
@@ -521,3 +523,38 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   - Checks: Wolf's four skills pass the new check on all three backdrops (13 sounds), moves check `errors: []`, 46 unit
     tests, the adopt test; the publish's page rewrite still applies to the edited page. `wardrobe_dist` was built before
     this (no public difference: the pilot is off there).
+- **2026-11-09, the piece menu: hover and click a piece on the model** (user: "instead of viewing individual object,
+  downloading 2D and 3D and uploading buttons scattered all around the place, I want the user to be able to hover and
+  click at each individual item in the model directly, with mild hover effect, clicking at each piece will then show
+  basic info of that item and dropdown list of actions download upload, view this item only, etc.").
+  - Hover: the piece under the mouse (`pieceAt`, about ten rays a second in the render loop, mouse / pen only) lights up
+    and the cursor turns to a pointer; never in the viewer, while dragging, or in a screenshot (`hoverClear` first). Three
+    looks mocked side by side (`?hover=gold` default / `lift` / `dim`, `checks/piece_menu/hover_close.png`, the
+    user's pick pending): gold = diffuse colour x (1.18, 1.08, 0.92) + emissive 0.07 x gold. **Trap: an added glow lifts
+    dark colours most** (the first try, emissive + 0.2 x gold, turned the Wolf's dark-blue outfit sepia); a factor keeps
+    the darks, but a full red can't brighten (the red weapon showed nothing), hence the trace of added gold. Lift (x 1.22)
+    is close to invisible, dim (the rest x 0.6) barely shows.
+  - Click (no drag over 5 px, under 0.7 s, one finger): the menu `#pmenu` beside the pointer, kept in the window (moved to
+    `body`: inside the stage a phone's panel drew over it). Head: icon, name, slot · ใส่อยู่ / ยังไม่ได้ใส่ · colour or
+    ลายของคุณ · first set (+n) · ของจาก TTO / ToT. Actions: ดูชิ้นนี้อย่างเดียว (the viewer), ใส่ชิ้นนี้ (not worn),
+    เปลี่ยน<slot> (opens its picker), ถอด<slot>ออก (props; not the Cat's base head), ดาวน์โหลดลาย (PNG) and
+    อัปโหลดลายของคุณ (one per texture when a piece has two), ดาวน์โหลดโมเดล 3D (GLB), คืนลายเดิม (when skinned); wear /
+    take off are one undo step. The menu's piece stays lit while it is open.
+  - Other ways to the same menu: right-click / long press on a picker tile (pieces not worn: ใส่ชิ้นนี้ instead of
+    เปลี่ยน) or a topic ring; the viewer card's ตัวเลือก (no "view"); Ctrl+V on a two-texture piece opens it with วางรูปเป็นลาย
+    1 / 2 (the picture kept); a menu item with a texture is a Ctrl+V target too.
+  - Keyboard: the menu key / Shift+F10 on a tile or ring opens it under the element with the first action focused (Chrome
+    gives a key-opened context menu a point inside the element, so the key press itself is noted: `ctxKeyAt`); a pointer
+    opens it with the menu focused (no action looks chosen); ↑ ↓ Home End move, Esc / Tab close and give the focus back;
+    the page's keys (Esc closing the picker, ← → in the viewer, WASD) wait while it has the focus.
+  - Removed: the three tools on every tile (the ลายของคุณ badge stays as a label), the toolbar's ชมชิ้นส่วน (`#vmode`),
+    the card's ดาวน์โหลดโมเดล 3D / ดาวน์โหลดลาย (and its two-texture choice). Phone pickers for items go four abreast like
+    the rest (three only made room for the tools). The WASD hint says คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู.
+  - **The video repo's trailer breaks on the next publish**: `trailer_features.py` clicks `#vmode` ("inspect", "download")
+    and a tile's `.sk[data-sk="up"]`; it films `wardrobe_dist`, which still has them until it is rebuilt.
+  - Check: `pipeline/wardrobe_menu_check.py` (31 checks: hover per piece, a menu per piece inside the window, a drag opens
+    none, PNG and GLB downloads, upload through the file chooser then reset, take off + Ctrl+Z, the viewer's ตัวเลือก and
+    Esc order, the double-click, right-click a tile + wear, Shift+F10 + arrows + focus back, a phone tap; no errors).
+    Also: sets, moves and effects checks `errors: []`, 46 unit tests, the publish's page rewrite. Heredoc trap seen
+    twice this session: a `\n` inside a Python heredoc came out as a real line break in the written file (a toast string
+    split in two, a PNG signature turned into raw bytes); edit such lines with the Edit tool.

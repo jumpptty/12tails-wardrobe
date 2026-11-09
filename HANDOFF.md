@@ -9,6 +9,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   (6,899 files, data folder `data-7e0350ddb2`, check: no problems, pilot off). Deploy it from an empty folder with the
   wrangler line in NOTES.md "Online copy". Delete this item once deployed. (Publishing from the office still drops 4
   Monkey back items: its rip is damaged, see NOTES.md 2026-11-09 "office publishing"; publish from home.)
+  **It predates the piece menu** (NOTES.md 2026-11-09 "the piece menu"): to put the menu online, rebuild first
+  (`py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, about 6.5 min) once the user is happy with it locally. That
+  rebuild breaks the video repo's trailer script (`trailer_features.py` clicks `#vmode` and the tiles' upload button):
+  tell the user, and fix it in a video session.
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 

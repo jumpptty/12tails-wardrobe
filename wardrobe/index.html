@@ -146,11 +146,6 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .sc-alt > .off { visibility: hidden; }
 .sc-b .l-short { display: none; }
 /* F3: a piece with two textures has one ดาวน์โหลดลาย that turns into ลาย 1 / ลาย 2 in the same place */
-.sc-pick { display: inline-grid; flex: none; }
-.sc-pick > * { grid-area: 1 / 1; }
-.sc-pair { display: flex; gap: 4px; }
-.sc-pair .sc-b { flex: 1 1 0; padding: 0 8px; }
-.sc-pick.choose > .sc-b, .sc-pick:not(.choose) > .sc-pair { visibility: hidden; }
 .sc-hint { display: none; margin: 0; color: var(--muted); font-size: 11.5px; line-height: 1.3; text-align: center; }
 @media (hover: hover) { .sc-b:not(:disabled):not([data-primary]):hover { color: var(--gold); border-color: var(--gold); } }
 /* an edition tag after a name (ruling R61: legendTrinketR = "Legend Trinket" + R) */
@@ -159,6 +154,7 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 5px; color: var(--on-stage); font-size: 12px; pointer-events: none;
   background: rgba(255, 255, 255, .9); border: 1px solid #e3d8c6; border-radius: 6px; padding: 4px 8px; }
 .keyhint kbd { font: inherit; font-weight: 600; font-size: 11px; line-height: 1.5; border: 1px solid #cdbfa8; border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+.kh-sep { width: 1px; align-self: stretch; margin: 2px 4px; background: #e3d8c6; }
 @media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
    the blocks share the panel's full height, the ring takes all the room its block has (container units) */
@@ -281,32 +277,43 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; border-radius: 4px; }
 .pk-note { color: var(--muted); font-size: 13px; margin: 0; }
 .pk-body > .pk-note { grid-column: 1 / -1; }
-/* an item tile's own skin tools (task 10): download / upload / give back that item's texture, and (task 15) download it as
-   a 3D model (.glb). They are the tile button's
-   siblings (a button can't hold buttons), laid over its foot, so a tap on them never equips through the tile */
+/* a picker tile and its "ลายของคุณ" badge (a label: the actions are the piece menu's, 2026-11-09). A right-click (a long
+   press on a phone) on a tile opens that menu for the tile's item */
 .pk-cell { position: relative; min-width: 0; display: grid; }
-.pk-cell > .pk-item { padding-bottom: calc(var(--skh, 28px) + 14px); }
-@media (pointer: coarse) { .pk-cell { --skh: 36px; } }
 .sk-ui { display: contents; }
-.pk-skin { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; justify-content: center; gap: 4px; }
-.sk { flex: 0 1 34px; min-width: 0; height: var(--skh, 28px); display: inline-flex; align-items: center; justify-content: center; gap: 1px; padding: 0;
-  border: 1px solid var(--line); border-radius: 4px; background: var(--well); color: var(--muted); font-size: 12px; font-weight: 600; }
-.sk svg { width: 16px; height: 16px; flex: none; }
-.sk.pick { flex-basis: 40px; font-family: var(--mono); }
-.sk:disabled { opacity: .4; cursor: default; }
-/* on a mouse the tools stay quiet until the tile is hovered or focused (V9); a touch screen always shows them */
-@media (hover: hover) {
-  .sk { border-color: transparent; background: none; opacity: .5; }
-  .pk-cell:hover .sk, .pk-cell:focus-within .sk { opacity: 1; border-color: var(--line); background: var(--well); }
-  .sk:not(:disabled):hover { color: var(--gold); border-color: var(--gold); }
-  .sk:disabled { opacity: .25; }
-  .pk-cell:hover .sk:disabled, .pk-cell:focus-within .sk:disabled { opacity: .4; }
-}
-/* a tile wearing the visitor's skin (F8): the badge "ลายของคุณ ✕" is the คืนลายเดิม button, so the foot keeps three tools */
-.sk-badge { position: absolute; left: 7px; top: 7px; z-index: 1; display: inline-flex; align-items: center; gap: 4px; padding: 0 7px; border: 0; border-radius: 4px;
+.sk-badge { position: absolute; left: 7px; top: 7px; z-index: 1; padding: 0 7px; border-radius: 4px; pointer-events: none;
   background: var(--gold); color: var(--gold-ink); font-size: 10.5px; font-weight: 600; line-height: 1.6; }
-.sk-badge .x { font-size: 1.05em; line-height: 1; }
-@media (pointer: coarse) { .sk-badge::after { content: ""; position: absolute; inset: -8px -6px; } }   /* a finger-sized target around the small badge */
+/* the piece menu (user 2026-11-09: "hover and click at each individual item in the model directly ... show basic info of
+   that item and dropdown list of actions"): a Ledger slip at the click, the piece's info on top, its actions below */
+.pmenu { position: fixed; z-index: 30; width: 268px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; padding: 6px; color: var(--text);
+  background: var(--weave), var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .25), 0 18px 36px -18px rgba(0, 0, 0, .6); transform-origin: var(--ox, 0) var(--oy, 0);
+  animation: pm-in .12s ease-out; }
+.pmenu[hidden] { display: none; }
+@keyframes pm-in { from { opacity: 0; transform: scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .pmenu { animation: none; } }
+.pm-head { display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: center; padding: 4px 6px 8px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.pm-pic { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 4px; background: var(--well); border: 1px solid var(--line); overflow: hidden; }
+.pm-pic img { width: 88%; height: 88%; object-fit: contain; }
+.pm-pic .noicon { width: 80%; font-size: 11px; }
+.pm-txt { min-width: 0; }
+.pmenu:focus { outline: none; }
+.pm-name { display: block; font-size: 14.5px; font-weight: 700; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm-meta { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.pm-meta .sep { margin: 0 .4em; }
+.pm-list { display: flex; flex-direction: column; }
+.pm-sep { height: 1px; margin: 4px 6px; background: var(--line); }
+.pm-item { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 34px; padding: 0 8px; border: 0; border-radius: 4px;
+  background: none; color: var(--text); font-size: 13.5px; font-weight: 500; text-align: left; cursor: pointer; }
+.pm-item svg { width: 16px; height: 16px; flex: none; color: var(--muted); }
+.pm-item .k { margin-left: auto; color: var(--muted); font: 500 11.5px/1 var(--mono); }
+.pm-item:focus-visible { outline-offset: -2px; }
+.pm-item:not(:disabled):hover, .pm-item:not(:disabled):focus-visible { background: var(--gold-soft); color: var(--gold); }
+.pm-item:not(:disabled):hover svg, .pm-item:not(:disabled):focus-visible svg { color: var(--gold); }
+.pm-item:disabled { opacity: .4; cursor: default; }
+.pm-item[data-primary] { color: var(--gold); font-weight: 600; }
+.pm-foot { margin: 4px 6px 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+@media (pointer: coarse) { .pm-item { min-height: 44px; } .pm-foot { display: none; } }
 .topic.color.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
    of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
@@ -363,8 +370,6 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
   /* P3: four tiles a row (faces three), so a sheet shows two rows and more */
   .pk-body { padding: 10px 10px 20px; gap: 6px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pk-body.face-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* F8: the pickers whose tiles carry the three tools go three abreast, so a tool is 31 px wide or more and the art keeps room */
-  .pk-body:is([data-topic=outfit], [data-topic=R], [data-topic=L], [data-topic=Head], [data-topic=Back]) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .pk-item { padding: 6px 4px 5px; gap: 3px; }
   .pk-item .lbl { font-size: 11px; }
   .pk-item .pic img { width: 74%; max-height: 74%; }
@@ -372,8 +377,6 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
   .pk-item .cnt { font-size: 10.5px; padding: 0 4px; }
   .pk-body[data-topic=set] .parts { display: none; }   /* P10: a set tile = its picture, name and count (the panel row shows the worn set's pieces) */
   .pk-item .dot { right: 5px; top: 5px; width: 7px; height: 7px; }
-  .pk-cell > .pk-item { padding: 6px 4px calc(var(--skh, 28px) + 11px); }
-  .pk-skin { left: 4px; right: 4px; bottom: 5px; gap: 3px; }
   .sk-badge { left: 4px; top: 4px; padding: 0 4px; font-size: 9.5px; }
   .bar { top: 8px; right: 8px; }
   .bar .l-full { display: none; }
@@ -392,7 +395,6 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
   .sc-b .l-full { display: none; }
   .sc-b .l-short { display: inline; }
   .sc-b .l-short.sc-alt { display: inline-grid; }
-  .sc-pair .sc-b { padding: 0 6px; }
   .sc-hint { display: block; }        /* F9: on a phone the sheet is hidden, so the card says what works there */
   .plate-cls { font-size: 15px; }
   .plate-sub { font-size: 12px; }
@@ -417,7 +419,6 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <button type="button" class="tb" id="redo" title="ทำซ้ำ (Ctrl+Y)" aria-label="ทำซ้ำ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="tb" id="vmode" title="ชมชิ้นส่วน" aria-label="ชมชิ้นส่วน" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 19.4 7.5v9L12 20.6 4.6 16.5v-9zM4.6 7.5 12 11.6l7.4-4.1M12 11.6v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button type="button" class="tb" id="sound" title="เสียงท่าทาง" aria-label="เสียงท่าทาง" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path class="snd-on" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="snd-off" d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
@@ -428,13 +429,14 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
       <section class="showcase" id="showcase" hidden aria-label="ชมชิ้นส่วน"></section>
     </div>
-    <div class="keyhint" id="keyhint" aria-hidden="true"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
+    <div class="keyhint" id="keyhint" aria-hidden="true">คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู<span class="kh-sep"></span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
         <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
         <p class="pk-hint" id="pkHint" hidden>กดช่องเพื่อชมชิ้นนั้น ใส่ได้จากการ์ด</p></div>
       <div class="pk-body" id="pkBody"></div>
     </section>
+    <div class="pmenu" id="pmenu" role="menu" aria-label="เมนูชิ้นส่วน" hidden></div>
   </main>
 </div>
 <script type="module">
@@ -547,6 +549,7 @@ const texLoader = new THREE.TextureLoader();
 // ---------- class ----------
 async function loadClass(cls) {
   Showcase.exit(true);                    // back to the character (at once) before another class takes the stage
+  closeMenu(); hoverClear();
   status("กำลังโหลด" + (CLASS_TH[cls] || cls) + "…");
   // the prop lists a saved loadout wears come alongside the rig and clips (F13); the others only after the first picture,
   // so a first visit (R70: the standard outfit) never waits on a prop list
@@ -1587,52 +1590,23 @@ async function modelDownload(slot, item) {
     file?.dispose(); piece?.dispose();
   }
 }
-const SK_LABEL = { dl: "ดาวน์โหลดลาย", up: "อัปโหลดลาย", reset: "คืนลายเดิม", view: "ชมชิ้นส่วน" };   // one name for the viewer everywhere (F4)
-const SK_ICON = Object.fromEntries(Object.entries({ dl: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
-  reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", view: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6" })
-  .map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
-// a tile's badge + tools; choose = "dl" | "up" on an item with two textures: one button per texture. A tile wearing the
-// visitor's skin shows the badge "ลายของคุณ ✕", which is the คืนลายเดิม button (F8: the foot never holds four tools)
-function skinParts(slot, item, choose) {
-  const kind = kindOf(slot), texs = texsOf(kind, item), mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
-  const badge = mine ? `<button type="button" class="sk-badge" data-sk="reset" title="${SK_LABEL.reset}" aria-label="${SK_LABEL.reset} ${humanize(item)}">ลายของคุณ<span class="x" aria-hidden="true">✕</span></button>` : "";
-  if (choose) return badge + `<span class="pk-skin">` + texs.map((t, i) => `<button type="button" class="sk pick" data-sk="${choose}" data-tex="${t}" `
-      + `title="${SK_LABEL[choose]} ลาย ${i + 1}" aria-label="${SK_LABEL[choose]} ${i + 1} ${humanize(item)}">${SK_ICON[choose]}${i + 1}</button>`).join("")
-    + `<button type="button" class="sk" data-sk="back" title="ยกเลิก" aria-label="ยกเลิก">✕</button></span>`;
-  const o = kind === "outfits" && texs.length && C.outfits.find(x => x.name === item);
-  const one = a => `<button type="button" class="sk" data-sk="${a}" aria-label="${SK_LABEL[a]} ${humanize(item)}" title="${
-    !texs.length ? "ชิ้นนี้ไม่มีลาย" : a === "dl" && o && !mine ? `${SK_LABEL.dl} สี ${outfitTex(o).tag}` : SK_LABEL[a]}"${texs.length ? "" : " disabled"}>${SK_ICON[a]}</button>`;
-  // the cube (tasks 15 / 16): the piece floating on its own (ชมชิ้นส่วน), its 3D file in the viewer's card
-  const model = hasModel(kind, item), view = `<button type="button" class="sk" data-sk="view" aria-label="${SK_LABEL.view} ${humanize(item)}" title="${
-    model ? SK_LABEL.view : "ชิ้นนี้ไม่มีโมเดล 3D"}"${model ? "" : " disabled"}>${SK_ICON.view}</button>`;
-  return badge + `<span class="pk-skin">${one("dl")}${one("up")}${view}</span>`;
+// a tile's "ลายของคุณ" badge: a label now, the actions are the piece menu's (2026-11-09; until then three tools per tile)
+function skinBadge(slot, item) {
+  const kind = kindOf(slot), mine = texsOf(kind, item).some(t => SKINS.has(skinKey(kind, item, t)));
+  return mine ? `<span class="sk-badge" title="ชิ้นนี้ใส่ลายของคุณอยู่">ลายของคุณ</span>` : "";
 }
-const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinParts(slot, name)}</span></div>`;
-function syncTiles() {                   // after an upload / reset: the open picker's pressed tile, badges and tools
+const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinBadge(slot, name)}</span></div>`;
+function syncTiles() {                   // after an upload / reset: the open picker's pressed tile and badges
   const t = openTopic, body = $("pkBody");
   if (t !== "outfit" && !SLOTS[t]) return;
   syncPressed(); syncViewing();
-  body.querySelectorAll(".pk-cell:not([data-ed])").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinParts(c.dataset.slot, c.dataset.item); });
+  body.querySelectorAll(".pk-cell:not([data-ed])").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinBadge(c.dataset.slot, c.dataset.item); });
 }
 const skinFile = Object.assign(document.createElement("input"), { type: "file", accept: "image/png,image/jpeg,image/webp", hidden: true });
 document.body.append(skinFile);
 let skinTarget = null;
 skinFile.onchange = () => { const f = skinFile.files[0], t = skinTarget; skinTarget = null;
   if (f && t) skinUpload(t, f).catch(e => { console.error(e); toast("เปิดไฟล์ภาพนี้ไม่ได้\nใช้ไฟล์ PNG, JPG หรือ WebP", 2500); }); };
-$("pkBody").addEventListener("click", e => {
-  const b = e.target.closest(".sk, .sk-badge"), c = b?.closest(".pk-cell");
-  if (!c || b.disabled) return;
-  const { slot, item } = c.dataset, act = b.dataset.sk, texs = texsOf(kindOf(slot), item);
-  const redraw = choose => { c.querySelector(".sk-ui").innerHTML = skinParts(slot, item, choose); };
-  if (act === "back") return redraw();
-  if (act === "view") return viewList(slot).then(l => Showcase.enter(slot, item, l));   // ชมชิ้นส่วน on this piece
-  if ((act === "dl" || act === "up") && b.dataset.tex == null && texs.length > 1) return redraw(act);   // which texture?
-  const tex = b.dataset.tex ?? texs[0];
-  if (b.dataset.tex != null) redraw();
-  if (act === "dl") skinDownload(slot, item, tex).catch(e2 => { console.error(e2); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
-  else if (act === "up") { skinTarget = { slot, item, tex }; skinFile.value = ""; skinFile.click(); }
-  else if (act === "reset") skinReset(slot, item).catch(err);
-});
 // ---------- paste a skin (user 2026-11-07: "Allow pasting Ctrl+V from clipboard for skin texture, work by applying the skin
 // to what the cursor is currently focused on if possible"). The pasted picture takes the tile upload's path (skinUpload).
 // Target: the item tile (or a worn piece's topic tile) under the pointer; else the item tile with keyboard focus; else the
@@ -1673,9 +1647,11 @@ function pieceAt(x, y) {                 // the worn piece under a screen point:
 }
 function pasteTarget() {
   const under = pointer && document.elementFromPoint(pointer.x, pointer.y);
-  const fromEl = el => {                 // an item tile (the texture button under it, if the two-texture choice shows), or a topic tile's worn piece
+  const fromEl = el => {                 // a piece menu's texture item, an item tile, or a topic tile's worn piece
+    const mi = el?.closest?.(".pm-item[data-tex]");
+    if (mi && PM.cur) return { slot: PM.cur.slot, item: PM.cur.item, tex: mi.dataset.tex };
     const c = el?.closest?.(".pk-cell");
-    if (c) return { slot: c.dataset.slot, item: c.dataset.item, tex: el.closest(".sk[data-tex]")?.dataset.tex ?? null, cell: c };
+    if (c) return { slot: c.dataset.slot, item: c.dataset.item, tex: null, cell: c };
     const s = el?.closest?.("#topics [data-t]")?.dataset.t;
     if (s === "outfit") return { slot: "outfit", item: C.state.outfit, tex: "" };
     if (SLOTS[s] && C.state[s]) return { slot: s, item: C.state[s], tex: null };
@@ -1700,12 +1676,205 @@ document.addEventListener("paste", e => {
   const texs = texsOf(kindOf(t.slot), t.item);
   if (!texs.length) { toast(`${humanize(t.item)} ไม่มีลาย`, 2500); return; }
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
-  if (tex == null) {                     // two textures and none chosen: show the choice on its tile
-    if (t.cell) t.cell.querySelector(".sk-ui").innerHTML = skinParts(t.slot, t.item, "up");
-    toast(`${humanize(t.item)} มี ${texs.length} ลาย\nชี้ที่ปุ่มลายที่ต้องการ หรือที่ลายบนตัวละคร แล้วกด Ctrl+V`, 3500); return;
+  if (tex == null) {                     // two textures and none chosen: the piece menu asks which one, the picture kept
+    openMenu({ slot: t.slot, item: t.item }, t.cell ? { rect: t.cell.getBoundingClientRect() } : pointer ? { ...pointer } : null,
+      { from: t.cell ? "tile" : "model", paste: file, kb: true });
+    return;
   }
   skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
 });
+// ---------- the piece menu and the hover (user 2026-11-09: "instead of viewing individual object, downloading 2D and 3D
+// and uploading buttons scattered all around the place, I want the user to be able to hover and click at each individual
+// item in the model directly, with mild hover effect, clicking at each piece will then show basic info of that item and
+// dropdown list of actions download upload, view this item only, etc."). One menu for a piece wherever it is reached: a
+// click on the model (pieceAt, the ray Ctrl+V uses), a right-click / long press on a picker tile or a topic ring (so a
+// piece not worn stays reachable), the viewer card's ตัวเลือก, and a pasted picture for a piece with two textures. The
+// tiles' three tools and the toolbar's ชมชิ้นส่วน went; a double-click on a piece still opens the viewer
+const PM_ICON = Object.fromEntries(Object.entries({
+  view: "M1.8 8s2.3-4.3 6.2-4.3S14.2 8 14.2 8s-2.3 4.3-6.2 4.3S1.8 8 1.8 8zM8 6.3a1.7 1.7 0 1 1 0 3.4 1.7 1.7 0 0 1 0-3.4z",
+  wear: "M3 8.5 6.5 12 13 4.5", change: "M3 5.5h9.5M10 3l2.5 2.5L10 8M13 10.5H3.5M6 8l-2.5 2.5L6 13",
+  remove: "M4.2 4.2l7.6 7.6M11.8 4.2l-7.6 7.6", png: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10",
+  glb: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
+  reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", more: "M3.5 8h.01M8 8h.01M12.5 8h.01",
+}).map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${k === "more" ? 2.8 : 1.8}" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
+const PM = { el: $("pmenu"), cur: null, back: null, paste: null, lastBack: null, closedAt: 0 };
+document.body.append(PM.el);               // above every layer (a phone's panel stacks over the stage)
+PM.el.tabIndex = -1;
+const wornNow = (slot, item) => (slot === "outfit" ? C.state.outfit === item : C.state[slot] === item);
+// the menu's head: the item's icon, name, then slot · worn or not · colour (or ลายของคุณ) · its set · where it is from
+function pmHead(slot, item) {
+  const kind = kindOf(slot), worn = wornNow(slot, item), texs = texsOf(kind, item);
+  const mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
+  const o = kind === "outfits" && C.outfits.find(x => x.name === item), rec = o || (C.propLists[kind] || []).find(x => x.name === item) || {};
+  const ed = o && worn ? C.state.edition || "" : "", icon = o ? outfitIcon(item, ed) : iconOf(SLOT_KEY[slot], item)?.icon;
+  const sets = (C.sets || []).filter(s => [s.outfit, s.R, s.L, s.Head, s.Back].includes(item));
+  const c = o && o.colors.length ? (o.colors.includes(C.state.color) ? C.state.color : o.colors[0]) : null, e = c && edOf(o, c, ed);
+  const meta = [SLOT_TH[slot], worn ? "ใส่อยู่" : "ยังไม่ได้ใส่",
+    mine ? "ลายของคุณ" : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`,
+    sets.length && `เซ็ต ${setNameHTML(sets[0])}${sets.length > 1 ? ` +<span class="num">${sets.length - 1}</span>` : ""}`,
+    rec.tot ? "ของจาก ToT" : rec.tto ? "ของจาก TTO" : ""].filter(Boolean);
+  return `<div class="pm-head"><span class="pm-pic">${pic(icon, false, noIcon(item))}</span><span class="pm-txt">`
+    + `<b class="pm-name">${nameHTML(item + ed)}</b><span class="pm-meta">${meta.join('<span class="sep" aria-hidden="true">·</span>')}</span></span></div>`;
+}
+// the actions: look (ดูชิ้นนี้อย่างเดียว = the viewer), wear / change / take off, then the files, then the skin. A piece with
+// two textures lists each one; paste = the choice for a picture pasted on such a piece
+function pmList(slot, item, from, paste) {
+  const kind = kindOf(slot), worn = wornNow(slot, item), texs = texsOf(kind, item), model = hasModel(kind, item);
+  const mine = texs.some(t => SKINS.has(skinKey(kind, item, t))), two = texs.length > 1;
+  const it = (a, label, o = {}) => `<button type="button" class="pm-item" role="menuitem" data-a="${a}"${o.tex != null ? ` data-tex="${o.tex}"` : ""}`
+    + `${o.off ? ` disabled title="${o.off}"` : ""}${o.primary ? " data-primary" : ""}>${PM_ICON[o.icon || a]}<span>${label}</span></button>`;
+  const sep = `<div class="pm-sep" role="separator"></div>`;
+  const perTex = (a, label, icon) => !texs.length ? [it(a, label, { off: "ชิ้นนี้ไม่มีลาย", icon })]
+    : texs.map((t, i) => it(a, two ? `${label} <span class="num">${i + 1}</span>` : label, { tex: t, icon }));
+  if (paste) return perTex("paste", "วางรูปเป็นลาย", "up").join("");
+  const L = [];
+  if (from !== "viewer") L.push(it("view", "ดูชิ้นนี้อย่างเดียว", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
+  if (!worn) L.push(it("wear", "ใส่ชิ้นนี้", { primary: true }));
+  if (from !== "tile") L.push(it("change", `เปลี่ยน${SLOT_TH[slot]}`));
+  if (worn && slot !== "outfit" && item !== BASE_HEAD[C.cls]) L.push(it("remove", `ถอด${SLOT_TH[slot]}ออก`));
+  L.push(sep, ...perTex("png", "ดาวน์โหลดลาย (PNG)", "png"), it("glb", "ดาวน์โหลดโมเดล 3D (GLB)", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
+  L.push(sep, ...perTex("up", "อัปโหลดลายของคุณ", "up"));
+  if (mine) L.push(it("reset", "คืนลายเดิม"));
+  return L.join("");
+}
+// at = { x, y } (a click: the menu opens beside it) | { rect } (a tile, a ring, a button: under it, else over it) | null
+// (centred); kept inside the window. The first action takes the focus (arrows move it, Esc / Tab close)
+function openMenu(t, at, o = {}) {
+  if (!C || !t?.item || !VIEW_SLOTS.has(t.slot)) return;
+  const el = PM.el;
+  PM.cur = { slot: t.slot, item: t.item, from: o.from || "model" }; PM.back = o.back || null; PM.paste = o.paste || null;
+  const n = texsOf(kindOf(t.slot), t.item).length;
+  el.innerHTML = pmHead(t.slot, t.item) + `<div class="pm-list">${pmList(t.slot, t.item, PM.cur.from, PM.paste)}</div>`
+    + `<p class="pm-foot">${PM.paste ? `ชิ้นนี้มี <span class="num">${n}</span> ลาย เลือกลายที่จะใส่รูปจากคลิปบอร์ด` : "ชี้ที่ชิ้นนี้แล้วกด Ctrl+V เพื่อวางรูปเป็นลายได้"}</p>`;
+  el.hidden = false; el.style.left = el.style.top = "0px";
+  const w = el.offsetWidth, h = el.offsetHeight, W = innerWidth, H = innerHeight, m = 8, cl = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
+  let x, y;
+  if (at?.rect) { const r = at.rect; x = r.left; y = r.bottom + 6; if (y + h > H - m) y = r.top - h - 6; }
+  else if (at) { x = at.x + 12; y = at.y + 12; if (x + w > W - m) x = at.x - w - 12; if (y + h > H - m) y = at.y - h - 12; }
+  else { x = (W - w) / 2; y = (H - h) / 2; }
+  x = cl(x, m, W - w - m); y = cl(y, m, H - h - m);
+  el.style.left = x + "px"; el.style.top = y + "px";
+  el.style.setProperty("--ox", (at?.rect ? at.rect.left : at ? at.x : x + w / 2) - x + "px");
+  el.style.setProperty("--oy", (at?.rect ? (y > at.rect.top ? 0 : h) : at ? at.y - y : h / 2) + "px");
+  // opened from the keyboard: the first action has the focus; by a pointer: the menu itself (no action looks chosen yet,
+  // and ↓ goes to the first)
+  (o.kb ? el.querySelector(".pm-item:not(:disabled)") : el)?.focus({ preventScroll: true });
+}
+function closeMenu(refocus = false) {
+  if (PM.el.hidden) return;
+  const back = PM.back;
+  PM.el.hidden = true; PM.el.innerHTML = ""; PM.cur = null; PM.back = null; PM.paste = null;
+  PM.lastBack = back; PM.closedAt = performance.now();
+  if (refocus && back?.isConnected) back.focus({ preventScroll: true });
+}
+PM.el.addEventListener("click", async e => {
+  const b = e.target.closest(".pm-item");
+  if (!b || b.disabled || !PM.cur) return;
+  const { slot, item, from } = PM.cur, a = b.dataset.a, tex = b.dataset.tex, file = PM.paste;
+  closeMenu(a !== "change" && a !== "view");
+  // the file dialog opens in the click's own task (browsers allow it only there)
+  if (a === "up") { skinTarget = { slot, item, tex }; skinFile.value = ""; skinFile.click(); return; }
+  if (a === "png") return skinDownload(slot, item, tex).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+  if (a === "glb") return modelDownload(slot, item);
+  if (a === "paste") return skinUpload({ slot, item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
+  if (a === "reset") return skinReset(slot, item).catch(err);
+  if (a === "view") return Showcase.enter(slot, item, await viewList(slot));
+  if (a === "change") return openPicker(slot, { fresh: true, kb: e.detail === 0 });
+  if (a === "wear" || a === "remove") {      // one undo step, like a pick in the picker
+    if (Showcase.on && from !== "viewer") Showcase.exit();
+    await tracked(() => (a === "remove" ? setProp(slot, null) : slot === "outfit" ? setOutfit(item, C.state.color) : setProp(slot, item))).catch(err);
+    renderTopics(); syncPressed(); syncTiles(); if (Showcase.on) renderCard(); autoFit();
+    toast(`${a === "remove" ? "ถอด" : "ใส่"} ${humanize(item)} แล้ว`);
+  }
+});
+PM.el.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey) return;      // Ctrl+Z / Ctrl+V keep working with the menu open
+  e.stopPropagation();                     // the page's own keys (Esc closing the picker, ← → in the viewer, WASD) wait
+  const items = [...PM.el.querySelectorAll(".pm-item:not(:disabled)")], i = items.indexOf(document.activeElement), n = items.length;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); items[i < 0 ? (e.key === "ArrowDown" ? 0 : n - 1) : (i + (e.key === "ArrowDown" ? 1 : n - 1)) % n]?.focus(); }
+  else if (e.key === "Home" || e.key === "End") { e.preventDefault(); items[e.key === "Home" ? 0 : n - 1]?.focus(); }
+  else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); closeMenu(true); }
+  else if (/^Arrow|^[wasdWASD]$/.test(e.key)) e.preventDefault();
+});
+document.addEventListener("pointerdown", e => { if (!PM.el.hidden && !PM.el.contains(e.target)) closeMenu(); }, true);
+addEventListener("resize", () => closeMenu());
+$("pkBody").addEventListener("scroll", () => { if (PM.cur?.from === "tile") closeMenu(); }, { passive: true });
+// a context menu opened by the keyboard (the menu key, Shift+F10; Chrome gives it a point inside the element, so the key
+// press itself tells) hangs under the element with its first action focused; a right-click / long press opens at the pointer
+let ctxKeyAt = 0;
+addEventListener("keydown", e => { if (e.key === "ContextMenu" || (e.key === "F10" && e.shiftKey)) ctxKeyAt = performance.now(); }, true);
+const menuAt = (e, el) => (performance.now() - ctxKeyAt < 600 ? { rect: el.getBoundingClientRect() } : { x: e.clientX, y: e.clientY });
+$("pkBody").addEventListener("contextmenu", e => {
+  const c = e.target.closest(".pk-cell");
+  if (!c || !C) return;
+  e.preventDefault();
+  const at = menuAt(e, c);
+  openMenu({ slot: c.dataset.slot, item: c.dataset.item }, at, { from: "tile", back: c.querySelector(".pk-item"), kb: !!at.rect });
+});
+$("topics").addEventListener("contextmenu", e => {
+  const b = e.target.closest("[data-t]"), t = b?.dataset.t, it = t && C && VIEW_SLOTS.has(t) && (t === "outfit" ? C.state.outfit : C.state[t]);
+  if (!it) return;
+  e.preventDefault();
+  const at = menuAt(e, b);
+  openMenu({ slot: t, item: it }, at, { from: "ring", back: b, kb: !!at.rect });
+});
+// a click on the model (not a drag, not a long press, one finger): the piece's menu beside the pointer
+{
+  let down = null;
+  renderer.domElement.addEventListener("pointerdown", e => {
+    down = !down && e.isPrimary && (e.pointerType !== "mouse" || e.button === 0) ? { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId } : null;
+  });
+  renderer.domElement.addEventListener("pointercancel", () => { down = null; });
+  renderer.domElement.addEventListener("pointerup", e => {
+    const d = down; down = null;
+    if (!d || d.id !== e.pointerId || !C || Showcase.phase !== "off") return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5 || performance.now() - d.t > 700) return;
+    const t = pieceAt(e.clientX, e.clientY);
+    if (t) openMenu(t, { x: e.clientX, y: e.clientY }, { from: "model" });
+  });
+}
+// the hover: the piece under the mouse lights up a little (its materials' diffuse colour; the menu's piece stays lit while
+// its menu is open) and the cursor says it can be clicked. Three looks to pick from (?hover=gold, the default, a warm
+// brightening / lift, a plain one / dim: the rest of the character darkens instead). Never in the viewer, never while
+// dragging; a screenshot clears it first
+const HOVER = new URLSearchParams(location.search).get("hover") || "gold";
+const Hover = { key: "", slot: null, saved: new Map(), at: null, t: 0 };
+function hoverClear() {
+  for (const [m, s] of Hover.saved) { m.emissive.copy(s.e); m.color.copy(s.c); }
+  Hover.saved.clear(); Hover.key = ""; Hover.slot = null; renderer.domElement.style.cursor = "";
+}
+function hoverPaint(slot) {
+  const root = !C || !slot ? null : slot === "outfit" ? C.meshes[0] : C.props[slot];
+  const key = root ? slot + "|" + root.uuid : "";        // a piece swapped under the pointer is a new key
+  if (key === Hover.key) return;
+  hoverClear();
+  if (!root) return;
+  Hover.key = key; Hover.slot = slot;
+  const mats = roots => { const out = new Set(); for (const r of roots) r?.traverse(o => { if (o.isMesh) for (const m of [].concat(o.material)) if (m.emissive) out.add(m); }); return out; };
+  const piece = mats(slot === "outfit" ? C.meshes : [C.props[slot]]);
+  const save = m => { if (!Hover.saved.has(m)) Hover.saved.set(m, { e: m.emissive.clone(), c: m.color.clone() }); };
+  if (HOVER === "dim") { for (const m of mats([...C.meshes, ...Object.values(C.props)])) if (!piece.has(m)) { save(m); m.color.multiplyScalar(.6); } }
+  // a brighter (gold: warmer) diffuse colour, not an added glow: added light lifts the dark colours most (the first try,
+  // emissive + 0.2 x gold, turned a dark-blue outfit sepia), a factor keeps the darks dark
+  // gold adds a trace of warm light too (0.07 x gold, a third of the first try): a full red can't get brighter, so a bright
+  // red weapon showed no change from the factor alone
+  else {
+    const f = HOVER === "lift" ? new THREE.Color(1.22, 1.22, 1.22) : new THREE.Color(1.18, 1.08, .92), g = HOVER === "lift" ? null : new THREE.Color(0xd0913e).multiplyScalar(.07);
+    for (const m of piece) { save(m); m.color.multiply(f); if (g) m.emissive.add(g); }
+  }
+  renderer.domElement.style.cursor = "pointer";
+}
+function hoverTick() {
+  if (!C || Showcase.phase !== "off") { if (Hover.key) hoverClear(); return; }
+  if (PM.cur?.from === "model") return hoverPaint(PM.cur.slot);
+  if (!Hover.at || scPtr.size) { if (Hover.key) hoverClear(); return; }
+  const now = performance.now();
+  if (now - Hover.t < 90) return;          // about ten rays a second: the piece under a still pointer changes as the hero moves
+  Hover.t = now;
+  hoverPaint(pieceAt(Hover.at.x, Hover.at.y)?.slot || null);
+}
+renderer.domElement.addEventListener("pointermove", e => { Hover.at = e.pointerType === "touch" ? null : { x: e.clientX, y: e.clientY }; });
+renderer.domElement.addEventListener("pointerleave", () => { Hover.at = null; });
 // ---------- ชมชิ้นส่วน (task 16, user 2026-11-08: "view and appreciate each piece of the model separately from the
 // character too, like a floating item"): an inspect mode on the same stage. The character fades out and one piece
 // (makePiece, pose "idle") floats in the free part of the stage: a slow turntable (20 deg/s) and a gentle bob (3 % of its
@@ -1803,9 +1972,10 @@ const Showcase = {
   on: false, phase: "off", token: 0, cur: null, list: [], piece: null, next: null, loading: false, fitted: false,
   group: new THREE.Group(), pivot: new THREE.Group(), holder: new THREE.Group(),
   t: 0, r: 1, h0: 1, size: new THREE.Vector3(1, 1, 1), rxz: .5, hull: [], look: new THREE.Vector3(), fitD: 1, foot: 1, lift: 0, shown: 0, dragging: false, resumeAt: 0,
-  hero: null, fx: null, heroTw: null, pieceTw: null, pieceTo: 1, liftTw: null, saved: null, fitKey: "", refitHero: false, pngChoose: false,
+  hero: null, fx: null, heroTw: null, pieceTw: null, pieceTo: 1, liftTw: null, saved: null, fitKey: "", refitHero: false,
   async enter(slot, item, list = null) {
     if (!C || !VIEW_SLOTS.has(slot) || !item) return;
+    closeMenu(); hoverClear();               // the character's materials go back to plain before they fade
     if (this.phase === "out") this.finishExit();            // back in while on the way out: that ends at once
     if (!this.on) {
       camFinish();
@@ -1815,7 +1985,7 @@ const Showcase = {
         floor: floor.visible, floorWide: floorWide.visible, root: K.root.visible, cls: K.cls };
       this.on = true; this.phase = "in"; this.t = 0; this.fitted = false; this.refitHero = false; wReset();
       controls.enablePan = false;
-      $("vmode").setAttribute("aria-pressed", "true"); $("shot").title = SHOT_TITLE.piece;
+      $("shot").title = SHOT_TITLE.piece;
       // the character and its floor shadows fade into the white stage with the camera still on them (0.2 s)
       this.hero = whiteFader([K.root, floor, floorWide]);
       this.heroTw = tween(.2, k => this.hero.set(k), () => this.heroGone());
@@ -1834,7 +2004,8 @@ const Showcase = {
   },
   async show(slot, item) {
     const tk = ++this.token;
-    this.cur = { slot, item }; this.loading = true; this.pngChoose = false; renderCard(); syncViewing();
+    if (PM.cur?.from === "viewer") closeMenu();
+    this.cur = { slot, item }; this.loading = true; renderCard(); syncViewing();
     let piece;
     try { piece = await makePiece(slot, item, { pose: "idle" }); await texturesReady(piece.view); }
     catch (e) { if (tk === this.token) { this.loading = false; renderCard(); err(e, "โหลดชิ้นนี้ไม่สำเร็จ ลองกดอีกครั้ง"); } return; }
@@ -1943,9 +2114,9 @@ const Showcase = {
   },
   exit(instant = false) {
     if (!this.on) { if (instant && this.phase === "out") this.finishExit(); return; }
-    this.token++; this.on = false; this.loading = false; this.next?.dispose(); this.next = null; this.pngChoose = false;
+    this.token++; this.on = false; this.loading = false; this.next?.dispose(); this.next = null;
     this.phase = "out";
-    $("vmode").setAttribute("aria-pressed", "false"); $("shot").title = SHOT_TITLE.hero;
+    $("shot").title = SHOT_TITLE.hero;
     syncViewing();
     if (instant || !C || C.cls !== this.saved.cls) return this.finishExit();
     stopTween(this.heroTw);
@@ -2063,17 +2234,12 @@ function renderCard() {
   const wearLbl = worn ? "ใส่อยู่" : "ใส่ชิ้นนี้";
   const wear = `<button type="button" class="sc-b sc-wear" data-a="wear" title="${wearLbl}" aria-label="${wearLbl}"${worn ? " disabled" : ' data-primary="1"'}>${SC_ICON.wear}`
     + alt("l-full", !worn, "ใส่ชิ้นนี้", "ใส่อยู่") + alt("l-short", !worn, "ใส่", "ใส่อยู่") + `</button>`;
-  const model = hasModel(kind, item);
-  const glb = b("glb", "ดาวน์โหลดโมเดล 3D", "3D", SK_ICON.dl, model ? "" : " disabled", model ? "ดาวน์โหลดโมเดล 3D (.glb)" : "ชิ้นนี้ไม่มีโมเดล 3D");
-  const png = !texs.length ? b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, " disabled", "ชิ้นนี้ไม่มีลาย")
-    : texs.length === 1 ? b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, ` data-tex="${texs[0]}"`)
-    : `<span class="sc-pick${S.pngChoose ? " choose" : ""}">` + b("png", "ดาวน์โหลดลาย", "ลาย", SK_ICON.dl, S.pngChoose ? ' tabindex="-1"' : "", `ดาวน์โหลดลาย (ชิ้นนี้มี ${texs.length} ลาย)`)
-      + `<span class="sc-pair">` + texs.map((t, k) => `<button type="button" class="sc-b" data-a="png" data-tex="${t}" title="ดาวน์โหลดลาย ${k + 1}" aria-label="ดาวน์โหลดลาย ${k + 1}"${S.pngChoose ? "" : ' tabindex="-1"'}>`
-        + `${SK_ICON.dl}<span class="l-full">ลาย <span class="num">${k + 1}</span></span><span class="l-short num">${k + 1}</span></button>`).join("") + `</span></span>`;
+  // the piece's files and skin are in its menu (2026-11-09), the same one a click on the character opens
+  const more = b("menu", "ตัวเลือก", "ตัวเลือก", PM_ICON.more, ' aria-haspopup="menu"', "ดาวน์โหลดลาย โมเดล 3D และอัปโหลดลาย");
   el.innerHTML = `<div class="sc-head"><b class="sc-name">${nameHTML(item)}</b><span class="sc-nav">${nav("prev", "ชิ้นก่อนหน้า", "←")}`
     + `<span class="sc-count num" style="min-width: ${String(n).length * 2 + 3}ch">${i + 1} / ${n}</span>${nav("next", "ชิ้นถัดไป", "→")}</span></div>`
     + `<div class="sc-meta">${meta.join(`<span class="sc-dot" aria-hidden="true">·</span>`)}</div>`
-    + `<div class="sc-acts">${wear}${glb}${png}${b("close", "กลับ", "กลับ", SC_ICON.close, ' data-close="1"', "กลับไปที่ตัวละคร (Esc)")}</div>`
+    + `<div class="sc-acts">${wear}${more}${b("close", "กลับ", "กลับ", SC_ICON.close, ' data-close="1"', "กลับไปที่ตัวละคร (Esc)")}</div>`
     + (n > 1 ? `<p class="sc-hint">ปัดซ้ายหรือขวาเพื่อดูชิ้นอื่น</p>` : "");
   el.hidden = false;
 }
@@ -2083,13 +2249,9 @@ $("showcase").addEventListener("click", async e => {
   const { slot, item } = S.cur, a = btn.dataset.a;
   if (a === "close") return S.exit();
   if (a === "prev" || a === "next") return S.step(a === "next" ? 1 : -1);
-  if (a === "glb") return modelDownload(slot, item);
-  if (a === "png") {
-    if (btn.dataset.tex == null && texsOf(kindOf(slot), item).length > 1) {      // which texture? (F3: in the same place)
-      S.pngChoose = true; renderCard(); $("showcase").querySelector(".sc-pair .sc-b")?.focus(); return;
-    }
-    if (S.pngChoose) { S.pngChoose = false; renderCard(); }
-    return skinDownload(slot, item, btn.dataset.tex).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+  if (a === "menu") {                    // a second press closes it (the press itself closed it a moment ago)
+    if (PM.lastBack === btn && performance.now() - PM.closedAt < 400) return;
+    return openMenu(S.cur, { rect: btn.getBoundingClientRect() }, { from: "viewer", back: btn, kb: e.detail === 0 });
   }
   if (a === "wear") {                    // one undo step, like a pick in the picker
     await tracked(() => (slot === "outfit" ? setOutfit(item, C.state.color) : setProp(slot, item))).catch(err);
@@ -2101,15 +2263,6 @@ function refreshShowcase(kind, item) {
   const S = Showcase;
   if (S.on && S.cur && kindOf(S.cur.slot) === kind && (item == null || S.cur.item === item)) S.show(S.cur.slot, S.cur.item);
 }
-// the toolbar's ชมชิ้นส่วน (F4): it opens the viewer on the open item picker's worn piece (else that picker's first), or on
-// the outfit, and closes it again; its pressed state is the viewer's (enter / exit set it)
-$("vmode").onclick = async () => {
-  if (Showcase.on) return Showcase.exit();
-  if (!C) return;
-  const t = VIEW_SLOTS.has(openTopic) ? openTopic : "outfit", list = await viewList(t);
-  const it = (t === "outfit" ? C.state.outfit : C.state[t]) || list[0];
-  if (it) Showcase.enter(t, it, list); else Showcase.enter("outfit", C.state.outfit);
-};
 // a double-click on a piece of the character (the ray Ctrl+V uses)
 renderer.domElement.addEventListener("dblclick", e => {
   if (!C || Showcase.on) return;
@@ -2218,7 +2371,7 @@ function renderTopics() {
     if (Showcase.on && Showcase.cur?.slot !== "outfit") Showcase.exit();     // a colour shows on the character (or the floating outfit)
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
-    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nกดคืนลายเดิมในหัวข้อชุดเพื่อดูสีนี้", 3000); });
+    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nคลิกที่ชุดบนตัวละคร แล้วเลือกคืนลายเดิมเพื่อดูสีนี้", 3000); });
   fitColors();
   if (keep) box.querySelector(keep)?.focus();
   renderPlate();
@@ -2554,6 +2707,7 @@ function cropToAlpha(cv) {
   return out;
 }
 $("shot").onclick = () => {
+  hoverClear();                            // the hover glow never goes into a picture
   if (!C) return;
   const pr = renderer.getPixelRatio(), s = Math.max(2, devicePixelRatio);
   camera.clearViewOffset(); viewOff = -1;
@@ -2978,6 +3132,7 @@ renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
   if (C) { C.mixer.update(dt); seqTick(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
   fxTick(dt);
+  hoverTick();
   runTweens(dt);
   Showcase.update(dt);
   // the picker's view offset glides in and out (F1)
@@ -3013,7 +3168,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains, PM, Hover }),   // scripted checks only
 };
 </script>
 </body>

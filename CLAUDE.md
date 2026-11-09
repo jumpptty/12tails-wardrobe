@@ -44,8 +44,8 @@ the Bible under either PC's path.
   Plain Python runs as `uv run --no-project --with <pkgs> python ...` or `py -3`, never a global `pip install`.
 - Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules`;
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
-- Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py` (headless Playwright), and
-  an isolated Playwright context for anything else so the user's own browser window is left alone.
+- Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
+  (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py` (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then the USER deploys (NOTES.md "Online
   copy"); Claude never deploys. Online it carries BB content only (the user's content rule, enforced by the publish).
 
