@@ -3066,7 +3066,10 @@ class Fx {
       }
     });
     this.root = this.nodes[0];
-    if (this.ec && (this.ec.velocity || []).some(x => x)) this.vel = vA(this.ec.velocity);   // world = spawn frame here
+    // EffectControl's Awake turns velocity by the spawned rotation (TransformDirection): a cue's rot sends it that way
+    // (2026-11-09; user: Resonance Claw's waves "should go 3 directions, but now it only go one direction": the -45 / +45
+    // waves flew straight ahead); the hero's facing is the group's, above
+    if (this.ec && (this.ec.velocity || []).some(x => x)) this.vel = vA(this.ec.velocity).applyQuaternion(this.root.quaternion);
     scene.add(this.group);
     this.group.updateMatrixWorld(true);
   }
@@ -3261,7 +3264,11 @@ function legacyParticles(fx, node, em, an, rd, mat) {
   const spawn = () => {
     let d; do { d = V(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)); } while (d.lengthSq() > 1 || d.lengthSq() < 1e-6);
     const p = d.normalize().multiplyScalar(em.m_MinEmitterRange + (1 - em.m_MinEmitterRange) * Math.random()).multiply(vv(em.m_Ellipsoid));
-    const q = fx.uQuat(node), vel = vv(em.localVelocity).applyQuaternion(q).add(vv(em.worldVelocity)).add(rv(em.rndVelocity));
+    // the random part turns with the emitter, like localVelocity (2026-11-09; user: Cross Break's slashes "should form a
+    // cross pattern on the ground ... the app vfx direction is all over the place"): Cross Break's four arms (emitters
+    // turned 0 / 90 / 180 / -90) all have rndVelocity on x only, as large as their speed along x, so it is along each
+    // arm; added in world axes it splayed the turned arms by up to 45 degrees. Grand Cross is built the same way
+    const q = fx.uQuat(node), vel = vv(em.localVelocity).add(rv(em.rndVelocity)).applyQuaternion(q).add(vv(em.worldVelocity));
     const e = rnd(em.minEnergy, em.maxEnergy);
     parts.push({ p: world ? p.applyMatrix4(fx.uMatrix(node)) : p, v: world ? vel : vel.applyQuaternion(q.clone().invert()), age: 0, energy: e,
                  size: rnd(em.minSize, em.maxSize), rot: em.rndRotation ? rnd(0, 2 * Math.PI) : 0,

@@ -712,3 +712,17 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   outliving its clip stays and cues after the clip's end fire (Wind Bound Domain's pulses at 2.8 / 4.8 / 6.8 s, a cut
   equal to the clip length); when the last cue has fired and the last effect is gone the cue list empties (the dark
   backdrop goes). `wardrobe_moves_check.py`'s looping expectations for skills are out of date (the user tests by hand).
+- **2026-11-09, effect directions: Cross Break / Grand Cross / Resonance Claw** (user: Cross Break "should form a cross
+  pattern on the ground briefly before disappearing, however the app vfx direction is all over the place, i suspect
+  this issue extends to Grand Cross too"; Resonance Claw "should go 3 directions, but now it only go one direction,
+  maybe there's a link"). The link: a velocity in the wrong frame, twice.
+  - Legacy particles added `rndVelocity` in world axes. Cross Break = four emitters 1 m out (0.2 m up) turned 0 / 90 /
+    180 / -90, each shooting stretched streaks along its local x through the centre, with rndVelocity (3, 0, 0) as big as
+    its speed: only along the arm if it turns with the emitter, so the prefab's own design says local (world axes splayed
+    the turned arms by up to 45 degrees). Grand Cross's emitters (turned 90 about z) have rndVelocity mostly on local x
+    too. Now (localVelocity + rnd) x the emitter's rotation + worldVelocity. (No Unity 3.5 engine source to cite: the
+    reading is from the prefabs.)
+  - `Fx` moved a root by its EffectControl velocity in the hero's frame only; EffectControl's Awake turns it by the
+    spawned rotation (TransformDirection), so the cue's rot must turn it: Resonance Claw's three waves all have velocity
+    (0, 0, 36) and differ only by the cue's rot 0 / -45 / +45, so all three flew straight ahead. Now velocity x the root's
+    spawn rotation. (fxparts/control.js's child EffectControl already did this.)
