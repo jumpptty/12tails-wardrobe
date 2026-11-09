@@ -1,5 +1,7 @@
 """Headless check of the wardrobe's move player (2026-11-09): every class's skill / base tiles to <out>/tiles.json, a
-screenshot of the Sheep's skill tab, then the Sheep's sequences, ko holding, run / falling looping, getUp back to idle.
+screenshot of the Sheep's skill tab, every class's parsed sequences with their step times to <out>/chains.json, then
+timed traces (step:clip@seconds since the pick) of the Sheep's sequences and the Wolf's Blade Song, ko holding, run /
+falling looping, getUp back to idle.
 uv run --no-project --with playwright python -I pipeline/wardrobe_moves_check.py D:/12tails-video checks/<dir> [page path]"""
 import asyncio, functools, http.server, json, sys, threading
 from pathlib import Path
@@ -19,16 +21,17 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f"http://127.0.0.1:{srv.server_address[1]}/{PAGE}"
 
 STATE = """() => { const { C } = wardrobe.debug(); const a = C.action;
-  return { cur: C.cur, i: C.seq?.i, clip: a?.getClip().name, t: +(a?.time ?? 0).toFixed(2), paused: a?.paused, dur: C.seq?.dur }; }"""
+  return { cur: C.cur, i: C.seq?.i, clip: a?.getClip().name, t: +(a?.time ?? 0).toFixed(2), paused: a?.paused, dur: C.seq?.dur, now: performance.now() }; }"""
 
 
 async def trace(page, move, secs, step=0.05):
-    seen, last = [], None
+    seen, last, t0 = [], None, None
     for _ in range(int(secs / step)):
         s = await page.evaluate(STATE)
+        t0 = s["now"] if t0 is None else t0
         key = (s["clip"], s["i"])
         if key != last:
-            seen.append(f'{s["i"]}:{s["clip"]}')
+            seen.append(f'{s["i"]}:{s["clip"]}@{(s["now"] - t0) / 1000:.1f}')
             last = key
         await page.wait_for_timeout(int(step * 1000))
     return seen, await page.evaluate(STATE)
@@ -50,13 +53,15 @@ async def main():
             await page.wait_for_timeout(150)
         async def tiles():
             return await page.evaluate("() => [...document.querySelectorAll('#pkBody .pk-item')].map(b => b.dataset.m + '=' + b.querySelector('.lbl').textContent + (b.title ? ' [' + b.title + ']' : ''))")
-        report = {}
+        report, seqs = {}, {}
         for cls in ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "whale", "wolf", "sheep"]:
             await page.evaluate("c => wardrobe.show(c)", cls)
             await tab("skill"); sk = await tiles()
             await tab("base"); bs = await tiles()
             report[cls] = {"skill": sk, "base": bs}
+            seqs[cls] = await page.evaluate("() => (wardrobe.debug().C.chains || []).map(c => c.name + ': ' + c.steps.map(s => s.clip + (s.hold ? '*' : '') + (s.t != null ? '@' + s.t : '')).join(' '))")
         (OUT / "tiles.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
+        (OUT / "chains.json").write_text(json.dumps(seqs, ensure_ascii=False, indent=1), encoding="utf-8")
         async def run(g, m, secs):
             await tab(g)
             await page.click(f'#pkBody .pk-item[data-m="{m}"]')
@@ -64,8 +69,8 @@ async def main():
             print(f"{m:16} {' '.join(seen)}  | end {end}")
         await tab("skill")
         await page.screenshot(path=str(OUT / "sheep_skill.png"))
-        await run("skill", "@HolyLight", 7)
-        await run("skill", "@ChargeAttack", 6)
+        await run("skill", "@HolyLight", 11)
+        await run("skill", "@ChargeAttack", 8)
         await run("skill", "@NormalAttack", 4)
         await run("skill", "soulOfArms", 1)
         await run("base", "ko", 3)
@@ -73,6 +78,9 @@ async def main():
         await run("base", "falling", 1.5)
         await run("base", "getUp", 3)
         await run("emote", "bow", 3.5)
+        await page.evaluate("c => wardrobe.show(c)", "wolf")
+        await run("skill", "@BladeSong", 12)
+        await run("skill", "@Counter", 2.5)
         print(json.dumps(report, ensure_ascii=False)[:200])
         print("errors:", errors)
         await b.close()
