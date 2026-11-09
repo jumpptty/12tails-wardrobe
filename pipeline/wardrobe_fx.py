@@ -64,6 +64,26 @@ LAYOUTS = {
                     ("Color1", "c"), ("Color2", "c"), ("Color3", "c"), ("Color4", "c"), ("Color5", "c"),
                     ("lineEmitterMode", "i"), ("symetry", "b"), ("localRotation", "v3"), ("repeatForever", "b")],
 }
+# the Wolf's other effect parts (plans/fx_wolf/parts.md, 2026-11-09): every instance in the 12 classes decodes and uses up
+# exactly its bytes (VortexEmitter 164 / 31, EmblemEmitter 68 / 24, TrailEmitter 124 / 22, EmitterControl 12 / 32,
+# ShatterMesh 56 / 5)
+LAYOUTS.update({
+    "EmitterControl": [("Delay", "f"), ("Life", "f"), ("AfterLife", "f")],          # EmitterControl.cs:175-181
+    "VortexEmitter": [("Life", "f"), ("Delay", "f"), ("startRadius", "f"), ("endRadius", "f"), ("rndRadius", "f"),
+                      ("startWidth", "f"), ("endWidth", "f"), ("length", "i"), ("alwaysUp", "b"), ("localVelocity", "v3"),
+                      ("Color1", "c"), ("Color2", "c"), ("Color3", "c"), ("Color4", "c"), ("Color5", "c"),
+                      ("Rotation", "f"), ("vortexCount", "i"), ("vortexRadian", "f"), ("Spin", "v3"),
+                      ("VortexEmitterMode", "i"), ("UVTile", "f"), ("repeatForever", "b")],
+    "EmblemEmitter": [("Life", "f"), ("Delay", "f"), ("image", "r"), ("startHeight", "f"), ("endHeight", "f"),
+                      ("startWidth", "f"), ("endWidth", "f"), ("rndScale", "f"), ("velocity", "v3"), ("alpha1", "f"),
+                      ("alpha2", "f"), ("alpha3", "f"), ("alpha4", "f"), ("alpha5", "f")],
+    "TrailEmitter": [("startWidth", "f"), ("endWidth", "f"), ("life", "f"), ("alwaysUp", "b"), ("minDistance", "f"),
+                     ("Color1", "c"), ("Color2", "c"), ("Color3", "c"), ("Color4", "c"), ("TrailEmitterMode", "i"),
+                     ("uvHeight", "f"), ("localVelocity", "f"), ("worldVelocity", "f"), ("isTimer", "b"), ("delay", "f"),
+                     ("easeIn", "f"), ("easeMiddle", "f"), ("easeOut", "f"), ("minQuality", "i")],
+    "ShatterMesh": [("Life", "f"), ("Delay", "f"), ("worldVelocity", "v3"), ("localVelocity", "v3"),
+                    ("rndVelocity", "v3"), ("rndRotation", "v3")],
+})
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -129,6 +149,20 @@ class Game:
         return self.scripts[key]
 
 
+_mesh = None
+
+
+def mesh_module():
+    """pipeline/wardrobe_fx_mesh.py, loaded by its path (python -I leaves the script's folder off sys.path)."""
+    global _mesh
+    if _mesh is None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("wardrobe_fx_mesh", os.path.join(HERE, "wardrobe_fx_mesh.py"))
+        _mesh = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_mesh)
+    return _mesh
+
+
 def material(game, pptr, base, mats, texs):
     o = game.obj(pptr, base)
     if o is None:
@@ -192,12 +226,29 @@ def effect(game, cls, name, mats, texs, sounds):
                     entry.update(decode(raw, lay, header_len(raw)))
                 elif len(raw) > header_len(raw):
                     raise ValueError(f"{name}/{node['name']}: no layout for {sname} ({len(raw) - header_len(raw)} field bytes)")
+                if sname == "EmblemEmitter":           # its picture: a Texture2D reference, exported like a material's
+                    to = game.obj(entry["image"], c.assets_file)
+                    if to is not None:
+                        entry["imageTex"] = to.read().m_Name
+                        texs.setdefault(entry["imageTex"], to)
                 node["comps"].append(entry)
             elif ty in ("MeshRenderer", "ParticleRenderer"):
                 t = c.read_typetree()
                 node["mats"] = [material(game, m, c.assets_file, mats, texs) for m in t["m_Materials"]]
                 if ty == "ParticleRenderer":
                     node["comps"].append({"type": ty, **{k: v for k, v in t.items() if not k.startswith("m_") or k in ("m_StretchParticles", "m_LengthScale", "m_VelocityScale", "m_MaxParticleSize", "m_CameraVelocityScale", "UV Animation")}})
+            elif ty in ("TrailRenderer", "Light"):      # Unity built-ins: their fields as stored (+ a trail's materials)
+                t = c.read_typetree()
+                entry = {"type": ty, **{k: v for k, v in t.items() if k not in ("m_GameObject", "m_Materials")}}
+                if "m_Materials" in t:
+                    entry["mats"] = [material(game, m, c.assets_file, mats, texs) for m in t["m_Materials"]]
+                node["comps"].append(json.loads(json.dumps(entry, default=str)))
+            elif ty in ("MeshFilter", "SkinnedMeshRenderer", "Animation"):
+                # meshes and legacy animations: pipeline/wardrobe_fx_mesh.py (its own file, so the mesh work stays apart)
+                got = mesh_module().component(game, c, ty, node, {"cls": cls, "effect": name, "mats": mats, "texs": texs,
+                                                                     "sounds": sounds, "material": material})
+                if got:
+                    node["comps"].extend(got)
             elif ty in ("EllipsoidParticleEmitter", "ParticleAnimator"):
                 t = c.read_typetree()
                 node["comps"].append({"type": ty, **{k: v for k, v in t.items() if k not in ("m_GameObject", "m_Enabled")}})
@@ -251,6 +302,8 @@ def cue_names(cls):
         for cues in cue_lists(entry):
             for cue in cues:
                 for n in str(cue[2]).split("|"):
+                    if cue[1] == "fx" and n.startswith("tto/"):     # TTO's effects: pipeline/wardrobe_fx_tto.py builds them
+                        continue
                     if n not in names[cue[1]]:
                         names[cue[1]].append(n)
     return ",".join(names["fx"]), ",".join(names["voice"]), ",".join(names["sound"])

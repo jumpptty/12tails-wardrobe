@@ -40,7 +40,7 @@ def names(cls, kind):
     return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")})
 
 
-OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll"}
+OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill"}
 
 
 def file_errors(cls):

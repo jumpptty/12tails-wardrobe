@@ -493,7 +493,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.prepend(renderer.domElement);
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 100);
+const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 1000);   // far 1000 (was 100): the further zoom-out keeps the stage in view
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xf1e8f6, 0x857c95, 1.6));
@@ -1723,16 +1723,43 @@ document.addEventListener("paste", e => {
   e.preventDefault();
   const t = pasteTarget();
   if (!t) { toast("ชี้เมาส์ที่ช่องไอเท็ม หรือที่ชิ้นบนตัวละคร แล้วกด Ctrl+V", 3000); return; }
+  skinFromFile(t, file, t.cell ? null : pointer, true);
+});
+// a picture for a piece (Ctrl+V or a drop): the TTO lock, then the piece's one texture, the one under the pointer, or the
+// piece menu's choice when it has two (the picture kept); at = where the pointer is (the menu opens there)
+function skinFromFile(t, file, at, kb = false) {
   const texs = texsOf(kindOf(t.slot), t.item);
   if (ttoLocked(t.slot, t.item)) { toast(TTO_NO, 2500); return; }
   if (!texs.length) { toast(`${humanize(t.item)} ไม่มีลาย`, 2500); return; }
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
   if (tex == null) {                     // two textures and none chosen: the piece menu asks which one, the picture kept
-    openMenu({ slot: t.slot, item: t.item }, t.cell ? { rect: t.cell.getBoundingClientRect() } : pointer ? { ...pointer } : null,
-      { from: t.cell ? "tile" : "model", paste: file, kb: true });
+    openMenu({ slot: t.slot, item: t.item }, t.cell ? { rect: t.cell.getBoundingClientRect() } : at ? { ...at } : null,
+      { from: t.cell ? "tile" : "model", paste: file, kb });
     return;
   }
-  skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
+  skinUpload({ slot: t.slot, item: t.item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nลองไฟล์ PNG, JPG หรือ WebP อีกครั้ง", 2500); });
+}
+// drag a picture file onto a piece of the character (user 2026-11-09: "allow drag and dropping texture file on top of the
+// part itself, similar logic to cursor hover effect detection"): while dragging, the piece under the pointer lights up as
+// on hover (the same ray: pieceAt); the drop puts the picture on it, like Ctrl+V. A file dropped anywhere else on the
+// page is swallowed (the browser would open it and leave the wardrobe)
+addEventListener("dragover", e => { if ([...(e.dataTransfer?.types || [])].includes("Files")) e.preventDefault(); });
+addEventListener("drop", e => { if ([...(e.dataTransfer?.types || [])].includes("Files")) e.preventDefault(); });
+renderer.domElement.addEventListener("dragover", e => {
+  if (!C || Showcase.phase !== "off" || ![...(e.dataTransfer?.types || [])].includes("Files")) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = "copy";
+  Hover.at = { x: e.clientX, y: e.clientY };
+});
+renderer.domElement.addEventListener("dragleave", () => { Hover.at = null; });
+renderer.domElement.addEventListener("drop", e => {
+  if (!C || ![...(e.dataTransfer?.types || [])].includes("Files")) return;
+  e.preventDefault(); e.stopPropagation(); Hover.at = null;
+  const file = [...e.dataTransfer.files].find(f => f.type.startsWith("image/"));
+  if (!file) { toast("ลากไฟล์รูป PNG, JPG หรือ WebP มาวางบนชิ้นส่วน", 2500); return; }
+  if (Showcase.phase !== "off") { toast("ปิดโหมดดูชิ้นเดียวก่อน แล้วลากรูปมาวางบนตัวละคร", 2500); return; }
+  const t = pieceAt(e.clientX, e.clientY);
+  if (!t) { toast("วางรูปบนชิ้นส่วนของตัวละคร", 2500); return; }
+  skinFromFile(t, file, { x: e.clientX, y: e.clientY });
 });
 // ---------- the piece menu and the hover (user 2026-11-09: "instead of viewing individual object, downloading 2D and 3D
 // and uploading buttons scattered all around the place, I want the user to be able to hover and click at each individual
@@ -2230,7 +2257,7 @@ const Showcase = {
     target.set(0, best.y, 0);
     const d = best.d, pos = target.clone().addScaledVector(dir, d), lift = phone ? 0 : vh / 2 - cy;
     this.look.copy(target); this.fitD = d;                                      // scClamp keeps WASD near these
-    const lim = { minDistance: d * 0.4, maxDistance: d * 2.5, minPolarAngle: 0, maxPolarAngle: Math.PI };   // free orbit, top to bottom (user 2026-11-08)
+    const lim = { minDistance: d * 0.4, maxDistance: d * 10, minPolarAngle: 0, maxPolarAngle: Math.PI };   // free orbit, top to bottom (user 2026-11-08); out to 10 x (was 2.5 x, user 2026-11-09)
     this.fitKey = `${vw}x${vh}/${stageInset}`;
     stopTween(this.liftTw);
     if (animate) {                          // a refit in view (a picker opened, the window resized): no jump
@@ -2743,7 +2770,9 @@ function heroFitPose() {
   // 2026-11-08: "lift the limit on left drag rotation, user should be able to freely do with all objects"); the shadow
   // discs are front-sided, so from below they vanish instead of covering the feet.
   return { pos: target.clone().addScaledVector(FIT_DIR, d), target, h, h0,
-    lim: { minDistance: h * .55, maxDistance: h * 6, minPolarAngle: 0, maxPolarAngle: Math.PI },
+    // zoom out to 40 x the hero's height (user 2026-11-09: "please allow much further zoom out"; was 6 x): effects reach
+    // 10 m and more ahead (casts with a target, Feral Assault's dash)
+    lim: { minDistance: h * .55, maxDistance: h * 40, minPolarAngle: 0, maxPolarAngle: Math.PI },
     fitBox: new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5))) };
 }
 let fitAt = null;                         // the pose the last fit put the camera in (autoFit follows only from there)
@@ -2902,8 +2931,27 @@ const Sound = {                          // Web Audio: started by the first pick
 };
 const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: {}, missing: {} };   // spawned / missing: tallies for the checks
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
+// (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
-  .then(t => (FX.cueTab[cls] = t, Object.keys(t).length ? getJSON(`${DATA}${cls}/fx.json`) : null)).catch(() => null);
+  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), getJSON(`${DATA}${cls}/fx.json`)) : null)).catch(() => null);
+// Effect parts in modules of their own (2026-11-09, the Wolf's missing effects: plans/fx_wolf/parts.md, tto.md), so each
+// part is written apart from this page: wardrobe/fxparts/<file>.js default-exports register(api) and calls
+// api.part(type, build) for each component type it draws (a game script's name, a Unity built-in like
+// "SkinnedMeshRenderer", "EffectControl" for one below an effect's root). build(fx, node, comp, mat, nodeDef, data) runs
+// once when the effect is made and returns an emitter like ringEmitter's: { node, update(dt, cam) (return "destroy" to
+// remove node and everything under it), stop?() (the after-life: stop emitting) } or null. fx = the Fx (its nodes,
+// emitters, age, uMatrix / uQuat / uDir); node = the component's Object3D in Unity space (inside the mirror group); mat
+// = the node's first material (fxMaterial) or null; nodeDef = the node's data; data = the class's fx.json. Loaded only
+// with the effects on (FX_ON); a module that fails to load is reported and skipped
+const FXPARTS = {};
+const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken"];
+let fxPartsReady = null;
+function loadFxParts() {
+  const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
+    fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C };
+  return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
+    .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
+}
 const FXBG = new URLSearchParams(location.search).get("fxbg") || "dark";   // pilot: the backdrop to compare (CSS above)
 stage.dataset.fxbg = FXBG;
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -2967,7 +3015,7 @@ class Fx {
       const o = this.nodes[i];
       o.name = n.name;
       if (n.parent < 0) {                      // Instantiate(prefab, hero position + offset, hero rotation x Euler(rot))
-        o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]);
+        o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]).multiplyScalar(at.scale || 1);
         // Unity's Quaternion.Euler turns z, then x, then y: three's intrinsic "YXZ"; inside the mirror Unity's numbers apply as they are
         if (at.rot) o.quaternion.setFromEuler(new THREE.Euler(...at.rot.map(v => v * Math.PI / 180), "YXZ"));
         this.mirror.add(o);
@@ -2982,6 +3030,7 @@ class Fx {
         else if (c.type === "ImageEmitter" && mat) this.emitters.push(imageEmitter(this, o, c, mat));
         else if (c.type === "LineEmitter" && mat) this.emitters.push(lineEmitter(this, o, c, mat));
         else if (c.type === "AudioSource" && c.playOnAwake) Sound.play(cls, c.clip, c.volume);
+        else if (FXPARTS[c.type]) { const em = FXPARTS[c.type](this, o, c, mat, n, d); if (em) this.emitters.push(em); }   // wardrobe/fxparts/
       }
     });
     this.root = this.nodes[0];
@@ -2998,6 +3047,7 @@ class Fx {
   uDir(v) { return v.clone().transformDirection(this.mirrorInv); }
   update(dt) {
     this.age += dt;
+    if (this.killAt != null && this.age >= this.killAt) return this.dispose();   // a cue's kill: the game's Destroy(obj, t)
     const ec = this.ec;
     if (this.vel) this.root.position.addScaledVector(this.vel, dt);
     // followState: the hero's action changed (the skill ended): straight to the after-life (EffectControl.cs:194-300)
@@ -3240,14 +3290,15 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //   name  "a|b" = the game's random pick, made when the clip starts (effects and sounds alike)
 //   options d (metres ahead), x (right), y (up), rot ([x, y, z] degrees, Unity's Euler, after the hero's facing), vol,
 //         cut (the clip time the hero's action changes: ends a followState effect), p (chance, 0-1: a rolled proc),
-//         roll (cues sharing a roll name share one roll per play: Double Art's effect and Sublime Art's ring)
+//         roll (cues sharing a roll name share one roll per play: Double Art's effect and Sublime Art's ring),
+//         scale (the spawned root's scale x this), kill (seconds after spawning: the effect is destroyed, Destroy(obj, t))
 // An entry is { why, cues } or, for a clip several skills share, { why, skills: { skill: { why, cues } } }: one skill
 // per play, even chance (the user: instantCast), kept for every step of a sequence. step = the sequence step (0 = a
 // new play: a new pick, new rolls)
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
   return { at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
-    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll };
+    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill };
 };
 const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
 function fxStart(clip, step = 0) {
@@ -3284,7 +3335,7 @@ function fxTick(dt) {
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
-      const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; FX.live.push(f);
+      const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error);
   }
