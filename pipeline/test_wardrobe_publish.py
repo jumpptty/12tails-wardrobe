@@ -47,6 +47,7 @@ PAGE = """<!doctype html>
 const DATA = "data/";
 const UI_DIR = "ui/";
 const FX_ON = true;
+const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
 const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
@@ -332,6 +333,7 @@ class World:
             (self.src / name).write_bytes(b)
         for n in range(1, 6):                           # the colour topic's pictures (the page needs all five)
             recolor(self, n)
+        Image.new("RGBA", (16, 16), (220, 120, 160, 255)).save(self.src / "ui" / wp.UI_TTO, "WEBP", lossless=True)   # the TTO mark
         return self
 
     def write_page(self, page):
@@ -426,7 +428,7 @@ class PublishTest(unittest.TestCase):
         w = self.world()
         result = w.publish()
         self.assertRegex(result["ui_dir"], r"^ui-[0-9a-f]{10}$")
-        self.assertEqual(result["ui_files"], [f"recolor{n}.webp" for n in range(1, 6)])
+        self.assertEqual(result["ui_files"], [f"recolor{n}.webp" for n in range(1, 6)] + [wp.UI_TTO])
         self.assertIn("ui-<hash>/recolor1-5.webp", wp.PROVENANCE)
         for n in range(1, 6):
             self.assertEqual((w.out / result["ui_dir"] / f"recolor{n}.webp").read_bytes(), (w.src / "ui" / f"recolor{n}.webp").read_bytes())
@@ -754,6 +756,11 @@ class PublishTest(unittest.TestCase):
                 self.copied.append(rel)
             def drop(self, kind, name, why):
                 self.dropped.append(name)
+            def candidate(self, cls, kind, name, reason, default=False, **extra):    # no released list: the old rule
+                return default
+            def local_copy(self, rel):
+                self.copy(rel)
+                return True
         faces = [{"n": n, "tto": True} for n in (30, 31, 32, 33)]
         out = {}
         for cls in ("bison", "cat"):
@@ -762,6 +769,44 @@ class PublishTest(unittest.TestCase):
             out[cls] = nums
             self.assertEqual([f["n"] for f in kept], nums)
         self.assertEqual(out, {"bison": [30, 31, 32, 33], "cat": [30, 31]})
+
+    def test_released_tto_items_published_from_the_data(self):
+        """tto_released.json (the picker's file, 2026-11-09) puts the TTO items it names online: their files, textures and
+        icons from the data, marked tto; the rest stays out; every TTO-sourced item is listed for the picker; the page is
+        preview-only for TTO (TTO_LOCK)."""
+        w = self.world()
+        for t in ("Cat_ttoFlag.png", "ttoWing.png"):
+            png(w.data / "props" / "tex" / t)
+        (w.src / wp.RELEASED_NAME).write_text(json.dumps({"_about": "test", "cat": {"outfits": ["ttoGown"], "trinkets": ["ttoFlag"],
+                                                         "clips": ["ttoJig"], "faces": [31]}}), encoding="utf-8")
+        result = w.publish()
+        d = data_dir(w)
+        gown = next(o for o in json.loads((d / "cat" / "outfits.json").read_text("utf-8")) if o["name"] == "ttoGown")
+        self.assertTrue(gown["tto"])
+        self.assertTrue((d / "cat" / "o_ttoGown.bin").is_file() and (d / "cat" / "tex" / "ttoGown1.webp").is_file())
+        flag = next(p for p in json.loads((d / "cat" / "props_trinkets.json").read_text("utf-8")) if p["name"] == "ttoFlag")
+        self.assertTrue(flag["tto"])
+        self.assertTrue((d / "props" / "tex" / "Cat_ttoFlag.png").is_file())
+        self.assertEqual(json.loads((d / "all" / "props_trinkets.json").read_text("utf-8")), [])      # ttoWing: not released
+        self.assertTrue(json.loads((d / "cat" / "clips.json").read_text("utf-8"))["ttoJig"]["tto"])
+        faces = [f["n"] for f in json.loads((d / "meta.json").read_text("utf-8"))["classes"][0]["faces"]]
+        self.assertEqual(faces, [0, 1, 31])
+        icons = json.loads((d / "icons.json").read_text("utf-8"))
+        self.assertEqual(icons["cat"]["outfits"]["ttoGown"]["icon"], "icons/armor/cat99.webp")
+        self.assertTrue((d / "icons" / "armor" / "cat99.webp").is_file())
+        cands = {(c["kind"], str(c["name"])): c["released"] for c in result["tto_candidates"]}
+        self.assertEqual(cands[("outfits", "ttoGown")], True)
+        self.assertEqual(cands[("trinkets", "ttoWing")], False)
+        self.assertEqual(cands[("faces", "30")], False)
+        self.assertIn("const TTO_LOCK = true;", (w.out / "index.html").read_text(encoding="utf-8"))
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_released_list_with_an_unknown_kind_fails_loudly(self):
+        w = self.world()
+        (w.src / wp.RELEASED_NAME).write_text(json.dumps({"cat": {"hats": ["x"]}}), encoding="utf-8")
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("kinds must be among", str(e.exception))
 
     def test_icons_from_bb_rip(self):
         w = self.world()
@@ -811,16 +856,20 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(json.loads((d / "item_map.json").read_text())["cat"]["weapon"], {})
         self.assertEqual(wp.check(w.out), [])
 
-    def test_mismatched_clip_is_dropped(self):
+    def test_mismatched_clip_takes_bbs_keys(self):
+        """Until 2026-11-09 a BB clip whose keys differed was dropped; now BB's own keys go online (the times here)."""
         w = make_world(self.tmp)
         changed = [(f, p, [(t + 0.25, v, i, o) for t, v, i, o in keys]) for f, p, keys in CLIP]
         (w.assets / "AnimationClip" / "wave_3.anim").write_text(anim_yaml("wave", changed), encoding="utf-8")
         w.finish()
         result = w.publish()
         d = data_dir(w)
-        self.assertIn("cat/wave", dropped_names(result, "emotes"))
-        self.assertEqual(sorted(json.loads((d / "cat" / "clips.json").read_text())), ["root"])
-        self.assertEqual(sorted(json.loads((d / "meta.json").read_text())["classes"][0]["clips"]), ["root"])
+        self.assertNotIn("cat/wave", dropped_names(result, "emotes"))
+        clips = json.loads((d / "cat" / "clips.json").read_text())
+        self.assertEqual(sorted(clips), ["root", "wave"])
+        first = next(iter(next(iter(clips["wave"]["tracks"].values())).values()))[0][0]
+        self.assertEqual(first, round(CLIP[0][2][0][0] + 0.25, 5))
+        self.assertEqual(sorted(json.loads((d / "meta.json").read_text())["classes"][0]["clips"]), ["root", "wave"])
 
     def test_prop_without_bb_texture_is_dropped(self):
         w = self.world()
@@ -839,7 +888,37 @@ class PublishTest(unittest.TestCase):
         w.finish()
         result = w.publish()
         reason = next(x["reason"] for x in result["dropped"]["headpieces"] if x["name"] == "cat/lantern")
-        self.assertIn("cannot be compared", reason)
+        self.assertIn("baked this skinned mesh", reason)            # BB's prefab has no skinned mesh "lantern"
+
+    def test_bb_clip_with_other_keys_publishes_bbs_own_keys(self):
+        """A BB clip whose data copy (TTO's) has other keys goes online with BB's own keys, not into the picker
+        (2026-11-09: Whale talk, its right foot's twist gone in TTO's copy)."""
+        w = make_world(self.tmp)
+        bb_tracks = json.loads(json.dumps(w.clips["wave"]["tracks"]))
+        bone = next(iter(w.clips["wave"]["tracks"]))
+        slot = next(iter(w.clips["wave"]["tracks"][bone]))
+        w.clips["wave"]["tracks"][bone][slot][0][1] += 0.5         # TTO's copy: one value off
+        w.finish()
+        result = w.publish()
+        clips = json.loads((data_dir(w) / "cat" / "clips.json").read_text())
+        self.assertEqual(clips["wave"]["tracks"], bb_tracks)
+        self.assertNotIn(("clips", "wave"), {(c["kind"], c["name"]) for c in result["tto_candidates"]})
+        self.assertTrue(any("published BB's own keys" in x for x in result["warnings"]), result["warnings"])
+
+    def test_baked_prop_matching_bbs_skinned_mesh_counts_is_bb(self):
+        """A mesh the extractor baked into a pose is BB's when BB's prefab has the skinned mesh of that name with the same
+        vertex and triangle counts (the positions differ: posed); then it publishes like any BB prop (2026-11-09)."""
+        w = make_world(self.tmp)
+        w.add_prop("accessories", "lantern", "Cat_lantern.png", node="baked_lantern")
+        posed = [(p[0] + 0.25, p[1], p[2]) for p in TRI]
+        g = w.bb_asset(w.assets / "Mesh" / "Cat_lantern_skin.asset", mesh_yaml("Cat_lantern_skin", posed, TRIS))
+        (w.heroes / "cat" / "accessories" / "lantern.prefab").write_text(
+            prefab_yaml([{"name": "lanternRoot"}, {"name": "lantern", "parent": 0, "skin": g}]), encoding="utf-8")
+        w.finish()
+        result = w.publish()
+        kept = [p["name"] for p in json.loads((data_dir(w) / "cat" / "props_accessories.json").read_text())]
+        self.assertIn("lantern", kept, result["dropped"])
+        self.assertNotIn(("accessories", "lantern"), {(c["kind"], c["name"]) for c in result["tto_candidates"]})
 
     def test_animated_prop_clips_compared(self):
         wing = [("m_RotationCurves", "Cat_wing_tri/blade", [(0.0, (0.0, 0.5, 0.0, 0.75), (0, 0, 0, 0), (0, 0, 0, 0)),

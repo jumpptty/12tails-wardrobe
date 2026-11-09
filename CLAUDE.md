@@ -47,7 +47,8 @@ the Bible under either PC's path.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
   (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py` (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then the USER deploys (NOTES.md "Online
-  copy"); Claude never deploys. Online it carries BB content only (the user's content rule, enforced by the publish).
+  copy"); Claude never deploys. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the
+  user's content rule, enforced by the publish; TTO is preview only online: no downloads or uploads). ToT never goes online.
 
 ## How the user works
 

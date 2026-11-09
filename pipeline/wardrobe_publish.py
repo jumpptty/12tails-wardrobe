@@ -25,7 +25,16 @@ Every picture is taken again from the BB rip: outfit colour and edition textures
 a picture with no BB file is dropped with whatever needs it (a prop: the prop; an icon: the tile shows no picture).
 The page's own pictures, ui/recolor1-5.webp (the colour topic), are 2x upscales of BB's Recolor Drug icons cropped to
 the potions' square (UI_CROP in BB's 64 px); each is proven against that box of BB's field/rsc<n>.png.
-TTO's own faces: the first half per class by face number, rounded down (plan ruling R8). rig.json (BB's skeleton,
+TTO online (user 2026-11-09: "Also add TTO stuff to the public deployement, I've got the green light, BUT 1. Change the
+pink dot to TTO small logo instead. 2. TTO shouldn't be downloadable nor uploadable, it's preview only 3. only include
+released assets, I will mark them from html picker."): <src>/tto_released.json, written by wardrobe/tto_picker.html,
+names per class the TTO-sourced items to publish ({cls: {kind: [names]}}; kinds outfits, weapons, accessories, trinkets,
+clips, faces; "all": accessories, trinkets). TTO-sourced = what the BB rule above would drop for being TTO's: its tto flag,
+no BB prefab or file to compare with, or a 3D file that differs from BB's (TTO's copy of a BB item). A released one is
+published from the local data (there is no BB file to re-take it from), with its own textures and icons, and marked
+"tto": true (the page shows the TTO mark and keeps it preview-only: TTO_LOCK). Every candidate, released or not, is
+listed in <out>_tto.json for the picker. ToT's own items never go online. With no tto_released.json, TTO's faces follow
+the old rule (TTO_FACES_ALL_RELEASED, else the first half per class by face number, plan ruling R8). rig.json (BB's skeleton,
 built from the BB rip by extract.py) is copied as built; placements.json (TTO's own mount table, Config/*Placement)
 keeps only the entries of published items' codes.
 
@@ -67,6 +76,7 @@ ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.
 PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
 UI_DIR = "ui"                                          # <src>/ui/recolor<n>.webp: the page's own pictures (the colour topic)
 UI_ICON = re.compile(r"recolor([1-5])\.webp")          # = BB's Recolor Drug n, gamegui/icons/items/field/rsc<n>.png
+UI_TTO = "tto.webp"                    # the TTO mark on TTO's tiles (user 2026-11-09: "Change the pink dot to TTO small logo")
 UI_COUNT = 5                                           # the page shows colours 1-5: all five pictures are needed
 UI_CROP = (4, 7, 56, 59)                               # the potions' common square in BB's 64 px icons (task 14b)
 UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at BB's size, over black
@@ -120,6 +130,8 @@ def page_edits(data_dir, ui_dir):
         # the skill effects + sounds pilot stays local (user 2026-11-09: "hide the pilot in public copy"): no cues, so no
         # effect data is fetched (none is published), and the sound button is hidden
         ("effects pilot", "const FX_ON = true;", "const FX_ON = false;", 1),
+        # TTO's items are preview only online (user 2026-11-09): no skin download / upload, no 3D file
+        ("TTO preview only", 'const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");', "const TTO_LOCK = true;", 1),
         ("sound button", '<button type="button" class="tb" id="sound" ', '<button type="button" class="tb" id="sound" hidden ', 1),
     ]
 
@@ -409,20 +421,26 @@ class BBRip:
             self._clips[cls] = out
         return self._clips[cls]
 
-    def compare_hero_clip(self, cls, name, tracks):
-        """None when BB has a clip of this name for the class whose keys give exactly these tracks, else the reason."""
-        paths = self.class_clips(cls).get(name, [])
-        if not paths:
-            return f"no BB clip named {name} in heroes/{cls}/animations, so it cannot be compared"
-        for path in paths:
+    def bb_hero_tracks(self, cls, name):
+        """[(path, tracks)] of BB's clips of this name for the class, the tracks in the wardrobe's form (clips.json)."""
+        out = []
+        for path in self.class_clips(cls).get(name, []):
             bb = {}
             for field, curve_path, keys in read_clip(path)[1]:
                 if keys:
                     slot = CURVE_SLOTS[field][0]
                     bb.setdefault(curve_path.rsplit("/", 1)[-1], {})[slot] = hero_rows(keys, slot)
-            if bb == tracks:
-                return None
-        return f"keys differ from BB's {', '.join(p.name for p in paths)}"
+            out.append((path, bb))
+        return out
+
+    def compare_hero_clip(self, cls, name, tracks):
+        """None when BB has a clip of this name for the class whose keys give exactly these tracks, else the reason."""
+        found = self.bb_hero_tracks(cls, name)
+        if not found:
+            return f"no BB clip named {name} in heroes/{cls}/animations, so it cannot be compared"
+        if any(bb == tracks for _, bb in found):
+            return None
+        return f"keys differ from BB's {', '.join(p.name for p, _ in found)}"
 
     def prop_prefab(self, cls, kind, name):
         if cls != "all":
@@ -451,10 +469,27 @@ class BBRip:
             for key in ("mesh", "skin"):
                 if key not in n:
                     continue
-                if n["name"].startswith("baked_"):
-                    return (f"node {n['name']}: extract_tto_props.py baked this skinned mesh into the prefab's pose, so it "
-                            f"cannot be compared with BB's raw mesh")
                 m = n[key]
+                if n["name"].startswith("baked_"):
+                    # extract_tto_props.py baked this skinned mesh into the prefab's pose: the positions can't be compared
+                    # with BB's raw mesh, but baking keeps the vertex and triangle counts, so it is BB's when BB's prefab
+                    # has the skinned mesh of that name with the same counts (user 2026-11-09: the Chinese Lantern is BB
+                    # stuff, "remove stuff like Chinese Lantern from the picker")
+                    base, nv, nt = n["name"][len("baked_"):], len(m["pos"]) // 3, len(m["idx"]) // 3
+                    seen = []
+                    for g in pf["skins"].get(base, []):
+                        try:
+                            path, (bb_pos, bb_tris) = self.mesh_shape(g)
+                        except BBDataError as e:
+                            seen.append(str(e))
+                            continue
+                        if len(bb_pos) == nv and bb_tris == nt:
+                            break
+                        seen.append(f"BB's {path.name} has {len(bb_pos)} vertices / {bb_tris} triangles, the wardrobe's {nv} / {nt}")
+                    else:
+                        return (f"node {n['name']}: extract_tto_props.py baked this skinned mesh into the prefab's pose, and "
+                                f"BB's skinned mesh {base} " + ("; ".join(seen) if seen else "is not in the prefab"))
+                    continue
                 mine = sorted(zip(*[iter(m["pos"])] * 3))
                 guids = pf["skins"].get(n["name"], []) + ([] if key == "skin" else pf["filters"].get(n["name"], []))
                 why = self.same_mesh(guids, mine, len(m["idx"]) // 3, f"node {n['name']}", prop_position)
@@ -516,10 +551,24 @@ def read_clip_name(path):
 class Run:
     """The filtered data being written to the staging folder, with the drop list and warnings."""
 
-    def __init__(self, data, stage, bb):
+    def __init__(self, data, stage, bb, released=None):
         self.data, self.stage, self.bb = Path(data), Path(stage), bb
         self.dropped, self.warnings = {}, []
         self._pictures, self._prop_tex = {}, {}
+        self.released, self.candidates = released, []
+
+    def candidate(self, cls, kind, name, reason, default=False, **extra):
+        """A TTO-sourced item, listed for the picker; True when the released list has it (no list: default)."""
+        rel = default if self.released is None else str(name) in self.released.get(cls, {}).get(kind, ())
+        self.candidates.append({"cls": cls, "kind": kind, "name": name, "reason": reason, "released": rel, **extra})
+        return rel
+
+    def local_copy(self, rel):
+        """Copy a released TTO item's file from the local data; False when the data has no such file."""
+        if not (self.data / rel).is_file():
+            return False
+        self.copy(rel)
+        return True
 
     def drop(self, kind, name, reason):
         self.dropped.setdefault(kind, []).append({"name": name, "reason": reason})
@@ -583,11 +632,14 @@ class Run:
         self._pictures[rel] = why
         return why
 
-    def icon(self, rel, kind="icons"):
+    def icon(self, rel, kind="icons", local_ok=False):
         """An icons/<sub>.webp picture taken again from BB's gamegui/icons/<sub>.png (item icons sit under items/);
-        returns rel, or None when BB has no usable file (then it is listed under kind)."""
+        returns rel, or None when BB has no usable file (then it is listed under kind). local_ok (a released TTO item's
+        icon): with no BB file, the local data's picture is copied instead."""
         if not rel:
             return None
+        if rel in self._pictures and self._pictures[rel] and local_ok and self.local_copy(rel):
+            self._pictures[rel] = None
         if rel in self._pictures:
             return None if self._pictures[rel] else rel
         parts = rel.split("/")
@@ -597,14 +649,19 @@ class Run:
             sub = "/".join((["items"] if parts[1] in ITEM_ICON_FOLDERS else []) + parts[1:])[:-len(".webp")] + ".png"
             bb_file = self.bb.find_rel(self.bb.icons, sub)
             why = self.picture(rel, bb_file, "icon") if bb_file else f"no BB file gamegui/icons/{sub}"
+        if why and local_ok and self.local_copy(rel):
+            why = None
         if why:
             self._pictures[rel] = why
             self.drop(kind, rel, why)
             return None
         return rel
 
-    def prop_texture(self, tex):
-        """None when props/tex/<tex> is written from BB's Assets/Texture2D, else why not."""
+    def prop_texture(self, tex, local_ok=False):
+        """None when props/tex/<tex> is written from BB's Assets/Texture2D (local_ok, a released TTO item: else from the
+        local data's props/tex), else why not."""
+        if self._prop_tex.get(tex) and local_ok and self.local_copy(f"props/tex/{tex}"):
+            self._prop_tex[tex] = None
         if tex not in self._prop_tex:
             bb_file = self.bb.find(self.bb.texture2d, tex)
             if bb_file is None:
@@ -621,6 +678,8 @@ class Run:
                     dst.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(bb_file, dst)
                     self._prop_tex[tex] = None
+            if self._prop_tex[tex] and local_ok and self.local_copy(f"props/tex/{tex}"):
+                self._prop_tex[tex] = None
         return self._prop_tex[tex]
 
 
@@ -633,17 +692,30 @@ def publish_outfits(run, cls):
         bb_file = run.bb.find(materials, f"{cap}_{stem}.png")
         return run.picture(f"{cls}/tex/{stem}.webp", bb_file, "texture") if bb_file \
             else f"no BB texture armors/materials/{cap}_{stem}.png"
+    icons = run.load("icons.json", default={}).get(cls, {}).get("outfits", {})
     for o in run.load(f"{cls}/outfits.json"):
         name = f"{cls}/{o['name']}"
-        if o.get("tto"):
-            run.drop("outfits", name, "TTO's own outfit (tto flag)")
+        if o.get("tot"):
+            run.drop("outfits", name, "ToT's own outfit (never online)")
             continue
         if not o["colors"]:              # a wardrobe_data.py bug (bat/shirt, mole/steamSuit, wolf/novice); ruling R24
             run.drop("outfits", name, "no colours: cannot be dressed")
             continue
-        why = run.bb.compare_outfit(cls, o, run.data / cls / f"o_{o['name']}.bin")
+        why = "TTO's own outfit (tto flag)" if o.get("tto") else run.bb.compare_outfit(cls, o, run.data / cls / f"o_{o['name']}.bin")
+        if why and run.candidate(cls, "outfits", o["name"], why, icon=(icons.get(o["name"]) or {}).get("icon")):
+            # released TTO: the local mesh and textures, every colour and edition the data has
+            colours = [c for c in o["colors"] if run.local_copy(f"{cls}/tex/{o['name']}{c}.webp")]
+            editions = {e: [c for c in cs if c in colours and run.local_copy(f"{cls}/tex/{o['name']}{c}{e}.webp")]
+                        for e, cs in (o.get("editions") or {}).items()}
+            editions = {e: cs for e, cs in editions.items() if cs}
+            if not colours or not run.local_copy(f"{cls}/o_{o['name']}.bin"):
+                run.drop("outfits", name, "released TTO outfit, but its mesh or colour textures are not in the data")
+                continue
+            out = {k: v for k, v in o.items() if k != "editions"} | {"colors": colours, "tto": True}
+            kept.append(out | ({"editions": editions} if editions else {}))
+            continue
         if why:
-            run.drop("outfits", name, why)
+            run.drop("outfits", name, why + "; not in the released list")
             continue
         colours, editions = [], {}
         for c in o["colors"]:
@@ -669,24 +741,50 @@ def publish_outfits(run, cls):
     return kept
 
 
-# Classes whose TTO face paints are all released (user 2026-11-07); every other class keeps the first half.
+# Classes whose TTO face paints are all released (user 2026-11-07); every other class keeps the first half. Used only
+# when there is no tto_released.json (then it is also the picker's starting choice for faces)
 TTO_FACES_ALL_RELEASED = {"bison", "chameleon", "mole", "monkey", "penguin", "whale"}
+RELEASED_NAME = "tto_released.json"      # <src>/tto_released.json, the picker's file
+TTO_KINDS = ("outfits", "weapons", "accessories", "trinkets", "clips", "faces")
+
+
+def load_released(src):
+    """The released list ({cls: {kind: set of names}}), or None when there is no file. A kind or class the picker
+    doesn't know stops the publish (a typo would quietly publish nothing)."""
+    p = Path(src) / RELEASED_NAME
+    if not p.is_file():
+        return None
+    raw = json.loads(p.read_text(encoding="utf-8"))
+    out = {}
+    for cls, kinds in raw.items():
+        if cls.startswith("_"):
+            continue
+        if not isinstance(kinds, dict) or set(kinds) - set(TTO_KINDS):
+            raise PublishError(f"{RELEASED_NAME}: {cls}: kinds must be among {TTO_KINDS}, got {sorted(kinds) if isinstance(kinds, dict) else kinds!r}")
+        out[cls] = {k: {str(n) for n in v} for k, v in kinds.items()}
+    return out
+
+
+def emo_map(page):
+    """The page's emote -> emotion icon table (const EMO = {...}), so a released TTO emote's icon can be published."""
+    m = re.search(r"const EMO = \{(.*?)\};", page, re.S)
+    return dict(re.findall(r'(\w+): "(\w+)"', m.group(1))) if m else {}
 
 
 def publish_faces(run, cls, faces):
-    """BB's faces from the BB rip plus TTO's own: all of them for TTO_FACES_ALL_RELEASED classes, else the first half
-    (by number, rounded down)."""
+    """BB's faces from the BB rip plus TTO's released ones (the released list; with none, the old rule: all of them for
+    TTO_FACES_ALL_RELEASED classes, else the first half by number, rounded down)."""
     own = sorted(f["n"] for f in faces if f.get("tto"))
-    keep_tto = set(own if cls in TTO_FACES_ALL_RELEASED else own[:len(own) // 2])
-    overlay, kept = run.bb.heroes / cls / "armors" / "overlay", []
+    legacy = set(own if cls in TTO_FACES_ALL_RELEASED else own[:len(own) // 2])
+    overlay, kept, keep_tto = run.bb.heroes / cls / "armors" / "overlay", [], []
     for f in faces:
         rel, name = f"{cls}/faces/{f['n']}.webp", f"{cls}/{f['n']}"
         if f.get("tto"):
-            if f["n"] in keep_tto:
-                run.copy(rel)
+            if run.candidate(cls, "faces", f["n"], "TTO's own face", default=f["n"] in legacy, icon=rel) and run.local_copy(rel):
                 kept.append(f)
+                keep_tto.append(f["n"])
             else:
-                run.drop("faces", name, "TTO's own face beyond the first half of them (the user allows 50 %)")
+                run.drop("faces", name, "TTO's own face, not in the released list")
             continue
         bb_file = run.bb.find(overlay, f"{cls}{f['n']}.png")
         why = run.picture(rel, bb_file, "face") if bb_file else f"no BB overlay armors/overlay/{cls.capitalize()}{f['n']}.png"
@@ -702,12 +800,21 @@ def publish_clips(run, cls):
     kept = {}
     for name, c in run.load(f"{cls}/clips.json").items():
         kind = "emotes" if c.get("group") == "emote" else "moves"
-        if c.get("tto"):
-            run.drop(kind, f"{cls}/{name}", "TTO's own clip (tto flag)")
+        if c.get("tot"):
+            run.drop(kind, f"{cls}/{name}", "ToT's own clip (never online)")
             continue
-        why = run.bb.compare_hero_clip(cls, name, c["tracks"])
-        if why:
-            run.drop(kind, f"{cls}/{name}", why)
+        why = "TTO's own clip (tto flag)" if c.get("tto") else run.bb.compare_hero_clip(cls, name, c["tracks"])
+        if why and why.startswith("keys differ") and not c.get("tto"):
+            # BB has this clip but TTO's copy differs (Whale talk: the right foot's 360-degree twist at 1.3-1.7 s is gone in
+            # TTO's; pipeline/clip_diff.py): BB's own keys go online instead (user 2026-11-09: "yes you should do that")
+            path, tracks = run.bb.bb_hero_tracks(cls, name)[0]
+            kept[name] = dict(c, tracks=tracks)
+            run.warnings.append(f"{cls}/{name}: TTO's keys differ from BB's {path.name}; published BB's own keys")
+            continue
+        if why and run.candidate(cls, "clips", name, why, group=c.get("group")):
+            kept[name] = dict(c, tto=True)
+        elif why:
+            run.drop(kind, f"{cls}/{name}", why + ("; not in the released list" if c.get("tto") else ""))
         else:
             kept[name] = c
     run.write_json(f"{cls}/clips.json", kept)
@@ -717,15 +824,26 @@ def publish_clips(run, cls):
 def publish_props(run, cls, kind):
     """props_<kind>.json: BB props whose geometry (and clips) equal BB's and whose textures BB has."""
     report_kind, kept = PROP_KINDS[kind], []
+    slot = run.load("icons.json", default={}).get(cls, {}).get(kind, {})
     for p in run.load(f"{cls}/props_{kind}.json", default=[]):
         name = f"{cls}/{p['name']}"
-        if p.get("tto"):
-            run.drop(report_kind, name, "TTO's own item (tto flag)")
+        if p.get("tot") or p.get("heroSkin"):
+            run.drop(report_kind, name, "ToT's own item (never online)")
             continue
-        why = run.bb.compare_prop(cls, kind, p)
-        if not why:
-            textures = sorted({m["tex"] for n in p["nodes"] for m in n.get("mats", []) if m.get("tex")})
-            why = next((w for w in map(run.prop_texture, textures) if w), None)
+        textures = sorted({m["tex"] for n in p["nodes"] for m in n.get("mats", []) if m.get("tex")})
+        why = "TTO's own item (tto flag)" if p.get("tto") else run.bb.compare_prop(cls, kind, p)
+        if why:
+            ic = slot.get(p["name"]) or slot.get(strip_hand(p["name"])) or slot.get(p["name"].lower()) or {}
+            if run.candidate(cls, kind, p["name"], why, icon=ic.get("icon")):
+                miss = next((w for w in (run.prop_texture(t, local_ok=True) for t in textures) if w), None)
+                if miss:
+                    run.drop(report_kind, name, "released TTO item, but " + miss)
+                else:
+                    kept.append(dict(p, tto=True))
+            else:
+                run.drop(report_kind, name, why + ("; not in the released list" if p.get("tto") else ""))
+            continue
+        why = next((w for w in map(run.prop_texture, textures) if w), None)
         if why:
             run.drop(report_kind, name, why)
         else:
@@ -743,11 +861,14 @@ def publish_icons(run, outfits, props):
     table by lower-case name); every picture from the BB rip, a missing one becomes "no icon" (the codes stay: they
     pick TTO's placement entry)."""
     names = {cls: {"outfits": {o["name"] for o in os_}} for cls, os_ in outfits.items()}
-    shared = {}
+    tto = {cls: {"outfits": {o["name"] for o in os_ if o.get("tto")}} for cls, os_ in outfits.items()}
+    shared, shared_tto = {}, {}
     for (cls, kind), ps in props.items():
         mine = {p["name"] for p in ps} | {strip_hand(p["name"]) for p in ps}
         names.setdefault(cls, {}).setdefault(kind, set()).update(mine)
+        tto.setdefault(cls, {}).setdefault(kind, set()).update(n for p in ps if p.get("tto") for n in (p["name"], strip_hand(p["name"])))
         shared.setdefault(kind, set()).update(p["name"].lower() for p in ps)
+        shared_tto.setdefault(kind, set()).update(p["name"].lower() for p in ps if p.get("tto"))
     out = {}
     for cls, slots in run.load("icons.json").items():
         out[cls] = {}
@@ -757,9 +878,10 @@ def publish_icons(run, outfits, props):
             for name, e in entries.items():
                 if name not in keep:
                     continue
-                e = dict(e, icon=run.icon(e.get("icon")))
+                local = name in (shared_tto.get(slot, set()) if cls == "all" else tto.get(cls, {}).get(slot, set()))
+                e = dict(e, icon=run.icon(e.get("icon"), local_ok=local))
                 if e.get("editions"):
-                    e["editions"] = {k: v for k, v in ((k, run.icon(v)) for k, v in e["editions"].items()) if v}
+                    e["editions"] = {k: v for k, v in ((k, run.icon(v, local_ok=local)) for k, v in e["editions"].items()) if v}
                 out[cls][slot][name] = e
     run.write_json("icons.json", out)
     return out
@@ -805,22 +927,29 @@ def publish_placements(run, icons):
     run.write_json("placements.json", out)
 
 
-def publish_ui(run, classes):
-    """ui.json: the class portraits, emotion and skill icons BB has (re-taken from gamegui/icons)."""
-    ui = run.load("ui.json")
+def publish_ui(run, classes, tto_clips=None, emo=None):
+    """ui.json: the class portraits, emotion and skill icons BB has (re-taken from gamegui/icons), plus the local ones a
+    released TTO clip shows (tto_clips {cls: names}; the page's moveIcon: an emote by emo (const EMO) or pose*, a skill by
+    its name or its name without the trailing number)."""
+    ui, tto_clips, emo = run.load("ui.json"), tto_clips or {}, emo or {}
     out = dict(ui, heroes={}, emotion=[], skills={})
     for cls, rel in ui.get("heroes", {}).items():
         if cls in classes and run.icon(rel, "portraits"):
             out["heroes"][cls] = rel
-    out["emotion"] = [n for n in ui.get("emotion", []) if run.icon(f"icons/skills/emotion/{n}.webp")]
-    out["skills"] = {cls: [n for n in names if run.icon(f"icons/skills/{cls}/{n}.webp")]
+    emo_used = {emo.get(n.lower()) or ("pose" if n.lower().startswith("pose") else None) for ns in tto_clips.values() for n in ns}
+    out["emotion"] = [n for n in ui.get("emotion", []) if run.icon(f"icons/skills/emotion/{n}.webp", local_ok=n in emo_used)]
+    bare = lambda x: re.sub(r"\d+$", "", x.lower())
+    out["skills"] = {cls: [n for n in names if run.icon(f"icons/skills/{cls}/{n}.webp",
+                                                         local_ok=any(n == c.lower() or bare(n) == bare(c) for c in tto_clips.get(cls, ())))]
                      for cls, names in ui.get("skills", {}).items() if cls in classes}
     run.write_json("ui.json", out)
 
 
-def stage_data(data, stage, bb):
-    """Write the filtered data to stage/; returns (dropped, tto_faces, warnings)."""
-    run = Run(data, stage, bb)
+def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
+    """Write the filtered data to stage/; returns (dropped, tto_faces, warnings). released: load_released()'s list;
+    candidates, a list, gets every TTO-sourced item (for the picker)."""
+    run = Run(data, stage, bb, released)
+    tto_clips = {}
     meta = run.load("meta.json")
     classes = [c["cls"] for c in meta["classes"]]
     outfits, props, tto_faces, meta_out = {}, {}, {}, {"classes": []}
@@ -832,6 +961,7 @@ def stage_data(data, stage, bb):
         if any(f.get("tto") for f in c["faces"]):
             tto_faces[cls] = kept_tto
         clips = publish_clips(run, cls)
+        tto_clips[cls] = [k for k, v in clips.items() if v.get("tto")]
         for kind in PROP_KINDS:
             props[(cls, kind)] = publish_props(run, cls, kind)
         meta_out["classes"].append(dict(c, outfits=len(outfits[cls]), faces=faces,
@@ -841,8 +971,10 @@ def stage_data(data, stage, bb):
     icons = publish_icons(run, outfits, props)
     publish_item_map(run, outfits, props)
     publish_placements(run, icons)
-    publish_ui(run, classes)
+    publish_ui(run, classes, tto_clips, emo)
     run.write_json("meta.json", meta_out)
+    if candidates is not None:
+        candidates.extend(run.candidates)
     return run.dropped, tto_faces, run.warnings
 
 
@@ -889,7 +1021,11 @@ def verify_ui_icons(src, bb):
     missing = [n for n in want if n not in names]
     if missing:
         raise PublishError(f"{UI_DIR}/: the page's colour pictures {missing} are missing")
+    if UI_TTO not in names:
+        raise PublishError(f"{UI_DIR}/{UI_TTO}: the TTO mark is missing")
     for name in names:
+        if name == UI_TTO:                  # TTO's own logo, not BB's: allowed since TTO is online (2026-11-09)
+            continue
         m = UI_ICON.fullmatch(name)
         if not m:
             raise PublishError(f"{UI_DIR}/{name}: not a BB Recolor Drug icon (recolor1.webp .. recolor5.webp only), "
@@ -932,7 +1068,8 @@ def publish(src, out, bb_rip, data=None, fallback_rip="beside"):
     remove(stage)
     remove(previous)                                # a run killed mid-swap: the data rebuilds the copy anyway
     try:
-        dropped, tto_faces, warnings = stage_data(data, stage, bb)
+        candidates = []
+        dropped, tto_faces, warnings = stage_data(data, stage, bb, load_released(src), candidates, emo_map(page))
         warnings = warnings + bb.fallback_used
         data_dir = "data-" + tree_hash(stage)
         previous.mkdir()
@@ -976,7 +1113,8 @@ def publish(src, out, bb_rip, data=None, fallback_rip="beside"):
     files = [p for p in out.rglob("*") if p.is_file()]
     return {"files": len(files), "bytes": sum(p.stat().st_size for p in files), "data_dir": data_dir,
             "ui_dir": ui_dir, "ui_files": list(ui_files),
-            "dropped": dropped, "tto_faces": tto_faces, "warnings": warnings}
+            "dropped": dropped, "tto_faces": tto_faces, "warnings": warnings, "tto_candidates": candidates,
+            "tto_released_file": (src / RELEASED_NAME).is_file()}
 
 
 # ---------------------------------------------------------------- check
@@ -1137,6 +1275,9 @@ def main(argv=None):
         print(f"publish failed: {e}", file=sys.stderr)
         return 1
     problems = check(a.out)
+    candidates = result.pop("tto_candidates")
+    tto_path = Path(a.out).parent / f"{Path(a.out).name}_tto.json"      # the picker's list (wardrobe/tto_picker.html)
+    tto_path.write_text(json.dumps({"released_file": result.pop("tto_released_file"), "items": candidates}, indent=1, ensure_ascii=False), encoding="utf-8")
     report = {"provenance": PROVENANCE, **result, "problems": problems}
     path, prev_path, prev = report_path(a.out), report_path(a.out, ".prev"), None
     if path.is_file():                                  # the last run's report becomes <out>_report.prev.json
@@ -1160,6 +1301,8 @@ def main(argv=None):
         print(f"changes since the previous report ({prev_path.name}):" + ("" if changes else " none"))
         for line in changes:
             print(f"  {line}")
+    n_rel = sum(1 for c in candidates if c["released"])
+    print(f"TTO: {n_rel} of {len(candidates)} TTO-sourced items released ({tto_path.name})")
     print(f"report: {path}")
     print("\n".join(f"  problem: {p}" for p in problems) or "check: no problems")
     return 1 if problems else 0

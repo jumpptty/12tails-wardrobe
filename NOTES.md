@@ -163,6 +163,8 @@ account; linked from the 12 Tails Bible's ห้องแต่งตัว tile
 and `.superpowers\sdd\2026-11-07-wardrobe-online\progress.md` (untracked), both moved here from the Bible repo on
 2026-11-09 (the wardrobe's home is this repo; only the hub mirror art, `art\` with its `HOW.md`, stays in the Bible's
 copy of that folder).
+- **Content rule, updated 2026-11-09: BB plus released TTO** (session log "TTO online"): the TTO items in
+  `wardrobe\tto_released.json` go online too, preview only. The rule below held until then.
 - **Content rule (user):** "BB 3D models only". From TTO only face paints: all of them for Bison, Chameleon, Mole,
   Monkey, Penguin, Whale (released), the first half by number for the other six (`TTO_FACES_ALL_RELEASED`). ToT's local
   student outfits never go online. `pipeline/wardrobe_publish.py` enforces it: it keeps only items whose meshes / clips /
@@ -563,3 +565,40 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   problems, `FX_ON = false`, no `#vmode` / clipboard code. Smoke test of the built copy served on its own (hover on the
   outfit, its menu: view / change / png / glb / up, no errors). The user deploys; the trailer fix waits in HANDOFF
   "Video repo".
+- **2026-11-09, hover look picked: pulsing rim** (user: "suggest a few more hover effect mocks", then "we will go with
+  pulsing rim", "stronger rim strenght please"). Mocked side by side (`pipeline/wardrobe_hover_mocks.py`, the idle
+  paused, animated looks at three moments; `D:\12tails-wardrobe\checks\hover_mocks\compare.html`): gold, pulse, outline,
+  rim, sweep, then rimpulse. The overlay looks draw a copy of the piece (same geometry and skeleton, never hit by the ray)
+  with the original's texture for the cut-outs. Rim = fresnel `pow(1 - |n.v|, 1.4)`, gold x 1.6, alpha x 1.8, **added**
+  light (blended, it went muddy brown fading into the black afro); rimpulse breathes between half and full every 1.4 s.
+  The others stay as `?hover=gold|lift|dim|pulse|outline|rim|sweep`.
+- **2026-11-09, TTO online** (user: "Also add TTO stuff to the public deployement, I've got the green light, BUT 1.
+  Change the pink dot to TTO small logo instead. 2. TTO shouldn't be downloadable nor uploadable, it's preview only 3.
+  only include released assets, I will mark them from html picker").
+  - `wardrobe_publish.py`: `wardrobe\tto_released.json` ({cls: {kind: [names]}}) names the TTO-sourced items to publish
+    (TTO-sourced = what the BB rule drops for being TTO's: tto flag, or BB's file can't be matched); they are copied from
+    the local data (mesh, textures, icons, prop textures, the skill / emotion icons a released clip shows: the page's
+    `EMO` table is read from index.html) and marked `"tto": true`. Every candidate goes into `wardrobe_dist_tto.json`
+    (beside the report) for the picker. No released file = the old face rule, nothing else of TTO (byte-identical data).
+    ToT's own items (`tot`, hero-skinned hats) never go online.
+  - Page: TTO's mark = `wardrobe\ui\tto.webp` (64 px from the Bible's `TTO_icon.png`) on TTO tiles and in the menu head
+    (the publish allows it in the ui folder beside the proven Recolor Drug icons). `TTO_LOCK` (the publish sets it;
+    locally `?ttolock`): a TTO piece's menu has no download / upload / reset (the user: no note needed), the skin / model
+    functions and Ctrl+V refuse it, and a BB outfit's 3D file swaps a worn TTO face for the class's first BB face.
+  - Picker: `wardrobe\tto_picker.html` (local only; http://127.0.0.1:8771/wardrobe/tto_picker.html), class tabs,
+    click to mark, saves `tto_released.json`. The user preferred rules in chat instead; the file was written from them:
+    every class's Halloween outfit, weapon(s), hat; Bat Dream Band V / Dream Wand V; Clap and Wai; every TTO skill motion
+    the Bible documents (clip -> skill through TTO's pseudo-C: golemCall = Rune Golem, solarCall = Sun Avatar,
+    leviathanCall = Leviathan Breach, magmaQuakeAxe = Magma Quake, emperorPenguin = Emperor's March, missilePad = the
+    Mole's Missile; left out: sanctumRaise = Buiten Offering, not in the Bible, and Cat shikifujin, which TTO never plays);
+    the 10 TTO faces per class already online; no Quotation Flag; every shared item except Aura Bloodmoon / Undead Queen,
+    Champion Wing, Moonlight Rabbit, Pumpkon Headband, White Wing, Witchy Wing. Dream Band V checked TTO-only: BB has
+    dreamBand / dreamBandR only (prefabs, `BatEquipment.cs:2659`, `:2681`).
+  - BB items that only looked TTO-sourced: the 12 Chinese Lanterns, Mole Legend Trinket, Penguin Hallow Lattern were
+    dropped because the extractor baked their skinned meshes into a pose; now a baked node is BB's when BB's prefab has
+    the skinned mesh of that name with the same vertex and triangle counts (all 14 pass), so they publish as BB. Whale
+    `talk`: 75 of 76 channels equal BB's `talk_7.anim`; Foot_R's rotation lost BB's 360-degree twist at 1.30-1.73 s
+    (`py -3 D:\12tails-wardrobe\pipeline\clip_diff.py whale talk`); a BB clip whose copy differs now goes online with
+    BB's own keys (the user: "yes you should do that"). The local page still plays TTO's copy.
+  - Checks: `pipeline/wardrobe_tto_check.py` (picker toggles and saved JSON, the TTO mark, the lock on a TTO outfit and
+    not on a BB one), 38 publish tests (released items, unknown kind, baked props, BB keys for a differing clip).

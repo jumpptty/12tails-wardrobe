@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เลือกของ TTO</title>
+<!-- The released-TTO picker (user 2026-11-09: "only include released assets, I will mark them from html picker"). Local
+     only (wardrobe_publish.py never copies it). Lists every TTO-sourced item the last publish found
+     (../wardrobe_dist_tto.json, written by wardrobe_publish.py), starts from wardrobe/tto_released.json when there is one
+     (else from what the last publish released: the old face rule), and saves the choice as tto_released.json, which the
+     next publish reads (wardrobe/tto_released.json). The draft is kept in this browser until saved. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #150f0c; --panel: #1f1914; --panel-2: #2a2118; --line: #5b4426; --text: #f3e7d3; --muted: #bfae8e; --gold: #d0913e;
+  --gold-soft: rgba(208, 145, 62, .16); --gold-ink: #1b1300; --well: #120d0a; --skin: #f4dcc4; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 "IBM Plex Sans Thai", system-ui, sans-serif; }
+.num { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 16px 0; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+h1 { margin: 0; font-size: 18px; font-weight: 700; }
+.sum { color: var(--muted); }
+.acts { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.b { height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--well); font-weight: 500; }
+.b:hover { border-color: var(--gold); color: var(--gold); }
+.b.primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 600; }
+.b.primary:hover { color: var(--gold-ink); filter: brightness(1.08); }
+.note { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+.note.warn { color: #f0b36a; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 10px; scrollbar-width: thin; }
+.tab { flex: none; padding: 8px 12px 10px; border: 0; background: none; color: var(--muted); font-weight: 500; position: relative; white-space: nowrap; }
+.tab[aria-pressed=true] { color: var(--text); }
+.tab[aria-pressed=true]::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: 0; height: 3px; border-radius: 2px; background: var(--gold); }
+.tab .num { margin-left: 4px; color: var(--muted); }
+main { padding: 6px 16px 60px; max-width: 1400px; }
+section { margin-top: 18px; }
+.sh { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.sh h2 { margin: 0; font-size: 15px; font-weight: 700; }
+.sh .cnt { color: var(--muted); font-size: 12.5px; }
+.sh .mini { margin-left: auto; display: flex; gap: 6px; }
+.sh .mini button { border: 1px solid var(--line); border-radius: 4px; background: none; padding: 1px 8px; font-size: 12.5px; color: var(--muted); }
+.sh .mini button:hover { color: var(--gold); border-color: var(--gold); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; margin-top: 10px; }
+.it { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px 7px; min-width: 0;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel); text-align: center; }
+.it:hover { border-color: color-mix(in srgb, var(--gold) 60%, var(--line)); }
+.it[aria-pressed=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold); }
+.it .pic { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 4px; background: var(--well); overflow: hidden; }
+.it .pic.face { background: var(--skin); border-radius: 50%; }
+.it .pic img { width: 92%; height: 92%; object-fit: contain; }
+.it .pic .txt { color: var(--muted); font-size: 11px; line-height: 1.2; padding: 4px; word-break: break-all; }
+.it .lbl { font-size: 12.5px; font-weight: 500; line-height: 1.3; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.it .why { font-size: 11px; color: var(--muted); line-height: 1.25; }
+.it .chk { position: absolute; left: 6px; top: 6px; width: 20px; height: 20px; border-radius: 4px; border: 1.5px solid var(--line); background: var(--well);
+  display: grid; place-items: center; color: var(--gold-ink); font-size: 13px; font-weight: 700; }
+.it[aria-pressed=true] .chk { background: var(--gold); border-color: var(--gold); }
+.it[aria-pressed=true] .chk::after { content: "✓"; }
+.it.changed::before { content: ""; position: absolute; right: 6px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+.empty { color: var(--muted); padding: 30px 0; }
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--panel-2); border: 1px solid var(--line);
+  border-left: 3px solid var(--gold); padding: 8px 14px; border-radius: 6px; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: pre-line; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>เลือกของ TTO ที่วางจำหน่ายแล้ว</h1>
+    <span class="sum" id="sum"></span>
+    <div class="acts">
+      <button type="button" class="b" id="revert" title="กลับไปที่ไฟล์ที่บันทึกไว้ล่าสุด">ย้อนการแก้ไข</button>
+      <button type="button" class="b" id="copy">คัดลอก JSON</button>
+      <button type="button" class="b primary" id="save">บันทึกไฟล์</button>
+    </div>
+  </div>
+  <p class="note" id="note"></p>
+  <div class="tabs" id="tabs" role="toolbar" aria-label="อาชีพ"></div>
+</header>
+<main id="main"><p class="empty">กำลังโหลด…</p></main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module">
+const $ = id => document.getElementById(id), DATA = "data/", DRAFT = "tto_picker.draft";
+const CLASS_TH = { bat: "ค้างคาว", bison: "กระทิง", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
+  penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า", all: "ทุกอาชีพ" };
+const KIND_TH = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ของประดับหลัง", clips: "ท่าทาง", faces: "หน้า" };
+const KINDS = Object.keys(KIND_TH), GROUP_TH = { emote: "อีโมต", base: "ท่าพื้นฐาน", skill: "ท่าสกิล" };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const humanize = n => String(n).replace(/_/g, " ").replace(/([a-z])([A-Z0-9])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
+const why = r => /tto flag|TTO's own/i.test(r) ? "ของ TTO เอง" : /no BB prefab|no BB file|no BB /i.test(r) ? "ไม่มีใน BB"
+  : /baked/i.test(r) ? "มีใน BB (โมเดลจาก TTO)" : /differ/i.test(r) ? "รุ่น TTO ต่างจาก BB" : "ของจาก TTO";
+function toast(t, ms = 2200) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), ms); }
+const key = c => `${c.cls}|${c.kind}|${c.name}`;
+
+const got = await fetch("../wardrobe_dist_tto.json", { cache: "no-cache" }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+if (!got) { $("main").innerHTML = `<p class="empty">ยังไม่มีรายการของ TTO: รัน <code>py -3 pipeline\\wardrobe_publish.py --out wardrobe_dist</code> ก่อน แล้วรีเฟรชหน้านี้</p>`; throw new Error("no list"); }
+const items = got.items, ui = await fetch(DATA + "ui.json").then(r => r.json()).catch(() => ({}));
+const fileSel = await fetch("tto_released.json", { cache: "no-cache" }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+// the saved file's choice (else the last publish's: the old face rule), then this browser's unsaved draft on top
+const fromFile = new Set(fileSel ? items.filter(c => (fileSel[c.cls]?.[c.kind] || []).map(String).includes(String(c.name))).map(key)
+  : items.filter(c => c.released).map(key));
+let sel = new Set(fromFile);
+try { const d = JSON.parse(localStorage.getItem(DRAFT) || "null"); if (d) sel = new Set(d.filter(k => items.some(c => key(c) === k))); } catch (e) {}
+$("note").textContent = (fileSel ? "เริ่มจากไฟล์ tto_released.json" : "ยังไม่มีไฟล์ tto_released.json: เริ่มจากที่เผยแพร่อยู่ตอนนี้ (หน้าครึ่งแรกของ TTO)")
+  + " · คลิกช่องเพื่อเลือก/ไม่เลือก จุดทองมุมขวา = ต่างจากไฟล์ที่บันทึกไว้ · บันทึกเป็น D:\\12tails-wardrobe\\wardrobe\\tto_released.json แล้วรันการเผยแพร่ใหม่";
+const classes = [...new Set(items.map(c => c.cls))].sort((a, b) => (a === "all") - (b === "all") || a.localeCompare(b));
+let cur = classes[0];
+
+// a clip's picture: the skill or emotion icon the wardrobe would show (its moveIcon, simplified)
+const EMO = { wave: "wave", bow: "bow", cheer: "cheer", cry: "cry", laugh: "laugh", dance: "dance", sit: "sit", sleep: "zzz", talk: "chat",
+  beg: "beg", clap: "clap", wai: "wai", cooking: "cook", mining: "mine", planting: "plant", battle: "battle" };
+function clipIcon(cls, name) {
+  const l = name.toLowerCase(), e = EMO[l] || (l.startsWith("pose") ? "pose" : null);
+  if (e && ui.emotion?.includes(e)) return `icons/skills/emotion/${e}.webp`;
+  const sk = ui.skills?.[cls] || [], bare = x => x.replace(/\d+$/, "");
+  const hit = sk.includes(l) ? l : sk.find(s => bare(s) === bare(l));
+  return hit ? `icons/skills/${cls}/${hit}.webp` : null;
+}
+function tile(c) {
+  const k = key(c), on = sel.has(k), src = c.kind === "clips" ? clipIcon(c.cls, String(c.name)) : c.icon;
+  const name = c.kind === "faces" ? `หน้า ${c.name}` : humanize(c.name);
+  const pic = src ? `<img loading="lazy" alt="" src="${DATA}${src}">` : `<span class="txt">${esc(name)}</span>`;
+  return `<button type="button" class="it${on !== fromFile.has(k) ? " changed" : ""}" data-k="${esc(k)}" aria-pressed="${on}" title="${esc(c.name)}: ${esc(c.reason)}">`
+    + `<span class="chk" aria-hidden="true"></span><span class="pic${c.kind === "faces" ? " face" : ""}">${pic}</span>`
+    + `<span class="lbl">${esc(name)}</span><span class="why">${why(c.reason)}${c.group ? " · " + (GROUP_TH[c.group] || c.group) : ""}</span></button>`;
+}
+function render() {
+  const n = cls => [items.filter(c => c.cls === cls && sel.has(key(c))).length, items.filter(c => c.cls === cls).length];
+  $("tabs").innerHTML = classes.map(cls => { const [a, b] = n(cls);
+    return `<button type="button" class="tab" data-c="${cls}" aria-pressed="${cls === cur}">${CLASS_TH[cls] || cls}<span class="num">${a}/${b}</span></button>`; }).join("");
+  const changed = items.filter(c => sel.has(key(c)) !== fromFile.has(key(c))).length;
+  $("sum").innerHTML = `เลือกไว้ <span class="num">${sel.size}</span> จาก <span class="num">${items.length}</span>`
+    + (changed ? ` · ยังไม่บันทึก <span class="num">${changed}</span>` : "");
+  const mine = items.filter(c => c.cls === cur);
+  $("main").innerHTML = KINDS.map(kind => {
+    let list = mine.filter(c => c.kind === kind);
+    if (!list.length) return "";
+    if (kind === "clips") list = list.sort((a, b) => (a.group || "").localeCompare(b.group || "") || String(a.name).localeCompare(String(b.name)));
+    if (kind === "faces") list = list.sort((a, b) => a.name - b.name);
+    const on = list.filter(c => sel.has(key(c))).length;
+    return `<section data-kind="${kind}"><div class="sh"><h2>${KIND_TH[kind]}</h2><span class="cnt">เลือก <span class="num">${on}</span> / <span class="num">${list.length}</span></span>`
+      + `<span class="mini"><button type="button" data-all="1">เลือกทั้งหมด</button><button type="button" data-all="0">ไม่เลือกเลย</button></span></div>`
+      + `<div class="grid">${list.map(tile).join("")}</div></section>`;
+  }).join("") || `<p class="empty">อาชีพนี้ไม่มีของจาก TTO</p>`;
+}
+const keep = () => { try { localStorage.setItem(DRAFT, JSON.stringify([...sel])); } catch (e) {} };
+$("tabs").onclick = e => { const b = e.target.closest(".tab"); if (b) { cur = b.dataset.c; render(); } };
+$("main").onclick = e => {
+  const t = e.target.closest(".it"), a = e.target.closest("[data-all]");
+  if (t) { const k = t.dataset.k; sel.has(k) ? sel.delete(k) : sel.add(k); }
+  else if (a) { const kind = a.closest("section").dataset.kind;
+    for (const c of items) if (c.cls === cur && c.kind === kind) a.dataset.all === "1" ? sel.add(key(c)) : sel.delete(key(c)); }
+  else return;
+  keep(); const y = scrollY; render(); scrollTo(0, y);
+};
+function output() {
+  const out = { _about: "TTO items released for the public wardrobe (wardrobe/tto_picker.html, read by pipeline/wardrobe_publish.py)" };
+  for (const c of items) if (sel.has(key(c))) ((out[c.cls] ||= {})[c.kind] ||= []).push(c.name);
+  for (const cls of Object.keys(out)) if (cls !== "_about") for (const k of Object.keys(out[cls]))
+    out[cls][k].sort((a, b) => (typeof a === "number" ? a - b : String(a).localeCompare(String(b))));
+  return JSON.stringify(out, null, 1) + "\n";
+}
+$("save").onclick = async () => {
+  const text = output();
+  try {
+    if (window.showSaveFilePicker) {
+      const h = await showSaveFilePicker({ suggestedName: "tto_released.json", id: "tto-released", types: [{ description: "JSON", accept: { "application/json": [".json"] } }] });
+      const w = await h.createWritable(); await w.write(text); await w.close();
+    } else {
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([text], { type: "application/json" })), download: "tto_released.json" });
+      document.body.append(a); a.click(); a.remove();
+    }
+  } catch (e) { if (e.name !== "AbortError") toast("บันทึกไม่สำเร็จ: " + e.message); return; }
+  for (const c of items) (sel.has(key(c)) ? fromFile.add(key(c)) : fromFile.delete(key(c)));
+  try { localStorage.removeItem(DRAFT); } catch (e) {}
+  render(); toast("บันทึกแล้ว\nเก็บไว้ที่ wardrobe\\tto_released.json แล้วรันการเผยแพร่ใหม่", 3500);
+};
+$("copy").onclick = async () => { try { await navigator.clipboard.writeText(output()); toast("คัดลอก JSON แล้ว"); } catch (e) { toast("คัดลอกไม่ได้"); } };
+$("revert").onclick = () => { sel = new Set(fromFile); try { localStorage.removeItem(DRAFT); } catch (e) {} render(); toast("กลับไปที่ไฟล์ที่บันทึกไว้แล้ว"); };
+render();
+window.picker = { items, sel, output };      // scripted checks only
+</script>
+</body>
+</html>

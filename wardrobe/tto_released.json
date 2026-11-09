@@ -1,0 +1,393 @@
+{
+ "_about": "TTO items released for the public wardrobe (read by pipeline/wardrobe_publish.py). Made 2026-11-09 from the user's rules: every class's Halloween outfit, weapon(s) and hat; Bat Dream Band V and Dream Wand V; the Clap and Wai emotes; every TTO skill motion the Bible documents (not Buiten Offering's sanctumRaise, not Cat shikifujin); the TTO faces already online, no more; no Quotation Flag; every shared item except Aura Bloodmoon, Aura Undead Queen, Champion Wing, Moonlight Rabbit, Pumpkon Headband, White Wing, Witchy Wing.",
+ "bat": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "nightfallSwarm",
+   "wai"
+  ],
+  "weapons": [
+   "dreamWandV",
+   "halloweenWand"
+  ],
+  "accessories": [
+   "dreamBandV",
+   "halloweenHat"
+  ]
+ },
+ "bison": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "magmaQuakeAxe",
+   "titanDrop",
+   "unchainedFury",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenAxe"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "cat": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "anchorYank",
+   "clap",
+   "crescentEclipse1",
+   "crescentEclipse2",
+   "dropAnchor",
+   "royalFlush1",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenDagger"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "chameleon": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "apexHunt",
+   "chainLightning",
+   "clap",
+   "venomPhantom1",
+   "venomPhantom2",
+   "venomPhantom3",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenArrow",
+   "halloweenBow"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "mole": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "barrelRailgun1",
+   "barrelRailgun2",
+   "barrelRailgun3",
+   "barrelRailgun4",
+   "clap",
+   "kaiserArsenal",
+   "missilePad",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenPot"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "monkey": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "buitenBastion",
+   "clap",
+   "golemCall",
+   "jaAscension",
+   "solarCall",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenMike"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "panda": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "nineDragons",
+   "tempestDance",
+   "tempestDanceEnd",
+   "wai",
+   "yinYangFist"
+  ],
+  "weapons": [
+   "halloweenScarecrow_L",
+   "halloweenScarecrow_R"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "penguin": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "constellation",
+   "emperorPenguin",
+   "frostFieldLeap",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenStaff"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "rabbit": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "bountyHunt",
+   "clap",
+   "coinRicochet",
+   "medicTurret",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenRifle"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "sheep": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "gleamingBreath",
+   "grandCodex",
+   "lucentBarrier",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenLantern"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "whale": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "clap",
+   "leviathanCall",
+   "wai"
+  ],
+  "weapons": [
+   "halloweenShield",
+   "halloweenSpear"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "wolf": {
+  "outfits": [
+   "halloween"
+  ],
+  "faces": [
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32
+  ],
+  "clips": [
+   "bladeSurge",
+   "clap",
+   "resonanceClaw",
+   "wai",
+   "windBoundDomain"
+  ],
+  "weapons": [
+   "halloweenSword"
+  ],
+  "accessories": [
+   "halloweenHat"
+  ]
+ },
+ "all": {
+  "accessories": [
+   "CactonHeadband",
+   "ChopperTrinket",
+   "CoconHeadband"
+  ],
+  "trinkets": [
+   "AngleWing",
+   "AngleWing_Crimson",
+   "AngleWing_Ghost",
+   "AngleWing_Pumpkin",
+   "AngleWing_Spectral",
+   "Azure_Wing",
+   "Ice_Wing",
+   "ReaperTrinket",
+   "Shade_Wing",
+   "daynightwing",
+   "devilWing"
+  ]
+ }
+}

@@ -271,7 +271,9 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .pk-item[aria-pressed=true] .lbl { color: var(--gold); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
 .pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
-.pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
+.pk-item .dot.tto-mark { right: 5px; top: 5px; width: 20px; height: 20px; border-radius: 0; background: none; object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5)); }
+.pm-tto { width: 15px; height: 15px; vertical-align: -3px; margin-right: 3px; object-fit: contain; }.pk-item .parts { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }       /* a set's pieces */
 .pk-item .cnt { font-size: 11.5px; line-height: 1.5; color: var(--muted); padding: 0 6px; border: 1px solid var(--line); border-radius: 4px; }   /* its piece count */
 .pk-item .parts img { width: 26px; height: 26px; object-fit: contain; background: var(--well); border-radius: 4px; }
 .pk-item .parts .noicon { width: 26px; height: 26px; font-size: 10px; border-radius: 4px; }
@@ -1300,7 +1302,9 @@ function dlName(kind, item, ext, tex = null) {
   return `12tails_${CLASS_TH[C.cls] || C.cls}_${humanize(item)}` + (o && o.colors.length && !mine ? `_สี${outfitTex(o).tag}` : "")
     + (tex != null && texs.length > 1 ? `_ลาย${texs.indexOf(tex) + 1}` : "") + (mine ? "_ลายของคุณ" : "") + "." + ext;
 }
+const TTO_NO = "ของจาก TTO ดูได้อย่างเดียว\nดาวน์โหลดหรือใส่ลายเองไม่ได้";
 async function skinDownload(slot, item, tex) {
+  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot);
   saveBlob(await texPNG(kind, item, tex), dlName(kind, item, "png", tex));
 }
@@ -1311,6 +1315,7 @@ async function decodeImage(file) {       // in the browser: no URL fetched, noth
   finally { URL.revokeObjectURL(url); }
 }
 async function skinUpload({ slot, item, tex }, file) {
+  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot), up = await decodeImage(file), orig = await texImage(kind, item, tex);
   const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height, uw = up.width, uh = up.height;
   const data = pixels(up, w, h).data;    // any size in, the original's size out
@@ -1391,7 +1396,7 @@ function wornTurn(K, slot, p) {
   const q = bn ? Rv.byName[bn].getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
   return q.multiply(pl ? q4(pl.kwr ? p.nodes[0].q : pl.q) : MOUNT_ROT[slot].clone());
 }
-async function makePiece(slot, item, { pose = "idle" } = {}) {
+async function makePiece(slot, item, { pose = "idle", face = null } = {}) {   // face: another face than the worn one
   const K = C, kind = kindOf(slot), own = [], skinned = [];
   let object, view = null, R = null, outfitTex = null, tag = "", mixer = null, propMixer = null;
   if (kind === "outfits") {
@@ -1400,7 +1405,7 @@ async function makePiece(slot, item, { pose = "idle" } = {}) {
     const buf = await res.arrayBuffer();
     if (o.colors.length) {                 // the texture as worn (composeTexture): colour, edition or skin, and the face
       const color = o.colors.includes(K.state.color) ? K.state.color : o.colors[0];
-      outfitTex = await composeTexture(o, color, K.state.face, K.state.edition); own.push(outfitTex);
+      outfitTex = await composeTexture(o, color, face ?? K.state.face, K.state.edition); own.push(outfitTex);
       tag = `${color}${edOf(o, color, K.state.edition)}`;
     }
     const mat = new THREE.MeshLambertMaterial({ name: item, map: outfitTex, side: THREE.DoubleSide, alphaTest: 0.5 }), front = mat.clone();
@@ -1443,7 +1448,7 @@ async function makePiece(slot, item, { pose = "idle" } = {}) {
   view ||= object;
   view.updateMatrixWorld(true);
   const skin = texsOf(kind, item).some(t => SKINS.has(skinKey(kind, item, t)));
-  return { object, view, slot, kind, item, cls: K.cls, outfitTex, tag, skin, mixer, skinned, rigBones: R?.bones || null,
+  return { object, view, slot, kind, item, cls: K.cls, outfitTex, tag, face: face ?? K.state.face, skin, mixer, skinned, rigBones: R?.bones || null,
     bones: R ? R.bones.length : new Set(skinned.flatMap(s => s.skeleton.bones)).size,
     dispose() {
       propMixer?.stopAllAction(); propMixer?.uncacheRoot(object); view.parent?.remove(view); object.parent?.remove(object);
@@ -1561,7 +1566,7 @@ async function pieceFile(piece, pngs) {
     sm.bind(new THREE.Skeleton(joints, joints.map(b => b.matrixWorld.clone().invert())), new THREE.Matrix4());
   }
   scene.name = item;
-  scene.userData = { source: "12 Tails Wardrobe", class: piece.cls, kind, item, ...(kind === "outfits" ? { colour: piece.tag || null, face: C.state.face } : {}), skin: piece.skin };
+  scene.userData = { source: "12 Tails Wardrobe", class: piece.cls, kind, item, ...(kind === "outfits" ? { colour: piece.tag || null, face: piece.face } : {}), skin: piece.skin };
   return { scene, dispose() {
     for (const x of old) { x.geometry?.dispose(); for (const m of [].concat(x.material || [])) m.dispose(); }
     scene.traverse(o => { if (!o.isMesh) return; o.geometry.dispose(); for (const m of [].concat(o.material)) { m.map?.dispose(); m.dispose(); } });
@@ -1569,14 +1574,17 @@ async function pieceFile(piece, pngs) {
 }
 const fileSize = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB");
 const modelBusy = new Set();
+// a BB outfit's 3D file with a TTO face on (TTO_LOCK): the class's first BB face instead
+const ttoFaceOff = () => (TTO_LOCK && C.faces.find(f => f.n === C.state.face)?.tto ? C.faces.find(f => !f.tto)?.n ?? null : null);
 async function modelDownload(slot, item) {
+  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot), key = skinKey(kind, item), name = dlName(kind, item, "glb");   // the same scheme as the PNGs (F12)
   if (modelBusy.has(key)) return;
   modelBusy.add(key);
   toast(`กำลังสร้างโมเดล 3D ของ ${humanize(item)}…`, 15000);
   let piece = null, file = null;
   try {
-    const pngs = new Map(), [Exporter, p] = await Promise.all([exporterOf(), makePiece(slot, item, { pose: "bind" })]);
+    const pngs = new Map(), [Exporter, p] = await Promise.all([exporterOf(), makePiece(slot, item, { pose: "bind", face: ttoFaceOff() })]);
     piece = p; file = await pieceFile(piece, pngs);
     const exporter = new Exporter().register(w => exactPNG(w, pngs));
     const blob = new Blob([await exporter.parseAsync(file.scene, { binary: true, trs: true })], { type: "model/gltf-binary" });
@@ -1674,6 +1682,7 @@ document.addEventListener("paste", e => {
   const t = pasteTarget();
   if (!t) { toast("ชี้เมาส์ที่ช่องไอเท็ม หรือที่ชิ้นบนตัวละคร แล้วกด Ctrl+V", 3000); return; }
   const texs = texsOf(kindOf(t.slot), t.item);
+  if (ttoLocked(t.slot, t.item)) { toast(TTO_NO, 2500); return; }
   if (!texs.length) { toast(`${humanize(t.item)} ไม่มีลาย`, 2500); return; }
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
   if (tex == null) {                     // two textures and none chosen: the piece menu asks which one, the picture kept
@@ -1697,6 +1706,12 @@ const PM_ICON = Object.fromEntries(Object.entries({
   glb: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
   reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", more: "M3.5 8h.01M8 8h.01M12.5 8h.01",
 }).map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${k === "more" ? 2.8 : 1.8}" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
+// TTO's items are preview only online (user 2026-11-09: "TTO shouldn't be downloadable nor uploadable, it's preview
+// only"): no skin download / upload / reset, no 3D file, and a TTO face never goes into a BB outfit's 3D file. The
+// published copy sets it (wardrobe_publish.py); locally ?ttolock shows it
+const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
+const recOf = (slot, item) => (slot === "outfit" ? C.outfits.find(x => x.name === item) : (C.propLists[kindOf(slot)] || []).find(x => x.name === item)) || {};
+const ttoLocked = (slot, item) => TTO_LOCK && !!recOf(slot, item).tto;
 const PM = { el: $("pmenu"), cur: null, back: null, paste: null, lastBack: null, closedAt: 0 };
 document.body.append(PM.el);               // above every layer (a phone's panel stacks over the stage)
 PM.el.tabIndex = -1;
@@ -1712,7 +1727,7 @@ function pmHead(slot, item) {
   const meta = [SLOT_TH[slot], worn ? "ใส่อยู่" : "ยังไม่ได้ใส่",
     mine ? "ลายของคุณ" : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`,
     sets.length && `เซ็ต ${setNameHTML(sets[0])}${sets.length > 1 ? ` +<span class="num">${sets.length - 1}</span>` : ""}`,
-    rec.tot ? "ของจาก ToT" : rec.tto ? "ของจาก TTO" : ""].filter(Boolean);
+    rec.tot ? "ของจาก ToT" : rec.tto ? ttoMark("ของจาก TTO", "pm-tto") + "ของจาก TTO" : ""].filter(Boolean);
   return `<div class="pm-head"><span class="pm-pic">${pic(icon, false, noIcon(item))}</span><span class="pm-txt">`
     + `<b class="pm-name">${nameHTML(item + ed)}</b><span class="pm-meta">${meta.join('<span class="sep" aria-hidden="true">·</span>')}</span></span></div>`;
 }
@@ -1732,6 +1747,7 @@ function pmList(slot, item, from, paste) {
   if (!worn) L.push(it("wear", "ใส่ชิ้นนี้", { primary: true }));
   if (from !== "tile") L.push(it("change", `เปลี่ยน${SLOT_TH[slot]}`));
   if (worn && slot !== "outfit" && item !== BASE_HEAD[C.cls]) L.push(it("remove", `ถอด${SLOT_TH[slot]}ออก`));
+  if (ttoLocked(slot, item)) return L.join("");      // TTO, preview only: no download / upload actions
   L.push(sep, ...perTex("png", "ดาวน์โหลดลาย (PNG)", "png"), it("glb", "ดาวน์โหลดโมเดล 3D (GLB)", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
   L.push(sep, ...perTex("up", "อัปโหลดลายของคุณ", "up"));
   if (mine) L.push(it("reset", "คืนลายเดิม"));
@@ -1745,7 +1761,7 @@ function openMenu(t, at, o = {}) {
   PM.cur = { slot: t.slot, item: t.item, from: o.from || "model" }; PM.back = o.back || null; PM.paste = o.paste || null;
   const n = texsOf(kindOf(t.slot), t.item).length;
   el.innerHTML = pmHead(t.slot, t.item) + `<div class="pm-list">${pmList(t.slot, t.item, PM.cur.from, PM.paste)}</div>`
-    + `<p class="pm-foot">${PM.paste ? `ชิ้นนี้มี <span class="num">${n}</span> ลาย เลือกลายที่จะใส่รูปจากคลิปบอร์ด` : "ชี้ที่ชิ้นนี้แล้วกด Ctrl+V เพื่อวางรูปเป็นลายได้"}</p>`;
+    + (ttoLocked(t.slot, t.item) ? "" : `<p class="pm-foot">${PM.paste ? `ชิ้นนี้มี <span class="num">${n}</span> ลาย เลือกลายที่จะใส่รูปจากคลิปบอร์ด` : "ชี้ที่ชิ้นนี้แล้วกด Ctrl+V เพื่อวางรูปเป็นลายได้"}</p>`);
   el.hidden = false; el.style.left = el.style.top = "0px";
   const w = el.offsetWidth, h = el.offsetHeight, W = innerWidth, H = innerHeight, m = 8, cl = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
   let x, y;
@@ -1833,15 +1849,60 @@ $("topics").addEventListener("contextmenu", e => {
     if (t) openMenu(t, { x: e.clientX, y: e.clientY }, { from: "model" });
   });
 }
-// the hover: the piece under the mouse lights up a little (its materials' diffuse colour; the menu's piece stays lit while
-// its menu is open) and the cursor says it can be clicked. Three looks to pick from (?hover=gold, the default, a warm
-// brightening / lift, a plain one / dim: the rest of the character darkens instead). Never in the viewer, never while
-// dragging; a screenshot clears it first
-const HOVER = new URLSearchParams(location.search).get("hover") || "gold";
-const Hover = { key: "", slot: null, saved: new Map(), at: null, t: 0 };
+// the hover: the piece under the mouse lights up a little (the menu's piece stays lit while its menu is open) and the
+// cursor says it can be clicked. Never in the viewer, never while dragging; a screenshot clears it first. Looks to pick
+// from (?hover=..., mocked side by side, the user's pick pending):
+//   rimpulse        the default (the user's pick, 2026-11-09: "pulsing rim"): rim (below), breathing every 1.4 s
+//   gold            a warm brightening of the piece's diffuse colour + a trace of added gold
+//   lift / dim      a plain brightening / the rest of the character darkens instead
+//   pulse           gold, breathing (1.4 s)
+//   outline         a thin gold edge around the piece (its copy pushed out along the normals, back faces only)
+//   rim             a gold glow where the piece's surface turns away from the eye (fresnel), drawn over it
+//   sweep           a soft band of light passing up the piece (1.6 s, then a pause)
+// The last three draw a copy of the piece (same geometry and skeleton, so it moves with it; never hit by the ray) with
+// the original's texture for the cut-outs; the colour looks change the piece's own materials and put them back
+const HOVER = new URLSearchParams(location.search).get("hover") || "rimpulse";   // the user's pick (2026-11-09): "pulsing rim"
+const Hover = { key: "", slot: null, saved: new Map(), over: [], anim: null, at: null, t: 0, t0: 0 };
+const HU = { glow: { value: new THREE.Vector3(.86, .6, .26) }, y: { value: -1e4 }, h: { value: 40 }, k: { value: 1 } };   // shared by the overlays
 function hoverClear() {
   for (const [m, s] of Hover.saved) { m.emissive.copy(s.e); m.color.copy(s.c); }
-  Hover.saved.clear(); Hover.key = ""; Hover.slot = null; renderer.domElement.style.cursor = "";
+  for (const x of Hover.over) { x.removeFromParent(); for (const m of [].concat(x.material)) m.dispose(); }
+  Hover.saved.clear(); Hover.over = []; Hover.anim = null; Hover.key = ""; Hover.slot = null; renderer.domElement.style.cursor = "";
+}
+// a copy of every mesh under roots with makeMat(original material) per material, added beside the original
+function hoverOverlays(roots, makeMat) {
+  const add = [];
+  for (const r of roots) r?.traverse(o => {
+    if (!o.isMesh || o.userData.hoverOverlay) return;
+    const ms = [].concat(o.material).map(m => makeMat(m, o)), mat = Array.isArray(o.material) ? ms : ms[0];
+    const x = o.isSkinnedMesh ? new THREE.SkinnedMesh(o.geometry, mat) : new THREE.Mesh(o.geometry, mat);
+    if (o.isSkinnedMesh) { x.bindMode = o.bindMode; x.bind(o.skeleton, o.bindMatrix); }
+    x.position.copy(o.position); x.quaternion.copy(o.quaternion); x.scale.copy(o.scale); x.visible = o.visible;
+    x.userData.hoverOverlay = true; x.raycast = () => {}; x.frustumCulled = false; x.renderOrder = 3;
+    add.push([o.parent, x]);
+  });
+  for (const [p, x] of add) p.add(x);      // after the walk (an added child would be walked too)
+  return add.map(([, x]) => x);
+}
+// the overlay materials: the original's texture and alpha test (hair cards and cut-outs keep their shape)
+function overlayMat(m, frag, vert = null, opts = {}) {
+  const x = new THREE.MeshLambertMaterial({ map: m.map || null, alphaTest: .5, side: m.side, transparent: true, depthWrite: false,
+    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4, ...opts });
+  x.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { uGlow: HU.glow, uY: HU.y, uH: HU.h, uK: HU.k, uW: { value: opts.w || 0 } });
+    sh.fragmentShader = "uniform vec3 uGlow; uniform float uY, uH, uK;\n" + sh.fragmentShader.replace("#include <dithering_fragment>", "#include <dithering_fragment>\n" + frag);
+    if (vert) sh.vertexShader = "uniform float uW;\n" + sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n" + vert);
+  };
+  x.customProgramCacheKey = () => "hover|" + frag + (vert || "");
+  return x;
+}
+// the piece's height on the screen in drawing-buffer pixels (the sweep runs over it)
+function screenSpan(root) {
+  const b = new THREE.Box3().setFromObject(root), v = new THREE.Vector3(), H = renderer.domElement.height;
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < 8; i++) { v.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(camera);
+    const y = (v.y * .5 + .5) * H; lo = Math.min(lo, y); hi = Math.max(hi, y); }
+  return [lo, hi];
 }
 function hoverPaint(slot) {
   const root = !C || !slot ? null : slot === "outfit" ? C.meshes[0] : C.props[slot];
@@ -1849,23 +1910,55 @@ function hoverPaint(slot) {
   if (key === Hover.key) return;
   hoverClear();
   if (!root) return;
-  Hover.key = key; Hover.slot = slot;
-  const mats = roots => { const out = new Set(); for (const r of roots) r?.traverse(o => { if (o.isMesh) for (const m of [].concat(o.material)) if (m.emissive) out.add(m); }); return out; };
-  const piece = mats(slot === "outfit" ? C.meshes : [C.props[slot]]);
+  Hover.key = key; Hover.slot = slot; Hover.t0 = performance.now();
+  const roots = slot === "outfit" ? C.meshes : [C.props[slot]];
+  const mats = rs => { const out = new Set(); for (const r of rs) r?.traverse(o => { if (o.isMesh && !o.userData.hoverOverlay) for (const m of [].concat(o.material)) if (m.emissive) out.add(m); }); return out; };
+  const piece = mats(roots);
   const save = m => { if (!Hover.saved.has(m)) Hover.saved.set(m, { e: m.emissive.clone(), c: m.color.clone() }); };
+  // gold: a brighter, warmer diffuse colour, not mainly an added glow: added light lifts the dark colours most (the first
+  // try, emissive + 0.2 x gold, turned a dark-blue outfit sepia), a factor keeps the darks dark; the trace of added gold
+  // (0.07 x gold) is for a full red, which can't get brighter (a bright red weapon showed no change from the factor alone)
+  const tint = k => { const f = new THREE.Color(1 + .18 * k, 1 + .08 * k, 1 - .08 * k), g = new THREE.Color(0xd0913e).multiplyScalar(.07 * k);
+    for (const m of piece) { save(m); const s = Hover.saved.get(m); m.color.copy(s.c).multiply(f); m.emissive.copy(s.e).add(g); } };
   if (HOVER === "dim") { for (const m of mats([...C.meshes, ...Object.values(C.props)])) if (!piece.has(m)) { save(m); m.color.multiplyScalar(.6); } }
-  // a brighter (gold: warmer) diffuse colour, not an added glow: added light lifts the dark colours most (the first try,
-  // emissive + 0.2 x gold, turned a dark-blue outfit sepia), a factor keeps the darks dark
-  // gold adds a trace of warm light too (0.07 x gold, a third of the first try): a full red can't get brighter, so a bright
-  // red weapon showed no change from the factor alone
-  else {
-    const f = HOVER === "lift" ? new THREE.Color(1.22, 1.22, 1.22) : new THREE.Color(1.18, 1.08, .92), g = HOVER === "lift" ? null : new THREE.Color(0xd0913e).multiplyScalar(.07);
-    for (const m of piece) { save(m); m.color.multiply(f); if (g) m.emissive.add(g); }
+  else if (HOVER === "lift") for (const m of piece) { save(m); m.color.multiplyScalar(1.22); }
+  else if (HOVER === "pulse") { tint(1); Hover.anim = t => tint(.25 + .75 * (.5 - .5 * Math.cos(t / 1400 * 2 * Math.PI))); }
+  else if (HOVER === "outline") {
+    // the copy's back faces pushed out along the normals: a band shows round the silhouette. The width is a share of the
+    // piece's size in its own units (the outfit is big on screen, a hat small: a bigger share)
+    let r = 0;
+    for (const x of roots) x?.traverse(o => { if (o.isMesh) { o.geometry.boundingSphere || o.geometry.computeBoundingSphere(); r = Math.max(r, o.geometry.boundingSphere.radius); } });
+    const w = r * (slot === "outfit" ? .012 : .03);
+    Hover.over = hoverOverlays(roots, m => overlayMat(m, "gl_FragColor = vec4(uGlow, 1.0);", "transformed += normalize(normal) * uW;",
+      { side: THREE.BackSide, transparent: false, depthWrite: true, polygonOffset: false, w }));
+    for (const x of Hover.over) x.renderOrder = 0;
   }
+  // added light, not blended paint: blended over the black afro the gold went muddy brown where it fades out
+  // rimpulse (the default): the rim breathing between half and full strength every 1.4 s. Stronger since the first
+  // try (user: "stronger rim strenght please"): a wider band (power 1.4, was 2), brighter (x 1.6 gold, alpha x 1.8, was
+  // x 1.15 / x 1.2), the pulse's low point half strength (was a third)
+  else if (HOVER === "rim" || HOVER === "rimpulse") {
+    Hover.over = hoverOverlays(roots, m => overlayMat(m,
+      "float fr = pow(1.0 - abs(dot(normalize(normal), normalize(vViewPosition))), 1.4); gl_FragColor = vec4(uGlow * 1.6, clamp(fr * 1.8, 0.0, 1.0) * uK);",
+      null, { blending: THREE.AdditiveBlending }));
+    HU.k.value = 1;
+    if (HOVER === "rimpulse") Hover.anim = t => { HU.k.value = .5 + .5 * (.5 - .5 * Math.cos(t / 1400 * 2 * Math.PI)); };
+  }
+  else if (HOVER === "sweep") {
+    Hover.over = hoverOverlays(roots, m => overlayMat(m,
+      "float d = abs(gl_FragCoord.y - uY) / uH; gl_FragColor = vec4(1.0, 0.94, 0.78, (1.0 - smoothstep(0.0, 1.0, d)) * 0.6);"));
+    Hover.anim = t => {                      // the band rises past the piece in 1.6 s, then waits 0.6 s
+      const [lo, hi] = screenSpan(root), h = Math.max(12, (hi - lo) * .12), k = (t % 2200) / 1600;
+      HU.h.value = h; HU.y.value = k <= 1 ? lo - h + k * (hi - lo + 2 * h) : -1e4;
+    };
+  }
+  else tint(1);
+  Hover.anim?.(0);
   renderer.domElement.style.cursor = "pointer";
 }
 function hoverTick() {
   if (!C || Showcase.phase !== "off") { if (Hover.key) hoverClear(); return; }
+  Hover.anim?.(performance.now() - Hover.t0);
   if (PM.cur?.from === "model") return hoverPaint(PM.cur.slot);
   if (!Hover.at || scPtr.size) { if (Hover.key) hoverClear(); return; }
   const now = performance.now();
@@ -2424,7 +2517,9 @@ function closePicker() {
 // a picker tile; o = { title, face, fb: the stand-in when there is no icon, over: drawn over the picture, dot: "tto" | "tot" }
 const item = (attr, lbl, pressed, src, o = {}) =>
   `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}"${o.title ? ` title="${o.title}"` : ""}><span class="pic${o.face ? " face" : ""}">${pic(src, o.face, o.fb)}${o.over || ""}</span>` +
-  `<span class="lbl">${lbl}</span>${o.dot ? `<i class="dot${o.dot === "tot" ? " tot" : ""}" title="${o.dot === "tot" ? "ของจาก ToT" : o.face ? "หน้าจาก TTO" : "ของจาก TTO"}"></i>` : ""}</button>`;
+  `<span class="lbl">${lbl}</span>${!o.dot ? "" : o.dot === "tot" ? `<i class="dot tot" title="ของจาก ToT"></i>` : ttoMark(o.face ? "หน้าจาก TTO" : "ของจาก TTO")}</button>`;
+// TTO's mark (user 2026-11-09: "Change the pink dot to TTO small logo instead"): TTO's own logo on its tiles, in the menu
+const ttoMark = (title, cls = "dot tto-mark") => `<img class="${cls}" alt="TTO" title="${title}" src="${UI_DIR}tto.webp">`;
 const badge = x => (x.tot ? "tot" : x.tto);           // pink dot = TTO's own, blue = ToT's own (wardrobe_tot.py)
 const isBare = () => C.state.outfit === "standard" && !C.state.edition && !C.state.R && !C.state.L && !C.state.Back
   && (C.state.Head || null) === (BASE_HEAD[C.cls] || null);
