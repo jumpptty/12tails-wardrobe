@@ -5,7 +5,8 @@ PC can't build the data (no game rips there), so it always gets the home PC's co
 
   powershell -ExecutionPolicy Bypass -File pipeline\transfer_to_drive.ps1 -Drive E
   -> E:\12tails-wardrobe-transfer\wardrobe_data.tar, 12tails-wardrobe.bundle, README.txt
-  -Dest <folder> writes there instead (tests).
+  -Dest <folder> writes there instead: e.g. the Desktop, then upload the folder to Google Drive (user 2026-11-09:
+  "No flashdrive, google drive only"), or tests.
 One tar, not thousands of files: a flash drive writes small files far slower (NOTES.md in 12tails-video, "Moving to
 another PC"). FAT32 caps a file at 4 GB; the data is ~300 MB.
 #>
@@ -36,11 +37,12 @@ if ($LASTEXITCODE) { "git bundle failed"; exit 1 }
 @"
 12 Tails wardrobe transfer ($(Get-Date -Format 'yyyy-MM-dd'))
 =============================================================
-<drive> below = this flash drive's letter on that PC. Office paths shown; the home PC uses D:\ for C:\work\.
+<folder> below = where this 12tails-wardrobe-transfer folder is on that PC: on a flash drive, or downloaded from
+Google Drive (e.g. C:\Users\Jump\Downloads\12tails-wardrobe-transfer). Office paths shown; home uses D:\ for C:\work\.
 1. Code:  git clone https://github.com/jumpptty/12tails-wardrobe.git C:\work\12tails-wardrobe
-          (no GitHub?  git clone <drive>\12tails-wardrobe-transfer\12tails-wardrobe.bundle C:\work\12tails-wardrobe)
+          (no GitHub?  git clone <folder>\12tails-wardrobe.bundle C:\work\12tails-wardrobe)
           (already cloned?  cd C:\work\12tails-wardrobe ; git pull)
-2. Data:  tar -xf <drive>\12tails-wardrobe-transfer\wardrobe_data.tar -C C:\work\12tails-wardrobe
+2. Data:  in PowerShell:  tar.exe -xf <folder>\wardrobe_data.tar -C C:\work\12tails-wardrobe
           (a folder C:\work\12tails-wardrobe\wardrobe\data already there? move it aside first, to the top level, where
            git ignores it:  Move-Item C:\work\12tails-wardrobe\wardrobe\data C:\work\12tails-wardrobe\wardrobe_data_old)
 3. Once, the first time on that PC (the video project must already sit in C:\work\12tails-video: if it is still

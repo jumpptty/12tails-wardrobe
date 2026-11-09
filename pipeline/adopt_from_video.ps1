@@ -59,7 +59,7 @@ if ($SetAside) {
     $here = Join-Path $Wardrobe "wardrobe\data"
     if (-not (Test-Path -LiteralPath (Join-Path $here "meta.json"))) {
         "STOPPED: -SetAside needs the home PC's data here first: restore wardrobe_data.tar into $Wardrobe"
-        "  (tar -xf <drive>\12tails-wardrobe-transfer\wardrobe_data.tar -C $Wardrobe), then run this again. Nothing moved."
+        "  (in PowerShell: tar.exe -xf <transfer folder>\wardrobe_data.tar -C $Wardrobe), then run this again. Nothing moved."
         exit 1
     }
     $items = $items | Where-Object { $_ -ne "wardrobe\data" }

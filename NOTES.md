@@ -335,7 +335,12 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   **Trap: a fresh clone checks the page out CRLF** (global `core.autocrlf true`) while the old folder's copy was LF;
   the publish copies the page's bytes, so the rebuilt `index.html` differed from the live one in line endings only
   (data byte-identical, 6,896 files). `.gitattributes` now pins `wardrobe/index.html` to LF.
-- **Moving data between PCs:** `pipeline\transfer_to_drive.ps1 -Drive <letter>` writes
+- **Moving data between PCs: Google Drive, no flash drive** (user 2026-11-09: "No flashdrive, google drive only"):
+  `pipeline\transfer_to_drive.ps1 -Dest C:\Users\Jump\Desktop\12tails-wardrobe-transfer` (1 s), the user uploads that
+  folder to Google Drive (Drive for desktop is installed here but wasn't running: `C:\Program Files\Google\Drive File
+  Stream\<version>\GoogleDriveFS.exe`) and downloads it at the office. Drive's web download of a file this size asks
+  to confirm it can't virus-scan it.
+  Flash-drive form, if one is ever used: `pipeline\transfer_to_drive.ps1 -Drive <letter>` writes
   `<drive>:\12tails-wardrobe-transfer\` = `wardrobe_data.tar` (0.35 GB, 7,668 files, prop textures included, 6 s),
   `12tails-wardrobe.bundle`, `README.txt` (restore: clone, `tar -xf ... -C C:\work\12tails-wardrobe`, then once
   `adopt_from_video.ps1 -SetAside`, which renames the office's older `<video>\wardrobe\data` to `wardrobe_data_old`).

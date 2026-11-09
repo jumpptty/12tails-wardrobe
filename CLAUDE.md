@@ -18,8 +18,9 @@ never only in a session scratch dir.
 | Video repo (read only) | `D:\12tails-video` | `C:\work\12tails-video` |
 | Bible repo (game rips, decompiles) | `D:\12tails` | `C:\Users\Jump\Desktop\12tails` |
 
-Code moves by git (`origin` = private GitHub `jumpptty/12tails-wardrobe`); `wardrobe\data` moves by flash drive
-(`pipeline\transfer_to_drive.ps1`). The data build needs the game rips, which only the home PC has: build at home,
+Code moves by git (`origin` = private GitHub `jumpptty/12tails-wardrobe`); `wardrobe\data` moves as one tar through
+Google Drive (user 2026-11-09: "No flashdrive, google drive only"): `pipeline\transfer_to_drive.ps1 -Dest <folder>`
+writes it (the Desktop, say), the user uploads it and downloads it on the other PC. The data build needs the game rips, which only the home PC has: build at home,
 carry the data to the office. Scripts find the video folder as their sibling (`<this folder>\..\12tails-video`) and
 the Bible under either PC's path.
 
