@@ -431,7 +431,7 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
       <section class="showcase" id="showcase" hidden aria-label="ชมชิ้นส่วน"></section>
     </div>
-    <div class="keyhint" id="keyhint" aria-hidden="true">คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู<span class="kh-sep"></span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง</div>
+    <div class="keyhint" id="keyhint" aria-hidden="true">คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู<span class="kh-sep"></span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง<span class="kh-sep"></span><kbd>Space</kbd> <span id="khPause">หยุดท่า</span><span class="kh-sep"></span><kbd>R</kbd> ท่ายืน</div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
         <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
@@ -1011,7 +1011,35 @@ function playMode(n) {
 }
 // a clip's twin: the same move started again crossfades from its own last frame, which needs a second action
 function twinClip(n) { return C.clips[n + "#twin"] || (C.clips[n + "#twin"] = buildClip(n).clone()); }
+// Space pauses / resumes the animation (user 2026-11-09: "add space bar to stop the animation control, hint near the
+// asdw"): the character's move, its props' own clips and the skill effects stand still; the camera, the hover and the
+// viewer's turntable keep going. A new move plays at once (play() resumes). Space is left to a focused button while the
+// visitor moves around by keyboard (Tab / arrows), and to text fields
+let animPaused = false;
+function setPaused(on) {
+  animPaused = on;
+  $("khPause").textContent = on ? "เล่นต่อ" : "หยุดท่า";
+}
+addEventListener("keydown", e => {
+  if (e.code !== "Space" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || !C) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  if (lastInput === "key" && t?.closest?.("button, a, [tabindex]")) return;     // keyboard navigation: Space presses the button
+  e.preventDefault();
+  setPaused(!animPaused);
+  toast(animPaused ? "หยุดท่าไว้ กด Space เพื่อเล่นต่อ" : "เล่นท่าต่อ");
+});
+// R: back to the idle stance (user 2026-11-09: "R to reset the pose to idle stance"), like picking ยืนพัก
+addEventListener("keydown", e => {
+  if (e.code !== "KeyR" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || !C || !C.clipsData) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  e.preventDefault();
+  play(idleName());
+  renderTopics(); syncPressed();
+});
 function play(name) {
+  if (animPaused) setPaused(false);
   const ch = chainOf(name);
   if (!ch && !C.clipsData[name]) name = idleName();
   const mode = ch ? "again" : playMode(name);
@@ -3225,8 +3253,9 @@ function fxTick(dt) {
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
-  if (C) { C.mixer.update(dt); seqTick(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
-  fxTick(dt);
+  const adt = animPaused ? 0 : dt;           // Space holds the move, its props and its effects where they are
+  if (C) { C.mixer.update(adt); seqTick(adt); for (const o of Object.values(C.props)) o.userData.mixer?.update(adt); }   // props flap too
+  fxTick(adt);
   hoverTick();
   runTweens(dt);
   Showcase.update(dt);

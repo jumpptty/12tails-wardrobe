@@ -189,6 +189,27 @@ async def main():
         check(await page.locator("#picker").is_visible(), "Esc in the menu leaves the picker open")
         await page.click("#pkClose")
 
+        # Space pauses / resumes the animation (after a pointer click; a new move resumes it)
+        await page.mouse.click(1340, 140); await page.wait_for_timeout(200)
+        mt = "() => wardrobe.debug().C.mixer.time"
+        await page.keyboard.press("Space"); await page.wait_for_timeout(300)
+        a = await page.evaluate(mt); await page.wait_for_timeout(500); b2 = await page.evaluate(mt)
+        hint = await page.evaluate("() => document.getElementById('khPause').textContent")
+        check(a == b2 and hint == "เล่นต่อ", f"Space pauses: mixer {a:.3f} -> {b2:.3f}, hint {hint!r}")
+        await page.keyboard.press("Space"); await page.wait_for_timeout(500)
+        check(await page.evaluate(mt) > b2, "Space again resumes")
+        await page.keyboard.press("Space"); await page.wait_for_timeout(200)
+        await page.evaluate("() => wardrobe.show('wolf')")      # plays the idle: a new move resumes
+        c0 = await page.evaluate(mt); await page.wait_for_timeout(500)
+        check(await page.evaluate(mt) > c0, "a new move resumes a paused animation")
+        # R: back to the idle stance from another move
+        await page.click('#topics [data-t="move"]'); await page.click('.pk-tab[data-g="emote"]')
+        await page.locator('#pkBody .pk-item').first.click(); await page.click("#pkClose"); await page.wait_for_timeout(300)
+        before = await page.evaluate("() => wardrobe.debug().C.cur")
+        await page.mouse.click(1340, 140); await page.keyboard.press("r"); await page.wait_for_timeout(300)
+        after = await page.evaluate("() => wardrobe.debug().C.cur")
+        check(before != after and after.lower() == "root", f"R: {before} -> {after}")
+
         # hover looks side by side
         rows = []
         for look in ("gold", "lift", "dim"):

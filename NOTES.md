@@ -609,3 +609,11 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `FX_ON = false`; the Wolf's Halloween outfit and the TTO mark answer 200. The auto-mode classifier did not block it
   this time. The live page has one unused CSS rule (`.pm-lock`) the repo's page no longer has: built just before it was
   removed; it goes with the next publish.
+- **2026-11-09, Space and R** (user: "add space bar to stop the animation control, hint near the asdw", "R to reset the
+  pose to idle stance"). Space pauses / resumes: the render loop gives the mixer, the sequence, the props' clips and the
+  skill effects dt 0 (camera, hover, the viewer's turntable keep going); a new move resumes (`play()`). Space is left to a
+  focused button while the visitor navigates by keyboard (`lastInput === "key"`) and to text fields; after a mouse click
+  on a tile it pauses instead of pressing the tile again. R plays the idle (`idleName()`), like picking ยืนพัก. The hint
+  row: คลิกที่ชิ้น... | WASD เลื่อนกล้อง | Space หยุดท่า (เล่นต่อ while paused) | R ท่ายืน. Checked in
+  `wardrobe_menu_check.py` (pause holds the mixer, resume, a new move resumes, R from an emote to root); moves check
+  `errors: []`. Not deployed yet.
