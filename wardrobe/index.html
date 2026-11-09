@@ -75,6 +75,13 @@ input[type=search] { width: 100%; background: var(--well); border: 1px solid var
 input[type=search]:focus { border-color: var(--gold); }
 main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
+/* the skill effects' backdrop (pilot 2026-11-09): the game's effects add light, which a white stage swallows; while a move
+   with effects plays, ?fxbg=dark darkens the stage, ?fxbg=spot darkens a glow behind the hero, ?fxbg=white keeps it white */
+main { isolation: isolate; }
+main::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s; }
+main.fx-on::before { opacity: 1; }
+main[data-fxbg=dark]::before { background: linear-gradient(#211c27, #2d2634); }
+main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50% 56%, rgba(28, 23, 34, .95), rgba(28, 23, 34, .72) 48%, rgba(28, 23, 34, 0) 100%); }
 /* one floating toolbar (V5): undo / redo | camera | the gold บันทึกภาพ, icon buttons with Thai names */
 .bar { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 3px;
   background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 10px 24px -14px rgba(0, 0, 0, .45); }
@@ -86,6 +93,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
 .tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 13px 0 10px; }
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
+#sound[aria-pressed=false] .snd-on, #sound[aria-pressed=true] .snd-off { display: none; }
 .tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
 /* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
@@ -409,6 +417,7 @@ main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15);
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button type="button" class="tb" id="vmode" title="ชมชิ้นส่วน" aria-label="ชมชิ้นส่วน" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4 19.4 7.5v9L12 20.6 4.6 16.5v-9zM4.6 7.5 12 11.6l7.4-4.1M12 11.6v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="tb" id="sound" title="เสียงท่าทาง" aria-label="เสียงท่าทาง" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path class="snd-on" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="snd-off" d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
@@ -543,7 +552,8 @@ async function loadClass(cls) {
   const fresh = !saved[cls], L0 = saved[cls] || {};
   for (const s of ["R", "L", "Head", "Back"]) if (L0[s]) fetchProps(cls, SLOTS[s]);
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
-  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); }     // the old class stays on stage until the new one has loaded
+  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); fxClear(); }     // the old class stays on stage until the new one has loaded
+  fxData(cls);                              // its skill effects, if it has any yet
   const root = new THREE.Group();
   const tri = new THREE.Object3D();
   tri.name = "tri";
@@ -1001,6 +1011,7 @@ function play(name) {
   const mode = ch ? "again" : playMode(name);
   C.seq = { steps: ch ? ch.steps : [{ clip: name, hold: false, fade: 0.2, t: null }], mode, i: 0, t: 0, dur: Infinity };
   C.cur = name;
+  fxClear();                                 // the last move's effects go with it
   startStep(0, 0.2);
   renderMovesUI();
 }
@@ -1014,6 +1025,7 @@ function startStep(i, fade) {
   if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
   C.action = act;
   S.i = i; S.t = 0;
+  fxStart(st.clip);                          // its effects and voice, every time the clip starts (the loop too)
   S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
     : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
 }
@@ -2567,11 +2579,402 @@ $("copy").onclick = async () => {
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว\nวางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
 
+// ---------- skill effects and sounds (pilot 2026-11-09, user: "let's try wolf cross break, armor break, and grand cross")
+// The game's own effects rebuilt from its scripts (NOTES.md "Skill effects"): data/<cls>/fx.json from
+// pipeline/wardrobe_fx.py (BB's emitter settings, materials, the sound an effect plays), data/fx/tex, data/<cls>/sfx.
+// An effect is built in Unity's own left-handed space inside a group scaled (-1, 1, 1), the mirror wardrobe_data.py
+// applies to everything else, so the game's numbers are used as they are. FX_CUES: what a skill clip spawns and says,
+// traced from its coroutine: [seconds after the clip starts, "fx" | "voice", name ("a|b" = the game's random pick),
+// metres in front of the hero for createEffect(prefab, hero position + forward)].
+const FX_CUES = { wolf: {
+  // Wolf.cs RPC_armorBreak: clip, voice armorBreak1 / 2 and armorBreak_ring at once (:22851-22976); 0.3 s, a 0.3 s dash,
+  // 0.1 s, then the slash picked by rank (rank 2 = armorBreak2, :22598-22645) at 0.7 s
+  armorBreak: [[0, "voice", "armorBreak1|armorBreak2"], [0, "fx", "armorBreak_ring"], [0.7, "fx", "armorBreak2"]],
+  // RPC_crossBreak: clip, voice crossBreak1 / 2 (:24078-24223); crossBreak_ring at 0.1 s (:23748); the dash 0.4-1.2 s;
+  // the cross 0.6 m ahead at 1.2 s (:23896)
+  crossBreak: [[0, "voice", "crossBreak1|crossBreak2"], [0.1, "fx", "crossBreak_ring"], [1.2, "fx", "crossBreak", 0.6]],
+  // RPC_grandCross: clip, voice grandCross1 / 2 and grandCross_ring (:24628-24753); the wave at the Cross Break mark
+  // (0.6 m ahead; the hero stands still here) at 0.6 s (:24451)
+  grandCross: [[0, "voice", "grandCross1|grandCross2"], [0, "fx", "grandCross_ring"], [0.6, "fx", "grandCross", 0.6]],
+} };
+let soundOn = true;
+try { soundOn = localStorage.getItem("wardrobe.sound") !== "0"; } catch (e) {}
+const Sound = {                          // Web Audio: started by the first pick (a click), as browsers require
+  ctx: null, bufs: {},
+  unlock() { try { this.ctx ||= new AudioContext(); if (this.ctx.state === "suspended") this.ctx.resume(); } catch (e) {} },
+  get(cls, n) {
+    const k = cls + "/" + n;
+    return this.bufs[k] ||= fetch(`${DATA}${cls}/sfx/${n}.mp3`).then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(n))))
+      .then(b => this.ctx.decodeAudioData(b));
+  },
+  async play(cls, n, vol = 1) {
+    if (!soundOn || !this.ctx) return;
+    try {
+      const b = await this.get(cls, n), s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+      s.buffer = b; g.gain.value = vol; s.connect(g).connect(this.ctx.destination); s.start();
+    } catch (e) {}
+  },
+};
+const FX = { live: [], data: {}, mats: {}, cues: [], t: 0 };
+const fxData = cls => FX.data[cls] ||= FX_CUES[cls] ? getJSON(`${DATA}${cls}/fx.json`).catch(() => null) : Promise.resolve(null);
+const FXBG = new URLSearchParams(location.search).get("fxbg") || "dark";   // pilot: the backdrop to compare (CSS above)
+stage.dataset.fxbg = FXBG;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const clamp01 = x => Math.min(1, Math.max(0, x));
+const toLin = c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);   // the game's colours are gamma values
+const linRGBA = c => [toLin(c[0]), toLin(c[1]), toLin(c[2]), c[3]];
+// the emitters' 5-key colour: C1..C5 at life 0 / .25 / .5 / .75 / 1 (span 4); LineEmitter's burst mode uses 2.5, so it
+// jumps at each key and never reaches C5 (LineEmitter.cs:370-408, kept as the game draws it)
+function ramp(e, u, span = 4) {
+  const i = u < .25 ? 0 : u < .5 ? 1 : u < .75 ? 2 : 3, k = clamp01(span * (u - i * .25)), a = e["Color" + (i + 1)], b = e["Color" + (i + 2)];
+  return linRGBA([0, 1, 2, 3].map(j => a[j] + (b[j] - a[j]) * k));
+}
+function fxMaterial(cls, name, d) {
+  const k = cls + "/" + name;
+  if (FX.mats[k]) return FX.mats[k];
+  // Unity 3.5's particle shaders: Additive (200) and Alpha Blended (203) = 2 x _TintColor x vertex colour x texture (the
+  // default tint 0.5 makes the factor 1); Additive (Soft) (202) = vertex colour x texture, rgb x alpha, Blend One
+  // OneMinusSrcColor (a screen: bright parts add less over bright ground). The canvas is transparent over the page's stage
+  // colour, and a browser drops colour where the canvas alpha is 0, so the additive ones write premultiplied colour with
+  // alpha = its brightest channel: over a dark stage that is the game's added light, over white the coloured part stays
+  const add = d.blend === "add" || d.blend === "addsoft", soft = d.blend === "addsoft", tint = soft ? [.5, .5, .5, .5] : d.tint || [.5, .5, .5, .5];
+  const m = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    blending: add ? THREE.CustomBlending : THREE.NormalBlending, opacity: Math.min(1, 2 * tint[3]), premultipliedAlpha: add });
+  if (add) {
+    Object.assign(m, { blendSrc: THREE.OneFactor, blendDst: soft ? THREE.OneMinusSrcColorFactor : THREE.OneFactor,
+                       blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor });
+    m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <dithering_fragment>",
+      "#include <dithering_fragment>\n\tgl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));"); };
+  }
+  m.color.setRGB(Math.min(1, 2 * tint[0]), Math.min(1, 2 * tint[1]), Math.min(1, 2 * tint[2]), THREE.SRGBColorSpace);
+  if (d.tex) {
+    const t = texLoader.load(`${DATA}fx/tex/${d.tex}.webp`);
+    t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.fromArray(d.scale); t.offset.fromArray(d.offset);
+    m.map = t;
+  }
+  return (FX.mats[k] = m);
+}
+function fxMesh(parent, mat) { const m = new THREE.Mesh(new THREE.BufferGeometry(), mat); m.frustumCulled = false; parent.add(m); return m; }
+function setMesh(m, pos, col, uv, idx) {
+  const g = m.geometry;
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 4));
+  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+}
+// Unity-space vector helpers (the effect's numbers stay in Unity's coordinates)
+const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+const vA = a => V(a[0], a[1], a[2]);
+const nz = v => (v.lengthSq() < 1e-10 ? V() : v.clone().normalize());         // Unity's normalized: zero below 1e-5
+
+class Fx {
+  constructor(cls, name, d, dist = 0) {
+    const def = d.effects[name];
+    this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false;
+    this.group = new THREE.Group();
+    C.root.getWorldPosition(this.group.position); C.root.getWorldQuaternion(this.group.quaternion);
+    this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
+    this.nodes = def.nodes.map(() => new THREE.Object3D());
+    def.nodes.forEach((n, i) => {
+      const o = this.nodes[i];
+      o.name = n.name;
+      if (n.parent < 0) { o.position.set(0, 0, dist); o.scale.fromArray(n.scale || [1, 1, 1]); this.mirror.add(o); }   // Instantiate(prefab, pos, rot)
+      else { o.position.fromArray(n.pos); o.quaternion.fromArray(n.rot); o.scale.fromArray(n.scale); this.nodes[n.parent].add(o); }
+      const mat = n.mats?.[0] ? fxMaterial(cls, n.mats[0], d.materials[n.mats[0]]) : null;
+      const em = n.comps.find(c => c.type === "EllipsoidParticleEmitter");
+      if (em) this.emitters.push(legacyParticles(this, o, em, n.comps.find(c => c.type === "ParticleAnimator"), n.comps.find(c => c.type === "ParticleRenderer"), mat));
+      for (const c of n.comps) {
+        if (c.type === "EffectControl" && n.parent < 0) this.ec = c;
+        else if (c.type === "RingEmitter" && mat) this.emitters.push(ringEmitter(this, o, c, mat));
+        else if (c.type === "ImageEmitter" && mat) this.emitters.push(imageEmitter(this, o, c, mat));
+        else if (c.type === "LineEmitter" && mat) this.emitters.push(lineEmitter(this, o, c, mat));
+        else if (c.type === "AudioSource" && c.playOnAwake) Sound.play(cls, c.clip, c.volume);
+      }
+    });
+    this.root = this.nodes[0];
+    if (this.ec && (this.ec.velocity || []).some(x => x)) this.vel = vA(this.ec.velocity);   // world = spawn frame here
+    scene.add(this.group);
+    this.group.updateMatrixWorld(true);
+  }
+  attached(o) { for (; o; o = o.parent) if (o === this.mirror) return true; return false; }
+  // a node's matrix in Unity's world (the mirror group's space) and its rotation (no scale), for TransformPoint and
+  // InverseTransformDirection
+  uMatrix(o) { return this.mirrorInv.clone().multiply(o.matrixWorld); }
+  uQuat(o) { const q = new THREE.Quaternion(); for (; o && o !== this.mirror; o = o.parent) q.premultiply(o.quaternion); return q; }
+  // a world (three.js) direction in Unity's world space
+  uDir(v) { return v.clone().transformDirection(this.mirrorInv); }
+  update(dt) {
+    this.age += dt;
+    const ec = this.ec;
+    if (this.vel) this.root.position.addScaledVector(this.vel, dt);
+    if (ec) {
+      if (this.age >= ec.life + ec.afterLife) return this.dispose();
+      // live phase: the hero never moves here, so following is a no-op; after-life: legacy emitters and ImageEmitters stop
+      // emitting (EffectControl.cs:421-512); RingEmitters run on
+      if (this.age >= ec.life && !this.stopped) { this.stopped = true; for (const e of this.emitters) e.stop?.(); }
+    }
+    this.group.updateMatrixWorld(true);
+    this.mirrorInv = this.mirror.matrixWorld.clone().invert();
+    const cam = { right: this.uDir(V(1, 0, 0).applyQuaternion(camera.quaternion)), up: this.uDir(V(0, 1, 0).applyQuaternion(camera.quaternion)),
+                  fwd: this.uDir(V(0, 0, -1).applyQuaternion(camera.quaternion)) };
+    for (const e of this.emitters) {
+      if (!this.attached(e.node)) continue;
+      if (e.update(dt, cam) === "destroy") {           // Destroy(gameObject): the node and everything under it
+        if (e.node === this.root) return this.dispose();
+        e.node.parent?.remove(e.node);
+      }
+    }
+    if (!this.ec && !this.emitters.some(e => this.attached(e.node))) this.dispose();
+  }
+  dispose() {
+    this.alive = false; scene.remove(this.group);
+    this.group.traverse(o => o.geometry?.dispose());
+  }
+}
+
+// RingEmitter.cs (spec 2026-11-09): rings in the node's XZ plane, every one made at once and shown from Delay + k x
+// EmissionPeriod for Life; radius / width / height / colour linear over life; velocity = the whole drift over life;
+// UV scrolls uvRotation turns a second; x / z also times the node's own scale (RE:499, :504)
+function ringEmitter(fx, node, e, mat) {
+  const m = fxMesh(node, mat); let t = 0, parts = null;
+  return { node, update(dt) {
+    t += dt;
+    if (t >= e.Life + e.Delay + e.Emission * e.EmissionPeriod) {
+      if (!e.repeatForever) return "destroy";
+      t = 0; parts = null; setMesh(m, [], [], [], []);
+    }
+    if (t < e.Delay) return;
+    const T = Math.max(3, e.ringTri);
+    parts ||= Array.from({ length: Math.ceil(e.Emission) }, (_, k) => ({ birth: k * e.EmissionPeriod,
+      v: [0, 1, 2].map(i => e.localVelocity[i] + rnd(-e.rndVelocity[i], e.rndVelocity[i])), rR: rnd(0, e.rndRadius), rH: rnd(0, e.rndHeight) }));
+    const pos = [], col = [], uv = [], idx = [], sx = node.scale.x, sz = node.scale.z, time = performance.now() / 1000;
+    let s = 0;
+    for (const p of parts) {
+      const age = t - e.Delay - p.birth;
+      if (!(age > 0 && age < e.Life)) continue;
+      const u = clamp01(age / e.Life), L = (a, b) => a + (b - a) * u;
+      const ri = L(e.startRadius + p.rR, e.endRadius + p.rR), ro = L(e.startRadius + e.startWidth + p.rR, e.endRadius + e.endWidth + p.rR);
+      const h = L(e.startHeight + p.rH, e.endHeight + p.rH), o = p.v.map(x => x * u), c = ramp(e, u), vo = pos.length / 3;
+      for (let jj = 0; jj <= T; jj++) {
+        const j = s * (T + 1) + jj, th = 2 * Math.PI * j / T, ax = sx * Math.sin(th), az = sz * Math.cos(th);
+        pos.push(ri * ax + o[0], o[1], ri * az + o[2], ro * ax + o[0], h + o[1], ro * az + o[2]);
+        const uu = j * e.uvTile / T + e.uvTile * e.uvRotation * time;
+        uv.push(uu, 0, uu, 1); col.push(...c, ...c);
+      }
+      for (let k = 0; k < T; k++) idx.push(vo + 2 * k, vo + 2 * k + 1, vo + 2 * k + 2, vo + 2 * k + 2, vo + 2 * k + 1, vo + 2 * k + 3);
+      s++;
+    }
+    setMesh(m, pos, col, uv, idx);
+  } };
+}
+
+// ImageEmitter.cs (spec 2026-11-09): Emission quads made at once, quad i shown from Delay + i x EmissionTime / Emission
+// for Life (all of them when EmissionTime is 0); rndLife = a hold at the start; size / colour linear over life; angles
+// in RADIANS (as the game); the image transposed on the quad (u along the height, as the game's UVs)
+function imageEmitter(fx, node, e, mat) {
+  const m = fxMesh(node, mat); let T = 0, parts = null;
+  const E0 = Math.max(1, e.Emission), box = () => V(rnd(-e.startPosition[0], e.startPosition[0]), rnd(-e.startPosition[1], e.startPosition[1]), rnd(-e.startPosition[2], e.startPosition[2]));
+  return { node, stop() { e.repeatForever = false; }, update(dt, cam) {
+    T += dt;
+    const D = e.Delay, L = e.Life, ET = e.EmissionTime;
+    if (T >= L + D + ET) {
+      if (!e.repeatForever) return "destroy";
+      T = 0; parts = null; setMesh(m, [], [], [], []);
+    }
+    if (T < D) return;
+    const E = ET === 0 ? Math.min(E0, 99) : E0 / ET > 999 ? Math.floor(999 * ET) : E0;
+    parts ||= Array.from({ length: E }, (_, i) => { const pt = e.useWorldSpace ? null : box();
+      return { life: i * (ET / E), point: pt, vel: pt ? nz(pt).multiplyScalar(e.localVelocity + rnd(0, e.rndVelocity)) : V(),
+               rs: rnd(0, e.rndScale), rr: rnd(0, e.rndRotation) + e.startAngle + e.spreadAngle * i, rl: rnd(0, e.rndLife) }; });
+    const qi = fx.uQuat(node).invert(), toL = v => v.clone().applyQuaternion(qi);   // InverseTransformDirection
+    const um = fx.uMatrix(node), umInv = um.clone().invert();
+    const pos = [], col = [], uv = [], idx = [];
+    let n = 0;
+    for (const p of parts) {
+      const a = T - D;
+      if (ET !== 0 && !(p.life <= a && a < p.life + L)) continue;
+      const tt = L - p.rl > 0 ? clamp01((a - p.life - p.rl) / (L - p.rl)) : 0;
+      let c;
+      if (!e.useWorldSpace) c = p.point.clone();
+      else if (!p.point) { const o = box(); p.point = o.clone().applyMatrix4(um); c = o; }  // born where the emitter is, then stays
+      else c = p.point.clone().applyMatrix4(umInv);
+      const b = p.vel.clone().add(vA(e.worldVelocity)).multiplyScalar(tt), s = 1 + p.rs, f = p.rr + e.Rotation * tt;
+      const w = .5 * (e.startWidth + (e.endWidth - e.startWidth) * tt) * s, h = .5 * (e.startHeight + (e.endHeight - e.startHeight) * tt) * s;
+      const sf = Math.sin(f), cf = Math.cos(f), comb = (A, B, x, y) => A.clone().multiplyScalar(x).addScaledVector(B, y);
+      let H, W;
+      const mode = e.ImageEmitterMode;
+      if (mode === 1) { H = toL(comb(V(0, 0, 1), V(1, 0, 0), cf, -sf)); W = toL(comb(V(0, 0, 1), V(1, 0, 0), sf, cf)); }        // Horizontal: on the ground
+      else if (mode === 2) { H = toL(comb(V(0, 1, 0), V(1, 0, 0), cf, -sf)); W = toL(comb(cam.up, cam.right, sf, cf)); }        // Vertical
+      else if (mode === 3) { H = comb(V(0, 1, 0), V(1, 0, 0), cf, -sf); W = comb(V(0, 1, 0), V(1, 0, 0), sf, cf); }             // LocalRotation
+      else { H = toL(comb(cam.up, cam.right, cf, -sf)); W = toL(comb(cam.up, cam.right, sf, cf)); }                              // FaceCamera
+      H.multiplyScalar(h); W.multiplyScalar(w);
+      const P = (sh, sw) => c.clone().addScaledVector(H, sh).addScaledVector(W, sw).add(b);
+      for (const v of [P(-1, -1), P(-1, 1), P(1, -1), P(1, 1)]) pos.push(v.x, v.y, v.z);
+      uv.push(0, 0, 0, 1, 1, 0, 1, 1);
+      const k = ramp(e, tt); col.push(...k, ...k, ...k, ...k);
+      idx.push(4 * n, 4 * n + 1, 4 * n + 2, 4 * n + 2, 4 * n + 1, 4 * n + 3);
+      n++;
+    }
+    setMesh(m, pos, col, uv, idx);
+  } };
+}
+
+// LineEmitter.cs (spec 2026-11-09): Emission flat strips running out from the node along each one's random direction
+// (radius = how far out, height = the length); all at once (EmissionTime 0, colour span 2.5) or staggered (span 4, and
+// the game drops the last visible strip, LE:1318); localRotation spins the node 115 x value degrees a second
+function lineEmitter(fx, node, e, mat) {
+  const m = fxMesh(node, mat); let t = 0, parts = null;
+  return { node, update(dt, cam) {
+    t += dt;
+    if (t >= e.Life + e.Delay + e.EmissionTime) {
+      if (!e.repeatForever) return "destroy";
+      t = 0; parts = null;
+    }
+    if (t < e.Delay) return;
+    const ET = Math.max(0, e.EmissionTime);
+    parts ||= Array.from({ length: Math.ceil(e.Emission) }, () => ({ off: rnd(0, ET),
+      v: V(...[0, 1, 2].map(i => e.localVelocity[i] + rnd(-e.rndVelocity[i], e.rndVelocity[i]))), rR: rnd(0, e.rndRadius), rH: rnd(0, e.rndHeight), rW: rnd(0, e.rndWidth) }));
+    if (e.localRotation.some(x => x)) node.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(
+      ...e.localRotation.map(x => THREE.MathUtils.degToRad(115 * x * dt)), "YXZ")));                 // Rotate(), Space.Self
+    const qi = fx.uQuat(node).invert(), wUp = V(0, 1, 0).applyQuaternion(fx.uQuat(node)), inv = v => v.clone().applyQuaternion(qi);
+    const burst = ET === 0;
+    const side = (a, v) => {
+      const md = e.lineEmitterMode;
+      if (md === 1) return wUp.clone();
+      if (md === 2) return nz(V().crossVectors(wUp, V(v.x, 0, v.z)));
+      if (md === 3) { const s = nz(V().crossVectors(cam.fwd, v)); return burst ? inv(s) : s; }
+      if (md === 4) return inv(wUp);
+      return nz(V().crossVectors(burst ? inv(wUp) : wUp, v));
+    };
+    const pos = [], col = [], uv = [], idx = [];
+    let vis = parts;
+    if (!burst) { vis = parts.filter(p => t - e.Delay > p.off && t - e.Delay - p.off < e.Life); vis = vis.slice(0, Math.max(0, vis.length - 1)); }
+    vis.forEach((p, k) => {
+      const f = burst ? (t !== 0 ? clamp01((t - e.Delay) / e.Life) : 0) : clamp01((t - e.Delay - p.off) / e.Life);
+      const R = e.startRadius + (e.endRadius - e.startRadius) * f, hw = .5 * (e.startWidth + (e.endWidth - e.startWidth) * f) + p.rW;
+      const H = e.startHeight + (e.endHeight - e.startHeight) * f, a = nz(p.v), s = side(a, p.v);
+      const r0 = R + p.rR, r1 = R + p.rR + H + p.rH, one = e.lineEmitterMode === 4;
+      const pts = [a.clone().multiplyScalar(r0).addScaledVector(s, one ? 0 : -hw), a.clone().multiplyScalar(r0).addScaledVector(s, hw),
+                   a.clone().multiplyScalar(r1).addScaledVector(s, one ? 0 : -hw), a.clone().multiplyScalar(r1).addScaledVector(s, hw)];
+      for (const v of pts) pos.push(v.x, v.y, v.z);
+      uv.push(0, 0, 0, 1, 1, 0, 1, 1);
+      const c = ramp(e, f, burst ? 2.5 : 4); col.push(...c, ...c, ...c, ...c);
+      idx.push(4 * k, 4 * k + 1, 4 * k + 2, 4 * k + 2, 4 * k + 1, 4 * k + 3);
+    });
+    setMesh(m, pos, col, uv, idx);
+  } };
+}
+
+// Unity 3.5's legacy particles (EllipsoidParticleEmitter + ParticleAnimator + ParticleRenderer; spec 2026-11-09 from the
+// 3.5 manual and scripting pages and Unity's legacy-to-Shuriken converter): spawned inside the ellipsoid (semi-axes, shell
+// from m_MinEmitterRange), velocity = world + local (emitter's rotation) + random per axis; lifetime min..maxEnergy;
+// colour through colorAnimation[0..4] at life 0 / .25 / .5 / .75 / 1; size x (1 + sizeGrow) a second; velocity x damping
+// a second; a one-shot bursts min..maxEmission and again once they have all died, unless it autodestructs (gone when all
+// are dead). Quads: 0 / 2 billboard, 3 stretched along the motion (lengthScale x size + velocityScale x speed, negative
+// = forward), 4 flat on the ground, 5 upright facing the camera
+function legacyParticles(fx, node, em, an, rd, mat) {
+  const world = !!em["Simulate in Worldspace?"], m = fxMesh(world ? fx.mirror : node, mat);
+  const parts = []; let emit = !!em.m_Emit, emitted = false, acc = 0;
+  const key = x => { const v = x.rgba >>> 0; return linRGBA([(v & 255) / 255, ((v >>> 8) & 255) / 255, ((v >>> 16) & 255) / 255, (v >>> 24) / 255]); };
+  const keys = an?.["Does Animate Color?"] ? [0, 1, 2, 3, 4].map(i => key(an[`colorAnimation[${i}]`])) : null;
+  const vv = o => V(o.x, o.y, o.z), rv = o => V(rnd(-o.x, o.x), rnd(-o.y, o.y), rnd(-o.z, o.z));
+  const uv0 = rd?.["UV Animation"] || { "x Tile": 1, "y Tile": 1, cycles: 1 };
+  const spawn = () => {
+    let d; do { d = V(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)); } while (d.lengthSq() > 1 || d.lengthSq() < 1e-6);
+    const p = d.normalize().multiplyScalar(em.m_MinEmitterRange + (1 - em.m_MinEmitterRange) * Math.random()).multiply(vv(em.m_Ellipsoid));
+    const q = fx.uQuat(node), vel = vv(em.localVelocity).applyQuaternion(q).add(vv(em.worldVelocity)).add(rv(em.rndVelocity));
+    const e = rnd(em.minEnergy, em.maxEnergy);
+    parts.push({ p: world ? p.applyMatrix4(fx.uMatrix(node)) : p, v: world ? vel : vel.applyQuaternion(q.clone().invert()), age: 0, energy: e,
+                 size: rnd(em.minSize, em.maxSize), rot: em.rndRotation ? rnd(0, 2 * Math.PI) : 0,
+                 spin: THREE.MathUtils.degToRad(em.angularVelocity + rnd(-em.rndAngularVelocity, em.rndAngularVelocity)) });
+    emitted = true;
+  };
+  return { node, stop() { emit = false; }, update(dt, cam) {
+    for (let i = parts.length - 1; i >= 0; i--) if ((parts[i].age += dt) >= parts[i].energy) parts.splice(i, 1);
+    if (an?.autodestruct && emitted && !parts.length) return "destroy";
+    if (emit) {
+      if (!em.m_OneShot) { acc += rnd(em.minEmission, em.maxEmission) * dt; for (; acc >= 1; acc--) spawn(); }
+      else if (!parts.length) for (let n = Math.floor(rnd(em.minEmission, em.maxEmission + 1)); n > 0; n--) spawn();
+    }
+    const damp = an ? Math.pow(an.damping, dt) : 1, grow = an ? Math.pow(Math.max(0, 1 + an.sizeGrow), dt) : 1;
+    const force = an ? vv(an.force) : V();
+    for (const p of parts) {
+      if (an) p.v.addScaledVector(force.clone().add(rv(an.rndForce)), dt).multiplyScalar(damp);
+      p.p.addScaledVector(p.v, dt); p.size *= grow; p.rot += p.spin * dt;
+    }
+    const mode = rd ? rd.m_StretchParticles : 0, qi = world ? null : fx.uQuat(node).invert(), toL = v => (qi ? v.clone().applyQuaternion(qi) : v.clone());
+    const N = Math.max(1, uv0["x Tile"] * uv0["y Tile"]);
+    const pos = [], col = [], uv = [], idx = [];
+    parts.forEach((p, k) => {
+      const u = p.age / p.energy, i = Math.min(3, Math.floor(u * 4)), f = u * 4 - i;
+      const c = keys ? keys[i].map((x, j) => x + (keys[i + 1][j] - x) * f) : [1, 1, 1, 1];
+      const r = p.size / 2;
+      let corners;
+      if (mode === 3) {                                // stretched: from the particle back along -D (forward when negative)
+        const vl = p.v.length(), D = nz(p.v).multiplyScalar(p.size * rd.m_LengthScale).addScaledVector(p.v, rd.m_VelocityScale);
+        const side = nz(V().crossVectors(D, toL(cam.fwd))).multiplyScalar(r), tail = p.p.clone().sub(D);
+        corners = vl < 1e-6 ? null : [p.p.clone().sub(side), p.p.clone().add(side), tail.clone().sub(side), tail.add(side)];
+        if (corners) uv.push(0, 0, 0, 1, 1, 0, 1, 1);
+      } else {
+        let ax, ay;
+        if (mode === 4) { ax = toL(V(1, 0, 0)); ay = toL(V(0, 0, 1)); }
+        else if (mode === 5) { ax = toL(nz(V(cam.right.x, 0, cam.right.z))); ay = toL(V(0, 1, 0)); }
+        else { ax = toL(cam.right); ay = toL(cam.up); }
+        const cs = Math.cos(p.rot), sn = Math.sin(p.rot);
+        const X = ax.clone().multiplyScalar(cs).addScaledVector(ay, sn).multiplyScalar(r), Y = ay.clone().multiplyScalar(cs).addScaledVector(ax, -sn).multiplyScalar(r);
+        corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => p.p.clone().addScaledVector(X, sx).addScaledVector(Y, sy));
+        const fr = uv0.cycles > 0 ? Math.max(0, Math.min(Math.floor(u * uv0.cycles * N), Math.ceil(uv0.cycles * N) - 1)) % N : 0;   // cycles 0 = the first tile
+        const tw = 1 / uv0["x Tile"], th = 1 / uv0["y Tile"];
+        const ux = (fr % uv0["x Tile"]) * tw, uy = 1 - (Math.floor(fr / uv0["x Tile"]) + 1) * th;      // tiles left to right, top row first
+        uv.push(ux, uy, ux + tw, uy, ux, uy + th, ux + tw, uy + th);
+      }
+      if (!corners) return;
+      const b = pos.length / 3;
+      for (const v of corners) pos.push(v.x, v.y, v.z);
+      col.push(...c, ...c, ...c, ...c);
+      idx.push(b, b + 1, b + 2, b + 2, b + 1, b + 3);
+    });
+    setMesh(m, pos, col, uv, idx);
+  } };
+}
+
+// a clip's cues start with it (startStep) and run on the render clock; a new pick clears what was left
+function fxStart(clip) {
+  FX.t = 0;
+  FX.cues = (FX_CUES[C?.cls]?.[clip] || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0 }));
+  for (const c of FX.cues) if (c.kind === "voice" && Sound.ctx) c.name.split("|").forEach(n => Sound.get(C.cls, n).catch(() => {}));
+}
+function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
+// the เสียงท่าทาง button: on by default, remembered in this browser; the first click or key press starts the audio
+const sndBtn = $("sound"), syncSound = () => sndBtn.setAttribute("aria-pressed", soundOn);
+sndBtn.onclick = () => {
+  soundOn = !soundOn; syncSound(); toast(soundOn ? "เปิดเสียงท่าทาง" : "ปิดเสียงท่าทาง");
+  try { localStorage.setItem("wardrobe.sound", soundOn ? "1" : "0"); } catch (e) {}
+};
+syncSound();
+for (const ev of ["pointerdown", "keydown"]) addEventListener(ev, () => Sound.unlock(), { capture: true });
+function fxTick(dt) {
+  if (!C) return;
+  FX.t += dt;
+  const cls = C.cls;
+  for (const c of FX.cues) {
+    if (c.done || c.at > FX.t) continue;
+    c.done = true;
+    if (c.kind === "voice") { const ns = c.name.split("|"); Sound.play(cls, ns[Math.floor(Math.random() * ns.length)]); }
+    else fxData(cls).then(d => { if (d?.effects[c.name] && C?.cls === cls) FX.live.push(new Fx(cls, c.name, d, c.dist)); }).catch(console.error);
+  }
+  for (const f of FX.live) f.update(dt);
+  FX.live = FX.live.filter(f => f.alive);
+  stage.classList.toggle("fx-on", FXBG !== "white" && (FX.cues.length > 0 || FX.live.length > 0));   // the whole move, no flicker between loops
+}
+
 // ---------- go ----------
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
   if (C) { C.mixer.update(dt); seqTick(dt); for (const o of Object.values(C.props)) o.userData.mixer?.update(dt); }   // props flap too
+  fxTick(dt);
   runTweens(dt);
   Showcase.update(dt);
   // the picker's view offset glides in and out (F1)
@@ -2607,7 +3010,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound }),   // scripted checks only
 };
 </script>
 </body>

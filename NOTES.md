@@ -409,3 +409,62 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   worn + pressed, undo -> standard, plain Worm -> no edition, Worm R again; screenshot), `wardrobe_moves_check.py`
   (Quick Fire with Added Fire: quickFire2 0.4 -> quickFire3 2.1 s). One run logged a transient
   `ERR_CONNECTION_REFUSED` that two reruns didn't repeat; the moves check now prints a console error's URL.
+- **2026-11-09, skill sounds online: feasibility** (user: "analyze whether it is feasible for the cloudflare server to
+  hold all skills sfx to play along character animations"; analysis only, nothing built). Hosting: easy. The BB rip has
+  1,627 hero WAVs (+36 that Python's `wave` can't read, likely not plain PCM; ffmpeg should) under
+  `Resources/gameassets/characters/heroes/<cls>/{sounds,voices}`: 32 min in all, mostly mono 22 kHz, median 1.0 s,
+  longest Sheep lullaby 17.8 s. At 48 kbps mono AAC that is 1,920 s × 6 KB/s ≈ 11.5 MB; the files would take the
+  online copy from ~6,900 to ~8,500 of Cloudflare's 20,000. Where each sound plays is readable: the skill coroutine
+  loads it by path and plays it (`Resources.Load(".../Wolf/Voices/bladeFang1")` then `audio.PlayOneShot`,
+  `Wolf.cs:26536-26548`; random picks like armorBreak1 / 2, `:22904-22947`; Blood Fang swaps bloodFang1 / 2,
+  `:26451-26512`), and the effects it spawns carry their own play-on-awake sound (`createEffect(armorBreak_ring)`,
+  `:22966-22976`; about 550 hero effect prefabs have an AudioSource, clip by GUID via the WAVs' `.meta`). Animation
+  events are only footsteps / wing flaps (155 of 2,933 clips: playRunStepEvent, playWalkStepEvent ...). The work is the
+  cue timing in the flattened coroutines (done by hand for Blade Fang's clips), not the hosting.
+- **2026-11-09, skill VFX too: feasibility** (user: "not just sfx, the vfx too"; analysis only). BB is Unity 3.5.7f6.
+  1,668 effect prefabs (hero ones 60-96 per class). What they are made of (prefabs containing): the game's own scripts
+  `EffectControl` 1,339 and mesh emitters `RingEmitter` 717, `ImageEmitter` 490, `LineEmitter` 417, `VortexEmitter` 88,
+  `EmblemEmitter` 33, `BoltEmitter` 30, `TrailEmitter` 25 (+ `ProjectileControl` 67, `AlphaTimer` 62, `UVScroll` 6;
+  128 scripts in all, most one-offs); Unity's legacy particles (Ellipsoid emitter + animator + renderer) 552; Shuriken
+  `ParticleSystem` only 46; legacy `Animation` 272; `SkinnedMeshRenderer` 170. 663 materials, ~92% on Unity's built-in
+  particle shaders (fileID 200-207 + 7: blend modes), a few custom (Additive / Alpha / MultiplyOffset, Opaque1/2,
+  Phoenix); 608 textures, 23.6 MB as PNG. **Trap: the rip has no emitter settings** (every script's MonoBehaviour is
+  just `m_Script`; the video repo's skits rebuilt effects from textures for that reason). They are in BB's
+  `12TailsOnline_Data/resources.assets` (type tree on, but MonoBehaviour's tree is only the 24-36-byte header; the
+  fields follow as raw bytes in declaration order): 1,284 objects of 212 bytes = 24 + RingEmitter's 188 (13 floats,
+  2 Vector3, 5 Color, Vector3, float, int, float, bool padded to 4, int), decoded with UnityPy's `get_raw_data()` +
+  `struct` (`<13f6f20f3ffifbxxxi`): Life 0.3, Emission 2 / 0.1 s, radius 0 -> 2, width 0.3 -> 0, ringTri 24. Legacy
+  particle settings did survive in the rip YAML (`EllipsoidParticleEmitter` minSize / minEnergy / minEmission /
+  worldVelocity, `ParticleAnimator` colorAnimation[0-4], sizeGrow). Effects are spawned by the same coroutines
+  (`createEffect(prefab, pos, rot)`), many at the target, which the wardrobe has none of.
+- **2026-11-09, skill effects + sounds pilot: Wolf Armor Break, Cross Break, Grand Cross** (user: "let's try wolf cross
+  break, armor break, and grand cross"). Local only so far (the publish doesn't copy the effect data).
+  - Data: `pipeline/wardrobe_fx.py wolf --fx ... --voices ...` -> `data/wolf/fx.json` (effects: node tree, transforms in
+    Unity space, components; materials), `data/fx/tex/*.webp`, `data/wolf/sfx/*.mp3` (64 kbps mono). It reads BB's own
+    files, not the rip: `mainData`'s ResourceManager (16,645 Resources paths) -> the prefab in `resources.assets`;
+    materials, textures and AudioClips sit in `sharedassets1.assets` (a PPtr's fileID is read against the externals of
+    the file holding the reference; each file numbers its own). MonoBehaviour fields decoded from raw bytes with
+    `LAYOUTS` (EffectControl 32, RingEmitter 188, ImageEmitter 188, LineEmitter 180; every decode must use all bytes),
+    script names from the MonoScripts in `sharedassets0.assets`. Unity 3.5 traps: `m_Component` = (classID, PPtr) pairs;
+    material property keys are `{name: ...}`. Built-in shaders by id = the Particle shader files alphabetically from 200:
+    200 Additive, 202 Additive (Soft), 203 Alpha Blended (borne out by 1,200 materials' tints and texture alpha).
+  - Page: FX section (`FX_CUES`, `Fx`, `ringEmitter` / `imageEmitter` / `lineEmitter` / `legacyParticles`, `Sound`):
+    each effect is built in Unity's space inside a group scaled (-1, 1, 1). Behaviour from four read-only agent specs of
+    the decompiled scripts (cited in the code comments) and Unity 3.5's legacy particle docs: emitters make all their
+    elements at once and stagger them; colour through 5 keys (LineEmitter's burst mode uses 2.5, a game quirk kept);
+    ImageEmitter angles are radians; ParticleRenderMode 0 / 2 billboard, 3 stretched, 4 horizontal, 5 vertical;
+    sizeGrow = x (1 + g) a second, damping = x d a second; EffectControl stops legacy emitters and ImageEmitters after
+    `life`, destroys at `life + afterLife`. Cues traced from the coroutines (Armor Break: voice + ring at 0, slash by
+    rank = armorBreak2 at 0.7 s; Cross Break: voice at 0, ring 0.1 s, cross 0.6 m ahead at 1.2 s; Grand Cross: voice +
+    ring at 0, wave at the mark 0.6 m ahead at 0.6 s). Sound: Web Audio, unlocked by the first click / key, เสียงท่าทาง
+    toolbar button (on by default, localStorage).
+  - **Trap, additive light on a transparent canvas:** the stage is a transparent canvas over a white CSS background, and
+    a browser drops colour where the canvas alpha is 0, so plain additive effects showed only over the hero (and written
+    alpha made grey squares). The additive materials now write premultiplied colour with alpha = the brightest channel
+    (`onBeforeCompile`): over dark that is the game's added light, over white the coloured parts stay.
+  - Backdrop, the user's pick pending: `?fxbg=dark` (default: the stage darkens while a move with effects plays),
+    `spot` (a dark glow behind the hero), `white`. `pipeline/wardrobe_fx_check.py` shoots all three into
+    `<out>/compare.html`, samples the live effects, and fails on page / console errors or failed requests.
+  - Open: Cross Break's stretched slashes come out huge at the wardrobe's close camera (lengthScale -1 / velocityScale
+    -1 read as size + speed, up to ~8 m; the anchor and sign are the spec's open points); sizeGrow's formula; no game
+    footage compared yet.
