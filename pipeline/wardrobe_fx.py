@@ -228,9 +228,12 @@ def rip_wav(cls, name, folder=None):
         p = os.path.join(RIP, *sub.split("/"), name + ".wav")
         if os.path.exists(p):
             return p
-    for root, _, fs in os.walk(RIP):                     # an effect's sound kept elsewhere
-        if name + ".wav" in fs:
-            return os.path.join(root, name + ".wav")
+    # an effect's sound kept elsewhere: anywhere under gameassets, then anywhere under Resources (Blade Fang's ring plays
+    # Resources/sound/fx/aura1.wav, 2026-11-09)
+    for top in (RIP, os.path.dirname(RIP)):
+        for root, _, fs in os.walk(top):
+            if name + ".wav" in fs:
+                return os.path.join(root, name + ".wav")
     return None
 
 

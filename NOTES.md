@@ -654,3 +654,24 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (data unchanged, `data-a6cc4a90e6`), `wardrobe_dist_check.py` passed, deployed from a fresh empty folder (the last
   deploy's folder holds wrangler's `.wrangler` cache now): version `c1753290-953d-4a5c-a23d-f7b8968b9d9c`, Space / R and
   the hint live. Same deploy carries Space / R (555e6b0) and drops the stale `.pm-lock` rule.
+- **2026-11-09, the Wolf's effects and sounds, the parallel way** (user: "let's start doing a single class, Wolf first";
+  then "send more agents to research Wolf, each with is own reports only ... delegate only one agent capable of editting
+  the file", "don't use playwright test, I will help you test"). Six read-only researchers wrote
+  `plans/fx_wolf/{attacks,counters,misc,cast,tto,parts}.md`; the user's decisions are `plans/fx_wolf/decisions.md`
+  (passives on, no Cast tile, instantCast one skill per play at even chance, Double Art rolled at 24 %, enemy hits out,
+  a cast needing a target 10 m ahead). Groundwork (commit 439c7b1): the cue options / sound kind / skills map / rolls
+  (comment above `cueOf` in index.html), voices as `sfx/v_<name>.mp3` apart from sounds (Wolf voices and sounds share
+  names: crusader1, artCancel1, nAttack1-3, cAttack1-2, bladeFang1-2 are different recordings), `wardrobe_fx.py --probe`
+  (read only), `wardrobe_fx_check.py --files-only`. Step times fixed after checking each claim in Wolf.cs by hand:
+  nAttack2 0.64 (stage 3 from 1.44 s), cAttack1 0.8 + cAttack2 5.1 (full-charge ring 5.0 s in), bladeFang1 0.7 (a 0.5 s
+  wind-up, the first hit at 0.7), bladeSong3 2.9 (bladeSong4 right after the 11th slash when skill 354 is learned),
+  mirrorCounter1 1.0. The Bible lacks the Blade Fang wind-up and the Blade Song 2.9: offered to the user.
+  - The one editor wrote `wardrobe/fx_cues/wolf.json`: 31 clips; Double Art (doubleArt + sublimeArt_ring, one roll) on
+    the 24 skills whose code calls getDoubleArt (not the normal attacks, Charge Attack, Sky Slasher); the TTO skills as
+    sounds only (their effects need a TTO reader and GroundHugEmitter / ArcRibbonEmitter / Shuriken). Build: 33 effects,
+    88 sounds (`rip_wav` now also searches Resources\, for `sound/fx/aura1.wav`, the Blade Fang ring's); files check:
+    no problems. Not tested in a browser (the user tests).
+  - Known limits: a cue at exactly a step's end never fires (the step switches first), so the 11th Blade Song slash is
+    bladeSong4's cue at 0; Twin Resonance's fire sound plays once (loops in the game); effects that outlive their clip
+    restart with each replay; TTO sounds from other classes' folders (shatteringDream_hit, iceBreak) can't be cued;
+    luck's bonus to Double Art ignored; old pilot voice files without `v_` are left in `data/wolf/sfx`.

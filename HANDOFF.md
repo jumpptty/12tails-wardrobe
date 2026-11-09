@@ -10,6 +10,12 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 
+## Office PC
+
+- **The Wolf's effects data** (2026-11-09, home): `wardrobe\data\wolfx.json`, `sfx\` and `datax	ex\` were rebuilt
+  for 31 Wolf skills (not in git). Carry a fresh data tar from home (`pipeline	ransfer_to_drive.ps1`), or rebuild at the
+  office: `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf`.
+
 ## Video repo (either PC)
 
 - The rebuilt `wardrobe_dist` (2026-11-09, the piece menu) breaks the trailer script: `trailer_features.py` clicks

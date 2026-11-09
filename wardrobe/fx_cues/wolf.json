@@ -1,34 +1,361 @@
 {
-  "armorBreak": {
-    "why": "Wolf.cs RPC_armorBreak: clip, voice armorBreak1 / 2 and armorBreak_ring at once (:22851-22976); 0.3 s, a 0.3 s dash, 0.1 s, then the slash picked by rank (rank 2 = armorBreak2, :22598-22645) at 0.7 s",
+  "nAttack1": {
+    "why": "Wolf.cs RPC_nAttack1: clip and voice nAttack1 at 0 (:15444, :15491-15536); 0.15 s, the lunge's dust_forward at the hero (:14985, the Wolf prefab's dust_forward field = Resources wolf/effects/dust_forward); 0.35 s, the swing Sounds/nAttack1 at half volume (PlayOneShot(clip, 0.5f), :15018-15030); hit at 0.65 s, standby 0.8 s (:15372); no Double Art roll in the normal attacks; left out: nAttack_hit and Sounds/nAttack_hit at the target (:8194-8213); darkEdge1 1 m ahead 1 m up at 0.65 s (:15091-15103) only under the Dark Edge buff (another skill's buff, not a passive)",
     "cues": [
+    [0, "voice", "nAttack1"],
+    [0.15, "fx", "dust_forward"],
+    [0.35, "sound", "nAttack1", {"vol": 0.5}]
+    ]
+  },
+  "nAttack2": {
+    "why": "Wolf.cs RPC_nAttack2 (its clip 0.8 s after stage 1, :16267): voice nAttack2 at 0 (:15802, :16256); 0.16 s, the swing Sounds/nAttack2 at half volume (:15857-15869); hit at 0.48 s, standby 0.64 s (:16188); left out: nAttack_hit at the target; darkEdge1 at 0.48 s (:15942) only under Dark Edge",
+    "cues": [
+    [0, "voice", "nAttack2"],
+    [0.16, "sound", "nAttack2", {"vol": 0.5}]
+    ]
+  },
+  "nAttack3": {
+    "why": "Wolf.cs RPC_nAttack3 (its clip 1.44 s after stage 1, :16959): voice nAttack3 and the swing Sounds/nAttack2 at half volume together at 0 (:16522-16572); hit at 0.33 s, standby 0.53 s (:16891); left out: nAttack_hit at the target; darkEdge1 at 0.33 s (:16645) only under Dark Edge",
+    "cues": [
+    [0, "voice", "nAttack3"],
+    [0, "sound", "nAttack2", {"vol": 0.5}]
+    ]
+  },
+  "nAttack4": {
+    "why": "Wolf.cs RPC_nAttack4 (its clip 1.97 s after stage 1, :18024): voice nAttack4 at 0 (:17221, :18010); 0.16 s, the swing Sounds/nAttack1 at half volume (:17276-17288); hit 1 at 0.3 s; 0.6 s, the second swing Sounds/nAttack3 at half volume (:17624-17636); hit 2 at 0.8 s, standby 1.3 s (:17925); left out: nAttack_hit at the target; darkEdge1 at 0.3 s (:17356) and darkEdge2 at 0.8 s (:17694) only under Dark Edge",
+    "cues": [
+    [0, "voice", "nAttack4"],
+    [0.16, "sound", "nAttack1", {"vol": 0.5}],
+    [0.6, "sound", "nAttack3", {"vol": 0.5}]
+    ]
+  },
+  "cAttack1": {
+    "why": "Wolf.cs RPC_cAttack1: clip and voice charge1 / charge2 (Random.Range(0, 2), :18742-18827, :19196-19209) at 0; at 0.8 s it cuts to cAttack2 (:19220), whose cues hold the charge; no Double Art roll",
+    "cues": [
+    [0, "voice", "charge1|charge2"]
+    ]
+  },
+  "cAttack2": {
+    "why": "Wolf.cs RPC_cAttack1 case 2 (the cut to cAttack2, looped, :18636): Sounds/cAttack1 (:18658-18670, full volume); the charge tick every 1 s from here (:18851, Yield(3, 1) :19201): tick 1 Sounds/cAttack2 (:18892-18904), later ticks Sounds/cAttack3 (:18942-18954); cAttack1_ring at the hero every tick (:18976-18988, Instantiate, Quaternion.identity); the tier ring 0.15 m up (position + (0, 0.15, 0)): ticks 2-3 cAttack1_ring1 (:19160-19172), 4-5 cAttack1_ring2 (:19116-19128), 6+ cAttack1_ring3 (charge rank 3, :19068-19080); the page holds cAttack2 5.1 s, so the 5 s tick fires; mission / arena only (mGameType > 4, :18646, :18872); skySlasher_ring (12 ticks + Sky Slasher, :19020) is never reached",
+    "cues": [
+    [0, "sound", "cAttack1"],
+    [0, "sound", "cAttack2"],
+    [0, "fx", "cAttack1_ring"],
+    [1, "sound", "cAttack3"],
+    [1, "fx", "cAttack1_ring"],
+    [1, "fx", "cAttack1_ring1", {"y": 0.15}],
+    [2, "sound", "cAttack3"],
+    [2, "fx", "cAttack1_ring"],
+    [2, "fx", "cAttack1_ring1", {"y": 0.15}],
+    [3, "sound", "cAttack3"],
+    [3, "fx", "cAttack1_ring"],
+    [3, "fx", "cAttack1_ring2", {"y": 0.15}],
+    [4, "sound", "cAttack3"],
+    [4, "fx", "cAttack1_ring"],
+    [4, "fx", "cAttack1_ring2", {"y": 0.15}],
+    [5, "sound", "cAttack3"],
+    [5, "fx", "cAttack1_ring"],
+    [5, "fx", "cAttack1_ring3", {"y": 0.15}]
+    ]
+  },
+  "cAttack3": {
+    "why": "Wolf.cs RPC_cAttack2 (the release, clip cut in :19752): voice cAttack1 / cAttack2 (Random.Range(0, 2), :19793-19848) at 0; left out: the cAttack2 effect at the hero at 0.2 s (:19403-19415) needs EffectControl(child) (its own sound Sounds/cAttack4 goes with it); the waves' nAttack_hit at the targets (0.5 / 0.6 / 0.7 s); the camera motion blur (:19870)",
+    "cues": [
+    [0, "voice", "cAttack1|cAttack2"]
+    ]
+  },
+  "bladeFang1": {
+    "why": "Wolf.cs RPC_bladeFang with Blood Fang #403 (the user's passives rule): Double Art roll at the start (getDoubleArt :26375; 24 % at rank 4, Random.Range(0, 100) < lckAdjust(4 x 6) :8235-8300; a proc runs RPC_doubleArt :18411-18459: doubleArt at the hero, and sublimeArt_ring with Sublime Art #431, one roll for both); clip, voice bloodFang1 / bloodFang2 (hasSkill(403), Random.Range(0, 2), :26402, :26451-26512) and bladeFang_ring at the hero (:26598-26610) at 0; then a 0.5 s wait (:26613 -> :26652); the dash at 0.5 s with dust_forward at the hero (:25641); hit 1 at 0.7 s, then bladeFang2 (:26640); left out: bloodFang_underSlash at 0.5 s turned Euler(270, 90, 0) (:25695-25707) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "bloodFang1|bloodFang2"],
+    [0, "fx", "bladeFang_ring"],
+    [0.5, "fx", "dust_forward"]
+    ]
+  },
+  "bladeFang2": {
+    "why": "Wolf.cs RPC_bladeFang cases 4-6 (from the cut to bladeFang2, :26640; slashes 2 and 4, both plays of the step): 0.1 s, dust_forward at the hero (:25854); hit at 0.2 s; 0.3 s cut to bladeFang3 (:26063), or after the 4th slash standby at 0.4 s (:26308); left out: bloodFang_upperSlash at 0.1 s turned Euler(270, 90, 0) (:25906-25918) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "cues": [
+    [0.1, "fx", "dust_forward"]
+    ]
+  },
+  "bladeFang3": {
+    "why": "Wolf.cs RPC_bladeFang cases 6-9 (clip cut in :26063): dust_forward at the hero at 0 (:26073); hit at 0.2 s; 0.3 s cut to bladeFang2 (:26640); left out: bloodFang_underSlash at 0.1 s turned Euler(270, 90, 0) (:26100-26159) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "cues": [
+    [0, "fx", "dust_forward"]
+    ]
+  },
+  "bladeSong3": {
+    "why": "Wolf.cs RPC_bladeSong (rank 3, clip :30365): Double Art roll at the start (getDoubleArt :30305, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); voice bladeSong1 / bladeSong2 (Random.Range(0, 2), :30403-30506) at 0; 0.3 s, bladeSong_ring at the hero (:29857-29869); 0.7 s, the backstep (:29906); then 5 + 2 x 3 = 11 slashes 0.2 s apart, the bladeSong effect at the hero each time (:29963-29975, loop :30273, wait :30514): 0.9 ... 2.7 s here; the 11th (2.9 s) is in bladeSong4's cues at 0, because the page's step ends at 2.9 s and drops a cue at that very time (the game spawns it in the same frame as the crossfade, :30289); left out: the slashes' hits at the targets",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "bladeSong1|bladeSong2"],
+    [0.3, "fx", "bladeSong_ring"],
+    [0.9, "fx", "bladeSong"],
+    [1.1, "fx", "bladeSong"],
+    [1.3, "fx", "bladeSong"],
+    [1.5, "fx", "bladeSong"],
+    [1.7, "fx", "bladeSong"],
+    [1.9, "fx", "bladeSong"],
+    [2.1, "fx", "bladeSong"],
+    [2.3, "fx", "bladeSong"],
+    [2.5, "fx", "bladeSong"],
+    [2.7, "fx", "bladeSong"]
+    ]
+  },
+  "bladeSong4": {
+    "why": "Wolf.cs RPC_bladeSong after the 11th slash (Last Blade #354, bladeSong4 crossfaded in :30289): the 11th bladeSong slash at 0 (bladeSong3's last, the same frame, :29975); 0.3 s, bladeSong_finalBlade at the hero (:30095-30107); standby at 0.7 s (:30219); no voice (BB's Voices/lastBlade1-2 are never loaded); left out: the camera motion blur (:30083), the finisher's hits at the targets (:30129)",
+    "cues": [
+    [0, "fx", "bladeSong"],
+    [0.3, "fx", "bladeSong_finalBlade"]
+    ]
+  },
+  "counter2": {
+    "why": "Wolf.cs RPC_counter2, started by RPC_counter1 the frame the hero's HP drops (:28211-28229; the page plays it after the full 0.8 s stance, which itself plays and draws nothing: no counter1 entry): Double Art roll at the start (getDoubleArt :28680, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice counter1 / counter2 at 0 (:28701-28797); the lunge at 0.1 s, the hit at 0.3 s (:28431, :28506), standby 0.7 s (:28619); left out: counter_hit at the struck enemy (:28511-28526, :8795)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "counter1|counter2"]
+    ]
+  },
+  "mirrorCounter1": {
+    "why": "Wolf.cs RPC_mirrorBlade: Double Art roll at the start (getDoubleArt :34807, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice mirrorBlade1 / mirrorBlade2 and mirrorBlade_ring at the hero at once (:34839-34974; the ring plays its own Sounds/mirrorBlade_ring); mirrorCounter2 at 1.0 s (:34615); nothing reacts to a hit, only the damage depends on the HP lost 0.2-1.4 s; left out: mirrorBlade_mirror at the hero at 0.2 s (:34574) needs ShatterMesh, StaticMesh; mirrorBlade_hit at the locked target 0.4 s into mirrorCounter2 (:34715-34725, at the target; no mirrorCounter2 entry); the camera white flash (:34633)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "mirrorBlade1|mirrorBlade2"],
+    [0, "fx", "mirrorBlade_ring"]
+    ]
+  },
+  "darkEdge": {
+    "why": "The darkEdge clip is played by two skills (Dark Edge RPC_darkEdge :30908, Holy Armor RPC_holyArmor :33598): each play shows one, picked at random",
+    "skills": {
+      "darkEdge": {
+        "why": "Wolf.cs RPC_darkEdge: Double Art roll at the start (getDoubleArt :30887, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice darkEdge1 / darkEdge2 at 0 (:30908-31036); the darkEdge status at 0.4 s (:30805), standby 0.6 s (:30826); left out: darkEdge_ring at the hero at 0.2 s (:30743) needs VortexEmitter (its own Sounds/darkEdge_ring goes with it); the status's Effects/darkEdge on both hand bones until it ends (CharacterControl.cs:34159-34210) needs a bone-attached, held effect",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "darkEdge1|darkEdge2"]
+        ]
+      },
+      "holyArmor": {
+        "why": "Wolf.cs RPC_holyArmor: Double Art roll at the start (getDoubleArt :33566, 24 %: doubleArt + sublimeArt_ring); clip darkEdge (:33598) and voice holyArmor1 / holyArmor2 (Random.Range(0, 2), :33647-33702) at 0; Yield 0.2 (:33760): the camera blur and the holyArmor status (armour with DEF only, :33484); Yield 0.6 (:33767): standby 0.8 s (:33505); left out: holyArmor_ring at the hero at 0 (:33721-33733) needs EmblemEmitter (its own Sounds/holyArmor_ring goes with it); the status's look (CharacterControl.cs, not traced)",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "holyArmor1|holyArmor2"]
+        ]
+      }
+    }
+  },
+  "dualBrand": {
+    "why": "Wolf.cs RPC_dualBrand: Double Art roll at the start (getDoubleArt :36665, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice dualBrand1 / dualBrand2 and dualBrand_ring at the hero at once (:36692-36817; the ring plays its own Sounds/dualBrand_ring); standby at 1.6 s (:36604), which ends dualBrand_ring (followState); left out: dualBrand_slash1 / 2 / 3 / 4 at the hero at 0.3 / 0.6 / 0.9 / 1.1 s (:35959, :36119, :36274, :36424; 1, 2, 4 need Animation, TrailEmitter, 3 needs EffectControl(child), VortexEmitter; their Sounds/dualBrand_slash goes with them); dualBrand_hit at each enemy at 0.5 / 0.8 / 1.0 / 1.3 s",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "dualBrand1|dualBrand2"],
+    [0, "fx", "dualBrand_ring", {"cut": 1.6}]
+    ]
+  },
+  "crusader": {
+    "why": "Wolf.cs RPC_crusader with Law Bringer #412 (getLawBringerLv() > 0, :21377; the user's passives rule): Double Art roll at the start (getDoubleArt :21344, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:21365), lawBringer_ring at the hero (:21387-21399; plays its own Sounds/crusader1) and voice lawBringer1 / lawBringer2 (:21442-21688) at once; the 7 m/s dash 1.0-1.4 s, the hit at 1.4 s; standby at 1.8 s (:21283), which ends lawBringer_ring (followState); left out: the lawBringer slash at 0.6 s turned Euler(270, 90, 0) (:21048-21060) needs Animation, TrailRenderer (its Sounds/crusader2 goes with it); lawBringer_hit at each enemy (needs Light, at the target)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "lawBringer1|lawBringer2"],
+    [0, "fx", "lawBringer_ring", {"cut": 1.8}]
+    ]
+  },
+  "artBreaker": {
+    "why": "Wolf.cs RPC_artBreaker: Double Art roll at the start (getDoubleArt :34146, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (0.1 s fade) and voice artBreaker1 / artBreaker2 at 0 (:34176-34272); standby 1.3 s (:34058); left out: artBreaker_ring at the hero at 0 (:34291-34303) needs EmitterControl (its own Sounds/artBreaker_ring goes with it); artBreaker_hit at the locked target (within 30 m) at 1.0 s (:33988-34026, at the target); the camera motion blur (:34332)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "artBreaker1|artBreaker2"]
+    ]
+  },
+  "artCancel": {
+    "why": "Wolf.cs RPC_artCancel: Double Art roll at the start (getDoubleArt :27617, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, the 10 m/s dash, voice artCancel1 / artCancel2 (the Voices/ files; Sounds/ has different artCancel1-2), dust_forward, artCancel_slide (plays its own Sounds/artCancel1) and artCancel_ring at the hero at once (:27638-27803); the hit at 0.6 s; standby at 1.0 s (:27556), which ends artCancel_slide (followState); left out: artCancel_hit at each enemy (at the target), the camera motion blur (:27823)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "artCancel1|artCancel2"],
+    [0, "fx", "dust_forward"],
+    [0, "fx", "artCancel_slide", {"cut": 1.0}],
+    [0, "fx", "artCancel_ring"]
+    ]
+  },
+  "powerBreak": {
+    "why": "Wolf.cs RPC_powerBreak: Double Art roll at the start (getDoubleArt :22093, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice powerBreak1 / powerBreak2 (:22114-22210) and the effect picked by rank at once (sLv 1 = powerBreak1, else powerBreak2: max rank 2 = powerBreak2 at the hero, :22223-22278; plays its own Sounds/powerBreak); 0.5 s, a 0.2 s dash (:21891), the hit (:21936), standby at 1.0 s (:22032), which ends powerBreak2 (followState); left out: the hit sparks at the target (RPC_nAttack_hit :21975)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "powerBreak1|powerBreak2"],
+    [0, "fx", "powerBreak2", {"cut": 1.0}]
+    ]
+  },
+  "provoke": {
+    "why": "Wolf.cs RPC_provoke: Double Art roll at the start (getDoubleArt :27011, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice provoke1 / provoke2 (:27033-27137) at 0; no effect in the coroutine; left out: the provoke mark the status puts on the provoked enemy 0.8 s in (mProvokeTime :27150, RPC_AddStatus :27186, CharacterControl.cs:34082-34098: on the enemy)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "provoke1|provoke2"]
+    ]
+  },
+  "resurrection": {
+    "why": "Wolf.cs RPC_massResurrection: Double Art roll at the start (getDoubleArt :25254, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice resurrection1 / resurrection2 (:25275-25371) at 0; standby at 1.8 s (:25193); left out: resurrection_ring at the hero at 0 (:25390-25400) needs EmblemEmitter (its own Sounds/resurrection goes with it); resurrection_hit on each revived ally 1.2 s in (:25114-25126, at the target; needs EmblemEmitter); the camera motion blur at 0.8 s (:24990-24995)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "resurrection1|resurrection2"]
+    ]
+  },
+  "thirdRend": {
+    "why": "Wolf.cs RPC_thirdRend: Double Art roll at the start (getDoubleArt :32523, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice thirdRend1 / thirdRend2 (:32544-32640) and thirdRend_ring at the hero (:32659-32669; plays its own Sounds/thirdRend) at 0; the step-in 0.2-1.0 s, the hit at 0.6 s (:32317), standby at 1.0 s (:32460; no followState); left out: the hit sparks at the target (RPC_nAttack_hit :32377)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "thirdRend1|thirdRend2"],
+    [0, "fx", "thirdRend_ring"]
+    ]
+  },
+  "feralAssault": {
+    "why": "Wolf.cs RPC_feralAssault: Double Art roll at the start (getDoubleArt :35400, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:35432), no voice in BB (the rings carry the sounds feralAssualt_ring1-3); feralAssault_ring1 Instantiated at the hero at 0 (:35463-35475): no EffectControl owner, so its followState cuts it at once (EffectControl.cs:194-200): cut 0; 0.9 s standing (:35702), then the dash with feralAssault_ring2 at the hero (createEffect, followState, :35208-35231); four hits 0.3 s apart (:35498-35696); at 2.1 s the stop and feralAssault_ring3 at the hero's spot (Instantiate, :35503-35527; 0 m: the wardrobe hero doesn't travel); standby at 2.4 s (:35333); left out: the hits at the targets (feralStrike_hit :35668, feralAssault_hit :35582), the camera blur and flash (:35266, :35603)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "feralAssault_ring1", {"cut": 0}],
+    [0.9, "fx", "feralAssault_ring2", {"cut": 2.4}],
+    [2.1, "fx", "feralAssault_ring3"]
+    ]
+  },
+  "twinResonance": {
+    "why": "Wolf.cs RPC_twinResonance: Double Art roll at the start (getDoubleArt :37207, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice twinResonance1 / twinResonance2 (:37228-37324) and twinResonance_ring Instantiated at the hero (:37343-37353) at 0; 2 s (:37391), then RPC_twinResonance_fire (:37110): twinResonance_fire Instantiated at the hero facing forward (:37590-37602), 40 ticks x 0.4 s (:37622, :37714; EffectControl life 16; its looping Sounds/twinResonance_fire plays once on the page); standby at 2.8 s (:37146); no followState on either; left out: twinResonance_hit at the targets (:37690), the camera blur (:37120-37125)",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "voice", "twinResonance1|twinResonance2"],
+    [0, "fx", "twinResonance_ring"],
+    [2.0, "fx", "twinResonance_fire"]
+    ]
+  },
+  "instantCast": {
+    "why": "instantCast is played by four skills (Brave Spirit :20597, Second Wind :23381, Lunar Eclipse :31341, Holy Sword :33083), all learnable in one Lv 100 build (plans/fx_wolf/cast.md); each play shows one, picked at random, even chance (the user); each rolls Double Art at its start",
+    "skills": {
+      "braveSpirit": {
+        "why": "Wolf.cs RPC_braveSpirit with Glorious Spirit #402 (the user's passives rule): Double Art roll at the start (getDoubleArt :20576, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:20597); voice gloriousSpirit1 / gloriousSpirit2 (hasSkill(402), :20638-20699) and Sounds/braveSpirit (:20779-20795, always played) at 0; gloriousSpirit 0.2 m ahead at 0.5 s (:20833, :20394-20406); valor at 0.7 s (:20489); standby 1.3 s (:20824, :20515); left out: valor_emblem 2 m above each receiver (CharacterControl.cs:33969) needs EmblemEmitter",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "gloriousSpirit1|gloriousSpirit2"],
+        [0, "sound", "braveSpirit"],
+        [0.5, "fx", "gloriousSpirit", {"d": 0.2}]
+        ]
+      },
+      "secondWind": {
+        "why": "Wolf.cs RPC_secondWind: Double Art roll at the start (getDoubleArt :23360, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:23381); voice secondWind1 / secondWind2 (:23422-23477) and Sounds/secondWind (:23490-23506) at 0; secondWind 0.2 m ahead at 0.6 s (:23548, :23221-23233); the heal at 0.8 s (:23278); standby 1.3 s (:23552, :23299)",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "secondWind1|secondWind2"],
+        [0, "sound", "secondWind"],
+        [0.6, "fx", "secondWind", {"d": 0.2}]
+        ]
+      },
+      "lunarEclipse": {
+        "why": "Wolf.cs RPC_lunarEclipse: Double Art roll at the start (getDoubleArt :31320, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:31341); voice lunarEclipse1 / lunarEclipse2 (:31382-31437) and Sounds/braveSpirit (:31450-31468) at 0; no effect prefab; standby 1.3 s (:31510); left out: the screen colour ramp (camera, :31488) and the status's black body tint from 0.7 s (:31238; CharacterControl.cs:34241), which no cue can express",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "lunarEclipse1|lunarEclipse2"],
+        [0, "sound", "braveSpirit"]
+        ]
+      },
+      "holySword": {
+        "why": "Wolf.cs RPC_holySword: Double Art roll at the start (getDoubleArt :33051, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:33083); voice holySword1 / holySword2 (:33132-33187) at 0; standby 1.1 s (:33246, :32990); left out: holySword_ring at the hero at 0 (:33206-33218) needs EmblemEmitter (its own Sounds/holySword_ring goes with it); the status's holySword glow on both hands from 0.5 s (:32969; CharacterControl.cs:34264) needs a bone-attached, held effect; the camera blur (:32921)",
+        "cues": [
+        [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+        [0, "voice", "holySword1|holySword2"]
+        ]
+      }
+    }
+  },
+  "armorBreak": {
+    "why": "Wolf.cs RPC_armorBreak: Double Art roll at the start (getDoubleArt :22830, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice armorBreak1 / 2 and armorBreak_ring at once (:22851-22976); 0.3 s, a 0.3 s dash, 0.1 s, then the slash picked by rank (rank 2 = armorBreak2, :22598-22645) at 0.7 s",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "armorBreak1|armorBreak2"],
     [0, "fx", "armorBreak_ring"],
     [0.7, "fx", "armorBreak2"]
     ]
   },
   "crossBreak": {
-    "why": "RPC_crossBreak: clip, voice crossBreak1 / 2 (:24078-24223); crossBreak_ring at 0.1 s (:23748); the dash 0.4-1.2 s; the cross 0.6 m ahead at 1.2 s (:23896)",
+    "why": "RPC_crossBreak: Double Art roll at the start (getDoubleArt :24060, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice crossBreak1 / 2 (:24078-24223); crossBreak_ring at 0.1 s (:23748); the dash 0.4-1.2 s; the cross 0.6 m ahead at 1.2 s (:23896)",
     "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "crossBreak1|crossBreak2"],
     [0.1, "fx", "crossBreak_ring"],
     [1.2, "fx", "crossBreak", 0.6]
     ]
   },
   "grandCross": {
-    "why": "RPC_grandCross: clip, voice grandCross1 / 2 and grandCross_ring (:24628-24753); the wave at the Cross Break mark (0.6 m ahead; the hero stands still here) at 0.6 s (:24451)",
+    "why": "RPC_grandCross: Double Art roll at the start (getDoubleArt :24593, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice grandCross1 / 2 and grandCross_ring (:24628-24753); the wave at the Cross Break mark (0.6 m ahead; the hero stands still here) at 0.6 s (:24451)",
     "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "grandCross1|grandCross2"],
     [0, "fx", "grandCross_ring"],
     [0.6, "fx", "grandCross", 0.6]
     ]
   },
   "feralStrike": {
-    "why": "RPC_feralStrike: clip (cut in), voice feralStrike1 / 2 and feralStrike_ring at once (:29467-29595); feralStrike at 0.3 s with the dash (:29118); standby at 1.0 s (0.3 + 0.3 + 0.2 + 0.2), which ends feralStrike early (its EffectControl followState: the 5th value = when the hero's action changes)",
+    "why": "RPC_feralStrike: Double Art roll at the start (getDoubleArt :29446, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (cut in), voice feralStrike1 / 2 and feralStrike_ring at once (:29467-29595); feralStrike at 0.3 s with the dash (:29118); standby at 1.0 s (0.3 + 0.3 + 0.2 + 0.2), which ends feralStrike early (its EffectControl followState: the 5th value = when the hero's action changes)",
     "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "feralStrike1|feralStrike2"],
     [0, "fx", "feralStrike_ring"],
     [0.3, "fx", "feralStrike", 0, 1.0]
+    ]
+  },
+  "bladeSurge": {
+    "why": "TTO1102:Wolf.<RPC_bladeSurge>d__317::MoveNext@0x1F1F640 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (bladeSurge_aura, _zone, _flicker, _cut, _sheathe, _shatter, _shards); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20 -> getDoubleArt; BB's doubleArt + sublimeArt_ring assumed); 0: the aura's own sound bladeSong_ring (vol 1); cuts at 0.30 + 0.15 k and the slam at 1.20 (Wolf::BladeSurgeCut@0x1F07840): the hero's PlayOneShot Sounds/bladeFang(k % 3 + 1), vol 1 (Wolf::Row6Clip@0x1F0EAA0); 2.1: the sheathe's own sound artCancel2 (Wolf::BladeSurgeShatter@0x1F09240); left out: the shatter's shatteringDream_hit (bat/sounds) and the 4 shards' iceBreak (penguin/sounds, vol 0.8): a sound cue reads only the Wolf's own Sounds/. The prefab sounds stand in for their effects: drop them when the effects are built",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "sound", "bladeSong_ring"],
+    [0.3, "sound", "bladeFang1"],
+    [0.45, "sound", "bladeFang2"],
+    [0.6, "sound", "bladeFang3"],
+    [0.75, "sound", "bladeFang1"],
+    [0.9, "sound", "bladeFang2"],
+    [1.05, "sound", "bladeFang3"],
+    [1.2, "sound", "bladeFang1"],
+    [2.1, "sound", "artCancel2"]
+    ]
+  },
+  "resonanceClaw": {
+    "why": "TTO1102:Wolf.<RPC_resonanceClaw>d__329::MoveNext@0x1F3C1E0 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (resonanceClaw_charge, _rake, _wave_twin, _wave_light, _wave_dark); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: the charge's own sound twinResonance_ring (vol 1); Waits 0.62 (0x1F3CBE3): the rake's skySlasher (vol 1) and the twin wave's cAttack4 (vol 0.9); the side waves at 0.67 have no sound; left out: resonanceClaw_burst and twinResonance_hit at the hit targets. The prefab sounds stand in for their effects: drop them when the effects are built",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "sound", "twinResonance_ring"],
+    [0.62, "sound", "skySlasher"],
+    [0.62, "sound", "cAttack4", {"vol": 0.9}]
+    ]
+  },
+  "windBoundDomain": {
+    "why": "TTO1102:Wolf.<RPC_windBoundDomain>d__313::MoveNext@0x1F51890 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (windBoundDomain_cast, _plant, _domain, _pulse); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: the cast's own sound secondWind (vol 1); Waits 0.8 (0x1F51F7C): the plant's grandCross (vol 1); the domain and pulses (0.8, 2.8, 4.8, 6.8 s) have no sound; left out: the windBound mark on enemies",
+    "cues": [
+    [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
+    [0, "sound", "secondWind"],
+    [0.8, "sound", "grandCross"]
     ]
   }
 }
