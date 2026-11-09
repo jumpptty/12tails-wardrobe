@@ -114,8 +114,8 @@ copies the loadout line. CSS `saturate(1.15)` on the canvas = the V07 saturation
     checks `:26055`, `:26627`, waits `:26652-26694`). Bison Charge Attack was cAttack3 × 4 hits = rank 1 without Improved
     Swing; now rank 2's full 8 s charge (cAttack1 1 s + cAttack2 7 s) and Improved Swing 3's cAttack6 (`Bison.cs:20318`)
     for 8 × 0.202 = 1.6 s. Quick Fire had no times: rank 4 = quickFire1 0.4 s, quickFire2 0.9 s (opening shot + 8 shots
-    0.1 s apart), quickFire3 (`Chameleon.cs:19660`, `:20061`, `:19787`); Added Fire #402 (Lv 55 passive) would make it
-    1.7 s, not assumed. Lower-rank clips (`LOWER_RANK`: bladeSong1-2, the Bison's cAttack3-5) are left out of the move
+    0.1 s apart), quickFire3 (`Chameleon.cs:19660`, `:20061`, `:19787`); with Added Fire #402 (Lv 55 passive; user: "want
+    it") the loop is 4 × 4 = 16 shots, so quickFire2 runs 1.7 s. Lower-rank clips (`LOWER_RANK`: bladeSong1-2, the Bison's cAttack3-5) are left out of the move
     list. How found: every skill coroutine whose flow branches on `sLv` (`clip_flow.js` with `sLv` as the extra pattern:
     46 do), kept only where rank picks the clip or the length of a held / looped part; Trample (2.6 s), Grand Casino
     Arcade (5 rolls), the Chameleon's Charge Attack (9 s, 18 swings), Qi Strike (4 s) were already at max rank; the
@@ -385,3 +385,17 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   by design since 2026-11-07 (editions picked in the set tab): the ชุด picker lists each outfit once
   (`C.outfits.map`), so all 132 R / V editions (11 per class) are missing from it, not only Worm R; the check finds
   every one reachable through some set (0 unreached).
+- **2026-11-09, bug 1 fixed: `bb_item_codes.py` reads the braces** (user: "yes" to the parser fix). `parse()` now takes
+  each compare's own `{}` block: a positive code's loads are inside it; a negated code `if (!(n == "c")) {...}` owns the
+  loads after its block up to the parent block's end; an empty branch falls through to the enclosing negated code's
+  loads; a default `else` is no code's. `item_map.json` changed in 14 codes, all to the game's pattern (60 / 61 plain,
+  62 R): Chameleon w_chm60 / 61 legendBow + legendArrow (was missing / standardBow + legendArrow), w_chm82 flaming only
+  (was 7 pieces), w_chm51 royal (was royal R); Whale w_whl51 royal, w_whl61 legend, w_whl79 eclipse only; Cat t_cat61
+  legendTrinketR (was sandTopaz, which is t_all51; the icon cat61 is the starred legend trinket); t_*62 legendTrinketR
+  added for Bat, Chameleon, Mole, Panda, Whale, Wolf. Effect: the Chameleon legend set wears legendBow (the only set that
+  changed, all 12 classes diffed), legendBow's icon is chm61 (was Flaming Arch's chm82); `wardrobe_sets_check.py`
+  passes. The script's run is under `main()` now (importing it no longer rewrites the data) and its kinds are sorted
+  (two runs gave the same JSON in a different key order); `pipeline/test_bb_item_codes.py` tests the four shapes on
+  the Chameleon's real nest. **Home PC: after `git pull`, run `py -3 -I pipeline\bb_item_codes.py` once** (it needs the
+  Bible's DecompiledSource, both PCs have it), or the next data tar from home carries the old map back. The video
+  repo's `extract_tto_props.py` reads `item_map.json`: those 14 codes now map as above.
