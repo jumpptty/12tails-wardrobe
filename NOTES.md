@@ -488,3 +488,9 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (`RippedAssets_Reborn`, all 24 intact); `read_mesh_shape` reads Reborn's newer mesh layout (channels, topology 1 =
   strip); 11 Wolf meshes readable in both rips are identical. Office build: 6,896 files (= home's count); 4 Monkey back
   items still dropped (their Reborn meshes are multi-stream / skinned). Tested (fallback test in test_wardrobe_publish).
+- **2026-11-09, home PC catches up on HANDOFF**: `bb_item_codes.py` rebuilt `item_map.json` / `icons.json` (exactly the
+  14 codes listed above changed; `wardrobe_sets_check.py` exit 0, 0 foreign weapons). `wardrobe_fx.py wolf` built the
+  pilot's data (8 effects, 13 materials, 13 textures, 13 sounds; `wardrobe_fx_check.py` exit 0, all 13 sounds loaded,
+  `errors: []`). `wardrobe_publish.py --out wardrobe_dist`: 6,899 files (+3 on the last report), 270.1 MB,
+  `data-7e0350ddb2`, `FX_ON = false`, no fx / sfx files, check: no problems; 6.5 min. 46 unit tests pass. Not deployed
+  (the user's step, HANDOFF). The Bible commit `0704e0f6` is still not on GitHub (office to push).
