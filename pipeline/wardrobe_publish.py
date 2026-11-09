@@ -945,11 +945,26 @@ def publish_ui(run, classes, tto_clips=None, emo=None):
     run.write_json("ui.json", out)
 
 
+def publish_hd_icons(run, pub_clips):
+    """icons/hd/: the Bible's upscaled skill icons (pipeline/wardrobe_skill_icons.py; the user 2026-11-09: "borrow
+    upscaled skill icon from the bible"): only the skills whose clips are published (BB's, released TTO ones), and the
+    index filtered to them. No index in the data: nothing."""
+    index = run.load("icons/hd/index.json", default={})
+    out = {}
+    for cls, skills in index.items():
+        keep = {s: dict(v, clips=[c for c in v["clips"] if c in pub_clips.get(cls, set())]) for s, v in skills.items()}
+        keep = {s: v for s, v in keep.items() if v["clips"] and run.local_copy(v["icon"])}
+        if keep:
+            out[cls] = keep
+    if index:
+        run.write_json("icons/hd/index.json", out)
+
+
 def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
     """Write the filtered data to stage/; returns (dropped, tto_faces, warnings). released: load_released()'s list;
     candidates, a list, gets every TTO-sourced item (for the picker)."""
     run = Run(data, stage, bb, released)
-    tto_clips = {}
+    tto_clips, pub_clips = {}, {}
     meta = run.load("meta.json")
     classes = [c["cls"] for c in meta["classes"]]
     outfits, props, tto_faces, meta_out = {}, {}, {}, {"classes": []}
@@ -962,6 +977,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
             tto_faces[cls] = kept_tto
         clips = publish_clips(run, cls)
         tto_clips[cls] = [k for k, v in clips.items() if v.get("tto")]
+        pub_clips[cls] = set(clips)
         for kind in PROP_KINDS:
             props[(cls, kind)] = publish_props(run, cls, kind)
         meta_out["classes"].append(dict(c, outfits=len(outfits[cls]), faces=faces,
@@ -972,6 +988,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
     publish_item_map(run, outfits, props)
     publish_placements(run, icons)
     publish_ui(run, classes, tto_clips, emo)
+    publish_hd_icons(run, pub_clips)
     run.write_json("meta.json", meta_out)
     if candidates is not None:
         candidates.extend(run.candidates)

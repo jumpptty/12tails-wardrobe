@@ -726,3 +726,15 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
     spawned rotation (TransformDirection), so the cue's rot must turn it: Resonance Claw's three waves all have velocity
     (0, 0, 36) and differ only by the cue's rot 0 / -45 / +45, so all three flew straight ahead. Now velocity x the root's
     spawn rotation. (fxparts/control.js's child EffectControl already did this.)
+- **2026-11-09, ท่าสกิล in the class guide's ring format, with the Bible's upscaled icons** (user: "for Wolf animations
+  that might come from various skills, display all their skill icons, i want all skills to use circle frame too like our
+  class guide format. Resurrection is Mass Ressurection icon, please borrow upscaled skill icon from the bible too").
+  `pipeline/wardrobe_skill_icons.py` copies each skill's highest-rank 128 px icon from the Bible's
+  `12t_projects/bible/assets.js` (BIBLE_ASSETS.SKILL_ICONS, `<cls>_<skill><rank>`) to `data/icons/hd/<cls>/<skill>.webp`
+  and writes `data/icons/hd/index.json` ({cls: {skill: {icon, clips}}}): a clip belongs to the skill named like it, or
+  to CLIP_SKILLS' list (the Wolf: instantCast = Brave Spirit, Second Wind, Lunar Eclipse, Holy Sword; darkEdge = Dark
+  Edge, Holy Armor; resurrection = Mass Resurrection; mirrorCounter1-2 = Mirror Blade). 189 icons, the Wolf's 41 skill
+  clips all covered (other classes partly: names that differ fall back to the game's icon). Page: skill tiles show every
+  skill of their clips in the Bible's cover-ring layout (`RING_SPOTS` = CLASS_GUIDE_COVER_SPOTS; `.rc-ring` =
+  `.cg-cover-ring`: gold ring, dark gap, faint ring, glow, blurred copy behind, art at 130 % with a round mask); the
+  ท่าทาง ring shows a skill's first Bible icon. Publish: `publish_hd_icons` carries only the skills whose clips are online.
