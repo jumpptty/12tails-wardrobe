@@ -468,3 +468,12 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   - Open: Cross Break's stretched slashes come out huge at the wardrobe's close camera (lengthScale -1 / velocityScale
     -1 read as size + speed, up to ~8 m; the anchor and sign are the spec's open points); sizeGrow's formula; no game
     footage compared yet.
+- **2026-11-09, Feral Strike added to the effects pilot, timed** (user: "try adding feral strike and time"). Coroutine
+  `RPC_feralStrike` (`Wolf.cs:28952-29704`): clip (cut in) + voice feralStrike1 / 2 + `feralStrike_ring` (Instantiate,
+  so no EffectControl owner) at 0; `feralStrike` with the dash at 0.3 s; standby at 1.0 s. `feralStrike`'s
+  EffectControl has followState, so the game ends it when the hero's action changes: a 5th cue value (the clip time
+  of that change) does that now. Both effects use only component types already built, so the work was: trace the
+  coroutine, probe the prefabs, extract, one cue line. Check fix found on the way: the intermittent
+  ERR_CONNECTION_REFUSED in the headless checks was the stdlib test server's 5-connection queue (the page loads dozens
+  of icons at once); all three checks now set `request_queue_size = 128`. `wardrobe_fx_check.py` also shoots each
+  skill's busiest frame (`_peak`), since short-lived parts fall between swiftshader's slow frames.

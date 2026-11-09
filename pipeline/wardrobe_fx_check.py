@@ -1,6 +1,6 @@
-"""Headless check of the skill effects and sounds (2026-11-09 pilot: Wolf Armor Break, Cross Break, Grand Cross). Plays
+"""Headless check of the skill effects and sounds (2026-11-09 pilot: Wolf Armor Break, Cross Break, Grand Cross, Feral Strike). Plays
 each skill tile, samples which effects are alive (and their emitters' vertex counts) over time, screenshots each skill at
-the moments its effects show, once per backdrop (?fxbg=dark / spot / white, side by side in <out>/compare.html), and
+the moments its effects show and at its busiest frame (peak), once per backdrop (?fxbg=dark / spot / white, side by side in <out>/compare.html), and
 fails on a page error, a console error or a failed request.
   uv run --no-project --with playwright python -I pipeline/wardrobe_fx_check.py D:/12tails-wardrobe checks/<dir> [dark,spot,white]"""
 import asyncio, functools, http.server, sys, threading
@@ -10,13 +10,16 @@ from playwright.async_api import async_playwright
 ROOT, OUT = Path(sys.argv[1]), Path(sys.argv[2])
 OUT.mkdir(parents=True, exist_ok=True)
 VARIANTS = (sys.argv[3] if len(sys.argv) > 3 else "dark,spot,white").split(",")
-SKILLS = {"armorBreak": [0.15, 0.8], "crossBreak": [0.3, 1.35], "grandCross": [0.2, 0.75]}   # seconds to screenshot at
+SKILLS = {"armorBreak": [0.15, 0.8], "crossBreak": [0.3, 1.35], "grandCross": [0.2, 0.75], "feralStrike": [0.15, 0.5]}   # seconds to screenshot at
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
 
+# the stdlib server queues 5 connections; the page loads dozens of icons at once and the rest were refused
+# (ERR_CONNECTION_REFUSED, 2026-11-09: data/icons/skills/emotion/beg.webp)
+http.server.ThreadingHTTPServer.request_queue_size = 128
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"
@@ -47,10 +50,14 @@ async def main():
                 await page.click(f'#pkBody .pk-item[data-m="{skill}"]')
                 await page.click('#pkClose') if await page.locator('#pkClose').count() else None
                 t0 = await page.evaluate("() => performance.now()")
-                samples, shot_i = [], 0
+                samples, shot_i, peak = [], 0, 0
                 for _ in range(80):
                     now = (await page.evaluate("() => performance.now()") - t0) / 1000
-                    samples.append(f"{now:.2f}s " + ",".join(await page.evaluate(LIVE)))
+                    live = await page.evaluate(LIVE)
+                    samples.append(f"{now:.2f}s " + ",".join(live))
+                    total = sum(int(x.rsplit(":", 1)[1][:-1]) for x in live if ":" in x)
+                    if total > peak:                                   # the frame with the most effect geometry
+                        peak = total; await page.screenshot(path=str(OUT / f"{var}_{skill}_peak.png"))
                     if shot_i < len(shots) and now >= shots[shot_i]:
                         await page.screenshot(path=str(OUT / f"{var}_{skill}_{shot_i}.png")); shot_i += 1
                     if now > 2.2:
@@ -61,7 +68,7 @@ async def main():
         print("sound:", snd)
         await b.close()
     rows = "".join(f"<tr><th>{s} {i}</th>" + "".join(f'<td><img src="{v}_{s}_{i}.png"></td>' for v in VARIANTS) + "</tr>"
-                   for s, sh in SKILLS.items() for i in range(len(sh)))
+                   for s, sh in SKILLS.items() for i in [*range(len(sh)), "peak"])
     (OUT / "compare.html").write_text("<!doctype html><meta charset=utf-8><title>Effect backdrops</title><style>body{font:14px sans-serif;"
                                       "margin:16px}img{width:100%}td{vertical-align:top}</style><table><tr><th></th>"
                                       + "".join(f"<th>{v}</th>" for v in VARIANTS) + f"</tr>{rows}</table>", encoding="utf-8")

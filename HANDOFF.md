@@ -13,7 +13,7 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   after the rebuild above; it carries 2026-11-09's changes (max-rank moves, R / V tiles in ชุด, the item-map fix). The
   user deploys (NOTES.md "Online copy").
 - **Build the effects pilot's data** (left by the office, 2026-11-09; the data isn't in git):
-  `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf --fx armorBreak_ring,armorBreak2,crossBreak_ring,crossBreak,grandCross_ring,grandCross --voices armorBreak1,armorBreak2,crossBreak1,crossBreak2,grandCross1,grandCross2`
+  `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf --fx armorBreak_ring,armorBreak2,crossBreak_ring,crossBreak,grandCross_ring,grandCross,feralStrike_ring,feralStrike --voices armorBreak1,armorBreak2,crossBreak1,crossBreak2,grandCross1,grandCross2,feralStrike1,feralStrike2`
   (reads `12TailsOnline_Data` in the Bible folder). Check: `wardrobe_fx_check.py` exits 0.
 - **Before publishing:** the page now has the effects pilot (Wolf's three skills, the เสียงท่าทาง button) but
   `wardrobe_publish.py` doesn't copy `fx.json` / `fx/tex` / `sfx`, so online those skills would just have no effects or

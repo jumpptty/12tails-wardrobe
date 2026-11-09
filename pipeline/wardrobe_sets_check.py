@@ -20,6 +20,9 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
 
+# the stdlib server queues 5 connections; the page loads dozens of icons at once and the rest were refused
+# (ERR_CONNECTION_REFUSED, 2026-11-09: data/icons/skills/emotion/beg.webp)
+http.server.ThreadingHTTPServer.request_queue_size = 128
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"

@@ -2596,6 +2596,10 @@ const FX_CUES = { wolf: {
   // RPC_grandCross: clip, voice grandCross1 / 2 and grandCross_ring (:24628-24753); the wave at the Cross Break mark
   // (0.6 m ahead; the hero stands still here) at 0.6 s (:24451)
   grandCross: [[0, "voice", "grandCross1|grandCross2"], [0, "fx", "grandCross_ring"], [0.6, "fx", "grandCross", 0.6]],
+  // RPC_feralStrike: clip (cut in), voice feralStrike1 / 2 and feralStrike_ring at once (:29467-29595); feralStrike at
+  // 0.3 s with the dash (:29118); standby at 1.0 s (0.3 + 0.3 + 0.2 + 0.2), which ends feralStrike early (its
+  // EffectControl followState: the 5th value = when the hero's action changes)
+  feralStrike: [[0, "voice", "feralStrike1|feralStrike2"], [0, "fx", "feralStrike_ring"], [0.3, "fx", "feralStrike", 0, 1.0]],
 } };
 let soundOn = true;
 try { soundOn = localStorage.getItem("wardrobe.sound") !== "0"; } catch (e) {}
@@ -2708,6 +2712,8 @@ class Fx {
     this.age += dt;
     const ec = this.ec;
     if (this.vel) this.root.position.addScaledVector(this.vel, dt);
+    // followState: the hero's action changed (the skill ended): straight to the after-life (EffectControl.cs:194-300)
+    if (ec?.followState && this.cutAt != null && FX.t >= this.cutAt && this.age < ec.life) this.age = ec.life;
     if (ec) {
       if (this.age >= ec.life + ec.afterLife) return this.dispose();
       // live phase: the hero never moves here, so following is a no-op; after-life: legacy emitters and ImageEmitters stop
@@ -2942,7 +2948,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 // a clip's cues start with it (startStep) and run on the render clock; a new pick clears what was left
 function fxStart(clip) {
   FX.t = 0;
-  FX.cues = (FX_CUES[C?.cls]?.[clip] || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0 }));
+  FX.cues = (FX_CUES[C?.cls]?.[clip] || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0, cut: c[4] }));
   for (const c of FX.cues) if (c.kind === "voice" && Sound.ctx) c.name.split("|").forEach(n => Sound.get(C.cls, n).catch(() => {}));
 }
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
@@ -2962,7 +2968,7 @@ function fxTick(dt) {
     if (c.done || c.at > FX.t) continue;
     c.done = true;
     if (c.kind === "voice") { const ns = c.name.split("|"); Sound.play(cls, ns[Math.floor(Math.random() * ns.length)]); }
-    else fxData(cls).then(d => { if (d?.effects[c.name] && C?.cls === cls) FX.live.push(new Fx(cls, c.name, d, c.dist)); }).catch(console.error);
+    else fxData(cls).then(d => { if (d?.effects[c.name] && C?.cls === cls) { const f = new Fx(cls, c.name, d, c.dist); f.cutAt = c.cut; FX.live.push(f); } }).catch(console.error);
   }
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
