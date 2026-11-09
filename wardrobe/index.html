@@ -94,6 +94,7 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
 #sound[aria-pressed=false] .snd-on, #sound[aria-pressed=true] .snd-off { display: none; }
+.tb[hidden] { display: none; }
 .tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
 /* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
@@ -2586,7 +2587,8 @@ $("copy").onclick = async () => {
 // applies to everything else, so the game's numbers are used as they are. FX_CUES: what a skill clip spawns and says,
 // traced from its coroutine: [seconds after the clip starts, "fx" | "voice", name ("a|b" = the game's random pick),
 // metres in front of the hero for createEffect(prefab, hero position + forward)].
-const FX_CUES = { wolf: {
+const FX_ON = true;   // the effects pilot; the published copy turns it off (wardrobe_publish.py: local only for now)
+const FX_CUES = !FX_ON ? {} : { wolf: {
   // Wolf.cs RPC_armorBreak: clip, voice armorBreak1 / 2 and armorBreak_ring at once (:22851-22976); 0.3 s, a 0.3 s dash,
   // 0.1 s, then the slash picked by rank (rank 2 = armorBreak2, :22598-22645) at 0.7 s
   armorBreak: [[0, "voice", "armorBreak1|armorBreak2"], [0, "fx", "armorBreak_ring"], [0.7, "fx", "armorBreak2"]],

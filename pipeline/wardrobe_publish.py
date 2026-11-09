@@ -54,7 +54,10 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageStat
 
 ROOT = Path(__file__).resolve().parent.parent
-BB_RIP = Path(r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources")
+# either PC's Bible (home D:\12tails, office Desktop\12tails), so the office can publish too (user 2026-11-09)
+BB_RIP = next((p for p in (Path(r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources"),
+                          Path(r"C:\Users\Jump\Desktop\12tails\RippedAssets\ExportedProject\Assets\Resources")) if p.is_dir()),
+              Path(r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources"))
 BIBLE_URL = "https://jumpptty.github.io/12tails/12t_projects/bible/"
 MAX_FILES = 20_000                       # Cloudflare Pages, free plan: files a deploy
 MAX_FILE_BYTES = 25 * 1024 * 1024        # and bytes a file
@@ -114,6 +117,10 @@ def page_edits(data_dir, ui_dir):
         ("Bible link", '<a class="brand" id="bible" aria-label="12 Tails Bible">',
          f'<a class="brand" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener" aria-label="12 Tails Bible">', 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
+        # the skill effects + sounds pilot stays local (user 2026-11-09: "hide the pilot in public copy"): no cues, so no
+        # effect data is fetched (none is published), and the sound button is hidden
+        ("effects pilot", "const FX_ON = true;", "const FX_ON = false;", 1),
+        ("sound button", '<button type="button" class="tb" id="sound" ', '<button type="button" class="tb" id="sound" hidden ', 1),
     ]
 
 
@@ -484,11 +491,30 @@ class Run:
         p.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(self.data / rel, p)
 
+    def usable(self, bb_file):
+        """bb_file, or BB's own copy of it when the rip's file can't be read: the office PC's rip has 52 zero-filled
+        Monkey PNGs (2026-11-09), so pipeline/bb_rip_fix.py exports them from BB's game data (12TailsOnline_Data) into
+        data/bb_rip_fix/<path under Assets>; without that copy the picture is dropped as before."""
+        try:
+            with Image.open(bb_file) as im:
+                im.verify()
+            return bb_file
+        except OSError:
+            try:
+                fix = self.data / "bb_rip_fix" / Path(bb_file).relative_to(self.bb.assets)
+            except ValueError:
+                return bb_file
+            if fix.exists():
+                self.warnings.append(f"{Path(bb_file).name}: the rip's copy can't be read; used BB's game data (bb_rip_fix)")
+                return fix
+            return bb_file
+
     def picture(self, rel, bb_file, how):
         """Write stage/rel from BB's file: "texture" = lossy WebP q90 (wardrobe_data.py), "face" = the 256 px face
         block, lossless, "icon" = lossless WebP. Returns None, or why the BB file could not be used."""
         if rel in self._pictures:
             return self._pictures[rel]
+        bb_file = self.usable(bb_file)
         dst = self.stage / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -533,6 +559,7 @@ class Run:
             if bb_file is None:
                 self._prop_tex[tex] = f"texture {tex} has no BB file in Assets/Texture2D"
             else:
+                bb_file = self.usable(bb_file)
                 try:
                     with Image.open(bb_file) as im:          # a broken BB PNG would leave the prop untextured
                         im.load()

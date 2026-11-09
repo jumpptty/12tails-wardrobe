@@ -39,12 +39,14 @@ PAGE = """<!doctype html>
     <header class="lockup"><a class="brand" id="bible" aria-label="12 Tails Bible"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><path d="M14 24 L30 12 L30 78"/></svg><span class="brand-spine" aria-hidden="true"></span><span class="brand-word" aria-hidden="true"><span>TAILS</span><span>BIBLE</span></span></a><span class="lockup-rule" aria-hidden="true"></span><h1>ห้องแต่งตัว</h1></header>
   </aside>
     <div class="bar">
+      <button type="button" class="tb" id="sound" title="เสียงท่าทาง" aria-pressed="true"></button>
       <button type="button" class="tb primary" id="shot">บันทึกภาพ</button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
 <script type="module">
 const DATA = "data/";
 const UI_DIR = "ui/";
+const FX_ON = true;
 const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
@@ -502,6 +504,10 @@ class PublishTest(unittest.TestCase):
                 self.assertNotIn("bible", bar)
                 self.assertNotIn("tb-sep", bar)
                 self.assertNotIn('id="copy"', html)
+                # the skill effects + sounds pilot stays local (2026-11-09): switched off, its button hidden
+                self.assertIn("const FX_ON = false;", html)
+                self.assertNotIn("const FX_ON = true;", html)
+                self.assertIn('<button type="button" class="tb" id="sound" hidden ', html)
                 self.assertIn(f'const UI_DIR = "{result["ui_dir"]}/";', html)
                 self.assertIn("https://fonts.googleapis.com/css2?family=Prompt", html)   # the fonts come from Google Fonts
                 self.assertIn('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">', html)
@@ -884,7 +890,7 @@ class PublishTest(unittest.TestCase):
         anchors = ['const DATA = "data/";', 'const UI_DIR = "ui/";', 'fetch(p, { cache: "no-cache" })',
                    '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
                    '<a class="brand" id="bible" aria-label="12 Tails Bible">',
-                   '$("copy").onclick = async () => {']
+                   '$("copy").onclick = async () => {', "const FX_ON = true;", '<button type="button" class="tb" id="sound" ']
         for label, w in self.newline_worlds():
             for anchor in anchors:
                 with self.subTest(page=label, anchor=anchor):
