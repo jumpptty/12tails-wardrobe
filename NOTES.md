@@ -738,3 +738,11 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   skill of their clips in the Bible's cover-ring layout (`RING_SPOTS` = CLASS_GUIDE_COVER_SPOTS; `.rc-ring` =
   `.cg-cover-ring`: gold ring, dark gap, faint ring, glow, blurred copy behind, art at 130 % with a round mask); the
   ท่าทาง ring shows a skill's first Bible icon. Publish: `publish_hd_icons` carries only the skills whose clips are online.
+- **2026-11-09, deployed** (user: "when you are done, fell free to commit push and deploy"): `wardrobe_dist` 7,288 files,
+  `data-913bb811c8`, check: no problems; the online icons/hd index holds only skills whose clips are online (189, every
+  file present). From a fresh empty folder (each deploy leaves a `.wrangler` cache in its folder): 191 uploaded, version
+  `2c062f90-9a2d-4a2c-86a2-ad7f9528d815`. **Trap:** a request right after the deploy can get Cloudflare's edge copy of
+  the old page (CF-Cache-Status: HIT, the old data folder) although the page is served no-cache; a fresh request (a
+  query string) shows the new one. This deploy carries everything since the last: the piece menu's hover = pulsing rim,
+  TTO, Space / R, the key-hint centring, zoom 40 x, drop a picture on a piece, the Whale's hands, ประดับ, skills once
+  (วนซ้ำ), the skill rings. Online the effects stay off (FX_ON false). Not browser-checked (the user tests).
