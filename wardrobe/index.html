@@ -2584,25 +2584,13 @@ $("copy").onclick = async () => {
 // The game's own effects rebuilt from its scripts (NOTES.md "Skill effects"): data/<cls>/fx.json from
 // pipeline/wardrobe_fx.py (BB's emitter settings, materials, the sound an effect plays), data/fx/tex, data/<cls>/sfx.
 // An effect is built in Unity's own left-handed space inside a group scaled (-1, 1, 1), the mirror wardrobe_data.py
-// applies to everything else, so the game's numbers are used as they are. FX_CUES: what a skill clip spawns and says,
-// traced from its coroutine: [seconds after the clip starts, "fx" | "voice", name ("a|b" = the game's random pick),
-// metres in front of the hero for createEffect(prefab, hero position + forward)].
+// applies to everything else, so the game's numbers are used as they are. The cues (what a skill clip spawns and says,
+// traced from its coroutine) are in fx_cues/<cls>.json, tracked, one file per class (so parallel sessions never edit the
+// same lines; `{}` = none yet): { clip: { why: "the source lines", cues: [[seconds after the clip starts, "fx" | "voice",
+// name ("a|b" = the game's random pick), metres in front of the hero for createEffect(prefab, hero position + forward),
+// optional: the clip time the hero's action changes, which ends a followState effect]] } }. wardrobe_fx.py builds the
+// effects and sounds those cues name, wardrobe_fx_check.py plays them.
 const FX_ON = true;   // the effects pilot; the published copy turns it off (wardrobe_publish.py: local only for now)
-const FX_CUES = !FX_ON ? {} : { wolf: {
-  // Wolf.cs RPC_armorBreak: clip, voice armorBreak1 / 2 and armorBreak_ring at once (:22851-22976); 0.3 s, a 0.3 s dash,
-  // 0.1 s, then the slash picked by rank (rank 2 = armorBreak2, :22598-22645) at 0.7 s
-  armorBreak: [[0, "voice", "armorBreak1|armorBreak2"], [0, "fx", "armorBreak_ring"], [0.7, "fx", "armorBreak2"]],
-  // RPC_crossBreak: clip, voice crossBreak1 / 2 (:24078-24223); crossBreak_ring at 0.1 s (:23748); the dash 0.4-1.2 s;
-  // the cross 0.6 m ahead at 1.2 s (:23896)
-  crossBreak: [[0, "voice", "crossBreak1|crossBreak2"], [0.1, "fx", "crossBreak_ring"], [1.2, "fx", "crossBreak", 0.6]],
-  // RPC_grandCross: clip, voice grandCross1 / 2 and grandCross_ring (:24628-24753); the wave at the Cross Break mark
-  // (0.6 m ahead; the hero stands still here) at 0.6 s (:24451)
-  grandCross: [[0, "voice", "grandCross1|grandCross2"], [0, "fx", "grandCross_ring"], [0.6, "fx", "grandCross", 0.6]],
-  // RPC_feralStrike: clip (cut in), voice feralStrike1 / 2 and feralStrike_ring at once (:29467-29595); feralStrike at
-  // 0.3 s with the dash (:29118); standby at 1.0 s (0.3 + 0.3 + 0.2 + 0.2), which ends feralStrike early (its
-  // EffectControl followState: the 5th value = when the hero's action changes)
-  feralStrike: [[0, "voice", "feralStrike1|feralStrike2"], [0, "fx", "feralStrike_ring"], [0.3, "fx", "feralStrike", 0, 1.0]],
-} };
 let soundOn = true;
 try { soundOn = localStorage.getItem("wardrobe.sound") !== "0"; } catch (e) {}
 const Sound = {                          // Web Audio: started by the first pick (a click), as browsers require
@@ -2621,8 +2609,10 @@ const Sound = {                          // Web Audio: started by the first pick
     } catch (e) {}
   },
 };
-const FX = { live: [], data: {}, mats: {}, cues: [], t: 0 };
-const fxData = cls => FX.data[cls] ||= FX_CUES[cls] ? getJSON(`${DATA}${cls}/fx.json`).catch(() => null) : Promise.resolve(null);
+const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: {}, missing: {} };   // spawned / missing: tallies for the checks
+// the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
+const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
+  .then(t => (FX.cueTab[cls] = t, Object.keys(t).length ? getJSON(`${DATA}${cls}/fx.json`) : null)).catch(() => null);
 const FXBG = new URLSearchParams(location.search).get("fxbg") || "dark";   // pilot: the backdrop to compare (CSS above)
 stage.dataset.fxbg = FXBG;
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -2950,7 +2940,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 // a clip's cues start with it (startStep) and run on the render clock; a new pick clears what was left
 function fxStart(clip) {
   FX.t = 0;
-  FX.cues = (FX_CUES[C?.cls]?.[clip] || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0, cut: c[4] }));
+  FX.cues = (FX.cueTab[C?.cls]?.[clip]?.cues || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0, cut: c[4] }));
   for (const c of FX.cues) if (c.kind === "voice" && Sound.ctx) c.name.split("|").forEach(n => Sound.get(C.cls, n).catch(() => {}));
 }
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
@@ -2970,7 +2960,12 @@ function fxTick(dt) {
     if (c.done || c.at > FX.t) continue;
     c.done = true;
     if (c.kind === "voice") { const ns = c.name.split("|"); Sound.play(cls, ns[Math.floor(Math.random() * ns.length)]); }
-    else fxData(cls).then(d => { if (d?.effects[c.name] && C?.cls === cls) { const f = new Fx(cls, c.name, d, c.dist); f.cutAt = c.cut; FX.live.push(f); } }).catch(console.error);
+    else fxData(cls).then(d => {
+      if (C?.cls !== cls) return;
+      if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
+      const f = new Fx(cls, c.name, d, c.dist); f.cutAt = c.cut; FX.live.push(f);
+      FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
+    }).catch(console.error);
   }
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
@@ -3018,7 +3013,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains }),   // scripted checks only
 };
 </script>
 </body>

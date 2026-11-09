@@ -10,9 +10,9 @@ the object's bytes (the self-check); the script's name from its MonoScript in sh
 Kept in Unity's space (left-handed): the page builds each effect inside a group scaled (-1, 1, 1), the same mirror as
 wardrobe_data.py's x -> -x, so positions, rotations and emitter vectors need no conversion here.
 
-  uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf ^
-      --fx armorBreak_ring,armorBreak2,crossBreak_ring,crossBreak,grandCross_ring,grandCross ^
-      --voices armorBreak1,armorBreak2,crossBreak1,crossBreak2,grandCross1,grandCross2
+  uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf
+builds every effect and voice the class's cue file names (wardrobe/fx_cues/<cls>.json, the page's cues: "fx" and
+"voice" cues, "a|b" = both); --fx a,b [--voices c,d] builds those instead (probing a skill before its cues are written).
 -> wardrobe/data/<cls>/fx.json (effects, materials, which sound each plays), wardrobe/data/fx/tex/<texture>.webp,
    wardrobe/data/<cls>/sfx/<sound>.mp3 (64 kbps mono: plays in every browser)
 """
@@ -117,12 +117,15 @@ class Game:
         f = self.files.get(name)
         return f.objects.get(pid) if f else None
 
-    def script_name(self, raw):
+    def script_name(self, raw, base=None):
+        """The MonoBehaviour's script, its PPtr read against the file holding the component (base; resources.assets by
+        default; Mole megapunch_hit's are in another file, 2026-11-09)."""
+        base = base or self.ra
         fid, pid = struct.unpack_from("<ii", raw, 12)
-        key = (fid, pid)
+        key = (base.name, fid, pid)
         if key not in self.scripts:
-            o = self.obj((fid, pid))
-            self.scripts[key] = o.read_typetree()["m_ClassName"] if o else f"?{fid}:{pid}"
+            o = self.obj((fid, pid), base)
+            self.scripts[key] = o.read_typetree()["m_ClassName"] if o is not None and o.type.name == "MonoScript" else f"?{fid}:{pid}"
         return self.scripts[key]
 
 
@@ -182,7 +185,7 @@ def effect(game, cls, name, mats, texs, sounds):
                 tr_children = t["m_Children"]
             elif ty == "MonoBehaviour":
                 raw = c.get_raw_data()
-                sname = game.script_name(raw)
+                sname = game.script_name(raw, c.assets_file)
                 lay = LAYOUTS.get(sname)
                 entry = {"type": sname}
                 if lay is not None:
@@ -226,15 +229,31 @@ def rip_wav(cls, name):
     return None
 
 
+def cue_names(cls):
+    """The effects and voices the class's cue file names, as --fx / --voices strings (in cue order, no repeats)."""
+    path = os.path.join(os.path.dirname(DATA), "fx_cues", cls + ".json")
+    names = {"fx": [], "voice": []}
+    for skill in json.load(open(path, encoding="utf-8")).values():
+        for cue in skill["cues"]:
+            for n in cue[2].split("|"):
+                if n not in names[cue[1]]:
+                    names[cue[1]].append(n)
+    return ",".join(names["fx"]), ",".join(names["voice"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cls")
-    ap.add_argument("--fx", required=True)
+    ap.add_argument("--fx", default="", help="effects to build instead of the cue file's")
     ap.add_argument("--voices", default="")
     a = ap.parse_args()
+    if not a.fx:
+        a.fx, a.voices = cue_names(a.cls)
+        if not a.fx and not a.voices:
+            ap.error(f"wardrobe/fx_cues/{a.cls}.json has no cues; write them first, or pass --fx")
     game = Game()
     mats, texs, sounds, effects = {}, {}, set(), {}
-    for n in a.fx.split(","):
+    for n in [n for n in a.fx.split(",") if n]:
         effects[n] = effect(game, a.cls, n, mats, texs, sounds)
     voices = [v for v in a.voices.split(",") if v]
     # textures -> data/fx/tex (shared by every class), sounds -> data/<cls>/sfx

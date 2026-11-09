@@ -19,6 +19,8 @@ from here. The split's design and plan: `plans\wardrobe_split_design.md`, `plans
 - `wardrobe_dist\` (untracked) = the published copy (`pipeline\wardrobe_publish.py`). The video repo's trailer films
   it and its skits read `wardrobe\data` (placements, the office's prop / face fallbacks): renaming either breaks them.
 - `tto_config\` (untracked): `wardrobe_placements.py`'s copies of TTO's placement tables.
+- `wardrobe\fx_cues\<cls>.json` (tracked): each class's skill effect / sound cues (`plans\fx_recipe.md`); the built
+  effects are in `wardrobe\data\<cls>\fx.json`, `sfx\`, `data\fx\tex\`.
 
 ## Wardrobe app (2026-11-04)
 
@@ -494,3 +496,28 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `errors: []`). `wardrobe_publish.py --out wardrobe_dist`: 6,899 files (+3 on the last report), 270.1 MB,
   `data-7e0350ddb2`, `FX_ON = false`, no fx / sfx files, check: no problems; 6.5 min. 46 unit tests pass. Not deployed
   (the user's step, HANDOFF). The Bible commit `0704e0f6` is still not on GitHub (office to push).
+- **2026-11-09, effects for every class, step 1 (prep) done** (HANDOFF "Next up", the plan agreed at the office).
+  - Cues moved out of `index.html` into `wardrobe/fx_cues/<cls>.json`, tracked, one per class (11 are `{}`), each clip
+    `{why: the source lines, cues: [...]}` (JSON has no comments, so the citations moved into `why`). The page reads the
+    class's file when it shows the class (`fxData`: cues, then `data/<cls>/fx.json` if any); with `FX_ON` false (the
+    publish) it fetches nothing; the publish copies only named files, so `fx_cues/` stays local. `FX.spawned` /
+    `FX.missing` tally what cues spawned (a cue whose effect isn't in the data used to be skipped silently).
+  - `wardrobe_fx.py <cls>` with no `--fx` builds what the cue file names (same lists as the HANDOFF's typed ones for
+    Wolf). `Game.script_name` now reads a script reference against the component's own file (Mole `megapunch_hit`'s is
+    not in resources.assets: it raised).
+  - `wardrobe_fx_check.py`: classes from the cue files (`--cls` to pick), each cued clip's tile (the sequence holding it),
+    a shot 0.15 s after each effect first appears (no typed times), fails on a cued effect or voice missing from the data
+    or never spawned (tested with a bogus cue: exit 1, both messages).
+  - `plans/fx_recipe.md`: the per-skill recipe (trace with `clip_flow.js` and an extra pattern, the flattened state
+    machine's `Yield(n, wait)`, max rank, distance, followState, target-spawned effects left out, build, check).
+  - `pipeline/wardrobe_fx_inventory.py` -> `plans/fx_inventory.md` / `.json`: every effect a class's `<Class>.cs` loads
+    from its own Effects folder (699; the code also loads 12 pet effects and other classes' buffs / potions, ~28 per class,
+    counted apart), its parts, and whether ready (built parts only, and `wardrobe_fx.effect()` extracts it in memory).
+    **403 of 699 (58%) are ready today**; Mole is the worst off (25 of 78: bombs and missiles are meshes). Greedy build
+    order: VortexEmitter +23, EmblemEmitter +19, EmitterControl +18, StaticMesh +10, AlphaTimer +9, Animation +18,
+    SkinnedMeshRenderer +52 (the mesh parts unlock effects together: 80 for the three), TrailRenderer +14,
+    Rabbit_potion +13, EffectControl(child) +12, TrailEmitter +10, BoltEmitter +9; then one-offs (the classes' own
+    scripts). Physics parts (colliders, Rigidbody) don't count: they draw nothing.
+  - Checks: Wolf's four skills pass the new check on all three backdrops (13 sounds), moves check `errors: []`, 46 unit
+    tests, the adopt test; the publish's page rewrite still applies to the edited page. `wardrobe_dist` was built before
+    this (no public difference: the pilot is off there).

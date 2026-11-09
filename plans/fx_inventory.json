@@ -1,0 +1,7237 @@
+{
+ "bat": {
+  "own": {
+   "bigcast_ring": {
+    "line": 30026,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "blackservant_ring": {
+    "line": 44917,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "bloodcarnage_ring": {
+    "line": 16065,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "charm_hit": {
+    "line": 13666,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 53740,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "demongaze_hit": {
+    "line": 11542,
+    "parts": [
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "dreamburst_hit": {
+    "line": 13989,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "LineEmitter",
+     "StaticMesh"
+    ]
+   },
+   "dreamdazzle_hit": {
+    "line": 35102,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "echoes": {
+    "line": 11825,
+    "parts": [
+     "Bat_echoes",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl"
+    ]
+   },
+   "echoes_hit": {
+    "line": 11928,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "echoes_ring": {
+    "line": 27967,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "guardian": {
+    "line": 30549,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Bat_guardianOfTheNight",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "masscast": {
+    "line": 11140,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "mindcontrol_ring": {
+    "line": 13738,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "ImageEmitter",
+     "Light"
+    ]
+   },
+   "mirageorb": {
+    "line": 12669,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Bat_mirageOrb",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "nefariouswhip_hit": {
+    "line": 44025,
+    "parts": [
+     "AudioControl",
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "nightmare_ring": {
+    "line": 11996,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "paranoia_hit": {
+    "line": 14599,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "phantasmblast_hit": {
+    "line": 36059,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "shadowgaze_hit": {
+    "line": 11582,
+    "parts": [
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "shadowsacrifice_ring": {
+    "line": 14301,
+    "parts": [
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "shatteringdream_hit": {
+    "line": 42548,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "ShatterMesh",
+     "StaticMesh"
+    ]
+   },
+   "souleater_hit": {
+    "line": 14413,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "souleater_ring": {
+    "line": 40715,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "swap_hit": {
+    "line": 13562,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "switch_hit": {
+    "line": 13368,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/elementals/shade4/effects/nattack_hit",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "bison": {
+  "own": {
+   "aftershock": {
+    "line": 22984,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "aspect_slam": {
+    "line": 21449,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "StaticMesh",
+     "UVScroll"
+    ]
+   },
+   "aspect_trample": {
+    "line": 22536,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer",
+     "UVScroll"
+    ]
+   },
+   "calamityhammer_fire": {
+    "line": 32785,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "calamityhammer_ring": {
+    "line": 32350,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cattack1_dust": {
+    "line": 19320,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cattack2_dust": {
+    "line": 20379,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "deadeffect": {
+    "line": 41201,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "diamondshield_ring": {
+    "line": 28196,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "earthrupture": {
+    "line": 8775,
+    "parts": [
+     "Animation",
+     "Bison_earthRupture",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "earthrupture_ring": {
+    "line": 28854,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "earthsmasher": {
+    "line": 29132,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "earthsmasher_ring": {
+    "line": 29505,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "enrage_ring": {
+    "line": 20911,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "farstun": {
+    "line": 7646,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "farstun_ring": {
+    "line": 23695,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "holdcharge_fire": {
+    "line": 20280,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "instantrush_dust": {
+    "line": 24514,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "instantrush_ring": {
+    "line": 24482,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "ironshield_ring": {
+    "line": 27609,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "knockdown": {
+    "line": 23019,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "knockdown_hit": {
+    "line": 7511,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "knockdown_ring": {
+    "line": 23393,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "magmaclutter_ring1": {
+    "line": 31839,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "magmaclutter_ring2": {
+    "line": 31506,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "TrailEmitter"
+    ]
+   },
+   "massstun": {
+    "line": 9096,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "onslaught_ring": {
+    "line": 30325,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "overpower": {
+    "line": 24985,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "overswing_ring": {
+    "line": 25579,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "powercleave": {
+    "line": 26129,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "TrailEmitter"
+    ]
+   },
+   "powercleave_hit": {
+    "line": 8162,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "powercleave_ring": {
+    "line": 26465,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "powerhammer": {
+    "line": 26179,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "TrailRenderer"
+    ]
+   },
+   "powerhammer_hit": {
+    "line": 8254,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "powerreel_ring": {
+    "line": 26513,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "pridecrusher_ring": {
+    "line": 31147,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "slam_dust": {
+    "line": 21411,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "slam_ring": {
+    "line": 21794,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "solidcharge_ring": {
+    "line": 19358,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "spinhack_ring": {
+    "line": 20417,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "stunningground_ring": {
+    "line": 9378,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "titanform_ring": {
+    "line": 30006,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "trample1": {
+    "line": 22057,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "trample2": {
+    "line": 22096,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "trample_dust": {
+    "line": 22648,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "warcry_ring": {
+    "line": 26868,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "cat": {
+  "own": {
+   "assassinate_hit": {
+    "line": 41949,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "awareness1": {
+    "line": 8591,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "awareness2": {
+    "line": 8630,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "backstab_hit": {
+    "line": 10353,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "bleed_fire": {
+    "line": 34887,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "bleed_hit": {
+    "line": 10282,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "bleed_ring": {
+    "line": 35207,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "copycat_hit": {
+    "line": 9541,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "copycat_ring": {
+    "line": 26750,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "damageplus": {
+    "line": 19749,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StatusControl"
+    ]
+   },
+   "damageplus_ring": {
+    "line": 19987,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "damageroulette_ring": {
+    "line": 27080,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "deltastrike": {
+    "line": 37470,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "RingEmitter",
+     "ShatterMesh",
+     "SkinnedMeshRenderer",
+     "StaticMesh",
+     "TrailEmitter",
+     "UVScroll"
+    ]
+   },
+   "deltastrike_cat": {
+    "line": 37305,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "deltastrike_ring": {
+    "line": 37105,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "disarm": {
+    "line": 34055,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "disarm_hit": {
+    "line": 10232,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "disarm_ring": {
+    "line": 34375,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "doubledown1_hit": {
+    "line": 25441,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "doubledown2_hit": {
+    "line": 25405,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "doubledown_ring": {
+    "line": 24711,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "evenodds_hit": {
+    "line": 9351,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "fatedraw_ring": {
+    "line": 21714,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "finishingblow_hit": {
+    "line": 38739,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "finishingblow_ring1": {
+    "line": 38445,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "finishingblow_ring2": {
+    "line": 39223,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "flyingdagger_fire": {
+    "line": 29156,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "flyingdagger_hit": {
+    "line": 9838,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "forwardlunge_hit": {
+    "line": 9888,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "grandcasinoarcade": {
+    "line": 27826,
+    "parts": [
+     "Animation",
+     "Cat_grandCasinoArcade",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "grandcasinoarcade_hit1": {
+    "line": 9669,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "grandcasinoarcade_hit2": {
+    "line": 9706,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "grandcasinoarcade_hit3": {
+    "line": 9743,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "grandcasinoarcade_hit7": {
+    "line": 9784,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "grandcasinoarcade_ring1": {
+    "line": 28645,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "grandcasinoarcade_ring2": {
+    "line": 28406,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "hiddenblade_hit": {
+    "line": 10072,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "ladyluck_ring": {
+    "line": 21585,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "lifegamble_heal": {
+    "line": 9169,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "lifegamble_hit": {
+    "line": 9212,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "lifegamble_ring": {
+    "line": 22967,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "luckycard_fire": {
+    "line": 20626,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "luckydice": {
+    "line": 23872,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "WorldParticleCollider"
+    ]
+   },
+   "moonblade": {
+    "line": 35984,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "moonstorm": {
+    "line": 36726,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "nattack_dust": {
+    "line": 16320,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "nattack_hit": {
+    "line": 8266,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "pillageplunge_hit": {
+    "line": 10510,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "pillageplunge_ring1": {
+    "line": 40471,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "pillageplunge_ring2": {
+    "line": 40110,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "pillageplunge_ring3": {
+    "line": 40289,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "powershuffle_ring": {
+    "line": 22424,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "reversethrust": {
+    "line": 31169,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh",
+     "TrailRenderer"
+    ]
+   },
+   "reversethrust_hit": {
+    "line": 9938,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "skillgamble_heal": {
+    "line": 9262,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "skillgamble_hit": {
+    "line": 9305,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "skillgamble_ring": {
+    "line": 23499,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "supportfire_cannon": {
+    "line": 41072,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "supportfire_fire": {
+    "line": 10731,
+    "parts": [
+     "Cat_supportFire",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "supportfire_hit": {
+    "line": 10790,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter"
+    ]
+   },
+   "supportfire_ring": {
+    "line": 40920,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "RingEmitter"
+    ]
+   },
+   "supportfire_smoke": {
+    "line": 10699,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "swiftpace_ring1": {
+    "line": 39733,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "swiftpace_ring2": {
+    "line": 39608,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "treasurehunt": {
+    "line": 9091,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "WorldParticleCollider"
+    ]
+   },
+   "twopair_hit": {
+    "line": 9477,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "twopair_ring": {
+    "line": 26195,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "chameleon": {
+  "own": {
+   "allbugslayer_fire": {
+    "line": 33006,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allbugslayer_hit": {
+    "line": 9785,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allelementalslayer_fire": {
+    "line": 33088,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allelementalslayer_hit": {
+    "line": 9859,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allmachineslayer_fire": {
+    "line": 33133,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allmachineslayer_hit": {
+    "line": 9900,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allslain_hit": {
+    "line": 9953,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allslain_ring": {
+    "line": 34604,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "allslayer_ring": {
+    "line": 32297,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "alltailslayer_fire": {
+    "line": 33047,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "alltailslayer_hit": {
+    "line": 9822,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "blend": {
+    "line": 16325,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "bloodburn": {
+    "line": 29807,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "bugslayer_eye": {
+    "line": 9615,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "bugslayer_fire": {
+    "line": 31797,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "castring": {
+    "line": 18534,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "cattack_fire": {
+    "line": 17253,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "cattack_ring1": {
+    "line": 16457,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cattack_ring2": {
+    "line": 16496,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cleararrow": {
+    "line": 8996,
+    "parts": [
+     "Chameleon_nAttack",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "criticalplus_hit": {
+    "line": 9338,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 46832,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "doublestrider_left": {
+    "line": 27161,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "doublestrider_right": {
+    "line": 28535,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "elementalslayer_eye": {
+    "line": 9689,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "elementalslayer_fire": {
+    "line": 31875,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "fatalstrike_ring": {
+    "line": 26527,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "finalentrapment": {
+    "line": 9142,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "immunity_ring": {
+    "line": 18842,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "machineslayer_eye": {
+    "line": 9730,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "machineslayer_fire": {
+    "line": 31914,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "markofslayer_hit": {
+    "line": 36758,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "markofslayer_ring": {
+    "line": 36890,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "masshouseshot": {
+    "line": 22359,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "masslock_ring": {
+    "line": 22051,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "massshot": {
+    "line": 22396,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "nattack": {
+    "line": 8460,
+    "parts": [
+     "Chameleon_nAttack",
+     "ProjectileControl"
+    ]
+   },
+   "nattack_hit": {
+    "line": 8578,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "perfectblend_ring": {
+    "line": 20595,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "poisonvolley": {
+    "line": 23618,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "quickfire_fire": {
+    "line": 19478,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "rightstride_fire": {
+    "line": 28247,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "rustydecay_ring": {
+    "line": 35780,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "skinshift_ring": {
+    "line": 35102,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "strideshot_dust": {
+    "line": 27317,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "tailslayer_eye": {
+    "line": 9652,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "tailslayer_fire": {
+    "line": 31836,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "tent_destroy": {
+    "line": 36181,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "tent_heal": {
+    "line": 36294,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "tent_ring": {
+    "line": 36079,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "thunderdragon_ring1": {
+    "line": 38276,
+    "parts": [
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "EffectControl(child)",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "thunderdragon_ring2": {
+    "line": 37992,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "tormentrain_fire": {
+    "line": 25996,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "WorldParticleCollider"
+    ]
+   },
+   "tormentrain_ring": {
+    "line": 25411,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "venomshock_ring": {
+    "line": 24213,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "zephyrlore_ring": {
+    "line": 10848,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "zeroshot_ring": {
+    "line": 37637,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "mole": {
+  "own": {
+   "assemble_box": {
+    "line": 23086,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "assemble_dust": {
+    "line": 11764,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "bazooka_fire": {
+    "line": 41324,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "Mole_bazooka",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "bazooka_hit": {
+    "line": 14026,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "bazooka_ring": {
+    "line": 41156,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_b": {
+    "line": 29996,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_fire": {
+    "line": 30418,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_g": {
+    "line": 29984,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_hit": {
+    "line": 30274,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "bombardment_k": {
+    "line": 30008,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_r": {
+    "line": 29972,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bombardment_signal": {
+    "line": 29668,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "bombardment_w": {
+    "line": 30020,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bunker": {
+    "line": 25254,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "bunker_hole": {
+    "line": 25457,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "cartbomb_fire": {
+    "line": 43076,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "Mole_cartBomb",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "cartbomb_hit": {
+    "line": 14142,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cartbomb_ring": {
+    "line": 43039,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "chopppercannon_ring": {
+    "line": 33707,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "detonate": {
+    "line": 31113,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "detonate_ring": {
+    "line": 31392,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "dig_dirt": {
+    "line": 21780,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "dig_dust": {
+    "line": 22241,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "dig_hole": {
+    "line": 22434,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "StaticMesh"
+    ]
+   },
+   "firebarrage_b": {
+    "line": 29131,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "firebarrage_g": {
+    "line": 29119,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "firebarrage_hit1": {
+    "line": 29000,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "firebarrage_hit2": {
+    "line": 29035,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "firebarrage_k": {
+    "line": 29143,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "firebarrage_r": {
+    "line": 29107,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "firebarrage_signal": {
+    "line": 28787,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "firebarrage_w": {
+    "line": 29155,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "flamecarnival": {
+    "line": 38506,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Mole_flameCarnival",
+     "StaticMesh"
+    ]
+   },
+   "flamecarnival_fire": {
+    "line": 38968,
+    "parts": [
+     "AudioControl",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "rotationControl"
+    ]
+   },
+   "flameturret": {
+    "line": 28349,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "flameturret_fire": {
+    "line": 27899,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "grenadecluster_fire": {
+    "line": 13800,
+    "parts": [
+     "Mole_grenadeCluster",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "grenadecluster_hit": {
+    "line": 13855,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "megadrill_hit": {
+    "line": 13919,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "megadrill_ring": {
+    "line": 39471,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "megahammer": {
+    "line": 33352,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "megapunch": {
+    "line": 32409,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "LineEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "megapunch_hit": {
+    "line": 13075,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "mine1": {
+    "line": 24269,
+    "parts": [
+     "ImageEmitter",
+     "Mole_mine",
+     "StaticMesh"
+    ]
+   },
+   "mine2": {
+    "line": 24308,
+    "parts": [
+     "ImageEmitter",
+     "Mole_mine",
+     "StaticMesh"
+    ]
+   },
+   "mine3": {
+    "line": 24347,
+    "parts": [
+     "ImageEmitter",
+     "Mole_mine",
+     "StaticMesh"
+    ]
+   },
+   "mine4": {
+    "line": 24386,
+    "parts": [
+     "ImageEmitter",
+     "Mole_mine",
+     "StaticMesh"
+    ]
+   },
+   "mine_hit": {
+    "line": 10543,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "minewalker_ring": {
+    "line": 45379,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "mortarshot_fire": {
+    "line": 10758,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Mole_mortarShot",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "mortarshot_hit": {
+    "line": 10818,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "napalm": {
+    "line": 13727,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Mole_napalm",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "napalm_hit": {
+    "line": 37757,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "napalm_ring": {
+    "line": 37134,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter"
+    ]
+   },
+   "reload": {
+    "line": 10325,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "rollermachine_hit": {
+    "line": 14083,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "rollermachine_ring": {
+    "line": 42340,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sawmachine_ring": {
+    "line": 40519,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "skydrill": {
+    "line": 31948,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "skydrill_ring": {
+    "line": 32021,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "skyshaker_ring": {
+    "line": 31986,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "smartshell_hit": {
+    "line": 11503,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "stungrenade": {
+    "line": 11285,
+    "parts": [
+     "Mole_stunGrenade",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "stunmine1": {
+    "line": 27055,
+    "parts": [
+     "ImageEmitter",
+     "Mole_stunMine",
+     "StaticMesh"
+    ]
+   },
+   "stunmine2": {
+    "line": 27094,
+    "parts": [
+     "ImageEmitter",
+     "Mole_stunMine",
+     "StaticMesh"
+    ]
+   },
+   "stunmine_hit": {
+    "line": 11040,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "superdig_dust": {
+    "line": 21664,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "supertnt_hit": {
+    "line": 25881,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "teslacoil_ring": {
+    "line": 41723,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "timenuke1": {
+    "line": 11636,
+    "parts": [
+     "Animation",
+     "ImageEmitter",
+     "Mole_timeNuke",
+     "StaticMesh"
+    ]
+   },
+   "timenuke2": {
+    "line": 11675,
+    "parts": [
+     "Animation",
+     "ImageEmitter",
+     "Mole_timeNuke",
+     "StaticMesh"
+    ]
+   },
+   "tnt": {
+    "line": 25792,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "tnt_hit": {
+    "line": 25916,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "warcapital": {
+    "line": 14267,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "CharacterControl",
+     "Mole_warCapital",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "warcapital_fire": {
+    "line": 44238,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "warfactory_ring": {
+    "line": 40903,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "warmissile": {
+    "line": 14507,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Mole_warMissile",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "StaticMesh"
+    ]
+   },
+   "warmissile_hit": {
+    "line": 14603,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "monkey": {
+  "own": {
+   "blazingarrow": {
+    "line": 27703,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer",
+     "TrailRenderer"
+    ]
+   },
+   "blazingform0_ring": {
+    "line": 40318,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "blazingform_fire": {
+    "line": 39493,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "blazingform_ring": {
+    "line": 39969,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 52233,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "earthpulse": {
+    "line": 13094,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Monkey_earthPulse",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl"
+    ]
+   },
+   "earthpulse_hit": {
+    "line": 32806,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "earthpulse_ring": {
+    "line": 32501,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer",
+     "StaticMesh"
+    ]
+   },
+   "earthrune_hit": {
+    "line": 13613,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "earthsoul_ring": {
+    "line": 12600,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "elementalbound_ring": {
+    "line": 15530,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "fireball1": {
+    "line": 11119,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "Monkey_fireBall",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fireball2": {
+    "line": 11158,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "Monkey_fireBall",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fireball3": {
+    "line": 11197,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "Monkey_fireBall",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fireball4": {
+    "line": 11236,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "Monkey_fireBall",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fireball_hit": {
+    "line": 11308,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "firerune_hit": {
+    "line": 12347,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "firesoul_ring": {
+    "line": 11377,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "flashfire": {
+    "line": 28556,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "flashfire_ring": {
+    "line": 28814,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "gadinaarmor": {
+    "line": 40695,
+    "parts": [
+     "Animation",
+     "RingEmitter",
+     "SkinnedMeshRenderer",
+     "TrailRenderer"
+    ]
+   },
+   "gadinaarmor_create": {
+    "line": 40758,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "gadinaarmor_destroy": {
+    "line": 14280,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "gattack1_ring": {
+    "line": 41461,
+    "parts": [
+     "AudioSource",
+     "EffectControl"
+    ]
+   },
+   "gattack2_ring": {
+    "line": 41853,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "gattack3_ring": {
+    "line": 42387,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "gattack_hit": {
+    "line": 14211,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "groundlock_hit": {
+    "line": 31127,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "instantcast": {
+    "line": 25036,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "instantcast_ring": {
+    "line": 10966,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "lavu": {
+    "line": 13889,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Monkey_lavu",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh",
+     "rotationControl"
+    ]
+   },
+   "lavu_ring": {
+    "line": 34612,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "mikeblink": {
+    "line": 35895,
+    "parts": [
+     "Animation"
+    ]
+   },
+   "mikecircle": {
+    "line": 21055,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer",
+     "TrailEmitter"
+    ]
+   },
+   "nattack_hit": {
+    "line": 10747,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "pattack_ring": {
+    "line": 38914,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "phoenixarmor": {
+    "line": 38383,
+    "parts": [
+     "Animation",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer",
+     "TrailEmitter"
+    ]
+   },
+   "phoenixarmor_create": {
+    "line": 38449,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "phoenixarmor_destroy": {
+    "line": 14140,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "planetbreaker_ring": {
+    "line": 31967,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "runicflame": {
+    "line": 12481,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Monkey_runicFlame",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "runicsand": {
+    "line": 13747,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "Monkey_runicSand",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "secondstone": {
+    "line": 31034,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sentinalguard_ring": {
+    "line": 42803,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "stonehammer": {
+    "line": 33523,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "summonsoul_ring": {
+    "line": 24150,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "upheaval": {
+    "line": 35164,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "upheaval_ring": {
+    "line": 35389,
+    "parts": [
+     "AudioSource",
+     "EffectControl"
+    ]
+   },
+   "volcaniceruption": {
+    "line": 43494,
+    "parts": [
+     "Animation",
+     "AudioControl",
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "volcaniceruption_ring": {
+    "line": 43457,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "worldignition": {
+    "line": 30309,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "panda": {
+  "own": {
+   "ashurafist": {
+    "line": 29770,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "ashuraring": {
+    "line": 30498,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "aurablast": {
+    "line": 18450,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "aurafield_ring": {
+    "line": 19072,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "cattack_ring": {
+    "line": 19034,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "climbingcliff_hit": {
+    "line": 8747,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "climbingcliff_ring": {
+    "line": 27699,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "combolink_ring": {
+    "line": 40690,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "crushingmonolith": {
+    "line": 28525,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "crushingmonolith_hit": {
+    "line": 9781,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 50719,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "deathblow": {
+    "line": 35027,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "deathblow_ring": {
+    "line": 35545,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "delayqi_fire": {
+    "line": 23759,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "delayqi_ring": {
+    "line": 24217,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "drunkenfist": {
+    "line": 31668,
+    "parts": [
+     "AudioSource",
+     "ImageEmitter"
+    ]
+   },
+   "drunkenspin": {
+    "line": 31633,
+    "parts": [
+     "AudioSource",
+     "ImageEmitter"
+    ]
+   },
+   "fuujinken_hit": {
+    "line": 9838,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "fuujinken_ring1": {
+    "line": 41267,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "fuujinken_ring2": {
+    "line": 40928,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioControl",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fuujinken_ring3": {
+    "line": 41312,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "heavenpalm": {
+    "line": 9529,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "heavenpalm_ring": {
+    "line": 40294,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "lotuspalm": {
+    "line": 9479,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "lotuspalm_ring": {
+    "line": 39465,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "mysticsage_hit": {
+    "line": 9583,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "StaticMesh"
+    ]
+   },
+   "nattack_hit1": {
+    "line": 8007,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "nattack_hit2": {
+    "line": 8093,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "nattack_punch": {
+    "line": 15271,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "nattack_wheel": {
+    "line": 16927,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "psalmofenergy_ring": {
+    "line": 10249,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "pummel_dust": {
+    "line": 25033,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "pummel_hit": {
+    "line": 8576,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "pummel_ogre": {
+    "line": 24492,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "pummel_ogrearm1": {
+    "line": 24553,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "pummel_ogrearm2": {
+    "line": 24589,
+    "parts": [
+     "AlphaTimer",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "qiburst": {
+    "line": 23798,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "qistrike": {
+    "line": 23833,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "qistrike_hit": {
+    "line": 8519,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "qistrike_ring": {
+    "line": 23247,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "raijinken_hit": {
+    "line": 42515,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "BoltEmitter",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "raijinken_ring1": {
+    "line": 42181,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "raijinken_ring2": {
+    "line": 41928,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "rainstorm": {
+    "line": 38305,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "risingdragon": {
+    "line": 29665,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "risingdragon_hit": {
+    "line": 8932,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "risingdragon_ring": {
+    "line": 29509,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "risingvortex": {
+    "line": 29251,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "risingvortex_hit": {
+    "line": 8882,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "rollaround_ring": {
+    "line": 20624,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "rushingfalcon": {
+    "line": 22711,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "rushingfalcon_hit": {
+    "line": 8462,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "safeguard_hit": {
+    "line": 9737,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "sptransfer": {
+    "line": 36062,
+    "parts": [
+     "BoltEmitter"
+    ]
+   },
+   "stasisblow": {
+    "line": 34212,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "stasisblow_enddust": {
+    "line": 34464,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "stasisblow_ring": {
+    "line": 34727,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "threestep": {
+    "line": 21716,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "TrailRenderer"
+    ]
+   },
+   "threestep_hit": {
+    "line": 8412,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "tigerpounce_hit": {
+    "line": 8690,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "tigertoss": {
+    "line": 26621,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "timeandtidecrane": {
+    "line": 33804,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "ImageEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "timeandtidemonkey": {
+    "line": 33237,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "towerrush_hit": {
+    "line": 8626,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "towerrush_ogre": {
+    "line": 25383,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "towerrush_ring": {
+    "line": 25756,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "watercrane": {
+    "line": 33841,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "watercrane_hit": {
+    "line": 9088,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "watermonkey": {
+    "line": 33272,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "watermonkey_hit": {
+    "line": 9038,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "windcloud": {
+    "line": 36687,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "penguin": {
+  "own": {
+   "absolutezero": {
+    "line": 33844,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "ShatterMesh",
+     "StaticMesh",
+     "VortexEmitter"
+    ]
+   },
+   "arcticemperor": {
+    "line": 35042,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_arcticEmperor",
+     "RingEmitter",
+     "ShatterMesh",
+     "StaticMesh",
+     "VortexEmitter"
+    ]
+   },
+   "arcticwind": {
+    "line": 30766,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "astralshift_ring": {
+    "line": 12805,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "blink": {
+    "line": 22817,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "blink_ring": {
+    "line": 23034,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "blizzard": {
+    "line": 34430,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cattack_ring": {
+    "line": 18593,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "cosmicfriday": {
+    "line": 39256,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_cosmicFriday",
+     "RingEmitter",
+     "StaticMesh",
+     "VortexEmitter"
+    ]
+   },
+   "cosmicfriday_ring": {
+    "line": 39219,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "cosmicrift_ring": {
+    "line": 38736,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "deadlyfrost": {
+    "line": 30739,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "dispell": {
+    "line": 22289,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "fallingcomet": {
+    "line": 26881,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fallingstar": {
+    "line": 25871,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "fallingstar_ring": {
+    "line": 25563,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "focusintellect_ring": {
+    "line": 35969,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "frostspike_ring": {
+    "line": 37883,
+    "parts": [
+     "AlphaTimer",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "frozenblast": {
+    "line": 29677,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "frozenbreak": {
+    "line": 29631,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "giantcomet": {
+    "line": 37615,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "giantstar": {
+    "line": 37328,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "iceblock": {
+    "line": 10716,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Penguin_iceBlock",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "manaarc": {
+    "line": 21821,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "manaburn": {
+    "line": 24795,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "manafield_ring": {
+    "line": 18558,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "manapool_hit": {
+    "line": 10562,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "manasurge": {
+    "line": 24758,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmblemEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "meteora": {
+    "line": 28348,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "EffectControl(child)",
+     "ImageEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "meteora_hit": {
+    "line": 28412,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "meteora_ring": {
+    "line": 28521,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "mptransfer": {
+    "line": 23488,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "mptransfer_ring": {
+    "line": 23651,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "multicast": {
+    "line": 9838,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "parallelshift": {
+    "line": 36642,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "parallelshift_ring": {
+    "line": 36854,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "penguinofarc": {
+    "line": 21786,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "snowball_cast": {
+    "line": 38253,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "VortexEmitter"
+    ]
+   },
+   "snowman_ring": {
+    "line": 32319,
+    "parts": [
+     "AudioSource",
+     "EffectControl"
+    ]
+   },
+   "spreadshot_fire": {
+    "line": 11486,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_nAttack",
+     "ProjectileControl"
+    ]
+   },
+   "tornado1": {
+    "line": 10897,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_tornado",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "tornado2": {
+    "line": 10936,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_tornado",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "tornado3": {
+    "line": 10975,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Penguin_tornado",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "tornado_hit": {
+    "line": 10802,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "tornado_ring": {
+    "line": 10857,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "typhoon1": {
+    "line": 11170,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Penguin_typhoon",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "typhoon2": {
+    "line": 11209,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Penguin_typhoon",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "typhoon3": {
+    "line": 11248,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Penguin_typhoon",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "rabbit": {
+  "own": {
+   "acidicfield": {
+    "line": 10119,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Rabbit_acidicField"
+    ]
+   },
+   "acidicfield_fire": {
+    "line": 10172,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "allhpdrug1": {
+    "line": 45475,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "allkodrug1": {
+    "line": 45581,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "allmpdrug1": {
+    "line": 45509,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "allspdrug1": {
+    "line": 45543,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "backpack_hit": {
+    "line": 10707,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "backpack_ring": {
+    "line": 31078,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh",
+     "TrailEmitter"
+    ]
+   },
+   "bigbag_ring": {
+    "line": 31041,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh",
+     "TrailEmitter"
+    ]
+   },
+   "boostshot": {
+    "line": 10265,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "bounce1": {
+    "line": 21019,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "bounce2": {
+    "line": 21865,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "bouncingbullet": {
+    "line": 18097,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "bouncingbullet_hit": {
+    "line": 18135,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cast_ring": {
+    "line": 23855,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "cattack_charge": {
+    "line": 18988,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "cattack_fire": {
+    "line": 19354,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cattack_hit": {
+    "line": 9391,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "circleshot": {
+    "line": 32909,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "circleshot_ring": {
+    "line": 33072,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "contract_create": {
+    "line": 11695,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "contract_flag": {
+    "line": 40696,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "diamondshot_fire": {
+    "line": 38214,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "diamondshot_hit": {
+    "line": 11405,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "diamondshot_ring": {
+    "line": 38544,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "extravagance_ring": {
+    "line": 40021,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "RingEmitter"
+    ]
+   },
+   "fourshot_fire": {
+    "line": 32314,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "fromtheabove_ring": {
+    "line": 21830,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "gilshot_fire": {
+    "line": 30320,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "gilshot_hit": {
+    "line": 10502,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "gilshot_ring": {
+    "line": 30726,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "gorgonshot_fire": {
+    "line": 29605,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter",
+     "StaticMesh"
+    ]
+   },
+   "gorgonshot_hit": {
+    "line": 10452,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "gorgonshot_ring": {
+    "line": 29974,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "healingfield": {
+    "line": 11295,
+    "parts": [
+     "AudioSource",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "Rabbit_healingField"
+    ]
+   },
+   "healingfield_fire": {
+    "line": 11355,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "heatshot": {
+    "line": 10308,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "hppot1": {
+    "line": 24375,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "hppot2": {
+    "line": 24414,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "hppot3": {
+    "line": 24453,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "hppot4": {
+    "line": 24492,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "hppot_hit": {
+    "line": 9964,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "immuneshot": {
+    "line": 10222,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "lifeshot": {
+    "line": 10351,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "maimshot_fire": {
+    "line": 23144,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "maimshot_hit": {
+    "line": 9639,
+    "parts": [
+     "ImageEmitter"
+    ]
+   },
+   "medicalshot_fire": {
+    "line": 27821,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "medicalshot_ring": {
+    "line": 27591,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "millionaire1": {
+    "line": 37116,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "WorldParticleCollider"
+    ]
+   },
+   "millionaire2": {
+    "line": 37153,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "WorldParticleCollider"
+    ]
+   },
+   "millionaire_peppon": {
+    "line": 37473,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "millionaire_ring": {
+    "line": 36909,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "mppot_hit": {
+    "line": 9880,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "nattack_fire": {
+    "line": 17537,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "nattack_hit": {
+    "line": 9125,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "randompot1": {
+    "line": 26173,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "randompot2": {
+    "line": 26204,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "randompot3": {
+    "line": 26235,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "randompot4": {
+    "line": 26266,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "randompot5": {
+    "line": 26297,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "randompot6": {
+    "line": 26328,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "rapidtrance_potion": {
+    "line": 28987,
+    "parts": [
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "rapidtrance_ring": {
+    "line": 29062,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "replenishment_ring": {
+    "line": 12843,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "shootingarray_finalhit": {
+    "line": 11007,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "shootingarray_fire": {
+    "line": 35184,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "shootingarray_hit": {
+    "line": 10964,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "shootingarray_ring": {
+    "line": 35793,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "shotgun_fire": {
+    "line": 36211,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "shotgun_hit": {
+    "line": 11057,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "snipercamera": {
+    "line": 18660,
+    "parts": [
+     "AudioSource",
+     "Rabbit_sniperCamera"
+    ]
+   },
+   "sppot1": {
+    "line": 25246,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sppot2": {
+    "line": 25285,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sppot3": {
+    "line": 25324,
+    "parts": [
+     "Animation",
+     "Rabbit_potion",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sppot_hit": {
+    "line": 9918,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "statscan": {
+    "line": 22512,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "statscan_dust": {
+    "line": 22545,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "stickygum": {
+    "line": 10045,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "Rabbit_stickyGum",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "tenshot_fire": {
+    "line": 39437,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "tenshot_ring": {
+    "line": 39112,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "trucetrading_fail": {
+    "line": 34859,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "trucetrading_flag": {
+    "line": 34295,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "trucetrading_ring": {
+    "line": 34263,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "trucetrading_success": {
+    "line": 34755,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "sheep": {
+  "own": {
+   "blueseal": {
+    "line": 32226,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "bookbash_hit": {
+    "line": 11814,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "bookbash_ring1": {
+    "line": 37543,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "bookbash_ring2": {
+    "line": 37658,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "bookbash_ring3": {
+    "line": 37769,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "TrailRenderer"
+    ]
+   },
+   "cattack": {
+    "line": 9819,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "Sheep_cAttack"
+    ]
+   },
+   "cattack_charge": {
+    "line": 18698,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cattack_hit": {
+    "line": 9915,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cattack_ring": {
+    "line": 18730,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "cleanse": {
+    "line": 25343,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "clear": {
+    "line": 24849,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 46903,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "divinechannel_ring": {
+    "line": 40167,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "divinityaxe": {
+    "line": 36690,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer",
+     "TrailEmitter"
+    ]
+   },
+   "divinityaxe_hit": {
+    "line": 11757,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "divinityspear": {
+    "line": 10752,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "divinityspear_ring": {
+    "line": 31886,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "divinitysword": {
+    "line": 31107,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "edensanctuary": {
+    "line": 37123,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "RingEmitter",
+     "Sheep_edenSanctuary",
+     "StaticMesh",
+     "VortexEmitter"
+    ]
+   },
+   "edensanctuary_ring": {
+    "line": 37087,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "freecast": {
+    "line": 10157,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "heal": {
+    "line": 22248,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "holylight": {
+    "line": 27863,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "holylight_ring": {
+    "line": 28100,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "hominglight": {
+    "line": 11445,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "Sheep_homingLight"
+    ]
+   },
+   "illuminate": {
+    "line": 29372,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "koheal": {
+    "line": 10334,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "lullaby_ring": {
+    "line": 35696,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "nattack": {
+    "line": 9316,
+    "parts": [
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "ProjectileControl",
+     "Sheep_nAttack"
+    ]
+   },
+   "nattack_hit": {
+    "line": 9409,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "overheal": {
+    "line": 26293,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "overheal_ring": {
+    "line": 21172,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "pacify": {
+    "line": 23760,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "purifyingtear_ring": {
+    "line": 34841,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "quickheal": {
+    "line": 10369,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "radiantheal": {
+    "line": 22213,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "redseal": {
+    "line": 32191,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "returncast": {
+    "line": 11651,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "revert": {
+    "line": 27339,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "revive": {
+    "line": 26829,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "sealofattack": {
+    "line": 10822,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "RingEmitter",
+     "Sheep_seal",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sealofdefense": {
+    "line": 10958,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "RingEmitter",
+     "Sheep_seal",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sealofearth": {
+    "line": 11100,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "RingEmitter",
+     "Sheep_seal",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sealofheaven": {
+    "line": 11243,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "RingEmitter",
+     "Sheep_seal",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "sleep": {
+    "line": 24347,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "soulofarms": {
+    "line": 34106,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh",
+     "TrailEmitter"
+    ]
+   },
+   "soulofarms_ring": {
+    "line": 33999,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "soulofarms_trail": {
+    "line": 34031,
+    "parts": [
+     "EffectControl",
+     "TrailRenderer"
+    ]
+   },
+   "whiteburst_hit": {
+    "line": 11577,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "worldencarta_hit": {
+    "line": 11871,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "worldencarta_ring": {
+    "line": 38322,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "whale": {
+  "own": {
+   "asunderimpale": {
+    "line": 27157,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "asunderround": {
+    "line": 28013,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "bowlingwhale": {
+    "line": 36680,
+    "parts": [
+     "AlphaTimer",
+     "Animation",
+     "AudioControl",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "StaticMesh",
+     "UVScroll"
+    ]
+   },
+   "bowlingwhale_ring": {
+    "line": 37128,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "bubbleburst": {
+    "line": 35943,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "bubbleburst_ring": {
+    "line": 35768,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "bubbleshield_cast": {
+    "line": 29688,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "calltoarm_ring": {
+    "line": 33314,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "castring": {
+    "line": 20409,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "StaticMesh"
+    ]
+   },
+   "deadeffect": {
+    "line": 46461,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "divingwave": {
+    "line": 31865,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "extendedwave1": {
+    "line": 16554,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "extendedwave2": {
+    "line": 16850,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "extendedwave3": {
+    "line": 18045,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "flyingshield": {
+    "line": 24795,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "Whale_flyingShield"
+    ]
+   },
+   "flyingshield_hit": {
+    "line": 8955,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "gobbleup_hit": {
+    "line": 9072,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "gobbleup_ring": {
+    "line": 26461,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "grandtide": {
+    "line": 37424,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "ParticleSystem",
+     "ParticleSystemRenderer",
+     "StaticMesh"
+    ]
+   },
+   "grandtide_ring": {
+    "line": 37896,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "homingshield": {
+    "line": 10401,
+    "parts": [
+     "AudioSource",
+     "Whale_homingShield"
+    ]
+   },
+   "hydroblast": {
+    "line": 10037,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "javelin": {
+    "line": 8781,
+    "parts": [
+     "AudioSource",
+     "ProjectileControl",
+     "Whale_javelin"
+    ]
+   },
+   "kingdomknight1": {
+    "line": 28433,
+    "parts": [
+     "Animation",
+     "SkinnedMeshRenderer",
+     "TrailRenderer",
+     "whale_kingdomKnight"
+    ]
+   },
+   "kingdomknight2": {
+    "line": 28468,
+    "parts": [
+     "Animation",
+     "SkinnedMeshRenderer",
+     "TrailRenderer",
+     "whale_kingdomKnight"
+    ]
+   },
+   "kingdomknight_ring1": {
+    "line": 28755,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "malstorm": {
+    "line": 32480,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "malstorm_bolt": {
+    "line": 10188,
+    "parts": [
+     "BoltEmitter",
+     "EffectControl"
+    ]
+   },
+   "megalodon": {
+    "line": 34790,
+    "parts": [
+     "Animation",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "megalodon_ring": {
+    "line": 34744,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "nattack_hit": {
+    "line": 8303,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "peninsulaimpale": {
+    "line": 27219,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "peninsulaimpale_ring": {
+    "line": 27389,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "peninsularound": {
+    "line": 28048,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "peninsularound_ring": {
+    "line": 27957,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "rejuvenate": {
+    "line": 31310,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "revitalize_ring": {
+    "line": 36455,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "roundtable_ring": {
+    "line": 29251,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "salvation_ring": {
+    "line": 33689,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "seaaegis_ring": {
+    "line": 11109,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "StaticMesh"
+    ]
+   },
+   "shieldbash_hit": {
+    "line": 8688,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "shieldbash_ring": {
+    "line": 19811,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "shieldrush_hit": {
+    "line": 8905,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "shieldrush_ring": {
+    "line": 24190,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "spiralblast": {
+    "line": 9997,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "swallow_hit": {
+    "line": 9020,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "swallow_ring": {
+    "line": 25666,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "sweep_ring": {
+    "line": 22438,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "tidecutter_ring": {
+    "line": 22309,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "wallpuncture_hit": {
+    "line": 9247,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "whalewave": {
+    "line": 31900,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/wolf/effects/obsidianfang_hit",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ },
+ "wolf": {
+  "own": {
+   "armorbreak1": {
+    "line": 22598,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "armorbreak2": {
+    "line": 22633,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "armorbreak_ring": {
+    "line": 22966,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "artbreaker_hit": {
+    "line": 9175,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "artbreaker_ring": {
+    "line": 34291,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "EmitterControl",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "artcancel_ring": {
+    "line": 27791,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "artcancel_slide": {
+    "line": 27759,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "bladefang_ring": {
+    "line": 26598,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "bladefang_underslash": {
+    "line": 25658,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bladefang_upperslash": {
+    "line": 25871,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bladesong": {
+    "line": 29963,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "bladesong_finalblade": {
+    "line": 30095,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "bladesong_ring": {
+    "line": 29857,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "bloodfang_underslash": {
+    "line": 25695,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bloodfang_upperslash": {
+    "line": 25906,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "SkinnedMeshRenderer"
+    ]
+   },
+   "bravespirit": {
+    "line": 20357,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "cattack1_ring": {
+    "line": 18976,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "cattack1_ring1": {
+    "line": 19160,
+    "parts": [
+     "RingEmitter"
+    ]
+   },
+   "cattack1_ring2": {
+    "line": 19116,
+    "parts": [
+     "RingEmitter"
+    ]
+   },
+   "cattack1_ring3": {
+    "line": 19068,
+    "parts": [
+     "RingEmitter"
+    ]
+   },
+   "cattack2": {
+    "line": 19403,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "crossbreak": {
+    "line": 23884,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "crossbreak_ring": {
+    "line": 23736,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "crusader": {
+    "line": 21085,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "TrailRenderer"
+    ]
+   },
+   "crusader_hit": {
+    "line": 8492,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "Light",
+     "LineEmitter"
+    ]
+   },
+   "crusader_ring": {
+    "line": 21516,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "darkedge1": {
+    "line": 15091,
+    "parts": [
+     "LineEmitter"
+    ]
+   },
+   "darkedge2": {
+    "line": 17682,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "darkedge_ring": {
+    "line": 30731,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "deadeffect": {
+    "line": 46037,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "doubleart": {
+    "line": 18411,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter"
+    ]
+   },
+   "dualbrand_hit": {
+    "line": 9325,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "dualbrand_ring": {
+    "line": 36807,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "dualbrand_slash1": {
+    "line": 35947,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "TrailEmitter"
+    ]
+   },
+   "dualbrand_slash2": {
+    "line": 36107,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "TrailEmitter"
+    ]
+   },
+   "dualbrand_slash3": {
+    "line": 36262,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "LineEmitter",
+     "RingEmitter",
+     "VortexEmitter"
+    ]
+   },
+   "dualbrand_slash4": {
+    "line": 36412,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter",
+     "TrailEmitter"
+    ]
+   },
+   "feralassault_hit": {
+    "line": 9275,
+    "parts": [
+     "EffectControl",
+     "LineEmitter"
+    ]
+   },
+   "feralassault_ring1": {
+    "line": 35463,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "feralassault_ring2": {
+    "line": 35219,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "feralassault_ring3": {
+    "line": 35515,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "feralstrike": {
+    "line": 29106,
+    "parts": [
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "feralstrike_hit": {
+    "line": 8873,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "feralstrike_ring": {
+    "line": 29585,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter"
+    ]
+   },
+   "gloriousspirit": {
+    "line": 20394,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "grandcross": {
+    "line": 24439,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "grandcross_mark": {
+    "line": 8615,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "grandcross_ring": {
+    "line": 24743,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   },
+   "holyarmor_ring": {
+    "line": 33721,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "RingEmitter"
+    ]
+   },
+   "holysword_ring": {
+    "line": 33206,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "RingEmitter"
+    ]
+   },
+   "lawbringer": {
+    "line": 21048,
+    "parts": [
+     "Animation",
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "TrailRenderer"
+    ]
+   },
+   "lawbringer_hit": {
+    "line": 8457,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "Light",
+     "LineEmitter"
+    ]
+   },
+   "lawbringer_ring": {
+    "line": 21387,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "mirrorblade_hit": {
+    "line": 9225,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "mirrorblade_mirror": {
+    "line": 34562,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter",
+     "ShatterMesh",
+     "StaticMesh"
+    ]
+   },
+   "mirrorblade_ring": {
+    "line": 34962,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "obsidianfang_hit": {
+    "line": 9575,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "powerbreak1": {
+    "line": 22233,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "powerbreak2": {
+    "line": 22268,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "resurrection_hit": {
+    "line": 25114,
+    "parts": [
+     "EffectControl",
+     "EmblemEmitter",
+     "RingEmitter"
+    ]
+   },
+   "resurrection_ring": {
+    "line": 25390,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EmblemEmitter",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "secondwind": {
+    "line": 23221,
+    "parts": [
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "skyslasher": {
+    "line": 31697,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "EffectControl(child)",
+     "EllipsoidParticleEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer",
+     "RingEmitter"
+    ]
+   },
+   "skyslasher_ring": {
+    "line": 19020,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "sublimeart_ring": {
+    "line": 18449,
+    "parts": [
+     "EffectControl",
+     "RingEmitter"
+    ]
+   },
+   "thirdrend_ring": {
+    "line": 32659,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "twinresonance_fire": {
+    "line": 37590,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "LineEmitter",
+     "RingEmitter"
+    ]
+   },
+   "twinresonance_hit": {
+    "line": 9425,
+    "parts": [
+     "EffectControl",
+     "EllipsoidParticleEmitter",
+     "ImageEmitter",
+     "ParticleAnimator",
+     "ParticleRenderer"
+    ]
+   },
+   "twinresonance_ring": {
+    "line": 37343,
+    "parts": [
+     "AudioSource",
+     "EffectControl",
+     "ImageEmitter",
+     "RingEmitter"
+    ]
+   }
+  },
+  "others": [
+   "gameassets/characters/heroes/bat/effects/bloodcarnage_ring",
+   "gameassets/characters/heroes/bison/effects/stunningground_ring",
+   "gameassets/characters/heroes/cat/effects/assassinate_hit",
+   "gameassets/characters/heroes/chameleon/effects/zephyrlore_ring",
+   "gameassets/characters/heroes/mole/effects/minewalker_ring",
+   "gameassets/characters/heroes/monkey/effects/elementalbound_ring",
+   "gameassets/characters/heroes/panda/effects/psalmofenergy_ring",
+   "gameassets/characters/heroes/penguin/effects/astralshift_ring",
+   "gameassets/characters/heroes/rabbit/effects/allhpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allkodrug1",
+   "gameassets/characters/heroes/rabbit/effects/allmpdrug1",
+   "gameassets/characters/heroes/rabbit/effects/allspdrug1",
+   "gameassets/characters/heroes/rabbit/effects/replenishment_ring",
+   "gameassets/characters/heroes/sheep/effects/divinechannel_ring",
+   "gameassets/characters/heroes/sheep/effects/revert",
+   "gameassets/characters/heroes/whale/effects/seaaegis_ring",
+   "gameassets/characters/pet/effects/minibubble_hit",
+   "gameassets/characters/pet/effects/minichaosray",
+   "gameassets/characters/pet/effects/minicrystaldrop",
+   "gameassets/characters/pet/effects/miniearthquake",
+   "gameassets/characters/pet/effects/minifan_hit",
+   "gameassets/characters/pet/effects/minilightning",
+   "gameassets/characters/pet/effects/minimeteora",
+   "gameassets/characters/pet/effects/minimultistrike",
+   "gameassets/characters/pet/effects/minipunch_hit",
+   "gameassets/characters/pet/effects/minithornstrike",
+   "gameassets/characters/pet/effects/smallawareness",
+   "gameassets/characters/pet/effects/smallicefield"
+  ]
+ }
+}
