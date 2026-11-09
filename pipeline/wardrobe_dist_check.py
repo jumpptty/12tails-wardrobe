@@ -1,7 +1,7 @@
 """Headless check of the built public copy (wardrobe_dist) itself, served on its own (2026-11-09, TTO online): the page
 loads with no errors or failed requests; the Wolf's Halloween outfit (released TTO) is in the outfit list with the TTO
 mark, wears, and its menu has no download / upload (preview only); a BB outfit's menu still has them; a released TTO
-skill tile (Blade Surge) and Clap are in the move lists; the effects pilot is off.
+skill tile (Blade Surge) and Clap are in the move lists; the effects are on (the sound button shown).
   uv run --no-project --with playwright python -I pipeline/wardrobe_dist_check.py D:/12tails-wardrobe/wardrobe_dist checks/<dir>"""
 import asyncio, functools, http.server, sys, threading
 from pathlib import Path
@@ -38,7 +38,7 @@ async def main():
         await page.goto(URL)
         await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
         await page.evaluate("() => wardrobe.show('wolf')")
-        check(await page.locator("#sound").is_hidden(), "effects pilot off (sound button hidden)")
+        check(await page.locator("#sound").is_visible(), "effects on (the sound button shown; online since 2026-11-09)")
         await page.click('#topics [data-t="outfit"]'); await page.wait_for_selector("#pkBody .pk-item")
         tile = page.locator('#pkBody .pk-item[data-o="halloween"][data-e=""]')
         check(await tile.count() == 1 and await tile.locator(".tto-mark").count() == 1, "Halloween outfit tile with the TTO mark")

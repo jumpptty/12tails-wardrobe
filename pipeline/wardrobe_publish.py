@@ -74,6 +74,9 @@ PROP_KINDS = {"weapons": "weapons", "accessories": "headpieces", "trinkets": "ba
 SHARED_KINDS = ("accessories", "trinkets")        # the page loads all/props_<kind>.json for these
 ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.json")
 PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
+# the effects' own folders, copied from --src next to the page (the page loads fx_cues/<cls>.json and fxparts/<file>.js
+# relative to itself): the cue files (one per class, {} = none) and the effect part modules (2026-11-09)
+PAGE_DIRS = ("fx_cues", "fxparts")
 UI_DIR = "ui"                                          # <src>/ui/recolor<n>.webp: the page's own pictures (the colour topic)
 UI_ICON = re.compile(r"recolor([1-5])\.webp")          # = BB's Recolor Drug n, gamegui/icons/items/field/rsc<n>.png
 UI_TTO = "tto.webp"                    # the TTO mark on TTO's tiles (user 2026-11-09: "Change the pink dot to TTO small logo")
@@ -82,7 +85,7 @@ UI_CROP = (4, 7, 56, 59)                               # the potions' common squ
 UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at BB's size, over black
 # what a publish writes beside its data-<hash> and ui-<hash> folders; "fonts" and "ui" are what earlier publishes wrote
 # (the self-hosted fonts, the unhashed ui folder): listed so a new publish removes them
-OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES
+OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES + PAGE_DIRS
 HASHED_PREFIXES = ("data-", "ui-")
 ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket"}    # icons/<folder> = gamegui/icons/items/<folder>
 GOATCOUNTER = ('<script data-goatcounter="https://jumpptty.goatcounter.com/count"\n'
@@ -127,12 +130,10 @@ def page_edits(data_dir, ui_dir):
         ("Bible link", '<a class="brand" id="bible" aria-label="12 Tails Bible">',
          f'<a class="brand" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener" aria-label="12 Tails Bible">', 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
-        # the skill effects + sounds pilot stays local (user 2026-11-09: "hide the pilot in public copy"): no cues, so no
-        # effect data is fetched (none is published), and the sound button is hidden
-        ("effects pilot", "const FX_ON = true;", "const FX_ON = false;", 1),
+        # the skill effects and sounds are online since the Wolf was finished (user 2026-11-09: "life the restriction on
+        # sfx and vfx on the public deploy, we have finished Wolf"; until then the pilot was hidden: FX_ON false)
         # TTO's items are preview only online (user 2026-11-09): no skin download / upload, no 3D file
         ("TTO preview only", 'const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");', "const TTO_LOCK = true;", 1),
-        ("sound button", '<button type="button" class="tb" id="sound" ', '<button type="button" class="tb" id="sound" hidden ', 1),
     ]
 
 
@@ -945,6 +946,30 @@ def publish_ui(run, classes, tto_clips=None, emo=None):
     run.write_json("ui.json", out)
 
 
+def publish_fx(run, classes):
+    """The skill effects and sounds (online since 2026-11-09): for a class that has them, <cls>/fx.json, every texture
+    its materials and emblems name (fx/tex/<name>.webp, shared by the classes) and its sounds (<cls>/sfx/). TTO's effects
+    (tto/...) are only cued for released TTO skills (the cue files are written against the released list). Returns the
+    classes published with effects."""
+    done = []
+    for cls in classes:
+        fx = run.data / cls / "fx.json"
+        if not fx.is_file():
+            continue
+        d = json.loads(fx.read_text(encoding="utf-8"))
+        texs = {m.get("tex") for m in d.get("materials", {}).values()} | {c.get("imageTex") for e in d.get("effects", {}).values()
+                                                                          for n in e.get("nodes", []) for c in n.get("comps", [])}
+        missing = [t for t in sorted(t for t in texs if t) if not run.local_copy(f"fx/tex/{t}.webp")]
+        if missing:
+            run.warnings.append(f"{cls}: effect textures not in the data: {missing}")
+        run.copy(f"{cls}/fx.json")
+        sfx = run.data / cls / "sfx"
+        for f in sorted(sfx.glob("*.mp3")) if sfx.is_dir() else []:
+            run.copy(f"{cls}/sfx/{f.name}")
+        done.append(cls)
+    return done
+
+
 def publish_hd_icons(run, pub_clips):
     """icons/hd/: the Bible's upscaled skill icons (pipeline/wardrobe_skill_icons.py; the user 2026-11-09: "borrow
     upscaled skill icon from the bible"): only the skills whose clips are published (BB's, released TTO ones), and the
@@ -989,6 +1014,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
     publish_placements(run, icons)
     publish_ui(run, classes, tto_clips, emo)
     publish_hd_icons(run, pub_clips)
+    publish_fx(run, classes)
     run.write_json("meta.json", meta_out)
     if candidates is not None:
         candidates.extend(run.candidates)
@@ -1010,7 +1036,9 @@ def headers_text(data_dir, ui_dir):
     # Cloudflare allows one splat a rule, so each rule names this publish's folder; both folders are named by a hash of
     # their content, so a changed file always comes under a new name and the old one may stay cached for a year
     immutable = "  Cache-Control: public, max-age=31536000, immutable\n"
-    return f"/{data_dir}/*\n{immutable}/{ui_dir}/*\n{immutable}/\n  Cache-Control: no-cache\n"
+    # the effects' cue files and part modules keep their names across publishes: asked for again every time (no-cache)
+    return (f"/{data_dir}/*\n{immutable}/{ui_dir}/*\n{immutable}/\n  Cache-Control: no-cache\n"
+            "/fx_cues/*\n  Cache-Control: no-cache\n/fxparts/*\n  Cache-Control: no-cache\n")
 
 
 def remove(path):
@@ -1113,6 +1141,9 @@ def publish(src, out, bb_rip, data=None, fallback_rip="beside"):
         put(ui_dir, copy_ui)
         for f in PAGE_FILES:
             put(f, lambda p: shutil.copy2(src / p.name, p))
+        for f in PAGE_DIRS:                        # the effects' cue files and part modules (only their own files)
+            if (src / f).is_dir():
+                put(f, lambda p: shutil.copytree(src / p.name, p, ignore=shutil.ignore_patterns("*.tmp", ".*")))
         put("_headers", lambda p: p.write_text(headers_text(data_dir, ui_dir), encoding="utf-8", newline="\n"))
     except BaseException as e:
         try:

@@ -506,10 +506,9 @@ class PublishTest(unittest.TestCase):
                 self.assertNotIn("bible", bar)
                 self.assertNotIn("tb-sep", bar)
                 self.assertNotIn('id="copy"', html)
-                # the skill effects + sounds pilot stays local (2026-11-09): switched off, its button hidden
-                self.assertIn("const FX_ON = false;", html)
-                self.assertNotIn("const FX_ON = true;", html)
-                self.assertIn('<button type="button" class="tb" id="sound" hidden ', html)
+                # the skill effects and sounds are online since the Wolf was finished (2026-11-09; hidden before)
+                self.assertIn("const FX_ON = true;", html)
+                self.assertNotIn('id="sound" hidden', html)
                 self.assertIn(f'const UI_DIR = "{result["ui_dir"]}/";', html)
                 self.assertIn("https://fonts.googleapis.com/css2?family=Prompt", html)   # the fonts come from Google Fonts
                 self.assertIn('<link rel="icon" href="wardrobe_icon.svg" type="image/svg+xml">', html)
@@ -678,7 +677,10 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(rules[f"/{result['data_dir']}/*"], ["Cache-Control: public, max-age=31536000, immutable"])
         self.assertEqual(rules[f"/{result['ui_dir']}/*"], ["Cache-Control: public, max-age=31536000, immutable"])
         self.assertEqual(rules["/"], ["Cache-Control: no-cache"])
-        self.assertEqual(len(rules), 3)
+        # the effects' cue files and part modules keep their names: asked for again every time (2026-11-09)
+        self.assertEqual(rules["/fx_cues/*"], ["Cache-Control: no-cache"])
+        self.assertEqual(rules["/fxparts/*"], ["Cache-Control: no-cache"])
+        self.assertEqual(len(rules), 5)
         headers = w.out / "_headers"
         headers.write_text(headers.read_text(encoding="utf-8").replace(f"/{result['ui_dir']}/*", "/ui/*"), encoding="utf-8")
         self.assertTrue(any("ui pictures would not be cached" in p for p in wp.check(w.out)), wp.check(w.out))
@@ -890,6 +892,27 @@ class PublishTest(unittest.TestCase):
         reason = next(x["reason"] for x in result["dropped"]["headpieces"] if x["name"] == "cat/lantern")
         self.assertIn("baked this skinned mesh", reason)            # BB's prefab has no skinned mesh "lantern"
 
+    def test_effects_published_with_their_files(self):
+        """The skill effects online (2026-11-09): a class's fx.json, the textures its materials and emblems name, its
+        sounds; the cue files and part modules beside the page."""
+        w = self.world()
+        (w.data / "cat").mkdir(parents=True, exist_ok=True)
+        (w.data / "cat" / "fx.json").write_text(json.dumps({"effects": {"ring": {"nodes": [{"name": "ring", "parent": -1,
+            "comps": [{"type": "EmblemEmitter", "imageTex": "emblem"}]}]}}, "materials": {"m": {"tex": "glow"}}}), encoding="utf-8")
+        for t in ("glow", "emblem", "unused"):
+            webp(w.data / "fx" / "tex" / f"{t}.webp")
+        webp(w.data / "cat" / "sfx" / "v_hit.mp3")
+        for d, f, body in (("fx_cues", "cat.json", "{}"), ("fxparts", "vortex.js", "export default function register(api) {}")):
+            (w.src / d).mkdir(parents=True, exist_ok=True)
+            (w.src / d / f).write_text(body, encoding="utf-8")
+        result = w.publish()
+        d = data_dir(w)
+        self.assertTrue((d / "cat" / "fx.json").is_file() and (d / "cat" / "sfx" / "v_hit.mp3").is_file())
+        self.assertTrue((d / "fx" / "tex" / "glow.webp").is_file() and (d / "fx" / "tex" / "emblem.webp").is_file())
+        self.assertFalse((d / "fx" / "tex" / "unused.webp").exists())
+        self.assertTrue((w.out / "fx_cues" / "cat.json").is_file() and (w.out / "fxparts" / "vortex.js").is_file())
+        self.assertEqual(wp.check(w.out), [], result["warnings"])
+
     def test_bb_clip_with_other_keys_publishes_bbs_own_keys(self):
         """A BB clip whose data copy (TTO's) has other keys goes online with BB's own keys, not into the picker
         (2026-11-09: Whale talk, its right foot's twist gone in TTO's copy)."""
@@ -996,7 +1019,7 @@ class PublishTest(unittest.TestCase):
         anchors = ['const DATA = "data/";', 'const UI_DIR = "ui/";', 'fetch(p, { cache: "no-cache" })',
                    '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
                    '<a class="brand" id="bible" aria-label="12 Tails Bible">',
-                   '$("copy").onclick = async () => {', "const FX_ON = true;", '<button type="button" class="tb" id="sound" ']
+                   '$("copy").onclick = async () => {']
         for label, w in self.newline_worlds():
             for anchor in anchors:
                 with self.subTest(page=label, anchor=anchor):
