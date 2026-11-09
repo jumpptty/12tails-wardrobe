@@ -3,6 +3,7 @@
 # wardrobe_dist (the published copy, rebuilt by pipeline/wardrobe_publish.py), checks/, tto_config/, .superpowers/.
 /*
 !/.gitignore
+!/.gitattributes
 !/CLAUDE.md
 !/NOTES.md
 !/wardrobe.cmd

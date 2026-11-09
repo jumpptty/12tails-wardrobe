@@ -2,7 +2,7 @@
 screenshot of the Sheep's skill tab, every class's parsed sequences with their step times to <out>/chains.json, then
 timed traces (step:clip@seconds since the pick) of the Sheep's sequences and the Wolf's Blade Song, ko holding, run /
 falling looping, getUp back to idle.
-uv run --no-project --with playwright python -I pipeline/wardrobe_moves_check.py D:/12tails-video checks/<dir> [page path]"""
+uv run --no-project --with playwright python -I pipeline/wardrobe_moves_check.py D:/12tails-wardrobe checks/<dir> [page path]"""
 import asyncio, functools, http.server, json, sys, threading
 from pathlib import Path
 from playwright.async_api import async_playwright

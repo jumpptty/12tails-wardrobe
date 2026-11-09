@@ -1,0 +1,3 @@
+# The page keeps LF endings on every PC: wardrobe_publish.py copies its bytes, so a CRLF checkout would change the
+# published index.html (seen at the 2026-11-09 split: a fresh clone checked it out CRLF).
+wardrobe/index.html text eol=lf
