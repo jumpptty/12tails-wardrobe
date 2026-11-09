@@ -13,7 +13,7 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 ## Office PC
 
 - **The Wolf's effects data** (2026-11-09, home): `wardrobe\data\wolf\fx.json`, `wardrobe\data\wolf\sfx\` and
-  `wardrobe\data\fx\tex\` were rebuilt for 31 Wolf skills (not in git). Carry a fresh data tar from home
+  `wardrobe\data\fx\tex\` were rebuilt for every Wolf skill, TTO's three included (not in git; the TTO effects are built at home only: pipeline/wardrobe_fx_tto.py reads the video folder's tto_assets). Carry a fresh data tar from home
   (`pipeline\transfer_to_drive.ps1`), or rebuild at the office:
   `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf`.
 

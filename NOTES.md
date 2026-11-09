@@ -686,3 +686,20 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   glasses, so let's use generic word"): the topic name (TOPICS), ถอดทั้งหมด's tooltip, the TTO picker's kind. The menu's
   เปลี่ยน / ถอด...ออก lines follow (เปลี่ยนประดับ, ถอดประดับออก). The video repo mentions the old label only in
   `plans/wardrobe_trailer_design.md` and two old `.playwright-mcp` dumps, no code.
+- **2026-11-09, every drawable Wolf effect, built and cued** (user: "make the effects we can't draw work including TTO
+  skills effects" / "every missing effect from Wolf hero"). Groundwork 9184194 (plug-in loader `FX_PART_FILES`, the five
+  proven layouts, `wardrobe_fx_mesh.py` hook, cue options scale / kill; `plans/fx_wolf/build_rules.md` = who owns which
+  file); seven agents in parallel, one file set each (2c3408b): vortex, emblem, trail, control, mesh (+ wardrobe_fx_mesh.py),
+  the TTO reader `pipeline/wardrobe_fx_tto.py` (TTO's bundles via the Bible's aa_catalog, default style, `tto/<prefab>`,
+  home only: it reads the video folder's tto_assets), groundhug / arcribbon / groundfollower (TTO's scripts from its
+  machine code, the Bible's run_ghidra.bat), shuriken (Unity's ParticleSystem). Inventory: 67 of the Wolf's 69 own
+  effects drawable. Then one editor (`plans/fx_wolf/parts_built.md`) cued them: Blood Fang's slashes (rot 270 / 90 / 0),
+  the Mirror Blade pane, Dark Edge's vortex, the emblems, Dual Brand's four slashes, Law Bringer's slash, Art Breaker,
+  cAttack2, and TTO's three skills (Blade Surge 68 cues: its random line cage is one fixed draw, seed 32, written in the
+  entry's why; Resonance Claw; Wind Bound Domain). Build: 48 BB effects, 93 sounds; 18 TTO effects; files check clean.
+  Found on the way: imageEmitter's stop() wrote into the shared data (fixed); legacy particles take setEmit.
+  - Open (page): a cue at or after a step's end never fires (Wind Bound Domain's pulses at 2.8 / 4.8 / 6.8 s after its
+    1.7 s clip; Blade Surge's aura cut set to 2.55 instead of 2.6 for the same reason); hand-bone auras for a buff's
+    length (Dark Edge, Holy Sword) and Lunar Eclipse's tint can't be cued; the TrailRenderer and DistortGlass are
+    approximations; Crusader / Law Bringer trail colours may be swapped (user to check); vortex speed 80 vs 60 fps
+    (`?vortexfps=60`) is the user's pick.

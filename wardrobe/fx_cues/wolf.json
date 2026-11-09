@@ -59,31 +59,35 @@
     ]
   },
   "cAttack3": {
-    "why": "Wolf.cs RPC_cAttack2 (the release, clip cut in :19752): voice cAttack1 / cAttack2 (Random.Range(0, 2), :19793-19848) at 0; left out: the cAttack2 effect at the hero at 0.2 s (:19403-19415) needs EffectControl(child) (its own sound Sounds/cAttack4 goes with it); the waves' nAttack_hit at the targets (0.5 / 0.6 / 0.7 s); the camera motion blur (:19870)",
+    "why": "Wolf.cs RPC_cAttack2 (the release, clip cut in :19752): voice cAttack1 / cAttack2 (Random.Range(0, 2), :19793-19848) at 0; 0.2 s, the cAttack2 effect at the hero (Instantiate(cAttack2, position, rotation), :19403-19415; EffectControl life 2, plays its own Sounds/cAttack4; its foot dust is destroyed on its 2nd frame by its child EffectControl, as in the game, so the rings 2 m and 4 m ahead 1 m up and the far particles are what shows); left out: the waves' nAttack_hit at the targets (0.5 / 0.6 / 0.7 s); the camera motion blur (:19870)",
     "cues": [
-    [0, "voice", "cAttack1|cAttack2"]
+    [0, "voice", "cAttack1|cAttack2"],
+    [0.2, "fx", "cAttack2"]
     ]
   },
   "bladeFang1": {
-    "why": "Wolf.cs RPC_bladeFang with Blood Fang #403 (the user's passives rule): Double Art roll at the start (getDoubleArt :26375; 24 % at rank 4, Random.Range(0, 100) < lckAdjust(4 x 6) :8235-8300; a proc runs RPC_doubleArt :18411-18459: doubleArt at the hero, and sublimeArt_ring with Sublime Art #431, one roll for both); clip, voice bloodFang1 / bloodFang2 (hasSkill(403), Random.Range(0, 2), :26402, :26451-26512) and bladeFang_ring at the hero (:26598-26610) at 0; then a 0.5 s wait (:26613 -> :26652); the dash at 0.5 s with dust_forward at the hero (:25641); hit 1 at 0.7 s, then bladeFang2 (:26640); left out: bloodFang_underSlash at 0.5 s turned Euler(270, 90, 0) (:25695-25707) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "why": "Wolf.cs RPC_bladeFang with Blood Fang #403 (the user's passives rule): Double Art roll at the start (getDoubleArt :26375; 24 % at rank 4, Random.Range(0, 100) < lckAdjust(4 x 6) :8235-8300; a proc runs RPC_doubleArt :18411-18459: doubleArt at the hero, and sublimeArt_ring with Sublime Art #431, one roll for both); clip, voice bloodFang1 / bloodFang2 (hasSkill(403), Random.Range(0, 2), :26402, :26451-26512) and bladeFang_ring at the hero (:26598-26610) at 0; then a 0.5 s wait (:26613 -> :26652); the dash at 0.5 s with dust_forward and bloodFang_underSlash at the hero, the slash turned hero rotation x Euler(270, 90, 0) (:25641, :25695-25707; it plays its own Sounds/bladeFang2); hit 1 at 0.7 s, then bladeFang2 (:26640); left out: bladeFang_hit at the target",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "bloodFang1|bloodFang2"],
     [0, "fx", "bladeFang_ring"],
-    [0.5, "fx", "dust_forward"]
+    [0.5, "fx", "dust_forward"],
+    [0.5, "fx", "bloodFang_underSlash", {"rot": [270, 90, 0]}]
     ]
   },
   "bladeFang2": {
-    "why": "Wolf.cs RPC_bladeFang cases 4-6 (from the cut to bladeFang2, :26640; slashes 2 and 4, both plays of the step): 0.1 s, dust_forward at the hero (:25854); hit at 0.2 s; 0.3 s cut to bladeFang3 (:26063), or after the 4th slash standby at 0.4 s (:26308); left out: bloodFang_upperSlash at 0.1 s turned Euler(270, 90, 0) (:25906-25918) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "why": "Wolf.cs RPC_bladeFang cases 4-6 (from the cut to bladeFang2, :26640; slashes 2 and 4, both plays of the step): 0.1 s, dust_forward and bloodFang_upperSlash at the hero, the slash turned hero rotation x Euler(270, 90, 0) (:25854, :25906-25918; its own Sounds/bladeFang2); hit at 0.2 s; 0.3 s cut to bladeFang3 (:26063), or after the 4th slash standby at 0.4 s (:26308); left out: bladeFang_hit at the target",
     "cues": [
-    [0.1, "fx", "dust_forward"]
+    [0.1, "fx", "dust_forward"],
+    [0.1, "fx", "bloodFang_upperSlash", {"rot": [270, 90, 0]}]
     ]
   },
   "bladeFang3": {
-    "why": "Wolf.cs RPC_bladeFang cases 6-9 (clip cut in :26063): dust_forward at the hero at 0 (:26073); hit at 0.2 s; 0.3 s cut to bladeFang2 (:26640); left out: bloodFang_underSlash at 0.1 s turned Euler(270, 90, 0) (:26100-26159) needs Animation, SkinnedMeshRenderer; bladeFang_hit at the target",
+    "why": "Wolf.cs RPC_bladeFang cases 6-9 (clip cut in :26063): dust_forward at the hero at 0 (:26073); 0.1 s, bloodFang_underSlash at the hero turned hero rotation x Euler(270, 90, 0) (:26100-26159; its own Sounds/bladeFang2); hit at 0.2 s; 0.3 s cut to bladeFang2 (:26640); left out: bladeFang_hit at the target",
     "cues": [
-    [0, "fx", "dust_forward"]
+    [0, "fx", "dust_forward"],
+    [0.1, "fx", "bloodFang_underSlash", {"rot": [270, 90, 0]}]
     ]
   },
   "bladeSong3": {
@@ -121,59 +125,68 @@
     ]
   },
   "mirrorCounter1": {
-    "why": "Wolf.cs RPC_mirrorBlade: Double Art roll at the start (getDoubleArt :34807, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice mirrorBlade1 / mirrorBlade2 and mirrorBlade_ring at the hero at once (:34839-34974; the ring plays its own Sounds/mirrorBlade_ring); mirrorCounter2 at 1.0 s (:34615); nothing reacts to a hit, only the damage depends on the HP lost 0.2-1.4 s; left out: mirrorBlade_mirror at the hero at 0.2 s (:34574) needs ShatterMesh, StaticMesh; mirrorBlade_hit at the locked target 0.4 s into mirrorCounter2 (:34715-34725, at the target; no mirrorCounter2 entry); the camera white flash (:34633)",
+    "why": "Wolf.cs RPC_mirrorBlade: Double Art roll at the start (getDoubleArt :34807, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice mirrorBlade1 / mirrorBlade2 and mirrorBlade_ring at the hero at once (:34839-34974; the ring plays its own Sounds/mirrorBlade_ring); 0.2 s, mirrorBlade_mirror at the hero (:34562-34574; EffectControl life 1.2 + afterLife 0.6, no followState: the pane 1.25 m ahead shatters at 1.2 s and is gone 1.8 s after it spawns, so it runs on into mirrorCounter2; no sound of its own; the game's DistortGlass is drawn as a multiply); mirrorCounter2 at 1.0 s (:34615); nothing reacts to a hit, only the damage depends on the HP lost 0.2-1.4 s; left out: mirrorBlade_hit at the locked target 0.4 s into mirrorCounter2 (:34715-34725, at the target; no mirrorCounter2 entry); the camera white flash (:34633)",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "mirrorBlade1|mirrorBlade2"],
-    [0, "fx", "mirrorBlade_ring"]
+    [0, "fx", "mirrorBlade_ring"],
+    [0.2, "fx", "mirrorBlade_mirror"]
     ]
   },
   "darkEdge": {
     "why": "The darkEdge clip is played by two skills (Dark Edge RPC_darkEdge :30908, Holy Armor RPC_holyArmor :33598): each play shows one, picked at random",
     "skills": {
       "darkEdge": {
-        "why": "Wolf.cs RPC_darkEdge: Double Art roll at the start (getDoubleArt :30887, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice darkEdge1 / darkEdge2 at 0 (:30908-31036); the darkEdge status at 0.4 s (:30805), standby 0.6 s (:30826); left out: darkEdge_ring at the hero at 0.2 s (:30743) needs VortexEmitter (its own Sounds/darkEdge_ring goes with it); the status's Effects/darkEdge on both hand bones until it ends (CharacterControl.cs:34159-34210) needs a bone-attached, held effect",
+        "why": "Wolf.cs RPC_darkEdge: Double Art roll at the start (getDoubleArt :30887, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice darkEdge1 / darkEdge2 at 0 (:30908-31036); 0.2 s, darkEdge_ring at the hero (createEffect, :30731-30743; EffectControl life 1, no followState: the 6-arm spiral at the feet rises and is gone by about 0.63 s; plays its own Sounds/darkEdge_ring); the darkEdge status at 0.4 s (:30805), standby 0.6 s (:30826); left out: the status's Effects/darkEdge on both hand bones until it ends (CharacterControl.cs:34159-34210) needs a bone-attached, held effect",
         "cues": [
         [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
         [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-        [0, "voice", "darkEdge1|darkEdge2"]
+        [0, "voice", "darkEdge1|darkEdge2"],
+        [0.2, "fx", "darkEdge_ring"]
         ]
       },
       "holyArmor": {
-        "why": "Wolf.cs RPC_holyArmor: Double Art roll at the start (getDoubleArt :33566, 24 %: doubleArt + sublimeArt_ring); clip darkEdge (:33598) and voice holyArmor1 / holyArmor2 (Random.Range(0, 2), :33647-33702) at 0; Yield 0.2 (:33760): the camera blur and the holyArmor status (armour with DEF only, :33484); Yield 0.6 (:33767): standby 0.8 s (:33505); left out: holyArmor_ring at the hero at 0 (:33721-33733) needs EmblemEmitter (its own Sounds/holyArmor_ring goes with it); the status's look (CharacterControl.cs, not traced)",
+        "why": "Wolf.cs RPC_holyArmor: Double Art roll at the start (getDoubleArt :33566, 24 %: doubleArt + sublimeArt_ring); clip darkEdge (:33598), voice holyArmor1 / holyArmor2 (Random.Range(0, 2), :33647-33702) and holyArmor_ring at the hero (:33721-33733; EffectControl life 1 + afterLife 1, no followState; its shield emblem 2.5 m up from 0.2 s, drawn over everything; plays its own Sounds/holyArmor_ring) at 0; Yield 0.2 (:33760): the camera blur and the holyArmor status (armour with DEF only, :33484); Yield 0.6 (:33767): standby 0.8 s (:33505); left out: the camera blur; the status's look (CharacterControl.cs, not traced)",
         "cues": [
         [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
         [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-        [0, "voice", "holyArmor1|holyArmor2"]
+        [0, "voice", "holyArmor1|holyArmor2"],
+        [0, "fx", "holyArmor_ring"]
         ]
       }
     }
   },
   "dualBrand": {
-    "why": "Wolf.cs RPC_dualBrand: Double Art roll at the start (getDoubleArt :36665, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice dualBrand1 / dualBrand2 and dualBrand_ring at the hero at once (:36692-36817; the ring plays its own Sounds/dualBrand_ring); standby at 1.6 s (:36604), which ends dualBrand_ring (followState); left out: dualBrand_slash1 / 2 / 3 / 4 at the hero at 0.3 / 0.6 / 0.9 / 1.1 s (:35959, :36119, :36274, :36424; 1, 2, 4 need Animation, TrailEmitter, 3 needs EffectControl(child), VortexEmitter; their Sounds/dualBrand_slash goes with them); dualBrand_hit at each enemy at 0.5 / 0.8 / 1.0 / 1.3 s",
+    "why": "Wolf.cs RPC_dualBrand: Double Art roll at the start (getDoubleArt :36665, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice dualBrand1 / dualBrand2 and dualBrand_ring at the hero at once (:36692-36817; the ring plays its own Sounds/dualBrand_ring); dualBrand_slash1 / 2 / 3 / 4 at the hero at 0.3 / 0.6 / 0.9 / 1.1 s (createEffect, :35947-35959, :36107-36119, :36262-36274, :36412-36424; distance 0: the wardrobe hero doesn't dash; 1, 2, 4 are wide trail ribbons, 3 a vortex its child EmitterControl shoots forward at 12 m/s; each plays its own Sounds/dualBrand_slash); standby at 1.6 s (:36604), which ends dualBrand_ring and the slashes (followState: cut 1.6; every one has ended by its own life first, and the page's step ends at the clip's 1.6 s, so the cut is the game's rule, not something seen); left out: dualBrand_hit at each enemy at 0.5 / 0.8 / 1.0 / 1.3 s",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "dualBrand1|dualBrand2"],
-    [0, "fx", "dualBrand_ring", {"cut": 1.6}]
+    [0, "fx", "dualBrand_ring", {"cut": 1.6}],
+    [0.3, "fx", "dualBrand_slash1", {"cut": 1.6}],
+    [0.6, "fx", "dualBrand_slash2", {"cut": 1.6}],
+    [0.9, "fx", "dualBrand_slash3", {"cut": 1.6}],
+    [1.1, "fx", "dualBrand_slash4", {"cut": 1.6}]
     ]
   },
   "crusader": {
-    "why": "Wolf.cs RPC_crusader with Law Bringer #412 (getLawBringerLv() > 0, :21377; the user's passives rule): Double Art roll at the start (getDoubleArt :21344, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:21365), lawBringer_ring at the hero (:21387-21399; plays its own Sounds/crusader1) and voice lawBringer1 / lawBringer2 (:21442-21688) at once; the 7 m/s dash 1.0-1.4 s, the hit at 1.4 s; standby at 1.8 s (:21283), which ends lawBringer_ring (followState); left out: the lawBringer slash at 0.6 s turned Euler(270, 90, 0) (:21048-21060) needs Animation, TrailRenderer (its Sounds/crusader2 goes with it); lawBringer_hit at each enemy (needs Light, at the target)",
+    "why": "Wolf.cs RPC_crusader with Law Bringer #412 (getLawBringerLv() > 0, :21377; the user's passives rule): Double Art roll at the start (getDoubleArt :21344, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:21365), lawBringer_ring at the hero (:21387-21399; plays its own Sounds/crusader1) and voice lawBringer1 / lawBringer2 (:21442-21688) at once; 0.6 s, the lawBringer slash at the hero turned hero rotation x Euler(270, 90, 0) (:21036-21060; EffectControl life 1.5, followState; plays its own Sounds/crusader2; its TrailRenderer streaks are drawn without the game's source, approximated); the 7 m/s dash 1.0-1.4 s, the hit at 1.4 s; standby at 1.8 s (:21283), which ends lawBringer_ring and the slash (followState: cut 1.8); left out: lawBringer_hit at each enemy (needs Light, at the target)",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
     [0, "voice", "lawBringer1|lawBringer2"],
-    [0, "fx", "lawBringer_ring", {"cut": 1.8}]
+    [0, "fx", "lawBringer_ring", {"cut": 1.8}],
+    [0.6, "fx", "lawBringer", {"rot": [270, 90, 0], "cut": 1.8}]
     ]
   },
   "artBreaker": {
-    "why": "Wolf.cs RPC_artBreaker: Double Art roll at the start (getDoubleArt :34146, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (0.1 s fade) and voice artBreaker1 / artBreaker2 at 0 (:34176-34272); standby 1.3 s (:34058); left out: artBreaker_ring at the hero at 0 (:34291-34303) needs EmitterControl (its own Sounds/artBreaker_ring goes with it); artBreaker_hit at the locked target (within 30 m) at 1.0 s (:33988-34026, at the target); the camera motion blur (:34332)",
+    "why": "Wolf.cs RPC_artBreaker: Double Art roll at the start (getDoubleArt :34146, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (0.1 s fade), voice artBreaker1 / artBreaker2 and artBreaker_ring at the hero at 0 (:34176-34303; EffectControl life 2, no followState; its EmitterControl starts the dust about 2 m ahead at 1.0 s; plays its own Sounds/artBreaker_ring); standby 1.3 s (:34058); left out: artBreaker_hit at the locked target (within 30 m) at 1.0 s (:33988-34026, at the target); the camera motion blur (:34332)",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-    [0, "voice", "artBreaker1|artBreaker2"]
+    [0, "voice", "artBreaker1|artBreaker2"],
+    [0, "fx", "artBreaker_ring"]
     ]
   },
   "artCancel": {
@@ -205,11 +218,12 @@
     ]
   },
   "resurrection": {
-    "why": "Wolf.cs RPC_massResurrection: Double Art roll at the start (getDoubleArt :25254, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip and voice resurrection1 / resurrection2 (:25275-25371) at 0; standby at 1.8 s (:25193); left out: resurrection_ring at the hero at 0 (:25390-25400) needs EmblemEmitter (its own Sounds/resurrection goes with it); resurrection_hit on each revived ally 1.2 s in (:25114-25126, at the target; needs EmblemEmitter); the camera motion blur at 0.8 s (:24990-24995)",
+    "why": "Wolf.cs RPC_massResurrection: Double Art roll at the start (getDoubleArt :25254, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip, voice resurrection1 / resurrection2 and resurrection_ring at the hero at 0 (:25275-25400; EffectControl life 2 + afterLife 1, no followState; its emblem 2.6 m up from 0.9 s, drawn over everything; plays its own Sounds/resurrection); standby at 1.8 s (:25193); left out: resurrection_hit on each revived ally 1.2 s in (:25114-25126, at the target); the camera motion blur at 0.8 s (:24990-24995)",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-    [0, "voice", "resurrection1|resurrection2"]
+    [0, "voice", "resurrection1|resurrection2"],
+    [0, "fx", "resurrection_ring"]
     ]
   },
   "thirdRend": {
@@ -245,13 +259,14 @@
     "why": "instantCast is played by four skills (Brave Spirit :20597, Second Wind :23381, Lunar Eclipse :31341, Holy Sword :33083), all learnable in one Lv 100 build (plans/fx_wolf/cast.md); each play shows one, picked at random, even chance (the user); each rolls Double Art at its start",
     "skills": {
       "braveSpirit": {
-        "why": "Wolf.cs RPC_braveSpirit with Glorious Spirit #402 (the user's passives rule): Double Art roll at the start (getDoubleArt :20576, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:20597); voice gloriousSpirit1 / gloriousSpirit2 (hasSkill(402), :20638-20699) and Sounds/braveSpirit (:20779-20795, always played) at 0; gloriousSpirit 0.2 m ahead at 0.5 s (:20833, :20394-20406); valor at 0.7 s (:20489); standby 1.3 s (:20824, :20515); left out: valor_emblem 2 m above each receiver (CharacterControl.cs:33969) needs EmblemEmitter",
+        "why": "Wolf.cs RPC_braveSpirit with Glorious Spirit #402 (the user's passives rule): Double Art roll at the start (getDoubleArt :20576, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:20597); voice gloriousSpirit1 / gloriousSpirit2 (hasSkill(402), :20638-20699) and Sounds/braveSpirit (:20779-20795, always played) at 0; gloriousSpirit 0.2 m ahead at 0.5 s (:20833, :20394-20406); valor on every ally in the cylinder, the Wolf included, at 0.7 s (:20456-20489): the valor status puts valor_emblem 2 m above each receiver (Instantiate(valor_emblem, position + 2 x up, identity), CharacterControl.cs:33969-33980; an EmblemEmitter alone, no EffectControl: a flat picture drawn over everything, gone when its Life ends): here the hero's own; standby 1.3 s (:20824, :20515); left out: the other receivers' emblems",
         "cues": [
         [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
         [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
         [0, "voice", "gloriousSpirit1|gloriousSpirit2"],
         [0, "sound", "braveSpirit"],
-        [0.5, "fx", "gloriousSpirit", {"d": 0.2}]
+        [0.5, "fx", "gloriousSpirit", {"d": 0.2}],
+        [0.7, "fx", "valor_emblem", {"y": 2}]
         ]
       },
       "secondWind": {
@@ -274,11 +289,12 @@
         ]
       },
       "holySword": {
-        "why": "Wolf.cs RPC_holySword: Double Art roll at the start (getDoubleArt :33051, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:33083); voice holySword1 / holySword2 (:33132-33187) at 0; standby 1.1 s (:33246, :32990); left out: holySword_ring at the hero at 0 (:33206-33218) needs EmblemEmitter (its own Sounds/holySword_ring goes with it); the status's holySword glow on both hands from 0.5 s (:32969; CharacterControl.cs:34264) needs a bone-attached, held effect; the camera blur (:32921)",
+        "why": "Wolf.cs RPC_holySword: Double Art roll at the start (getDoubleArt :33051, 24 %: doubleArt + sublimeArt_ring, RPC_doubleArt :18411-18459); clip (:33083); voice holySword1 / holySword2 and holySword_ring at the hero at 0 (:33132-33218; EffectControl life 1 + afterLife 1, no followState; its sword emblem 2.5 m up from 0.4 s, drawn over everything; plays its own Sounds/holySword_ring); standby 1.1 s (:33246, :32990); left out: the status's holySword glow on both hands from 0.5 s (:32969; CharacterControl.cs:34264) needs a bone-attached, held effect; the camera blur (:32921)",
         "cues": [
         [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
         [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-        [0, "voice", "holySword1|holySword2"]
+        [0, "voice", "holySword1|holySword2"],
+        [0, "fx", "holySword_ring"]
         ]
       }
     }
@@ -324,38 +340,99 @@
     ]
   },
   "bladeSurge": {
-    "why": "TTO1102:Wolf.<RPC_bladeSurge>d__317::MoveNext@0x1F1F640 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (bladeSurge_aura, _zone, _flicker, _cut, _sheathe, _shatter, _shards); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20 -> getDoubleArt; BB's doubleArt + sublimeArt_ring assumed); 0: the aura's own sound bladeSong_ring (vol 1); cuts at 0.30 + 0.15 k and the slam at 1.20 (Wolf::BladeSurgeCut@0x1F07840): the hero's PlayOneShot Sounds/bladeFang(k % 3 + 1), vol 1 (Wolf::Row6Clip@0x1F0EAA0); 2.1: the sheathe's own sound artCancel2 (Wolf::BladeSurgeShatter@0x1F09240); left out: the shatter's shatteringDream_hit (bat/sounds) and the 4 shards' iceBreak (penguin/sounds, vol 0.8): a sound cue reads only the Wolf's own Sounds/. The prefab sounds stand in for their effects: drop them when the effects are built",
+    "why": "TTO1102:Wolf.<RPC_bladeSurge>d__317::MoveNext@0x1F1F640 (default style, plans/fx_wolf/tto.md 2.1): Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20 -> getDoubleArt; BB's doubleArt + sublimeArt_ring assumed); 0: bladeSurge_aura owned at the hero (EffectControl life 11, followState: ends at Row6End 2.6 s; cut 2.55 here, because the page's step ends at the clip's 2.6 s and a cut at that very time never fires; plays its own bladeSong_ring); 0.3: bladeSurge_zone 1.2 m up (Wolf::BladeSurgeZone@0x1F097A0), destroyed at 2.1 s by Wolf::BladeSurgeClearFx@0x1F07620 (kill 1.8); cuts k = 0..5 at 0.30 + 0.15 k and the slam (k = 6) at 1.20 (Wolf::BladeSurgeCut@0x1F07840): bladeSurge_flicker 1 m up 0.6 m ahead, rolled about the hero's forward by BladeSurgeFlickerRoll[k % 4] = 0 / -70 / 180 / 90 (Wolf::.cctor@0x1F0F9B0), the slam's scaled 2.2; the hero's PlayOneShot Sounds/bladeFang(k % 3 + 1), vol 1 (Wolf::Row6Clip@0x1F0EAA0); six bladeSurge_cut lines per cut (Wolf::BladeSurgeLine@0x1F08A60): the game scatters them at random (v = insideUnitSphere, v.y x 0.45, pushed out by 0.3 when |v.xz| < 0.25; hero + 1.2 up + v x 6.3, y >= 0.3; rotation AngleAxis(Random 0-360, up) x FromToRotation(up, onUnitSphere with y x 0.6); scale 0.6-1.4), which a cue cannot draw anew each play: here one fixed draw of that same distribution (42 lines, Python random.Random(32), rot = [the tilt from up, the yaw, 0]), the same every play; the slam's two cuts 1.3 m up 3 m ahead rolled +45 / -45, scale 1.6; every line killed at 2.1 s (ClearFx); 2.1 (Wolf::BladeSurgeShatter@0x1F09240): bladeSurge_sheathe owned at the hero (plays its own artCancel2), bladeSurge_shatter 1.2 m up (its own shatteringDream_hit), bladeSurge_shards at the mean of each world quadrant's lines when it holds more than 3 (all four here: the fixed draw's quadrant means; each plays its own iceBreak, vol 0.8); the sound-only stand-ins are gone (the aura, sheathe, shatter and shards play their own); left out: the hits and the paralysis on targets, RPC_bladeSurgeJudge (shards and cuts at far targets), the camera shake, white flash, motion blur and lunarRamp grade (Wolf::BladeSurgeGrade@0x1F085A0)",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-    [0, "sound", "bladeSong_ring"],
+    [0, "fx", "tto/bladeSurge_aura", {"cut": 2.55}],
+    [0.3, "fx", "tto/bladeSurge_zone", {"y": 1.2, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, 0]}],
     [0.3, "sound", "bladeFang1"],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": 5.04, "y": 1.18, "d": 2.78, "rot": [70, 340, 0], "scale": 1.31, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": -1.85, "y": 0.3, "d": -2.4, "rot": [73, 293, 0], "scale": 1.19, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": 0.86, "y": 1.63, "d": 3.4, "rot": [108, 144, 0], "scale": 1.39, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": -2.72, "y": 0.3, "d": -0.86, "rot": [78, 253, 0], "scale": 0.67, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": -2.49, "y": 0.55, "d": -3.86, "rot": [89, 343, 0], "scale": 0.99, "kill": 1.8}],
+    [0.3, "fx", "tto/bladeSurge_cut", {"x": 0.32, "y": 1.25, "d": -3.46, "rot": [119, 70, 0], "scale": 1.28, "kill": 1.8}],
+    [0.45, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, -70]}],
     [0.45, "sound", "bladeFang2"],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": 0.12, "y": 1.79, "d": 4.06, "rot": [128, 10, 0], "scale": 1.36, "kill": 1.65}],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": -0.55, "y": 0.3, "d": -2.29, "rot": [71, 30, 0], "scale": 1.17, "kill": 1.65}],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": 1.06, "y": 1.1, "d": 5.13, "rot": [75, 66, 0], "scale": 0.6, "kill": 1.65}],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": 4.8, "y": 2.46, "d": 2.2, "rot": [87, 41, 0], "scale": 0.85, "kill": 1.65}],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": -0.73, "y": 0.92, "d": 5.09, "rot": [89, 46, 0], "scale": 0.67, "kill": 1.65}],
+    [0.45, "fx", "tto/bladeSurge_cut", {"x": 2.71, "y": 1.24, "d": -3.96, "rot": [57, 131, 0], "scale": 0.62, "kill": 1.65}],
+    [0.6, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, 180]}],
     [0.6, "sound", "bladeFang3"],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": 0.13, "y": 2.63, "d": -4.06, "rot": [73, 170, 0], "scale": 1.11, "kill": 1.5}],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": 0.25, "y": 0.3, "d": -2.84, "rot": [82, 32, 0], "scale": 0.91, "kill": 1.5}],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": -3.54, "y": 3.17, "d": -2.24, "rot": [98, 206, 0], "scale": 0.98, "kill": 1.5}],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": 1.85, "y": 0.3, "d": 1.65, "rot": [88, 92, 0], "scale": 1.34, "kill": 1.5}],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": -2.5, "y": 1.34, "d": -0.13, "rot": [89, 142, 0], "scale": 1.29, "kill": 1.5}],
+    [0.6, "fx", "tto/bladeSurge_cut", {"x": -1.9, "y": 0.3, "d": -1.92, "rot": [124, 264, 0], "scale": 1.1, "kill": 1.5}],
+    [0.75, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, 90]}],
     [0.75, "sound", "bladeFang1"],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": 1.27, "y": 2.14, "d": 0.94, "rot": [87, 220, 0], "scale": 1.27, "kill": 1.35}],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": -2.74, "y": 2.16, "d": 1.58, "rot": [105, 250, 0], "scale": 0.66, "kill": 1.35}],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": 1.48, "y": 0.34, "d": -1.05, "rot": [101, 28, 0], "scale": 1.28, "kill": 1.35}],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": 2.62, "y": 0.66, "d": 3.35, "rot": [80, 359, 0], "scale": 1.1, "kill": 1.35}],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": 1.71, "y": 0.86, "d": 0.72, "rot": [96, 96, 0], "scale": 0.7, "kill": 1.35}],
+    [0.75, "fx", "tto/bladeSurge_cut", {"x": 3.11, "y": 3.2, "d": -1.95, "rot": [74, 241, 0], "scale": 0.89, "kill": 1.35}],
+    [0.9, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, 0]}],
     [0.9, "sound", "bladeFang2"],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": -3.81, "y": 1.0, "d": -3.65, "rot": [10, 30, 0], "scale": 1.01, "kill": 1.2}],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": 2.5, "y": 0.9, "d": -3.91, "rot": [70, 147, 0], "scale": 0.68, "kill": 1.2}],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": -0.93, "y": 1.25, "d": -5.49, "rot": [134, 300, 0], "scale": 1.36, "kill": 1.2}],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": -4.61, "y": 1.13, "d": 2.56, "rot": [93, 30, 0], "scale": 0.63, "kill": 1.2}],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": -3.86, "y": 0.3, "d": 1.69, "rot": [82, 307, 0], "scale": 1.36, "kill": 1.2}],
+    [0.9, "fx", "tto/bladeSurge_cut", {"x": 2.64, "y": 0.82, "d": -2.17, "rot": [78, 151, 0], "scale": 1.35, "kill": 1.2}],
+    [1.05, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, -70]}],
     [1.05, "sound", "bladeFang3"],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": -3.78, "y": 2.33, "d": 2.91, "rot": [127, 187, 0], "scale": 1.08, "kill": 1.05}],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": -0.4, "y": 2.87, "d": 3.48, "rot": [110, 222, 0], "scale": 1.03, "kill": 1.05}],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": -2.27, "y": 1.75, "d": 2.45, "rot": [87, 285, 0], "scale": 0.62, "kill": 1.05}],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": 3.58, "y": 0.3, "d": -0.98, "rot": [84, 143, 0], "scale": 0.96, "kill": 1.05}],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": -4.96, "y": 0.3, "d": -0.55, "rot": [72, 326, 0], "scale": 1.19, "kill": 1.05}],
+    [1.05, "fx", "tto/bladeSurge_cut", {"x": 0.72, "y": 2.93, "d": -1.51, "rot": [75, 88, 0], "scale": 0.82, "kill": 1.05}],
+    [1.2, "fx", "tto/bladeSurge_flicker", {"d": 0.6, "y": 1.0, "rot": [0, 0, 180], "scale": 2.2}],
     [1.2, "sound", "bladeFang1"],
-    [2.1, "sound", "artCancel2"]
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": 3.39, "y": 1.25, "d": -4.1, "rot": [54, 266, 0], "scale": 0.83, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": -4.12, "y": 2.99, "d": 2.43, "rot": [102, 148, 0], "scale": 1.15, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": -2.51, "y": 0.52, "d": -0.15, "rot": [113, 266, 0], "scale": 0.61, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": 5.06, "y": 2.05, "d": 0.02, "rot": [128, 154, 0], "scale": 0.86, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": -3.09, "y": 2.0, "d": -1.79, "rot": [109, 352, 0], "scale": 1.28, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"x": -0.54, "y": 2.71, "d": 1.58, "rot": [86, 234, 0], "scale": 0.72, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"d": 3, "y": 1.3, "rot": [0, 0, 45], "scale": 1.6, "kill": 0.9}],
+    [1.2, "fx", "tto/bladeSurge_cut", {"d": 3, "y": 1.3, "rot": [0, 0, -45], "scale": 1.6, "kill": 0.9}],
+    [2.1, "fx", "tto/bladeSurge_sheathe"],
+    [2.1, "fx", "tto/bladeSurge_shatter", {"y": 1.2}],
+    [2.1, "fx", "tto/bladeSurge_shards", {"x": -2.57, "y": 0.94, "d": -2.11}],
+    [2.1, "fx", "tto/bladeSurge_shards", {"x": -2.56, "y": 1.91, "d": 2.64}],
+    [2.1, "fx", "tto/bladeSurge_shards", {"x": 1.89, "y": 1.38, "d": -2.73}],
+    [2.1, "fx", "tto/bladeSurge_shards", {"x": 2.03, "y": 1.4, "d": 2.52}]
     ]
   },
   "resonanceClaw": {
-    "why": "TTO1102:Wolf.<RPC_resonanceClaw>d__329::MoveNext@0x1F3C1E0 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (resonanceClaw_charge, _rake, _wave_twin, _wave_light, _wave_dark); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: the charge's own sound twinResonance_ring (vol 1); Waits 0.62 (0x1F3CBE3): the rake's skySlasher (vol 1) and the twin wave's cAttack4 (vol 0.9); the side waves at 0.67 have no sound; left out: resonanceClaw_burst and twinResonance_hit at the hit targets. The prefab sounds stand in for their effects: drop them when the effects are built",
+    "why": "TTO1102:Wolf.<RPC_resonanceClaw>d__329::MoveNext@0x1F3C1E0 (default style, plans/fx_wolf/tto.md 2.2): Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: resonanceClaw_charge owned at the hero (life 1.8 + 0.6; plays its own twinResonance_ring); Waits 0.62 (0x1F3CBE3): resonanceClaw_rake at the hero (the three claw lanes; its own skySlasher) and resonanceClaw_wave_twin (EffectControl velocity 36 m/s forward; its own cAttack4, vol 0.9); Waits 0.05 (0x1F3CA7D): resonanceClaw_wave_light turned AngleAxis(-45, up) (0x1F3C39C) and resonanceClaw_wave_dark +45 (0x1F3C529), no sound; Waits 0.93 -> Row6End 1.6 s (no followState effect; the waves run on past the clip); the sound-only stand-ins are gone (each sound comes from its effect now); left out: resonanceClaw_burst and twinResonance_hit at the hit targets (Wolf::RPC_resonanceBurst@0x1F0DB20), the camera shake, white flash and motion blur",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-    [0, "sound", "twinResonance_ring"],
-    [0.62, "sound", "skySlasher"],
-    [0.62, "sound", "cAttack4", {"vol": 0.9}]
+    [0, "fx", "tto/resonanceClaw_charge"],
+    [0.62, "fx", "tto/resonanceClaw_rake"],
+    [0.62, "fx", "tto/resonanceClaw_wave_twin"],
+    [0.67, "fx", "tto/resonanceClaw_wave_light", {"rot": [0, -45, 0]}],
+    [0.67, "fx", "tto/resonanceClaw_wave_dark", {"rot": [0, 45, 0]}]
     ]
   },
   "windBoundDomain": {
-    "why": "TTO1102:Wolf.<RPC_windBoundDomain>d__313::MoveNext@0x1F51890 (default style, plans/fx_wolf/tto.md): sounds only, effects pending: TTO reader + GroundHugEmitter / ArcRibbonEmitter / Shuriken (windBoundDomain_cast, _plant, _domain, _pulse); Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: the cast's own sound secondWind (vol 1); Waits 0.8 (0x1F51F7C): the plant's grandCross (vol 1); the domain and pulses (0.8, 2.8, 4.8, 6.8 s) have no sound; left out: the windBound mark on enemies",
+    "why": "TTO1102:Wolf.<RPC_windBoundDomain>d__313::MoveNext@0x1F51890 (default style, plans/fx_wolf/tto.md 2.3): Double Art roll at the start with Sublime Art #431 (Wolf::Row6Cooldown@0x1F0EC20); 0: windBoundDomain_cast owned 0.2 m ahead (plays its own secondWind); Waits 0.8 (0x1F51F7C): windBoundDomain_plant 0.7 m ahead (its own grandCross), windBoundDomain_domain (life 6 + 0.5) and windBoundDomain_pulse at the hero (the game's identity rotation is the hero's facing here: it only turns the sigil textures); Waits 0.9 -> Row6End 1.7 s; the sound-only stand-ins are gone (the cast and the plant play their own); left out: the pulses WindBoundHeals@0x1F52EC0 adds at 2.8 / 4.8 / 6.8 s (Waits 2 at 0x1F52F84, then every 2 s while t <= 6.85): the page's step ends with the 1.7 s clip and a cue after that never fires; the windBound mark on enemies (CharacterControl::AddWindBoundFx@0x24AF350); the camera shake",
     "cues": [
     [0, "fx", "doubleArt", {"p": 0.24, "roll": "doubleArt"}],
     [0, "fx", "sublimeArt_ring", {"p": 0.24, "roll": "doubleArt"}],
-    [0, "sound", "secondWind"],
-    [0.8, "sound", "grandCross"]
+    [0, "fx", "tto/windBoundDomain_cast", {"d": 0.2}],
+    [0.8, "fx", "tto/windBoundDomain_plant", {"d": 0.7}],
+    [0.8, "fx", "tto/windBoundDomain_domain"],
+    [0.8, "fx", "tto/windBoundDomain_pulse"]
     ]
   }
 }
