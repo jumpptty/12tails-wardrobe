@@ -1,5 +1,5 @@
-r"""The repo keeps game data out of git: every data folder, including one renamed aside before a fresh copy is
-restored, is ignored; the page and the scripts are tracked. (Final review of the 2026-11-09 split: the transfer
+r"""The repo tracks the page, the scripts and (since 2026-11-10) wardrobe/data, byte for byte; a data folder renamed
+aside before a fresh copy is restored stays ignored. (Final review of the 2026-11-09 split: the transfer
 README once said to rename the old data to wardrobe\data_old, which the whitelist did not ignore.)
 
   cd /d D:\12tails-wardrobe && py -3 -m unittest pipeline.test_repo_rules -v
@@ -17,10 +17,21 @@ def ignored(rel):
 
 class RepoRules(unittest.TestCase):
     def test_data_folders_ignored(self):
-        for rel in ("wardrobe/data/meta.json", "wardrobe/data_old/meta.json", "wardrobe/data-home/cat/rig.json",
+        # wardrobe/data itself is tracked since 2026-11-10 (test_data_tracked); copies set aside and the office's rip
+        # repair stay out
+        for rel in ("wardrobe/data_old/meta.json", "wardrobe/data-home/cat/rig.json", "wardrobe/data/bb_rip_fix/a.png",
                     "wardrobe_data_old/meta.json", "wardrobe_dist/index.html", "tto_config/x.json"):
             with self.subTest(rel=rel):
                 self.assertTrue(ignored(rel), f"{rel} is not ignored")
+
+    def test_data_tracked(self):
+        """The data is in git since 2026-11-10 (user: "one repo for now"), byte for byte (-text: no CRLF conversion)."""
+        for rel in ("wardrobe/data/meta.json", "wardrobe/data/wolf/fx.json", "wardrobe/data/icons/hd/index.json"):
+            with self.subTest(rel=rel):
+                self.assertFalse(ignored(rel), f"{rel} is ignored")
+        attr = subprocess.run(["git", "-C", str(ROOT), "check-attr", "text", "--", "wardrobe/data/wolf/fx.json"],
+                              capture_output=True, text=True).stdout
+        self.assertIn("text: unset", attr)
 
     def test_page_and_scripts_tracked(self):
         for rel in ("wardrobe/index.html", "wardrobe/ui/recolor1.webp", "pipeline/wardrobe_data.py", "wardrobe.cmd",

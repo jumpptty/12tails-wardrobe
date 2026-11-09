@@ -11,8 +11,9 @@ from here. The split's design and plan: `plans\wardrobe_split_design.md`, `plans
 
 ## Layout
 
-- `wardrobe\index.html` (the page, three.js r160), its icons and `wardrobe\ui\`; `wardrobe\data\` (untracked,
-  ~300 MB) built by `pipeline\wardrobe_*.py`, prop textures in `wardrobe\data\props\tex\` (`wardrobe_props_tex.py`).
+- `wardrobe\index.html` (the page, three.js r160), its icons and `wardrobe\ui\`; `wardrobe\data\` (~370 MB, tracked
+  in git since 2026-11-10, byte for byte; untracked before) built by `pipeline\wardrobe_*.py`, prop textures in
+  `wardrobe\data\props\tex\` (`wardrobe_props_tex.py`). A rebuild ends with committing and pushing the changed data.
 - Read only, from the sibling `12tails-video` folder: `outfits\`, `tex\faces_tto\`, `props\json\`, `props\tex\`,
   `tto_assets\`, `tot_assets\`; from the Bible repo (`D:\12tails`, office `C:\Users\Jump\Desktop\12tails`): the BB
   rip and the decompiles.
@@ -762,3 +763,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   the Wolf's fx.json and sounds 200. Space mid-skill fix (06dec0e) went with it. Office: `transfer_to_drive.ps1 -Dest
   C:\Users\Jump\Desktop\12tails-wardrobe-transfer` (362 MB tar, 8,107 files, checked for the effects, sounds, TTO
   textures and icons/hd); HANDOFF "Office PC" has the pull + restore steps.
+- **2026-11-10, `wardrobe\data` in git** (user: "can't the data folder push to github private?", then "one repo for
+  now"; separate data repo offered for smaller history later). 372 MB, 8,029 files, largest 8.4 MB (GitHub refuses
+  over 100 MB). `.gitignore`: `/wardrobe/data*/` then `!/wardrobe/data/` (copies set aside stay out) and
+  `/wardrobe/data/bb_rip_fix/` (the office's rip repair); `.gitattributes`: `wardrobe/data/** -text` (no CRLF on
+  checkout: core.autocrlf is true here, and the publish hashes the data's bytes); `test_repo_rules` checks both.
+  History grows with every data rebuild: if the repo gets heavy, split the data into its own repo then. The office's
+  first pull needs its untracked data moved aside (HANDOFF "Office PC").

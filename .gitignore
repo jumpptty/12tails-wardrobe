@@ -1,6 +1,6 @@
 # A whitelist, like 12tails-video's: everything at the top level is ignored unless it is listed here.
-# Untracked by design: wardrobe/data (built from the game rips, moved between PCs by pipeline/transfer_to_drive.ps1),
-# wardrobe_dist (the published copy, rebuilt by pipeline/wardrobe_publish.py), checks/, tto_config/, .superpowers/.
+# Untracked by design: wardrobe_dist (the published copy, rebuilt by pipeline/wardrobe_publish.py), checks/, tto_config/,
+# .superpowers/, any data folder set aside (wardrobe_data_old ...).
 /*
 !/.gitignore
 !/.gitattributes
@@ -11,6 +11,10 @@
 !/pipeline/
 !/plans/
 !/wardrobe/
-# every data folder, also one renamed aside (data_old, data-home, ...): 300 MB of game data never goes into git
+# wardrobe/data IS tracked since 2026-11-10 (user: "one repo for now"; it moved between the PCs as a tar through Google
+# Drive before). A copy renamed aside (data_old, data-home, ...) stays out, and so does the office's repair of its damaged
+# rip (bb_rip_fix: that PC only)
 /wardrobe/data*/
+!/wardrobe/data/
+/wardrobe/data/bb_rip_fix/
 __pycache__/
