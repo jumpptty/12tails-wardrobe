@@ -746,3 +746,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   query string) shows the new one. This deploy carries everything since the last: the piece menu's hover = pulsing rim,
   TTO, Space / R, the key-hint centring, zoom 40 x, drop a picture on a piece, the Whale's hands, ประดับ, skills once
   (วนซ้ำ), the skill rings. Online the effects stay off (FX_ON false). Not browser-checked (the user tests).
+- **2026-11-09, Space didn't pause mid skill** (user: "why spacebar doesn't work mid skill animations"). After a click on
+  a skill tile the tile keeps the focus; the capture-phase keydown that sets `lastInput` (the Ctrl+V target's keyboard
+  mode) counted Space as navigation and ran first, so the Space handler saw "keyboard navigation on a button" and let
+  Space press the tile: the skill restarted. Now only Tab / arrows count as navigation, and the key-up of a Space taken
+  for pause is swallowed too (a focused button is pressed on key-up). Not deployed yet.

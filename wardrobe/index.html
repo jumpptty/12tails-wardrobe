@@ -1059,9 +1059,13 @@ addEventListener("keydown", e => {
   if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
   if (lastInput === "key" && t?.closest?.("button, a, [tabindex]")) return;     // keyboard navigation: Space presses the button
   e.preventDefault();
+  spaceTaken = true;
   setPaused(!animPaused);
   toast(animPaused ? "หยุดท่าไว้ กด Space เพื่อเล่นต่อ" : "เล่นท่าต่อ");
 });
+// a focused button is pressed by Space on key-up: the key-up of a Space taken for pause is swallowed too
+let spaceTaken = false;
+addEventListener("keyup", e => { if (e.code === "Space" && spaceTaken) { spaceTaken = false; e.preventDefault(); } });
 // R: back to the idle stance (user 2026-11-09: "R to reset the pose to idle stance"), like picking ยืนพัก
 addEventListener("keydown", e => {
   if (e.code !== "KeyR" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || !C || !C.clipsData) return;
@@ -1695,8 +1699,12 @@ skinFile.onchange = () => { const f = skinFile.files[0], t = skinTarget; skinTar
 // worn piece under the pointer on the model (a ray against the outfit and the worn props, cut-outs and hidden parts skipped)
 let pointer = null, lastInput = "pointer";
 addEventListener("pointermove", e => { pointer = { x: e.clientX, y: e.clientY }; lastInput = "pointer"; }, { passive: true });
-// keyboard navigation (not Ctrl / V themselves) makes the focused tile the paste target; a mouse move takes it back (F2)
-addEventListener("keydown", e => { if (/^(Tab|Arrow\w+|Enter| )$/.test(e.key)) lastInput = "key"; }, true);
+// keyboard navigation (not Ctrl / V themselves) makes the focused tile the paste target; a mouse move takes it back (F2).
+// Tab and the arrows only: Enter and Space press what has the focus, they don't move it. Space counted here before
+// 2026-11-09 and this capture-phase listener runs first, so after a click on a skill tile the Space handler took Space
+// for keyboard navigation and let it press the tile again: the skill restarted instead of pausing (user: "why spacebar
+// doesn't work mid skill animations")
+addEventListener("keydown", e => { if (/^(Tab|Arrow\w+)$/.test(e.key)) lastInput = "key"; }, true);
 document.documentElement.addEventListener("mouseleave", () => { pointer = null; });
 const ray = new THREE.Raycaster(), alphaCache = new WeakMap();
 function alphaAt(map, uv) {              // a texture's alpha where a ray hit it (Repeat wrap); 255 when it can't be read
