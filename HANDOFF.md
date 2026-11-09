@@ -12,9 +12,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Office PC
 
-- **The Wolf's effects data** (2026-11-09, home): `wardrobe\data\wolfx.json`, `sfx\` and `datax	ex\` were rebuilt
-  for 31 Wolf skills (not in git). Carry a fresh data tar from home (`pipeline	ransfer_to_drive.ps1`), or rebuild at the
-  office: `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf`.
+- **The Wolf's effects data** (2026-11-09, home): `wardrobe\data\wolf\fx.json`, `wardrobe\data\wolf\sfx\` and
+  `wardrobe\data\fx\tex\` were rebuilt for 31 Wolf skills (not in git). Carry a fresh data tar from home
+  (`pipeline\transfer_to_drive.ps1`), or rebuild at the office:
+  `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf`.
 
 ## Video repo (either PC)
 
