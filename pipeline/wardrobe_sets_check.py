@@ -2,9 +2,10 @@
 bow", "Panda doesn't have Worm R in the armor selection, but it can be chosen from the set equip"). For every class:
   - foreign weapons: a set's R / L piece named after ANOTHER outfit (Chameleon legend got standardBow from item_map's
     wrong w_chm61 = standardBow + legendArrow; the game loads legendBow + legendArrow for w_chm60 / 61)
-  - editions: every outfits.json R / V edition, and whether any set reaches it (the ชุด picker lists outfits only; since
-    2026-11-07 an edition is picked through a set, and a set exists only for a variant letter its pieces carry)
-Writes <out>/sets.json; exit 1 when a set has a foreign weapon or an edition no set reaches.
+  - editions: every outfits.json R / V edition, whether a set reaches it and whether the ชุด picker has its tile (one
+    per edition since 2026-11-09); Panda's Worm R picked there, undone, and plain Worm dropping the edition
+Writes <out>/sets.json and <out>/panda_outfits.png; exit 1 on a foreign weapon, an edition no set reaches or with no
+ชุด tile, or a wrong pressed tile.
 uv run --no-project --with playwright python -I pipeline/wardrobe_sets_check.py D:/12tails-wardrobe checks/<dir>"""
 import asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
@@ -55,16 +56,44 @@ async def main():
         page.on("pageerror", lambda e: errors.append(str(e)))
         await page.goto(URL)
         await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
+        async def open_outfits():                 # the ชุด picker drawn fresh for the class now loaded
+            if await page.evaluate("() => !document.getElementById('picker').hidden && document.getElementById('pkBody').dataset.topic === 'outfit'"):
+                await page.click('button.topic[data-t="outfit"]')
+            await page.click('button.topic[data-t="outfit"]')
+            await page.wait_for_selector('#pkBody .pk-item[data-o]')
+        STATE = "() => { const s = wardrobe.debug().C.state; return s.outfit + '/' + (s.edition || ''); }"
+        PRESSED = "() => [...document.querySelectorAll('#pkBody .pk-item[aria-pressed=true]')].map(b => b.dataset.o + '/' + b.dataset.e).join(',')"
         for cls in CLASSES:
             await page.evaluate("c => wardrobe.show(c)", cls)
             await page.wait_for_function("c => { const C = wardrobe.debug().C; return C.cls === c && C.sets; }", arg=cls, timeout=60000)
             d = await page.evaluate(DUMP)
             foreign, eds, unreached = audit(d)
-            report[cls] = {**d, "foreign": foreign, "unreached": unreached}
-            bad += len(foreign) + len(unreached)
-            print(f"{cls:10} sets {len(d['sets']):3}  editions {len(eds):2} (no set: {len(unreached)})  foreign weapons {len(foreign)}")
+            # the ชุด picker: one tile per edition (user 2026-11-09: "Panda doesn't have Worm R in the armor selection")
+            await open_outfits()
+            tiles = set(await page.evaluate("() => [...document.querySelectorAll('#pkBody .pk-item[data-e]:not([data-e=\"\"])')].map(b => b.dataset.o + ' ' + b.dataset.e)"))
+            untiled = [f"{o} {e}" for o, e in eds if f"{o} {e}" not in tiles]
+            report[cls] = {**d, "foreign": foreign, "unreached": unreached, "untiled": untiled}
+            bad += len(foreign) + len(unreached) + len(untiled)
+            print(f"{cls:10} sets {len(d['sets']):3}  editions {len(eds):2} (no set: {len(unreached)}, no outfit-picker tile: {len(untiled)})  foreign weapons {len(foreign)}")
             for x in foreign: print("   foreign:", x)
             for x in unreached: print("   edition no set reaches:", x)
+            for x in untiled: print("   edition with no outfit-picker tile:", x)
+        # Panda's Worm R from the ชุด picker: worn, its tile pressed, one undo step; then plain Worm drops the edition
+        await page.evaluate("c => wardrobe.show(c)", "panda")
+        await open_outfits()
+        before = await page.evaluate(STATE)
+        steps = []
+        for sel, want in (('[data-o="worm"][data-e="R"]', "worm/R"), ("#undo", before), ('[data-o="worm"][data-e=""]', "worm/"),
+                          ('[data-o="worm"][data-e="R"]', "worm/R")):
+            await page.click(sel if sel == "#undo" else f"#pkBody .pk-item{sel}")
+            await page.wait_for_function(f"() => ({STATE})() === {json.dumps(want)}", timeout=30000)
+            pressed = await page.evaluate(PRESSED)
+            steps.append(f"{sel} -> {want} pressed {pressed}")
+            if sel != "#undo" and pressed != want:
+                errors.append(f"pressed {pressed}, want {want}")
+        print("Panda Worm R:", *steps, sep="\n   ")
+        await page.locator('#pkBody .pk-item[data-o="worm"][data-e="R"]').scroll_into_view_if_needed()
+        await page.screenshot(path=str(OUT / "panda_outfits.png"))
         await b.close()
     (OUT / "sets.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
     print("errors:", errors)

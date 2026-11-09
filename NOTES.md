@@ -399,3 +399,13 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   the Chameleon's real nest. **Home PC: after `git pull`, run `py -3 -I pipeline\bb_item_codes.py` once** (it needs the
   Bible's DecompiledSource, both PCs have it), or the next data tar from home carries the old map back. The video
   repo's `extract_tto_props.py` reads `item_map.json`: those 14 codes now map as above.
+- **2026-11-09, R / V editions in the ชุด picker** (user: "yes" to bug 2; reverses part of 2026-11-07's "editions in the
+  set tab"): every edition is a tile of its own right after its outfit (Worm, Worm R; icon = the edition's own from
+  icons.json "editions"), `wearOutfit(name, e)`: the same outfit changes only the texture (`setColorOrFace`), another
+  loads it (`setOutfit`); the plain tile now means ปกติ (before, an outfit pick kept the worn edition); a colour the
+  edition lacks moves to its first colour. Edition tiles carry no skin tools (one skin covers every edition) and are
+  `data-ed` cells, skipped by `syncTiles` and the viewer's list. Pressed = outfit and edition. Undo covers it (`pick` ->
+  `tracked`). Checked: `wardrobe_sets_check.py` (now also: every class's 11 editions have a tile; Panda Worm R picked ->
+  worn + pressed, undo -> standard, plain Worm -> no edition, Worm R again; screenshot), `wardrobe_moves_check.py`
+  (Quick Fire with Added Fire: quickFire2 0.4 -> quickFire3 2.1 s). One run logged a transient
+  `ERR_CONNECTION_REFUSED` that two reruns didn't repeat; the moves check now prints a console error's URL.

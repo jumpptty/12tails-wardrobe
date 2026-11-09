@@ -669,6 +669,13 @@ async function setColorOrFace(color, face, edition) {
   if (C.matFront) { C.matFront.map = tex; C.matFront.needsUpdate = true; }
   persist(); renderOutfitUI(); renderFacesUI(); refreshShowcase("outfits");
 }
+// a ชุด tile: the outfit in an edition ("" = ปกติ, no longer carried over from the outfit worn); a colour the edition
+// lacks moves to its first colour
+function wearOutfit(name, e) {
+  const o = C.outfits.find(x => x.name === name), cs = e ? o?.editions?.[e] || [] : [];
+  const color = !e || cs.includes(C.state.color) ? C.state.color : cs[0];
+  return name === C.state.outfit ? setColorOrFace(color, null, e) : setOutfit(name, color, e);
+}
 
 // ---------- props ----------
 const unityEuler = (x, y, z) => {          // Unity Quaternion.Euler: z, then x, then y; then mirrored to three.js
@@ -922,8 +929,8 @@ function buildClip(name) {
 // at rank 3, 1 → 2 → 3 → 2, the clip changing right after each hit at 0.2 / 0.5 / 0.8 s (:26402, :26640, :26063, the
 // bladeFang_count >= sLv checks :26055, :26627); the Bison's Charge Attack at rank 2 with Improved Swing 3: full charge
 // 8 s, then cAttack6 (the spin by Improved Swing rank, Bison.cs:20318) for 8 hits × 2 × (0.2 − 0.033 × 3) = 1.6 s; Quick
-// Fire at rank 4: quickFire2 from the opening shot (0.4 s) through 2 × 4 shots 0.1 s apart, quickFire3 on the closing
-// shot (Chameleon.cs:19660, :20061, :19787; Added Fire #402 would double the loop). LOWER_RANK = clips only lower ranks
+// Fire at rank 4 with Added Fire #402 (user 2026-11-09: "want it"): quickFire2 from the opening shot (0.4 s) through
+// 4 × 4 shots 0.1 s apart = 1.7 s, quickFire3 on the closing shot (Chameleon.cs:19660, :20061, :19787). LOWER_RANK = clips only lower ranks
 // play, kept out of the move list. After the last step the sequence starts again with a 0.2 s crossfade.
 const SEQ = {
   bat: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Drain Life: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
@@ -934,7 +941,7 @@ const SEQ = {
     "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2*@13.5 grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*@3",
     "Heart Ripper: heartRipper1 heartRipper2", "Finishing Blow: finishingBlow1 finishingBlow2", "Crescent Eclipse: crescentEclipse1 crescentEclipse2"],
   chameleon: ["Charge Attack: cAttack1 cAttack2*@9 cAttack3*@3.6 cAttack4", "Cast: cast1 cast2*@0 cast3~",
-    "Quick Fire: quickFire1@0.4 quickFire2*@0.9 quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
+    "Quick Fire: quickFire1@0.4 quickFire2*@1.7 quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
     "Thunder Dragon: thunderDragon1@0.8 thunderDragon2*@3", "Focus Fire: focusFire1 focusFire2", "Venom Phantom: venomPhantom1 venomPhantom2 venomPhantom3"],
   mole: ["Normal Attack: nAttack1 nAttack2", "Assemble: assemble1 assemble2*@0", "Flame Turret: flameTurret1 flameTurret2*@3",
     "Barrel Railgun: barrelRailgun1 barrelRailgun2*@6 barrelRailgun3@0.65 barrelRailgun4"],
@@ -1592,7 +1599,7 @@ function syncTiles() {                   // after an upload / reset: the open pi
   const t = openTopic, body = $("pkBody");
   if (t !== "outfit" && !SLOTS[t]) return;
   syncPressed(); syncViewing();
-  body.querySelectorAll(".pk-cell").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinParts(c.dataset.slot, c.dataset.item); });
+  body.querySelectorAll(".pk-cell:not([data-ed])").forEach(c => { c.querySelector(".sk-ui").innerHTML = skinParts(c.dataset.slot, c.dataset.item); });
 }
 const skinFile = Object.assign(document.createElement("input"), { type: "file", accept: "image/png,image/jpeg,image/webp", hidden: true });
 document.body.append(skinFile);
@@ -1766,7 +1773,7 @@ function camStep(dt) {
 }
 // the open picker's tiles in their order (the search applied), else the slot's whole list as the picker shows it
 async function viewList(slot) {
-  if (openTopic === slot) return [...$("pkBody").querySelectorAll(".pk-cell")].map(c => c.dataset.item);
+  if (openTopic === slot) return [...$("pkBody").querySelectorAll(".pk-cell:not([data-ed])")].map(c => c.dataset.item);
   if (slot === "outfit") return C.outfits.map(o => o.name);
   const list = (await propList(SLOTS[slot])).filter(p => slot !== "R" || p.mount !== "mount_Hand_L").map(p => p.name);
   return [...new Set(list)];
@@ -2261,7 +2268,7 @@ function syncPressed() {
   if (!t || !C) return;
   body.querySelectorAll(".pk-item").forEach(b => {
     const d = b.dataset;
-    const on = d.c != null ? d.c === C.cls : d.o != null ? d.o === C.state.outfit : d.p != null ? d.p === (C.state[t] || "")
+    const on = d.c != null ? d.c === C.cls : d.o != null ? d.o === C.state.outfit && (d.e || "") === (C.state.edition || "") : d.p != null ? d.p === (C.state[t] || "")
       : d.f != null ? +d.f === C.state.face : d.m != null ? d.m === C.cur
       : d.s != null ? (d.s === "clear" ? isBare() : !!C.sets?.[+d.s] && setWorn(C.sets[+d.s])) : null;
     if (on != null) b.setAttribute("aria-pressed", on);
@@ -2315,9 +2322,16 @@ async function openPicker(t, opts = {}) {
     body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, CLASS_TH[c.cls] || c.cls, c.cls === C.cls, UI.heroes?.[c.cls], { fb: noIcon(c.cls) })).join("");
     pick(b => loadClass(b.dataset.c), "โหลดอาชีพนี้ไม่สำเร็จ ลองกดอีกครั้ง");
   } else if (t === "outfit") {
-    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}"`, nameHTML(o.name), o.name === C.state.outfit,
-      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name) }))).join("");
-    pick(b => setOutfit(b.dataset.o, C.state.color));
+    // each R / V edition is a tile of its own right after its outfit (user 2026-11-09: "Panda doesn't have Worm R in the
+    // armor selection"; until then only a set reached one). One skin covers every edition: its tools stay on the plain
+    // tile, and an edition tile (data-ed) is no extra piece for the viewer's list
+    const worn = (n, e) => n === C.state.outfit && e === (C.state.edition || "");
+    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}" data-e=""`, nameHTML(o.name), worn(o.name, ""),
+      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name) }))
+      + Object.keys(o.editions || {}).sort().map(e => `<div class="pk-cell" data-slot="outfit" data-item="${o.name}" data-ed="${e}">`
+        + item(`data-o="${o.name}" data-e="${e}"`, nameHTML(o.name + e), worn(o.name, e), outfitIcon(o.name, e),
+          { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name + e) }) + `<span class="sk-ui"></span></div>`).join("")).join("");
+    pick(b => wearOutfit(b.dataset.o, b.dataset.e));
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า <span class="num">${f.n}</span>`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
     pick(b => setColorOrFace(null, +b.dataset.f));

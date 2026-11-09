@@ -43,7 +43,7 @@ async def main():
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
         page = await b.new_page(viewport={"width": 1366, "height": 607})
         page.on("pageerror", lambda e: errors.append(str(e)))
-        page.on("console", lambda m: m.type == "error" and errors.append(m.text))
+        page.on("console", lambda m: m.type == "error" and errors.append(m.text + " " + (m.location or {}).get("url", "")))
         await page.goto(URL)
         await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
         async def tab(g):
