@@ -703,3 +703,12 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
     length (Dark Edge, Holy Sword) and Lunar Eclipse's tint can't be cued; the TrailRenderer and DistortGlass are
     approximations; Crusader / Law Bringer trail colours may be swapped (user to check); vortex speed 80 vs 60 fps
     (`?vortexfps=60`) is the user's pick.
+- **2026-11-09, ท่าสกิล play once** (user: "for ท่าสกิล let's not loop unless it's my override"; reverses the morning's
+  "ท่าสกิล also should loop indefinitely until further input" by default). A skill move (a sequence tile, or a clip in
+  the skill group: `isSkillMove`) plays once and goes back to the idle stance (mode "back"); one the game loops (a
+  channel, `LOOPS`) plays its loop for the held time (HOLD_SECS) first. The override: the skill tab's วนซ้ำ toggle
+  (`.pk-loop`, localStorage `wardrobe.skillLoop`), the old endless loop; switching it replays the skill playing now.
+  Emotes and base moves unchanged. Going back to idle passes `tail`: no fxClear, no new cues, FX.t runs on, so an effect
+  outliving its clip stays and cues after the clip's end fire (Wind Bound Domain's pulses at 2.8 / 4.8 / 6.8 s, a cut
+  equal to the clip length); when the last cue has fired and the last effect is gone the cue list empties (the dark
+  backdrop goes). `wardrobe_moves_check.py`'s looping expectations for skills are out of date (the user tests by hand).

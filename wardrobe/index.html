@@ -240,6 +240,10 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .pk-tab { position: relative; border: 0; background: none; color: var(--muted); padding: 6px 2px; font-weight: 500; }
 .pk-tab[aria-pressed=true] { color: var(--text); font-weight: 600; }
 .pk-tab[aria-pressed=true]::after { content: ""; position: absolute; left: 20%; right: 20%; bottom: 1px; height: 3px; border-radius: 2px; background: var(--gold); }
+/* ท่าสกิล's วนซ้ำ override (2026-11-09): a toggle beside the tabs, gold when on */
+.pk-loop { margin-left: auto; height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--well);
+  color: var(--muted); font-size: 13px; font-weight: 500; }
+.pk-loop[aria-pressed=true] { border-color: var(--gold); background: var(--gold-soft); color: var(--gold); }
 .pk-tab:disabled { opacity: .35; cursor: default; }
 .pk-close { flex: none; display: grid; place-items: center; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; width: 36px; height: 36px; padding: 0; color: var(--muted); }
 .pk-close svg { width: 16px; height: 16px; }
@@ -1058,14 +1062,25 @@ addEventListener("keydown", e => {
   play(idleName());
   renderTopics(); syncPressed();
 });
-function play(name) {
+// ท่าสกิล play once, then the idle stance (user 2026-11-09: "for ท่าสกิล let's not loop unless it's my override"); the
+// skill tab's วนซ้ำ toggle (remembered in this browser) brings back the endless loop. A skill the game itself loops (a
+// channel, LOOPS) plays its loop for the held time (HOLD_SECS), then idle. Going back to idle keeps the skill's effects
+// and its cues still to come (an effect outliving the clip, Wind Bound Domain's pulses after its 1.7 s clip): tail
+let skillLoop = false;
+try { skillLoop = localStorage.getItem("wardrobe.skillLoop") === "1"; } catch (e) {}
+const isSkillMove = n => !!chainOf(n) || (!!C.clipsData[n] && moveGroup(n) === "skill");
+function play(name, tail = false) {
   if (animPaused) setPaused(false);
   const ch = chainOf(name);
   if (!ch && !C.clipsData[name]) name = idleName();
-  const mode = ch ? "again" : playMode(name);
-  C.seq = { steps: ch ? ch.steps : [{ clip: name, hold: false, fade: 0.2, t: null }], mode, i: 0, t: 0, dur: Infinity };
+  let mode = ch ? "again" : playMode(name), steps = ch ? ch.steps : [{ clip: name, hold: false, fade: 0.2, t: null }];
+  if (!skillLoop && isSkillMove(name)) {
+    if (mode === "loop") steps = [{ ...steps[0], hold: true }];   // a looped channel: held for HOLD_SECS, then idle
+    mode = "back";
+  }
+  C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail };
   C.cur = name;
-  fxClear();                                 // the last move's effects go with it
+  if (!tail) fxClear();                      // a new pick: the last move's effects go with it (not the way back to idle)
   startStep(0, 0.2);
   renderMovesUI();
 }
@@ -1079,7 +1094,8 @@ function startStep(i, fade) {
   if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
   C.action = act;
   S.i = i; S.t = 0;
-  fxStart(st.clip, i);                       // its effects and voice, every time the clip starts (the loop too)
+  if (!S.tail) fxStart(st.clip, i);          // its effects and voice, every time the clip starts (the loop too); the way back
+                                             // to idle keeps the skill's cues running on (FX.t goes on from the skill's clip)
   S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
     : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
 }
@@ -1087,7 +1103,8 @@ function startStep(i, fade) {
 function seqTick(dt) {
   const S = C?.seq;
   if (!S || S.dur === Infinity || (S.t += dt) < S.dur) return;
-  if (S.mode === "back") { play(idleName()); if (openTopic === "move") syncPressed(); return; }
+  // back: after the last step, idle (ลุกขึ้น; a skill played once: its effects and later cues run on)
+  if (S.mode === "back" && S.i + 1 >= S.steps.length) { play(idleName(), true); if (openTopic === "move") syncPressed(); return; }
   const n = S.i + 1 < S.steps.length ? S.i + 1 : 0;
   startStep(n, n ? S.steps[n].fade : 0.2);
 }
@@ -2673,8 +2690,17 @@ async function openPicker(t, opts = {}) {
     pick(b => setColorOrFace(null, +b.dataset.f));
   } else if (t === "move") {
     tools.innerHTML = [["emote", "อีโมต"], ["base", "ท่าพื้นฐาน"], ["skill", "ท่าสกิล"]].map(([g, n]) =>
-      `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("");
+      `<button type="button" class="pk-tab" data-g="${g}" aria-pressed="${g === moveTab}">${n}</button>`).join("")
+      // the skill tab's override: loop the skill moves (off: once, then the idle stance)
+      + (moveTab === "skill" ? `<button type="button" class="pk-loop" aria-pressed="${skillLoop}" title="เล่นท่าสกิลวนซ้ำไปเรื่อย ๆ">วนซ้ำ</button>` : "");
     tools.querySelectorAll(".pk-tab").forEach(b => b.onclick = () => { moveTab = b.dataset.g; openPicker("move", { fresh: true }); });
+    const lp = tools.querySelector(".pk-loop");
+    if (lp) lp.onclick = () => {
+      skillLoop = !skillLoop; lp.setAttribute("aria-pressed", skillLoop);
+      try { localStorage.setItem("wardrobe.skillLoop", skillLoop ? "1" : "0"); } catch (e) {}
+      toast(skillLoop ? "ท่าสกิลเล่นวนซ้ำ" : "ท่าสกิลเล่นครั้งเดียว แล้วกลับท่ายืน");
+      if (C.cur && isSkillMove(C.cur)) play(C.cur);              // the skill playing now follows at once
+    };
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
     // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
@@ -3349,6 +3375,8 @@ function fxTick(dt) {
   }
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
+  // back in the idle stance after a skill: once its last cue has fired and its last effect gone, the move is over
+  if (C.seq?.tail && FX.cues.length && FX.cues.every(c => c.done) && !FX.live.length) FX.cues = [];
   stage.classList.toggle("fx-on", FXBG !== "white" && (FX.cues.length > 0 || FX.live.length > 0));   // the whole move, no flicker between loops
 }
 
