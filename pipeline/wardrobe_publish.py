@@ -1,5 +1,4 @@
-r"""The public copy of the 12 Tails Wardrobe, for Cloudflare Pages (plan docs/superpowers/plans/2026-11-07-wardrobe-online.md
-in the Bible repo, Task 1).
+r"""The public copy of the 12 Tails Wardrobe, for Cloudflare Pages (plan plans/wardrobe_online_plan.md, Task 1).
 
   py -3 pipeline/wardrobe_publish.py [--src <repo>\wardrobe] [--data <src>\data] [--out <repo>\wardrobe_dist]
                                      [--bb-rip D:\12tails\RippedAssets\ExportedProject\Assets\Resources]
