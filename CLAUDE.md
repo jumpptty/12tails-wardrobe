@@ -7,7 +7,9 @@ face, prop and move, with a public copy at https://12tails-wardrobe.jumpthai.wor
 opens from its ห้องแต่งตัว tile. It split from `jumpptty/12tails-video` (the skits and dance videos) on 2026-11-09 so
 wardrobe and video sessions never share commits, notes or uncommitted files (user: "a clear line between them").
 
-**Read `NOTES.md` first** and append to it during the session, not at the end. Every script lives in `pipeline/`,
+**Read `NOTES.md` first** and append to it during the session, not at the end. **Then `HANDOFF.md`:** do what it lists
+for this PC and delete each done item. A step the other PC must take (a rebuild after pulling, a publish, a file to
+carry) goes there and gets pushed with the commit; never leave it only in a message to the user (user 2026-11-09). Every script lives in `pipeline/`,
 never only in a session scratch dir.
 
 ## Two PCs
