@@ -84,7 +84,7 @@ section { margin-top: 18px; }
 const $ = id => document.getElementById(id), DATA = "data/", DRAFT = "tto_picker.draft";
 const CLASS_TH = { bat: "ค้างคาว", bison: "กระทิง", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
   penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า", all: "ทุกอาชีพ" };
-const KIND_TH = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ของประดับหลัง", clips: "ท่าทาง", faces: "หน้า" };
+const KIND_TH = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ประดับ", clips: "ท่าทาง", faces: "หน้า" };
 const KINDS = Object.keys(KIND_TH), GROUP_TH = { emote: "อีโมต", base: "ท่าพื้นฐาน", skill: "ท่าสกิล" };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const humanize = n => String(n).replace(/_/g, " ").replace(/([a-z])([A-Z0-9])/g, "$1 $2").replace(/^./, c => c.toUpperCase());

@@ -1102,7 +1102,7 @@ const iconOf = (slot, name) => ICONS[C.cls]?.[slot]?.[name] || ICONS[C.cls]?.[sl
   || ICONS.all?.[slot]?.[name.toLowerCase()];                  // shared items: keyed by lower-case name
 // the panel's rows (user 2026-11-07): class / colour / face; the gear set (full row); hat + outfit; weapons; back + moves
 const TOPICS = [["class", "อาชีพ"], ["color", "สี"], ["face", "หน้า"], ["set", "ชุดเซ็ต"], ["Head", "หมวก"], ["outfit", "ชุด"],
-                ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"], ["Back", "ของประดับหลัง"], ["move", "ท่าทาง"]];
+                ["R", "อาวุธหลัก"], ["L", "อาวุธที่ 2"], ["Back", "ประดับ"], ["move", "ท่าทาง"]];
 
 // ---------- sets (user 2026-11-05: "an equip-set button that equips all related equipment in a single press; only
 // sets with 2 or more complementary pieces"). A set's pieces carry its name (hallow + hallowBaby + hallowFlower); a
@@ -2647,7 +2647,7 @@ async function openPicker(t, opts = {}) {
     if (openTopic !== t) return;
     // the character's colour has its own topic now (สี, user 2026-11-07); a set keeps the colour when it changes the outfit
     tools.innerHTML = `<span class="pk-note"><span class="num">${sets.length}</span> เซ็ต กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
-    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับหลัง">`
+    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับ">`
       + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
       + (sets.length ? sets.map((s, i) => `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}">` +
         `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span><span class="lbl">${setNameHTML(s)}</span>` +
@@ -3240,7 +3240,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
                  spin: THREE.MathUtils.degToRad(em.angularVelocity + rnd(-em.rndAngularVelocity, em.rndAngularVelocity)) });
     emitted = true;
   };
-  return { node, stop() { emit = false; }, update(dt, cam) {
+  return { node, stop() { emit = false; }, setEmit(on) { emit = on; }, update(dt, cam) {   // setEmit: fxparts/control.js's EmitterControl
     for (let i = parts.length - 1; i >= 0; i--) if ((parts[i].age += dt) >= parts[i].energy) parts.splice(i, 1);
     if (an?.autodestruct && emitted && !parts.length) return "destroy";
     if (emit) {

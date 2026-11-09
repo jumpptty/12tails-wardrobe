@@ -682,3 +682,7 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   ("whale" = mount_Hand_L), so the lance went left. `SWAP_HANDS` (index.html, above `placementOf`) uses the "#2" entry
   for the Whale's main slot and the plain one for its second. The Chameleon (bow first, on the left) matches its table
   and is unchanged. Not deployed yet; the user tests.
+- **2026-11-09, ของประดับหลัง -> ประดับ** (user: "rename ของประดับหลัง to ประดับ since some times they comes in a form of
+  glasses, so let's use generic word"): the topic name (TOPICS), ถอดทั้งหมด's tooltip, the TTO picker's kind. The menu's
+  เปลี่ยน / ถอด...ออก lines follow (เปลี่ยนประดับ, ถอดประดับออก). The video repo mentions the old label only in
+  `plans/wardrobe_trailer_design.md` and two old `.playwright-mcp` dumps, no code.
