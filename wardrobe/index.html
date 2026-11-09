@@ -3123,13 +3123,15 @@ function ringEmitter(fx, node, e, mat) {
 // for Life (all of them when EmissionTime is 0); rndLife = a hold at the start; size / colour linear over life; angles
 // in RADIANS (as the game); the image transposed on the quad (u along the height, as the game's UVs)
 function imageEmitter(fx, node, e, mat) {
-  const m = fxMesh(node, mat); let T = 0, parts = null;
+  // rep: this spawn's own repeatForever (stop() wrote into the shared fx.json data before 2026-11-09, so after one
+  // after-life every later spawn of that effect had lost it; found by agent G)
+  const m = fxMesh(node, mat); let T = 0, parts = null, rep = e.repeatForever;
   const E0 = Math.max(1, e.Emission), box = () => V(rnd(-e.startPosition[0], e.startPosition[0]), rnd(-e.startPosition[1], e.startPosition[1]), rnd(-e.startPosition[2], e.startPosition[2]));
-  return { node, stop() { e.repeatForever = false; }, update(dt, cam) {
+  return { node, stop() { rep = false; }, update(dt, cam) {
     T += dt;
     const D = e.Delay, L = e.Life, ET = e.EmissionTime;
     if (T >= L + D + ET) {
-      if (!e.repeatForever) return "destroy";
+      if (!rep) return "destroy";
       T = 0; parts = null; setMesh(m, [], [], [], []);
     }
     if (T < D) return;

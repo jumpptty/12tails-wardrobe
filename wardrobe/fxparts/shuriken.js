@@ -1,2 +1,567 @@
-// wardrobe/fxparts/shuriken.js: not built yet (see the loader comment above FX_PART_FILES in index.html)
-export default function register(api) {}
+// wardrobe/fxparts/shuriken.js: Unity's ParticleSystem ("Shuriken") and its ParticleSystemRenderer, for TTO's effects
+// (plans/fx_wolf/tto.md section 3: zone Glints, shatter / shards Glass + Sparks, rake and burst rays, the waves' Sparks,
+// the domain's Motes, the pulse's Sparkles). The component is UnityPy's read_typetree() of the ParticleSystem (field
+// names as Unity serializes them: lengthInSec, looping, moveWithTransform, InitialModule, ShapeModule, EmissionModule,
+// ...), the renderer the same node's "ParticleSystemRenderer" (nodeDef.comps), its material the node's mats[0].
+// Shuriken is Unity's native engine code (no game source): the behaviour follows Unity's documented semantics (Manual,
+// "Particle System modules"; ScriptReference ParticleSystem.*), field by field as serialized. TTO's own calls into it:
+//   - EffectControl's after-life stops every system under the effect without clearing it: TTO1102:EffectControl::Update
+//     @0x1A233A0, GetComponentsInChildren<ParticleSystem>(true) then ParticleSystem.Stop(false, StopEmitting) at
+//     0x1A23661 -> stop() below (emission ends, the living particles run out).
+//   - GroundHugEmitter feeds the domain's Motes (rate 0) with Emit(EmitParams { position, applyShapeToPosition, velocity },
+//     n): TTO1102:GroundHugEmitter::EmitMotes@0x22627A0 (set_position 0x22629D6, Emit 0x2262ACC) -> emit() below.
+// Everything is simulated in Unity's space and drawn in the Unity world of the effect (the mirror group's space): the
+// quads are built there and the mesh, a child of the node so it goes when the node is destroyed, undoes the node's
+// matrix. Approximations are marked APPROX.
+export default function register(api) {
+  const { THREE } = api;
+  const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+  const DEG = Math.PI / 180, G = -9.81;                       // Physics.gravity (Unity's default; TTO never sets it here)
+  const num = (x, d = 0) => (typeof x === "number" ? x : typeof x === "boolean" ? +x : d);
+  const on = x => x === true || x === 1;
+  const clamp01 = x => (x < 0 ? 0 : x > 1 ? 1 : x);
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const frac = x => x - Math.floor(x);
+  const vec = (o, d = [0, 0, 0]) => (!o ? d : Array.isArray(o) ? [num(o[0], d[0]), num(o[1], d[1]), num(o[2], d[2])]
+    : [num(o.x, d[0]), num(o.y, d[1]), num(o.z, d[2])]);
+  const rgba = o => {
+    if (!o) return [1, 1, 1, 1];
+    if (Array.isArray(o)) return [num(o[0], 1), num(o[1], 1), num(o[2], 1), num(o[3], 1)];
+    if (!("r" in o) && "rgba" in o) { const v = o.rgba >>> 0; return [(v & 255) / 255, ((v >>> 8) & 255) / 255, ((v >>> 16) & 255) / 255, (v >>> 24) / 255]; }
+    return [num(o.r, 1), num(o.g, 1), num(o.b, 1), num(o.a, 1)];
+  };
+  // the game's colours are gamma values; the page's vertex colours are linear (as index.html's ramp / linRGBA)
+  const toLin = c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const lin = c => [toLin(c[0]), toLin(c[1]), toLin(c[2]), c[3]];
+  const randUnit = () => { const z = 2 * Math.random() - 1, a = 2 * Math.PI * Math.random(), r = Math.sqrt(1 - z * z); return V(r * Math.cos(a), r * Math.sin(a), z); };
+  const finite = x => typeof x === "number" && Number.isFinite(x) && Math.abs(x) < 1e30;
+
+  // ---- AnimationCurve: Unity's Hermite between keys; an infinite tangent = stepped (holds the left key); weighted
+  // tangents (weightedMode 1 in / 2 out / 3 both) = Unity's cubic Bezier with the key weights; clamped outside the keys
+  // (APPROX: m_PreInfinity / m_PostInfinity loop and ping-pong are not used by particle curves, which run 0..1)
+  function curveFn(cv) {
+    const ks = (Array.isArray(cv) ? cv : cv?.m_Curve) || [];
+    const K = ks.map(k => ({ t: num(k.time), v: num(k.value), i: k.inSlope, o: k.outSlope, w: num(k.weightedMode),
+                             wi: num(k.inWeight, 1 / 3), wo: num(k.outWeight, 1 / 3) }));
+    if (!K.length) return () => 0;
+    if (K.length === 1) return () => K[0].v;
+    const last = K[K.length - 1];
+    return t => {
+      if (t <= K[0].t) return K[0].v;
+      if (t >= last.t) return last.v;
+      let lo = 0, hi = K.length - 1;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (K[m].t <= t) lo = m; else hi = m; }
+      const a = K[lo], b = K[hi], dx = b.t - a.t;
+      if (!(dx > 0) || !finite(a.o) || !finite(b.i)) return a.v;
+      const s = (t - a.t) / dx, m0 = a.o * dx, m1 = b.i * dx;
+      if ((a.w & 2) || (b.w & 1)) {                         // weighted: Bezier, x(u) solved by bisection
+        const w0 = a.w & 2 ? a.wo : 1 / 3, w1 = b.w & 1 ? b.wi : 1 / 3;
+        const bz = (p0, p1, p2, p3, u) => { const n = 1 - u; return n * n * n * p0 + 3 * n * n * u * p1 + 3 * n * u * u * p2 + u * u * u * p3; };
+        let l = 0, h = 1, u = s;
+        for (let it = 0; it < 24; it++) { u = (l + h) / 2; if (bz(0, w0, 1 - w1, 1, u) < s) l = u; else h = u; }
+        return bz(a.v, a.v + w0 * m0, b.v - w1 * m1, b.v, u);
+      }
+      const s2 = s * s, s3 = s2 * s;
+      return (2 * s3 - 3 * s2 + 1) * a.v + (s3 - 2 * s2 + s) * m0 + (-2 * s3 + 3 * s2) * b.v + (s3 - s2) * m1;
+    };
+  }
+  // ---- MinMaxCurve: minMaxState 0 constant (scalar), 1 curve (scalar x maxCurve), 2 random between two curves (both
+  // x scalar), 3 random between two constants (minScalar..scalar); r = the particle's own random for that property.
+  // Returns f(t, r) with f.k = true when it is a constant (f.c)
+  function mmCurve(c, def = 0) {
+    let f;
+    if (c == null) f = () => def, f.k = true, f.c = def;
+    else if (typeof c === "number") f = () => c, f.k = true, f.c = c;
+    else {
+      const st = num(c.minMaxState), S = num(c.scalar, def), m = num(c.minScalar, 0);
+      if (st === 0) f = () => S, f.k = true, f.c = S;
+      else if (st === 3) f = (t, r) => m + (S - m) * r;
+      else {
+        const mx = curveFn(c.maxCurve);
+        if (st === 1) f = t => S * mx(t);
+        else { const mn = curveFn(c.minCurve); f = (t, r) => { const a = mn(t); return S * (a + (mx(t) - a) * r); }; }
+      }
+    }
+    return f;
+  }
+  // ---- Gradient: up to 8 colour keys (key<i>.rgb at ctime<i> / 65535) and 8 alpha keys (key<i>.a at atime<i>), each
+  // interpolated on its own; m_Mode 0 blend, 1 fixed (the first key at or after t), 2 perceptual (APPROX: blended
+  // linearly). Evaluated on the stored (gamma) values, then made linear: returns f(t) -> [r, g, b, a] linear
+  function gradFn(g) {
+    if (!g || !("key0" in g)) { const c = lin(rgba(g)); return () => c; }
+    const nc = Math.max(1, Math.min(8, num(g.m_NumColorKeys, 2))), na = Math.max(1, Math.min(8, num(g.m_NumAlphaKeys, 2)));
+    const ck = [], ak = [];
+    for (let i = 0; i < nc; i++) { const k = rgba(g["key" + i]); ck.push([num(g["ctime" + i]) / 65535, k[0], k[1], k[2]]); }
+    for (let i = 0; i < na; i++) ak.push([num(g["atime" + i]) / 65535, rgba(g["key" + i])[3]]);
+    ck.sort((a, b) => a[0] - b[0]); ak.sort((a, b) => a[0] - b[0]);
+    const fixed = num(g.m_Mode) === 1;
+    const ev = (K, t, j) => {
+      if (t <= K[0][0]) return K[0][j];
+      const L = K[K.length - 1];
+      if (t >= L[0]) return L[j];
+      let i = 1; while (K[i][0] < t) i++;
+      if (fixed) return K[i][j];
+      const a = K[i - 1], b = K[i], d = b[0] - a[0];
+      return d > 0 ? lerp(a[j], b[j], (t - a[0]) / d) : b[j];
+    };
+    return t => [toLin(ev(ck, t, 1)), toLin(ev(ck, t, 2)), toLin(ev(ck, t, 3)), ev(ak, t, 1)];
+  }
+  // ---- MinMaxGradient: 0 colour (maxColor), 1 gradient, 2 random between two colours, 3 between two gradients,
+  // 4 random colour (a random point of maxGradient). Returns f(t, r) -> linear rgba, f.k when constant
+  function mmGrad(c) {
+    let f;
+    if (!c) { const w = [1, 1, 1, 1]; f = () => w; f.k = true; return f; }
+    if (!("minMaxState" in c)) { const g = gradFn(c); f = t => g(t); return f; }
+    const st = num(c.minMaxState);
+    if (st === 0) { const k = lin(rgba(c.maxColor)); f = () => k; f.k = true; }
+    else if (st === 1) { const g = gradFn(c.maxGradient); f = t => g(t); }
+    else if (st === 2) { const a = lin(rgba(c.minColor)), b = lin(rgba(c.maxColor)); f = (t, r) => a.map((x, j) => lerp(x, b[j], r)); }
+    else if (st === 3) { const ga = gradFn(c.minGradient), gb = gradFn(c.maxGradient); f = (t, r) => { const a = ga(t), b = gb(t); return a.map((x, j) => lerp(x, b[j], r)); }; }
+    else { const g = gradFn(c.maxGradient); f = (t, r) => g(r); }
+    return f;
+  }
+  // MultiModeParameter (the shape's radius / arc): {value, mode 0 random / 1 loop / 2 ping-pong / 3 burst spread,
+  // spread, speed (a MinMaxCurve)}; older files hold a plain number
+  const mmp = (p, d) => (typeof p === "number" || p == null ? { value: num(p, d), mode: 0, spread: 0, speed: () => 0 }
+    : { value: num(p.value, d), mode: num(p.mode), spread: num(p.spread), speed: mmCurve(p.speed, 1) });
+  // a position along a MultiModeParameter, 0..1 (Unity's arc / edge modes); ctx = { t (system time), nt, i, n (burst) }
+  const mmpPick = (p, ctx) => {
+    let u;
+    if (p.mode === 1) u = frac(ctx.t * p.speed(ctx.nt, 0));
+    else if (p.mode === 2) { const x = frac(ctx.t * p.speed(ctx.nt, 0) / 2) * 2; u = x > 1 ? 2 - x : x; }
+    else if (p.mode === 3 && ctx.n > 0) u = ctx.i / ctx.n;
+    else u = Math.random();
+    if (p.spread > 0) u = Math.floor(u / p.spread) * p.spread;
+    return u;
+  };
+
+  // ---- ShapeModule: where a particle starts and which way it goes (shape space: then m_Position / m_Rotation /
+  // m_Scale). Types as serialized: 0 sphere, 1 sphere shell, 2 hemisphere (+z half), 3 its shell, 4 cone (base),
+  // 7 cone shell, 8 cone volume, 9 its shell, 5 box (volume, along +z), 15 box shell, 16 box edge, 10 circle (the XY
+  // plane, outward), 11 circle edge, 12 single-sided edge (along x, emits +y), 17 donut, 18 rectangle (+z). radiusThickness
+  // 1 = the whole volume, 0 = the surface. The module off: the centre, along +z. APPROX: mesh / sprite shapes (6, 13,
+  // 14, 19, 20) emit from the centre; the direction turns with m_Rotation only (not m_Scale); alignToDirection ignored
+  function shapeFn(sh) {
+    if (!sh || !on(sh.enabled)) return null;
+    const type = num(sh.type), R = mmp(sh.radius, 1), arc = mmp(sh.arc, 360), th = clamp01(num(sh.radiusThickness, 1));
+    const ang = Math.min(90, Math.max(0, num(sh.angle, 25))) * DEG, len = num(sh.length, 5), dR = num(sh.donutRadius, 0.2);
+    const pos = V(...vec(sh.m_Position)), scl = V(...vec(sh.m_Scale, [1, 1, 1]));
+    const rot = new THREE.Quaternion().setFromEuler(new THREE.Euler(...vec(sh.m_Rotation).map(x => x * DEG), "YXZ"));   // Unity's Euler: z, x, y
+    const rDir = num(sh.randomDirectionAmount), sDir = num(sh.sphericalDirectionAmount), rPos = num(sh.randomPositionAmount);
+    const vol = (t, pw) => Math.pow(lerp(Math.pow(1 - t, pw), 1, Math.random()), 1 / pw);   // radius fraction, uniform in area / volume
+    return ctx => {
+      let p, d;
+      const r0 = R.value, theta = () => mmpPick(arc, ctx) * arc.value * DEG;
+      switch (type) {
+        case 0: case 1: case 2: case 3: {
+          d = randUnit(); if (type >= 2) d.z = Math.abs(d.z);
+          p = d.clone().multiplyScalar(r0 * (type === 1 || type === 3 ? 1 : vol(th, 3))); break;
+        }
+        case 4: case 7: case 8: case 9: {
+          const a = theta(), f = type === 7 || type === 9 ? 1 : vol(th, 2), c = Math.cos(a), s = Math.sin(a);
+          p = V(c * f * r0, s * f * r0, 0);
+          const k = (r0 > 0 ? f : Math.sqrt(Math.random())) * Math.tan(ang);   // aims at the matching point of the top circle
+          d = V(c * k, s * k, 1).normalize();
+          if (type >= 8) p.addScaledVector(d, Math.random() * len / d.z);
+          break;
+        }
+        case 5: case 15: case 16: {
+          p = V(Math.random() - .5, Math.random() - .5, Math.random() - .5);
+          if (type === 15) { const k = Math.floor(Math.random() * 3); p.setComponent(k, Math.random() < .5 ? -.5 : .5); }
+          if (type === 16) { const k = Math.floor(Math.random() * 3); for (let j = 0; j < 3; j++) if (j !== k) p.setComponent(j, Math.random() < .5 ? -.5 : .5); }
+          d = V(0, 0, 1); break;
+        }
+        case 10: case 11: {
+          const a = theta(), f = type === 11 ? 1 : vol(th, 2);
+          d = V(Math.cos(a), Math.sin(a), 0); p = d.clone().multiplyScalar(f * r0); break;
+        }
+        case 12: p = V(r0 * (2 * mmpPick(R, ctx) - 1), 0, 0); d = V(0, 1, 0); break;
+        case 17: {
+          const a = theta(), c = V(Math.cos(a) * r0, Math.sin(a) * r0, 0), b = Math.random() * 2 * Math.PI, rr = dR * vol(th, 2);
+          d = V(Math.cos(a) * Math.cos(b), Math.sin(a) * Math.cos(b), Math.sin(b)); p = c.addScaledVector(d, rr); break;
+        }
+        case 18: p = V(Math.random() - .5, Math.random() - .5, 0); d = V(0, 0, 1); break;
+        default: p = V(); d = V(0, 0, 1);
+      }
+      p.multiply(scl).applyQuaternion(rot).add(pos);
+      d.applyQuaternion(rot);
+      if (sDir > 0) { const o = p.clone().sub(pos); if (o.lengthSq() > 1e-12) d.lerp(o.normalize(), sDir); }
+      if (rDir > 0) d.lerp(randUnit(), rDir);
+      if (d.lengthSq() > 1e-12) d.normalize(); else d.set(0, 0, 1);
+      if (rPos > 0) p.addScaledVector(randUnit(), Math.random() * rPos);
+      return { p, d };
+    };
+  }
+
+  // ---- the whole system's settings, compiled once per component (the data is shared by every spawn: never mutated)
+  const CACHE = new WeakMap();
+  function compile(ps) {
+    if (CACHE.has(ps)) return CACHE.get(ps);
+    const I = ps.InitialModule || {}, E = ps.EmissionModule || {}, mod = n => (on(ps[n]?.enabled) ? ps[n] : null);
+    const P = {
+      dur: Math.max(0.05, num(ps.lengthInSec, 5)), loop: on(ps.looping), prewarm: on(ps.prewarm),
+      playOnAwake: ps.playOnAwake == null ? true : on(ps.playOnAwake), delay: mmCurve(ps.startDelay, 0),
+      // moveWithTransform is the serialized simulation space: 0 world, 1 local, 2 custom (APPROX: custom = local)
+      world: num(ps.moveWithTransform, 1) === 0, scaling: num(ps.scalingMode, 1), simSpeed: num(ps.simulationSpeed, 1),
+      stopAction: num(ps.stopAction), max: Math.max(0, num(I.maxNumParticles, 1000)),
+      life: mmCurve(I.startLifetime, 5), speed: mmCurve(I.startSpeed, 5), color: mmGrad(I.startColor),
+      size: mmCurve(I.startSize, 1), sizeY: mmCurve(I.startSizeY, 1), sizeZ: mmCurve(I.startSizeZ, 1), size3D: on(I.size3D),
+      rotX: mmCurve(I.startRotationX, 0), rotY: mmCurve(I.startRotationY, 0), rot: mmCurve(I.startRotation, 0), rot3D: on(I.rotation3D),
+      flipRot: num(I.randomizeRotationDirection), grav: mmCurve(I.gravityModifier ?? ps.gravityModifier, 0),
+      shape: shapeFn(ps.ShapeModule),
+    };
+    if (on(E.enabled)) {
+      P.rate = mmCurve(E.rateOverTime ?? E.rate, 0); P.rateD = mmCurve(E.rateOverDistance, 0);
+      const bs = E.m_Bursts || [];
+      P.bursts = bs.slice(0, E.m_BurstCount ?? bs.length).map(b => ({
+        time: num(b.time), cycles: num(b.cycleCount, 1), interval: Math.max(1e-4, num(b.repeatInterval, 0.01)),
+        prob: num(b.probability, 1),
+        count: b.countCurve != null ? mmCurve(b.countCurve, 30) : ((t, r) => lerp(num(b.minCount), num(b.maxCount), r)) }));
+    } else P.bursts = [];
+    let m;
+    if ((m = mod("VelocityModule"))) P.vel = { x: mmCurve(m.x), y: mmCurve(m.y), z: mmCurve(m.z), world: on(m.inWorldSpace),
+      orb: [mmCurve(m.orbitalX), mmCurve(m.orbitalY), mmCurve(m.orbitalZ)], off: [mmCurve(m.orbitalOffsetX), mmCurve(m.orbitalOffsetY), mmCurve(m.orbitalOffsetZ)],
+      radial: mmCurve(m.radial), speedMod: mmCurve(m.speedModifier, 1) };
+    if ((m = mod("InheritVelocityModule"))) P.inherit = { mode: num(m.m_Mode), k: mmCurve(m.m_Curve, 0) };
+    if ((m = mod("ForceModule"))) P.force = { x: mmCurve(m.x), y: mmCurve(m.y), z: mmCurve(m.z), world: on(m.inWorldSpace), perFrame: on(m.randomizePerFrame) };
+    if ((m = mod("ClampVelocityModule"))) P.limit = { sep: on(m.separateAxis), x: mmCurve(m.x, 1), y: mmCurve(m.y, 1), z: mmCurve(m.z, 1),
+      mag: mmCurve(m.magnitude, 1), world: on(m.inWorldSpace), dampen: num(m.dampen, 1), drag: mmCurve(m.drag, 0),
+      dragSize: on(m.multiplyDragByParticleSize), dragVel: on(m.multiplyDragByParticleVelocity) };
+    if ((m = mod("LifetimeByEmitterSpeedModule"))) P.lifeBySpeed = { k: mmCurve(m.m_Curve, 1), range: vec(m.m_Range, [0, 1]) };
+    if ((m = mod("SizeModule"))) P.sizeOL = { sep: on(m.separateAxes), x: mmCurve(m.curve, 1), y: mmCurve(m.y, 1), z: mmCurve(m.z, 1) };
+    if ((m = mod("SizeBySpeedModule"))) P.sizeBS = { sep: on(m.separateAxes), x: mmCurve(m.curve, 1), y: mmCurve(m.y, 1), range: vec(m.range, [0, 1]) };
+    if ((m = mod("RotationModule"))) P.rotOL = { sep: on(m.separateAxes), x: mmCurve(m.x), y: mmCurve(m.y), z: mmCurve(m.curve) };
+    if ((m = mod("RotationBySpeedModule"))) P.rotBS = { sep: on(m.separateAxes), x: mmCurve(m.x), y: mmCurve(m.y), z: mmCurve(m.curve), range: vec(m.range, [0, 1]) };
+    if ((m = mod("ColorModule"))) P.colOL = mmGrad(m.gradient);
+    if ((m = mod("ColorBySpeedModule"))) P.colBS = { g: mmGrad(m.gradient), range: vec(m.range, [0, 1]) };
+    if ((m = mod("UVModule")) && num(m.mode) === 0) P.uv = { tx: Math.max(1, num(m.tilesX, 1)), ty: Math.max(1, num(m.tilesY, 1)),
+      time: num(m.timeMode), fps: num(m.fps, 30), frame: mmCurve(m.frameOverTime, 0), start: mmCurve(m.startFrame, 0),
+      speedRange: vec(m.speedRange, [0, 1]), row: num(m.animationType) === 1, rowMode: num(m.rowMode, 1), rowIndex: num(m.rowIndex),
+      cycles: num(m.cycles, 1), flipU: num(m.flipU), flipV: num(m.flipV) };
+    // not drawn (no Wolf prefab enables them): NoiseModule, ExternalForces, Collision, Trigger, SubModule (sub-emitters),
+    // Lights, TrailModule (ribbons), CustomData; the UV module's sprite mode
+    P.skipped = ["NoiseModule", "ExternalForcesModule", "CollisionModule", "TriggerModule", "SubModule", "LightsModule", "TrailModule"].filter(n => mod(n));
+    if (P.skipped.length) console.warn("Shuriken: not drawn", P.skipped.join(", "));
+    CACHE.set(ps, P);
+    return P;
+  }
+  const speedT = (s, r) => (r[1] > r[0] ? clamp01((s - r[0]) / (r[1] - r[0])) : 0);
+
+  function build(fx, node, ps, mat, nodeDef, data) {
+    const P = compile(ps);
+    const rd = nodeDef.comps.find(c => c.type === "ParticleSystemRenderer") || {};
+    if (!mat) {                                                // the renderer's own material list, if the reader put it there
+      const nm = (rd.mats || rd.materials || []).find(x => typeof x === "string");
+      if (nm && data.materials?.[nm]) mat = api.fxMaterial(fx.cls, nm, data.materials[nm]);
+    }
+    const RM = num(rd.m_RenderMode), drawn = mat && RM !== 5 && rd.m_Enabled !== 0 && rd.m_Enabled !== false;
+    const mesh = drawn ? api.fxMesh(node, mat) : null;
+    if (mesh) { mesh.matrixAutoUpdate = false; mesh.renderOrder = num(rd.m_SortingOrder); }
+    const lenScale = num(rd.m_LengthScale, 2), velScale = num(rd.m_VelocityScale), align = num(rd.m_RenderAlignment);
+    const sortMode = num(rd.m_SortMode), minSize = num(rd.m_MinParticleSize), maxSize = num(rd.m_MaxParticleSize, 0.5);
+    const pivot = vec(rd.m_Pivot);
+
+    const parts = [];
+    let time = 0, delay = -1, emitting = P.playOnAwake, played = P.playOnAwake, ended = false, ready = false;
+    let acc = 0, accD = 0;
+    const pending = [];
+    // this frame's emitter: Unity-world position T, rotation Rq (Ri inverse), Sm = the scale the simulation sees
+    // (scalingMode 0 hierarchy: the lossy scale, 1 local: the node's own, 2 shape: none, the shape alone is scaled by
+    // the lossy scale, Ssh); sizeK = the particles' size factor; gSim = gravity in simulation space
+    const T = V(), Rq = new THREE.Quaternion(), Ri = new THREE.Quaternion(), lossy = V(1, 1, 1), Sm = V(1, 1, 1), Ssh = V(1, 1, 1);
+    const lastT = V(), eVel = V(), gSim = V(), camPos = V(), M = new THREE.Matrix4(), Minv = new THREE.Matrix4();
+    let sizeK = 1, haveLast = false, tanHalf = 0;
+    const safe = v => V(Math.abs(v.x) < 1e-6 ? 1e-6 : v.x, Math.abs(v.y) < 1e-6 ? 1e-6 : v.y, Math.abs(v.z) < 1e-6 ? 1e-6 : v.z);
+    const frame = dt => {
+      M.copy(fx.uMatrix(node));
+      M.decompose(T, Rq, lossy); Ri.copy(Rq).invert();
+      Sm.copy(P.scaling === 0 ? lossy : P.scaling === 1 ? node.scale : V(1, 1, 1));
+      Ssh.copy(P.scaling === 2 ? lossy : V(1, 1, 1));
+      sizeK = (Math.abs(Sm.x) + Math.abs(Sm.y) + Math.abs(Sm.z)) / 3;
+      if (haveLast && dt > 0) eVel.copy(T).sub(lastT).divideScalar(dt); else eVel.set(0, 0, 0);
+      lastT.copy(T); haveLast = true;
+      gSim.copy(worldToSimDir(V(0, G, 0)));
+      api.camera.getWorldPosition(camPos).applyMatrix4(fx.mirrorInv);
+      tanHalf = api.camera.isPerspectiveCamera ? Math.tan(api.camera.fov * DEG / 2) : 0;
+    };
+    // simulation space <-> the effect's Unity world (local: T + R (Sm x p); world: as is)
+    const toWorld = p => (P.world ? p.clone() : p.clone().multiply(Sm).applyQuaternion(Rq).add(T));
+    const toWorldDir = v => (P.world ? v.clone() : v.clone().multiply(Sm).applyQuaternion(Rq));
+    const worldToSimDir = w => (P.world ? w.clone() : w.clone().applyQuaternion(Ri).divide(safe(Sm)));
+    const localToSimDir = v => (P.world ? v.clone().multiply(Sm).applyQuaternion(Rq) : v.clone());
+
+    // one particle. bi / bn: its place in a burst (the shape's burst-spread mode); o: Emit()'s EmitParams
+    function emitOne(tau, preAge, bi = 0, bn = 0, o = null) {
+      if (parts.length >= P.max) return;
+      const nt = clamp01(tau / P.dur);                          // start values run over the system's duration
+      let life = P.life(nt, Math.random());
+      if (o?.startLifetime != null) life = o.startLifetime;
+      if (P.lifeBySpeed) life *= P.lifeBySpeed.k(speedT(eVel.length(), P.lifeBySpeed.range), Math.random());
+      if (!(life > 0)) return;
+      const sh = P.shape ? P.shape({ t: tau, nt, i: bi, n: bn }) : { p: V(), d: V(0, 0, 1) };
+      let p = sh.p.multiply(Ssh), v = sh.d.multiplyScalar(P.speed(nt, Math.random()));
+      if (o?.position) { const q = V(...vec(o.position)); p = o.applyShapeToPosition ? q.add(p) : q; }
+      if (o?.velocity) v = V(...vec(o.velocity));
+      const given = o?.space === "world";                       // emit() positions / velocities already in Unity world
+      if (P.world) {
+        if (!(o?.position && given)) p = p.multiply(Sm).applyQuaternion(Rq).add(T);
+        if (!(o?.velocity && given)) v = v.multiply(Sm).applyQuaternion(Rq);
+        // InheritVelocity acts on world-space systems only; mode 0 initial: the emitter's velocity x the curve at birth
+        if (P.inherit && P.inherit.mode === 0) v.addScaledVector(eVel, P.inherit.k(0, Math.random()));
+      } else {
+        if (o?.position && given) p = p.sub(T).applyQuaternion(Ri).divide(safe(Sm));
+        if (o?.velocity && given) v = worldToSimDir(v);
+      }
+      const s = P.size(nt, Math.random());
+      const size = o?.startSize != null ? V(o.startSize, o.startSize, o.startSize)
+        : P.size3D ? V(s, P.sizeY(nt, Math.random()), P.sizeZ(nt, Math.random())) : V(s, s, s);
+      const flip = Math.random() < P.flipRot ? -1 : 1;
+      const rot = o?.rotation != null ? V(0, 0, o.rotation * DEG)
+        : V(P.rot3D ? P.rotX(nt, Math.random()) : 0, P.rot3D ? P.rotY(nt, Math.random()) : 0, P.rot(nt, Math.random())).multiplyScalar(flip);
+      const c0 = o?.startColor ? lin(rgba(o.startColor)) : P.color(nt, Math.random());
+      const R = Array.from({ length: 16 }, Math.random);       // the particle's own randoms, one per curve
+      const q = { p, v, vt: v.clone(), age: 0, life, size, rot, flip, c0, R, sf: P.uv ? P.uv.start(nt, R[10]) : 0,
+                  row: P.uv ? Math.floor(R[12] * P.uv.ty) : 0 };
+      if (preAge > 0 && !step(q, preAge)) return;              // emitted inside the frame: run the rest of it
+      parts.push(q);
+    }
+    // one particle forward by dt; false = it died
+    const tmp = V();
+    function step(q, dt) {
+      q.age += dt;
+      if (q.age >= q.life) return false;
+      const u = q.age / q.life, R = q.R;
+      const g = P.grav(u, R[13]);                              // APPROX: a gravity curve runs over the particle's life
+      if (g) q.v.addScaledVector(gSim, g * dt);
+      if (P.force) {
+        const f = P.force, rr = f.perFrame ? [Math.random(), Math.random(), Math.random()] : [R[3], R[4], R[5]];
+        tmp.set(f.x(u, rr[0]), f.y(u, rr[1]), f.z(u, rr[2]));
+        q.v.addScaledVector(f.world ? worldToSimDir(tmp) : localToSimDir(tmp), dt);
+      }
+      if (P.limit) {                                           // Limit Velocity: dampen = the share of the excess removed
+        const L = P.limit, k = 1 - Math.pow(1 - clamp01(L.dampen), dt * 30);   // APPROX: Unity's per-frame dampen at 30 fps
+        const vv = L.world ? toWorldDir(q.v) : q.v.clone();
+        if (L.sep) {
+          const lim = [L.x(u, R[6]), L.y(u, R[6]), L.z(u, R[6])];
+          for (let j = 0; j < 3; j++) { const c = vv.getComponent(j), a = Math.abs(lim[j]); if (Math.abs(c) > a) vv.setComponent(j, lerp(c, Math.sign(c) * a, k)); }
+        } else { const sp = vv.length(), a = Math.abs(L.mag(u, R[6])); if (sp > a && sp > 0) vv.multiplyScalar(lerp(1, a / sp, k)); }
+        let drag = L.drag(u, R[14]);
+        if (drag) {
+          if (L.dragSize) drag *= q.size.x * q.size.x;
+          if (L.dragVel) drag *= vv.lengthSq();
+          vv.multiplyScalar(Math.max(0, 1 - drag * dt));
+        }
+        q.v.copy(L.world ? worldToSimDir(vv) : vv);
+      }
+      q.vt.copy(q.v);
+      let sm = 1;
+      if (P.vel) {                                             // Velocity over Lifetime: added to the motion, not kept
+        const m = P.vel;
+        tmp.set(m.x(u, R[0]), m.y(u, R[1]), m.z(u, R[2]));
+        if (tmp.lengthSq()) q.vt.add(m.world ? worldToSimDir(tmp) : localToSimDir(tmp));
+        const rad = m.radial(u, R[15]);
+        if (rad) {
+          const c = P.world ? T : V();
+          const d = q.p.clone().sub(c); if (d.lengthSq() > 1e-12) q.vt.addScaledVector(d.normalize(), rad);
+        }
+        const w = V(m.orb[0](u, R[0]), m.orb[1](u, R[1]), m.orb[2](u, R[2]));
+        if (w.lengthSq()) {                                    // orbital: turns the position about the centre + offset
+          const c = V(m.off[0](u, 0), m.off[1](u, 0), m.off[2](u, 0));
+          if (P.world) c.applyQuaternion(Rq).add(T);
+          const a = w.length(), wq = new THREE.Quaternion().setFromAxisAngle(localToSimDir(w).normalize(), a * dt);
+          q.p.sub(c).applyQuaternion(wq).add(c);
+        }
+        sm = m.speedMod(u, R[15]);
+      }
+      if (P.inherit && P.inherit.mode === 1 && P.world) q.vt.addScaledVector(eVel, P.inherit.k(u, R[13]));   // mode 1: current
+      q.p.addScaledVector(q.vt, sm * dt);
+      if (P.rotOL || P.rotBS) {                                // angular velocity (radians a second, as serialized)
+        const sp = q.vt.length();
+        for (const [m, t] of [[P.rotOL, u], [P.rotBS, P.rotBS ? speedT(sp, P.rotBS.range) : 0]]) {
+          if (!m) continue;
+          q.rot.z += m.z(t, R[8]) * dt * q.flip;
+          if (m.sep) { q.rot.x += m.x(t, R[8]) * dt * q.flip; q.rot.y += m.y(t, R[8]) * dt * q.flip; }
+        }
+      }
+      return true;
+    }
+    // the system's clock: start delay, then rate and bursts over [a, b) of the duration (looping wraps)
+    function emitRange(a, b, extra) {
+      const dur = P.dur, nt = a / dur;
+      const rate = P.rate ? P.rate(nt, Math.random()) : 0;
+      if (rate > 0) {
+        const before = acc; acc += rate * (b - a);
+        const n = Math.floor(acc);
+        for (let k = 1; k <= n; k++) { const tau = a + (k - before) / rate; emitOne(tau, b - tau + extra); }
+        acc -= n;
+      }
+      const rd2 = P.rateD ? P.rateD(nt, Math.random()) : 0;
+      if (rd2 > 0) {                                           // rate over distance: the emitter's own travel
+        const before = accD; accD += rd2 * eVel.length() * (b - a);
+        const n = Math.floor(accD);
+        for (let k = 1; k <= n; k++) { const tau = a + (b - a) * (k - before) / Math.max(1e-9, accD - before); emitOne(tau, b - tau + extra); }
+        accD -= n;
+      }
+      for (const B of P.bursts) {
+        const cc = B.cycles <= 0 ? Infinity : B.cycles;
+        for (let j = Math.max(0, Math.ceil((a - B.time) / B.interval - 1e-6)); j < cc && j < 1e5; j++) {
+          const tau = B.time + j * B.interval;
+          if (tau >= b) break;
+          if (tau < a || Math.random() >= B.prob) continue;
+          const n = Math.max(0, Math.round(B.count(tau / dur, Math.random())));
+          for (let i = 0; i < n; i++) emitOne(tau, b - tau + extra, i, n);
+        }
+      }
+    }
+    function advance(dt) {
+      let left = dt;
+      if (delay > 0) { const k = Math.min(delay, left); delay -= k; left -= k; if (delay > 0) return; }
+      while (left > 1e-9 && emitting) {
+        const st = Math.min(left, P.dur - time);
+        emitRange(time, time + st, left - st);
+        time += st; left -= st;
+        if (time >= P.dur - 1e-9) { if (P.loop) time = 0; else emitting = false; }
+      }
+    }
+    function stepAll(dt) {                                     // dead ones swap-removed, as Unity's particle buffer
+      for (let i = parts.length - 1; i >= 0; i--) if (!step(parts[i], dt)) { parts[i] = parts[parts.length - 1]; parts.pop(); }
+    }
+
+    const ps0 = {
+      node, comp: ps,
+      // Unity's ParticleSystem.Emit(EmitParams, count) (GroundHugEmitter.EmitMotes@0x22627A0): o.position / o.velocity
+      // are in the system's simulation space as Unity reads EmitParams (space "world" = already in the effect's Unity
+      // world), o.applyShapeToPosition adds the shape's point; also o.startSize, o.startLifetime, o.startColor
+      // ([r, g, b, a] gamma), o.rotation (degrees). Works stopped or not playing, as Unity's
+      emit(count = 1, o = {}) { played = true; if (!ready) { pending.push([count, o]); return; } for (let i = 0; i < count; i++) emitOne(time, 0, i, count, o); },
+      play() { played = true; emitting = true; ended = false; if (P.loop || time >= P.dur) time = 0; },
+      // ParticleSystem.Stop(StopEmitting): EffectControl's after-life (TTO1102:EffectControl::Update@0x1A233A0, 0x1A23661)
+      stop() { emitting = false; },
+      // the GroundHugEmitter's `motes` reference -> this system: wardrobe_fx_tto.py's {node: i, type: "ParticleSystem"}
+      // (the effect's node i), or [fileID, pathID] / an id
+      matches(ref) {
+        if (ref && typeof ref === "object" && !Array.isArray(ref) && "node" in ref) return fx.nodes?.[ref.node] === node;
+        const ids = [ps.pathID, ps.path_id, ps.m_PathID, ps.fileID, ps.id, ps._id, ps.ref].filter(x => x != null).map(String);
+        const want = String(Array.isArray(ref) ? ref[ref.length - 1] : ref);   // [fileID, pathID]: the pathID names it
+        return ids.includes(want);
+      },
+      get count() { return parts.length; },
+      update(dt, cam) {
+        dt *= P.simSpeed;
+        frame(dt);
+        if (!ready) {
+          ready = true;
+          if (delay < 0) delay = Math.max(0, P.delay(0, Math.random()));
+          if (P.prewarm && P.loop && emitting) {               // prewarm: one whole loop already run (and no start delay)
+            delay = 0;
+            for (let t = 0; t < P.dur; t += 1 / 30) { stepAll(1 / 30); advance(1 / 30); }
+          }
+          for (const [n, o] of pending.splice(0)) this.emit(n, o);
+        }
+        stepAll(dt);
+        if (emitting) advance(dt);
+        // the system has stopped (no emission and no particles): its stopAction (1 disable, 2 destroy, 3 callback)
+        if (!ended && played && !emitting && !parts.length && delay <= 0) {
+          ended = true;
+          if (P.stopAction === 2) return "destroy";
+          if (P.stopAction === 1) node.visible = false;
+        }
+        if (mesh) render(cam);
+      },
+    };
+    node.userData.particleSystem = ps0;
+    (fx.particleSystems ||= []).push(ps0);
+
+    // ---- ParticleSystemRenderer: m_RenderMode 0 billboard (m_RenderAlignment 0 view, 1 world, 2 local, 3 facing the
+    // camera's position; 4 velocity = APPROX view), 1 stretched (head at the particle, length = size x m_LengthScale +
+    // speed x m_VelocityScale, back along the motion; negative = forward, as the game's legacy particles), 2 horizontal
+    // (flat on the ground), 3 vertical (upright, facing the camera), 4 mesh (APPROX: drawn as a billboard), 5 none.
+    // m_MaxParticleSize / m_MinParticleSize clamp a billboard's size to that share of the view's height. m_SortMode 0 the
+    // buffer's order, 1 by distance (far first), 2 oldest in front, 3 youngest in front. Billboard rotation turns
+    // clockwise as seen (Unity's). APPROX: m_Flip, the camera-velocity stretch, freeform stretching and m_SortingFudge
+    // are ignored; a stretched quad runs u from head to tail (as index.html's legacy particles)
+    function render(cam) {
+      const det = M.determinant();
+      if (!Number.isFinite(det) || Math.abs(det) < 1e-12) { mesh.visible = false; return; }
+      mesh.visible = node.visible !== false;
+      Minv.copy(M).invert(); mesh.matrix.copy(Minv); mesh.matrixWorldNeedsUpdate = true;   // the quads are in the effect's Unity world
+      let order = parts;
+      if (sortMode === 1) order = parts.map(q => [q, toWorld(q.p).distanceToSquared(camPos)]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+      else if (sortMode === 2) order = parts.slice().sort((a, b) => a.age - b.age);
+      else if (sortMode === 3) order = parts.slice().sort((a, b) => b.age - a.age);
+      const pos = [], col = [], uvs = [], idx = [];
+      const wUp = V(0, 1, 0), tm = P.uv;
+      for (const q of order) {
+        const u = q.age / q.life, R = q.R, W = toWorld(q.p), Vw = toWorldDir(q.vt), sp = q.vt.length();
+        // size
+        let sx = q.size.x, sy = P.size3D ? q.size.y : q.size.x;
+        if (P.sizeOL) { const m = P.sizeOL; const a = m.x(u, R[7]); sx *= a; sy *= m.sep ? m.y(u, R[7]) : a; }
+        if (P.sizeBS) { const m = P.sizeBS, t = speedT(sp, m.range), a = m.x(t, R[7]); sx *= a; sy *= m.sep ? m.y(t, R[7]) : a; }
+        sx *= sizeK; sy *= sizeK;
+        if (tanHalf && RM !== 4) {
+          const dist = Math.max(0, W.clone().sub(camPos).dot(cam.fwd)), vh = 2 * dist * tanHalf;
+          const hi = maxSize * vh, lo = minSize * vh;
+          const cl = x => (x > hi ? hi : x < lo ? lo : x);
+          if (vh > 0) { sx = cl(sx); sy = cl(sy); }
+        }
+        if (!(sx > 0 || sy > 0)) continue;
+        // colour
+        let c = q.c0;
+        if (P.colOL) { const k = P.colOL(u, R[9]); c = [c[0] * k[0], c[1] * k[1], c[2] * k[2], c[3] * k[3]]; }
+        if (P.colBS) { const k = P.colBS.g(speedT(sp, P.colBS.range), R[9]); c = [c[0] * k[0], c[1] * k[1], c[2] * k[2], c[3] * k[3]]; }
+        // the texture sheet's tile (Grid mode; frameOverTime / startFrame are shares of the whole sheet or row)
+        let u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+        if (tm) {
+          const N = tm.row ? tm.tx : tm.tx * tm.ty;
+          let fi;
+          if (tm.time === 2) fi = Math.floor(q.sf * N + q.age * tm.fps);
+          else { const x = tm.time === 1 ? speedT(sp, tm.speedRange) : u; fi = Math.floor(frac(q.sf + tm.frame(x, R[11]) * tm.cycles) * N); }
+          fi = ((fi % N) + N) % N;
+          const row = tm.row ? (tm.rowMode === 0 ? tm.rowIndex : tm.rowMode === 1 ? q.row : 0) : 0;
+          const k = tm.row ? row * tm.tx + fi : fi, cx = k % tm.tx, cy = Math.floor(k / tm.tx) % tm.ty;
+          u0 = cx / tm.tx; u1 = (cx + 1) / tm.tx; v1 = 1 - cy / tm.ty; v0 = 1 - (cy + 1) / tm.ty;   // tiles left to right, top row first
+          if (tm.flipU > 0 && R[12] < tm.flipU) [u0, u1] = [u1, u0];
+          if (tm.flipV > 0 && R[14] < tm.flipV) [v0, v1] = [v1, v0];
+        }
+        let corners;
+        if (RM === 1) {                                        // stretched along the motion
+          const vl = Vw.length();
+          if (vl < 1e-6) continue;
+          const D = Vw.clone().divideScalar(vl), L = sx * lenScale + vl * velScale;
+          let side = V().crossVectors(D, cam.fwd);
+          if (side.lengthSq() < 1e-10) side = cam.right.clone();
+          side.normalize().multiplyScalar(sx / 2);
+          const tail = W.clone().addScaledVector(D, -L);
+          corners = [W.clone().sub(side), W.clone().add(side), tail.clone().sub(side), tail.add(side)];
+          uvs.push(u0, v0, u0, v1, u1, v0, u1, v1);
+        } else {
+          let ax, ay;
+          if (RM === 2) { ax = V(1, 0, 0); ay = V(0, 0, 1); }
+          else if (RM === 3) { ax = V(cam.right.x, 0, cam.right.z); if (ax.lengthSq() < 1e-10) ax = V(1, 0, 0); ax.normalize(); ay = wUp.clone(); }
+          else if (align === 1) { ax = V(1, 0, 0); ay = V(0, 1, 0); }
+          else if (align === 2) { ax = V(1, 0, 0).applyQuaternion(Rq); ay = V(0, 1, 0).applyQuaternion(Rq); }
+          else if (align === 3) {                              // facing: the plane square to the line to the camera
+            const f = camPos.clone().sub(W); if (f.lengthSq() < 1e-10) f.copy(cam.fwd).negate(); f.normalize();
+            ax = cam.right.clone().addScaledVector(f, -cam.right.dot(f)).normalize();
+            ay = cam.up.clone().addScaledVector(f, -cam.up.dot(f)).addScaledVector(ax, -cam.up.dot(ax)).normalize();
+          } else { ax = cam.right.clone(); ay = cam.up.clone(); }
+          const a = q.rot.z, cs = Math.cos(a), sn = Math.sin(a);
+          const X = ax.clone().multiplyScalar(cs).addScaledVector(ay, -sn).multiplyScalar(sx / 2);
+          const Y = ay.clone().multiplyScalar(cs).addScaledVector(ax, sn).multiplyScalar(sy / 2);
+          const C = W.clone().addScaledVector(X, -2 * pivot[0]).addScaledVector(Y, -2 * pivot[1]);
+          corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([i, j]) => C.clone().addScaledVector(X, i).addScaledVector(Y, j));
+          uvs.push(u0, v0, u1, v0, u0, v1, u1, v1);
+        }
+        const b = pos.length / 3;
+        for (const v of corners) pos.push(v.x, v.y, v.z);
+        col.push(...c, ...c, ...c, ...c);
+        idx.push(b, b + 1, b + 2, b + 2, b + 1, b + 3);
+      }
+      api.setMesh(mesh, pos, col, uvs, idx);
+    }
+    return ps0;
+  }
+
+  api.part("ParticleSystem", build);
+  api.part("ParticleSystemRenderer", () => null);              // read by its ParticleSystem from the same node's comps
+}

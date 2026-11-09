@@ -229,7 +229,9 @@ def effect(game, cls, name, mats, texs, sounds):
                 if sname == "EmblemEmitter":           # its picture: a Texture2D reference, exported like a material's
                     to = game.obj(entry["image"], c.assets_file)
                     if to is not None:
-                        entry["imageTex"] = to.read().m_Name
+                        img = to.read()
+                        entry["imageTex"] = img.m_Name
+                        entry["imageSize"] = [img.m_Width, img.m_Height]   # the emblem's pixel size (fxparts/emblem.js)
                         texs.setdefault(entry["imageTex"], to)
                 node["comps"].append(entry)
             elif ty in ("MeshRenderer", "ParticleRenderer"):
@@ -354,7 +356,7 @@ def main():
     out = os.path.join(DATA, a.cls, "fx.json")
     old = json.load(open(out, encoding="utf-8")) if os.path.exists(out) else {}
     merged = {"effects": {**old.get("effects", {}), **effects}, "materials": {**old.get("materials", {}), **mats}}
-    json.dump(merged, open(out, "w", encoding="utf-8"), indent=1)
+    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"))   # compact: meshes and clips (2026-11-09) doubled it indented
     print(f"{a.cls}: {len(effects)} effects, {len(mats)} materials, {len(texs)} textures, {len(jobs) - len(missing)} sounds"
           + (f", missing sounds: {missing}" if missing else ""))
 

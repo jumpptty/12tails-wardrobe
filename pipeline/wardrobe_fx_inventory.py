@@ -21,7 +21,10 @@ SRC = os.path.join(BIBLE, "DecompiledSource")
 CLASSES = ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "sheep", "whale", "wolf"]
 # what the page's Fx builds (wardrobe/index.html "skill effects and sounds"); MeshFilter / Transform are carried by these
 BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "EllipsoidParticleEmitter", "ParticleAnimator",
-         "ParticleRenderer", "AudioSource"}
+         "ParticleRenderer", "AudioSource",
+         # 2026-11-09, wardrobe/fxparts (plans/fx_wolf/build_rules.md): vortex, emblem, trail, control, mesh
+         "VortexEmitter", "EmblemEmitter", "TrailEmitter", "TrailRenderer", "EmitterControl", "EffectControl(child)",
+         "StaticMesh", "Animation", "SkinnedMeshRenderer", "ShatterMesh"}
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it
 # for hits, which the wardrobe has no targets for)
