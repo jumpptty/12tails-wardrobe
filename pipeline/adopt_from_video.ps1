@@ -36,6 +36,21 @@ $Video = (Resolve-Path -LiteralPath $Video).Path
 "video:    $Video"
 if ($DryRun) { "(dry run: nothing changes)" }
 
+# the video folder must be the video repo's own root, already moved up from its old comic-skit folder (the office
+# PC runs move_project.ps1 first; it failed twice on held folders at home before it worked)
+foreach ($old in @("comic-skit", "comic-skit.__moving__")) {
+    if (Test-Path -LiteralPath (Join-Path $Video $old)) {
+        "STOPPED: $(Join-Path $Video $old) is still there: the video project hasn't moved up yet."
+        "  Run its pipeline\move_project.ps1 first (VS Code closed), then this again. Nothing moved."
+        exit 1
+    }
+}
+if (-not (Test-Path -LiteralPath (Join-Path $Video ".git"))) {
+    "STOPPED: $Video has no .git, so it isn't the 12tails-video repo's root: pass -Video <that folder>, or run"
+    "  move_project.ps1 first if the project still sits in a comic-skit folder. Nothing moved."
+    exit 1
+}
+
 $items = @("wardrobe\data", "wardrobe_dist", "wardrobe_dist_report.json", "wardrobe_dist_report.prev.json",
            ".superpowers\sdd\2026-11-07-wardrobe-online")
 $moved = @(); $problem = $null

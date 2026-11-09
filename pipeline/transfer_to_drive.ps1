@@ -41,8 +41,10 @@ if ($LASTEXITCODE) { "git bundle failed"; exit 1 }
           (no GitHub?  git clone <drive>\12tails-wardrobe-transfer\12tails-wardrobe.bundle C:\work\12tails-wardrobe)
           (already cloned?  cd C:\work\12tails-wardrobe ; git pull)
 2. Data:  tar -xf <drive>\12tails-wardrobe-transfer\wardrobe_data.tar -C C:\work\12tails-wardrobe
-          (a folder C:\work\12tails-wardrobe\wardrobe\data already there? rename it first, e.g. to data_old)
-3. Once, the first time on that PC (the video folder C:\work\12tails-video must exist):
+          (a folder C:\work\12tails-wardrobe\wardrobe\data already there? move it aside first, to the top level, where
+           git ignores it:  Move-Item C:\work\12tails-wardrobe\wardrobe\data C:\work\12tails-wardrobe\wardrobe_data_old)
+3. Once, the first time on that PC (the video project must already sit in C:\work\12tails-video: if it is still
+   in C:\work\12tails-video\comic-skit, run that folder's pipeline\move_project.ps1 first; this step checks):
           powershell -ExecutionPolicy Bypass -File C:\work\12tails-wardrobe\pipeline\adopt_from_video.ps1 -SetAside
           (renames the video folder's older wardrobe\data to wardrobe_data_old, points the Desktop shortcut here)
 4. Run:   the Desktop shortcut "12 Tails Wardrobe" (or C:\work\12tails-wardrobe\wardrobe.cmd; needs Python 3's "py"

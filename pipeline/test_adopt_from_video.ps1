@@ -8,7 +8,7 @@ $fails = 0
 function Fresh([switch]$WithData) {
     if (Test-Path $base) { Remove-Item -Recurse -Force $base }
     $v = Join-Path $base "12tails-video"; $w = Join-Path $base "12tails-wardrobe"; $d = Join-Path $base "desk"
-    foreach ($p in @("$v\wardrobe\data\cat", "$v\wardrobe_dist", "$v\.superpowers\sdd\2026-11-07-wardrobe-online", "$v\props\tex", "$w\wardrobe", $d)) { New-Item -ItemType Directory -Force $p | Out-Null }
+    foreach ($p in @("$v\.git", "$v\wardrobe\data\cat", "$v\wardrobe_dist", "$v\.superpowers\sdd\2026-11-07-wardrobe-online", "$v\props\tex", "$w\wardrobe", $d)) { New-Item -ItemType Directory -Force $p | Out-Null }
     Set-Content "$v\wardrobe\index.html" "page" ; Set-Content "$w\wardrobe\index.html" "page"
     Set-Content "$v\wardrobe\data\meta.json" "{}"
     Set-Content "$v\wardrobe\data\cat\props_weapons.json" '[{"name":"p","nodes":[{"name":"n","mats":[{"tex":"x.png"}]}]}]'
@@ -67,6 +67,18 @@ try { $r = Run $t @() } finally { $fs.Close() }
 Check "e: exit 1" ($r.code -eq 1) $r.out
 Check "e: data moved, dist not" ((Test-Path "$($t.w)\wardrobe\data\meta.json") -and (Test-Path "$($t.v)\wardrobe_dist\index.html")) $r.out
 Check "e: prints moved and not moved" ($r.out -match "moved so far: wardrobe\\data" -and $r.out -match "not moved: wardrobe_dist") $r.out
+
+# (g) the office's video folder never moved up (move_project.ps1 failed or was skipped): stop, move nothing
+$t = Fresh -WithData; New-Item -ItemType Directory -Force "$($t.v)\comic-skit\wardrobe\data" | Out-Null
+Set-Content "$($t.v)\comic-skit\wardrobe\data\meta.json" "{}"; $r = Run $t @("-SetAside")
+Check "g: exit 1" ($r.code -eq 1) $r.out
+Check "g: says run move_project.ps1" ($r.out -match "move_project\.ps1") $r.out
+Check "g: nothing moved or set aside" ((Test-Path "$($t.v)\comic-skit\wardrobe\data\meta.json") -and -not (Test-Path "$($t.v)\wardrobe_data_old") -and (Test-Path "$($t.v)\wardrobe_dist")) $r.out
+
+# (h) a folder that isn't the video repo's root (no .git): stop, move nothing
+$t = Fresh; Remove-Item -Recurse -Force "$($t.v)\.git"; $r = Run $t @()
+Check "h: exit 1" ($r.code -eq 1) $r.out
+Check "h: nothing moved" ((Test-Path "$($t.v)\wardrobe\data\meta.json") -and -not (Test-Path "$($t.w)\wardrobe\data")) $r.out
 
 # dry run changes nothing
 $t = Fresh; $before = (Get-ChildItem -Recurse -Force $base | Measure-Object).Count; $r = Run $t @("-DryRun")

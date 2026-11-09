@@ -1,13 +1,15 @@
 r"""Copy the prop textures the wardrobe's props JSON names into its own data (wardrobe/data/props/tex/), from the video
 folder's extracted props (12tails-video/props/tex/, read only). The page loads them from `${DATA}props/tex/`, the same
 path the published copy uses (split from 12tails-video on 2026-11-09: a separate folder can't reach ../props/tex/).
-An existing copy is never overwritten (wardrobe_tot.py writes its own tot_*.png there); a texture the video folder
-lacks is listed and the run exits 1, so a prop never shows up grey.
+A copy is refreshed when the video folder's file differs (a re-extraction after a game patch), except the wardrobe's
+own tot_*.png, which wardrobe_tot.py writes there and the video folder's older copies never replace; a texture neither
+folder has is listed and the run exits 1, so a prop never shows up grey.
 
   py -3 pipeline/wardrobe_props_tex.py [--data wardrobe/data] [--src <video>/props/tex]
 wardrobe_data.py runs it at the end of a build; adopt_from_video.ps1 runs it after moving the data in.
 """
 import argparse
+import filecmp
 import json
 import shutil
 import sys
@@ -28,14 +30,19 @@ def referenced_textures(data: Path) -> set:
 
 
 def copy_prop_textures(data: Path, src: Path) -> tuple:
-    """Copy each referenced texture missing from data/props/tex/ out of src; returns (copied, missing names)."""
+    """Copy each referenced texture into data/props/tex/ out of src when it is missing there or differs (tot_* kept);
+    returns (copied or refreshed, names neither folder has)."""
     dst = data / "props" / "tex"
     copied, missing = 0, []
     for name in sorted(referenced_textures(data)):
-        if (dst / name).exists():
-            continue
+        have = (dst / name).exists()
+        if have and name.startswith("tot_"):
+            continue                              # the wardrobe's own (wardrobe_tot.py)
         if not (src / name).is_file():
-            missing.append(name)
+            if not have:
+                missing.append(name)
+            continue
+        if have and filecmp.cmp(src / name, dst / name, shallow=False):
             continue
         dst.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src / name, dst / name)

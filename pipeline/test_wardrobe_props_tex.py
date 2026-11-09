@@ -43,13 +43,30 @@ class CopyPropTextures(unittest.TestCase):
         self.write_props("cat", "weapons", "x.png")
         self.assertEqual(copy_prop_textures(self.data, self.src), (0, ["x.png"]))
 
-    def test_existing_copy_kept(self):
-        self.write_props("cat", "weapons", "a.png")
-        (self.src / "a.png").write_bytes(b"new")
+    def test_wardrobe_own_tot_copy_kept(self):
+        """wardrobe_tot.py writes tot_*.png into the data itself: the video folder's older copy never replaces it."""
+        self.write_props("cat", "weapons", "tot_a.png")
+        (self.src / "tot_a.png").write_bytes(b"video's old copy")
         (self.data / "props" / "tex").mkdir(parents=True)
-        (self.data / "props" / "tex" / "a.png").write_bytes(b"mine")
+        (self.data / "props" / "tex" / "tot_a.png").write_bytes(b"mine")
         self.assertEqual(copy_prop_textures(self.data, self.src), (0, []))
-        self.assertEqual((self.data / "props" / "tex" / "a.png").read_bytes(), b"mine")
+        self.assertEqual((self.data / "props" / "tex" / "tot_a.png").read_bytes(), b"mine")
+
+    def test_changed_texture_refreshed(self):
+        """A texture re-extracted in the video folder (a game patch) replaces the wardrobe's older copy."""
+        self.write_props("cat", "weapons", "a.png")
+        (self.src / "a.png").write_bytes(b"re-extracted")
+        (self.data / "props" / "tex").mkdir(parents=True)
+        (self.data / "props" / "tex" / "a.png").write_bytes(b"old")
+        self.assertEqual(copy_prop_textures(self.data, self.src), (1, []))
+        self.assertEqual((self.data / "props" / "tex" / "a.png").read_bytes(), b"re-extracted")
+
+    def test_unchanged_texture_not_counted(self):
+        self.write_props("cat", "weapons", "a.png")
+        (self.src / "a.png").write_bytes(b"same")
+        (self.data / "props" / "tex").mkdir(parents=True)
+        (self.data / "props" / "tex" / "a.png").write_bytes(b"same")
+        self.assertEqual(copy_prop_textures(self.data, self.src), (0, []))
 
     def test_shared_all_folder_and_mats_without_tex(self):
         self.write_props("all", "accessories", "s.png")

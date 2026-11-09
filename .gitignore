@@ -10,5 +10,6 @@
 !/pipeline/
 !/plans/
 !/wardrobe/
-/wardrobe/data/
+# every data folder, also one renamed aside (data_old, data-home, ...): 300 MB of game data never goes into git
+/wardrobe/data*/
 __pycache__/
