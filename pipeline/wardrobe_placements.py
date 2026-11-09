@@ -1,7 +1,8 @@
 r"""TTO's own equipment placements for the wardrobe (user 2026-11-04: shared wings sat turned 90 deg on the back).
 
   uv run --no-project --with UnityPy python wardrobe_placements.py
-  -> tto_assets/<date>/config/{Trinket,Accessory,Weapon}Placement.json (copies, read from the installed client)
+  -> tto_config/{Trinket,Accessory,Weapon}Placement.json (copies, read from the installed client; untracked, in this
+     folder since the 2026-11-09 repo split, never in the video folder's tto_assets)
      wardrobe/data/placements.json = {trinkets|accessories|weapons: {hero: {entries: {code: P}, fallback: P}}}
      P = {bone, p, q, s, kwr, kps} in three.js space (p x -> -x; q from Unity Euler degrees, then (x, -y, -z, w))
 
@@ -24,7 +25,7 @@ import UnityPy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-CFG = os.path.join(ROOT, "tto_assets", "2026-11-04", "config")
+CFG = os.path.join(ROOT, "tto_config")
 GAME = os.path.join(os.environ["LOCALAPPDATA"], "TailsTopia", "game", "TailsTopia", "TailsTopiaOnline_Data")
 os.makedirs(CFG, exist_ok=True)
 

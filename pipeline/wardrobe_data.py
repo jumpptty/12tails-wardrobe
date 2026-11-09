@@ -10,7 +10,8 @@ positions x -> -x, quaternions (x, y, z, w) -> (x, -y, -z, w), bind poses S B S 
 winding chosen to agree with the stored normals. Sources: the class skeleton = BB's (outfits/<cls>_standard_mesh.json,
 extract.py), every outfit and every clip from the TTO client (tto_assets/<date>: BB's items and TTO's new ones;
 BB's clips sit in animation prefabs, TTO's new ones are bare AnimationClips), faces = BB overlays 0-22 + tex/faces_tto,
-props = props/json (extract_tto_props.py). Clips keep the game's Hermite keys (mirrored; an infinite slope = a step,
+props = props/json (extract_tto_props.py). All of these are read from the 12tails-video folder (the sibling
+folder; read only); the props' textures are copied into data/props/tex/ (wardrobe_props_tex.py). Clips keep the game's Hermite keys (mirrored; an infinite slope = a step,
 written as +-1e30); the app samples them.
 """
 import io
@@ -28,10 +29,11 @@ from UnityPy.helpers.MeshHelper import MeshHandler
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
 HEROES = r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes"
 TOOLS = r"D:\12tails\DecompiledSource_TTO_2026-11-02\tools"
 argv = sys.argv[1:]
-ASSETS = argv[argv.index("--assets") + 1] if "--assets" in argv else os.path.join(ROOT, "tto_assets", "2026-11-04")
+ASSETS = argv[argv.index("--assets") + 1] if "--assets" in argv else os.path.join(VIDEO, "tto_assets", "2026-11-04")
 ONLY = set(argv[argv.index("--only") + 1].lower().split(",")) if "--only" in argv else None
 OUT = os.path.join(ROOT, "wardrobe", "data")
 CLASSES = ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "sheep", "whale", "wolf"]
@@ -136,7 +138,7 @@ for cls in CLASSES:
     od = os.path.join(OUT, cls)
     os.makedirs(od, exist_ok=True)
     # ---- rig ----
-    S = json.load(open(os.path.join(ROOT, "outfits", f"{cls}_standard_mesh.json")))
+    S = json.load(open(os.path.join(VIDEO, "outfits", f"{cls}_standard_mesh.json")))
     names = [b["name"] for b in S["bones"]]
     rig = {"tri": {"p": mp(S["tri_local"]["p"]), "q": mq(S["tri_local"]["q"]), "s": S["tri_local"]["s"]},
            "bones": [{"name": b["name"], "parent": names.index(b["parent"]) if b["parent"] in names else -1,
@@ -195,7 +197,7 @@ for cls in CLASSES:
     json.dump(outfits, open(os.path.join(od, "outfits.json"), "w"))
     # ---- faces ----
     faces = []
-    for d_, tto in ((os.path.join(HEROES, cls, "armors", "overlay"), False), (os.path.join(ROOT, "tex", "faces_tto", cls), True)):
+    for d_, tto in ((os.path.join(HEROES, cls, "armors", "overlay"), False), (os.path.join(VIDEO, "tex", "faces_tto", cls), True)):
         for f in os.listdir(d_) if os.path.isdir(d_) else []:
             m = re.fullmatch(cap + r"(\d+)\.png", f)
             if m and int(m.group(1)) not in {x["n"] for x in faces}:
@@ -264,8 +266,8 @@ def mirror_rows(rows, slot):
 
 
 if "--no-props" not in argv:
-    for f in sorted(os.listdir(os.path.join(ROOT, "props", "json"))):
-        D = json.load(open(os.path.join(ROOT, "props", "json", f)))
+    for f in sorted(os.listdir(os.path.join(VIDEO, "props", "json"))):
+        D = json.load(open(os.path.join(VIDEO, "props", "json", f)))
         if ONLY and D["class"] not in ONLY and D["class"] != "all":
             continue
         out = []
@@ -358,4 +360,10 @@ else:
     keep = [c for c in old["classes"] if c["cls"] not in {x["cls"] for x in meta["classes"]}]
     meta["classes"] = sorted(keep + meta["classes"], key=lambda c: c["cls"])
     json.dump(meta, open(p, "w"), separators=(",", ":"))
+if "--no-props" not in argv:                   # the props' textures into the wardrobe's own data
+    sys.path.insert(0, HERE)
+    from pathlib import Path
+    from wardrobe_props_tex import copy_prop_textures
+    n_tex, missing = copy_prop_textures(Path(OUT), Path(VIDEO, "props", "tex"))
+    print(f"prop textures: {n_tex} copied, missing: {len(missing)}", *missing, flush=True)
 print("done", OUT)

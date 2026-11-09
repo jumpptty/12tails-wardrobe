@@ -30,7 +30,8 @@ import UnityPy                     # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-ASSETS = os.path.join(ROOT, "tto_assets", "2026-11-04")
+VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
+ASSETS = os.path.join(VIDEO, "tto_assets", "2026-11-04")
 OUT = os.path.join(ROOT, "wardrobe", "data")
 CLASSES = ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "sheep", "whale", "wolf"]
 CODE = re.compile(r"^[a-z]{1,2}_[a-z]+\d+[a-z0-9]*$")

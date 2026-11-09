@@ -698,7 +698,7 @@ function propMaterials(list) {
   return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
     const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(m.color[0], m.color[1], m.color[2]), side: THREE.DoubleSide, alphaTest: 0.5 });
     if (m.tex) {
-      const t = texLoader.load(`../props/tex/${m.tex}`);
+      const t = texLoader.load(`${DATA}props/tex/${m.tex}`);
       t.colorSpace = THREE.SRGBColorSpace;
       // Unity's default wrap is Repeat; three.js clamps. Day-Night Wing's UVs run v -1..0, and clamped they
       // smeared the edge row over the wing (user 2026-11-04: "this texture was applied correct in the game")

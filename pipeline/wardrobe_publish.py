@@ -33,8 +33,9 @@ The page is rewritten by exact string replacement (a missing anchor = the page c
 data-<first 10 hex of SHA-256 over the published data>/ and UI_DIR at ui-<10 hex over the ui pictures>/, the fetches
 drop cache: "no-cache" (a changed file gets a new folder, so _headers makes both folders immutable for a year), the
 "copy for Claude" button and its handler go, the Bible's logo in the panel's lockup becomes a link to the Bible (new tab),
-../props/tex/ points inside the copy, and GoatCounter counts the page as /wardrobe/. The page loads its fonts from
-Google Fonts (the Bible's own sheet), so no font files are published; a page that still points at ../fonts/ fails.
+and GoatCounter counts the page as /wardrobe/. Prop textures load from ${DATA}props/tex/ locally and online alike (the
+local copy is wardrobe_props_tex.py's, since the 2026-11-09 repo split). The page loads its fonts from Google Fonts (the
+Bible's own sheet), so no font files are published; a page that still points at ../fonts/ or ../props/ fails.
 check() then applies Cloudflare Pages' limits (20,000 files a deploy, 25 MiB a file) and compares every path the page
 builds from the JSON, its ui pictures and its tab icon with the stored names case-sensitively (a Windows test server
 hides a case slip, Cloudflare 404s). Outfits with no colours (colors: []) are dropped: the page cannot dress them.
@@ -112,7 +113,6 @@ def page_edits(data_dir, ui_dir):
         # the Bible, in a new tab (the page's uploaded skins live in its tab only): only its opening tag changes
         ("Bible link", '<a class="brand" id="bible" aria-label="12 Tails Bible">',
          f'<a class="brand" id="bible" href="{BIBLE_URL}" target="_blank" rel="noopener" aria-label="12 Tails Bible">', 1),
-        ("prop textures", "texLoader.load(`../props/tex/${m.tex}`)", "texLoader.load(`${DATA}props/tex/${m.tex}`)", 1),
         ("analytics", "</head>", GOATCOUNTER + "</head>", 1),
     ]
 

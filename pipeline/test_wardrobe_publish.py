@@ -49,7 +49,7 @@ const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
-      const t = texLoader.load(`../props/tex/${m.tex}`);
+      const t = texLoader.load(`${DATA}props/tex/${m.tex}`);
 $("shot").onclick = () => {};
 $("copy").onclick = async () => {
   const s = C.state;
@@ -849,8 +849,9 @@ class PublishTest(unittest.TestCase):
         result = w.publish()
         self.assertIn("cat/wing", dropped_names(result, "back_trinkets"))
 
-    def test_prop_textures_rewritten_and_no_font_files(self):
-        """The page takes its fonts from Google Fonts (the Bible's sheet, task 14b ruling R65): no fonts/ is written."""
+    def test_prop_textures_load_from_the_data_and_no_font_files(self):
+        """The page loads prop textures from its data (${DATA}props/tex/, since the 2026-11-09 repo split) and its fonts
+        from Google Fonts (the Bible's sheet, task 14b ruling R65): no fonts/ is written."""
         for label, w in self.newline_worlds():
             with self.subTest(page=label):
                 w.publish()
@@ -860,6 +861,15 @@ class PublishTest(unittest.TestCase):
                 self.assertFalse((w.out / "fonts").exists())
                 knife = data_dir(w) / "props" / "tex" / "Cat_knife.png"
                 self.assertEqual(knife.read_bytes(), (w.assets / "Texture2D" / "Cat_knife.png").read_bytes())
+
+    def test_page_with_old_prop_path_fails_loudly(self):
+        """A page that still loads prop textures from ../props/tex/ (before the 2026-11-09 split) would 404 online."""
+        w = self.world()
+        w.write_page(PAGE.replace("texLoader.load(`${DATA}props/tex/${m.tex}`)", "texLoader.load(`../props/tex/${m.tex}`)"))
+        with self.assertRaises(wp.PublishError) as e:
+            w.publish()
+        self.assertIn("'../'", str(e.exception))
+        self.assertFalse(w.out.exists())
 
     def test_page_with_local_fonts_fails_loudly(self):
         """A page that still loads the self-hosted fonts (../fonts/) would 404 online: the publish stops."""
@@ -874,7 +884,7 @@ class PublishTest(unittest.TestCase):
         anchors = ['const DATA = "data/";', 'const UI_DIR = "ui/";', 'fetch(p, { cache: "no-cache" })',
                    '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
                    '<a class="brand" id="bible" aria-label="12 Tails Bible">',
-                   '$("copy").onclick = async () => {', "texLoader.load(`../props/tex/${m.tex}`)"]
+                   '$("copy").onclick = async () => {']
         for label, w in self.newline_worlds():
             for anchor in anchors:
                 with self.subTest(page=label, anchor=anchor):

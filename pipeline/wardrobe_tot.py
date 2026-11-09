@@ -9,7 +9,7 @@ lacks is ToT's **student set**, one per class (catalog `gameassets/characters/he
 Chameleon `_bow` + `_arrow`, Whale `_lance` + `_shield`: string literals in TTOLegacyArmor / Accessory / Weapon
 ResourceMap..cctor).
 
-Input: `tot_assets/<date>/dec/*.bundle` = ToT's bundles for those paths and their dependencies, decrypted (TTOENC01:
+Input: `tot_assets/<date>/dec/*.bundle` (in the 12tails-video folder, read only) = ToT's bundles for those paths and their dependencies, decrypted (TTOENC01:
 per 64 KB block a 16-byte IV + AES-256-CBC, key = base64 const TTOBundleCipher.ClientKey; recipe and tool in
 D:\12tails-assets-archive\tot-skins-2026-11-07\_tools\README.md, benc.js), and `student_resources.json` (the catalog rows
 for those paths: key, bundle, address = the bundle's container key).
@@ -19,7 +19,7 @@ wardrobe_data.py, which rewrites these files):
   o_student.bin + tex/student1..5.webp + outfits.json entry {"name": "student", "tot": true, "face": "quarter"}
   props_accessories.json + "studentHat": skinned to the hero's own bones ("heroSkin": the page binds it like an outfit)
   props_weapons.json + the student weapon(s) (plain nodes; a skinned one, Monkey's mic, baked into its prefab pose)
-  ../props/tex/tot_<texture>.png for the hat and weapon materials.
+  props/tex/tot_<texture>.png (in the data folder) for the hat and weapon materials.
 wardrobe_publish.py keeps only items verified against BB's files, so none of this reaches the online copy.
 
 Face: ToT's CharacterAppearance.TryBuildLegacyArmorMaterial (ToT GameAssembly 0x18138a070) loads
@@ -39,11 +39,12 @@ from UnityPy.helpers.MeshHelper import MeshHandler
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
 argv = sys.argv[1:]
-ASSETS = argv[argv.index("--assets") + 1] if "--assets" in argv else os.path.join(ROOT, "tot_assets", "2026-11-07")
+ASSETS = argv[argv.index("--assets") + 1] if "--assets" in argv else os.path.join(VIDEO, "tot_assets", "2026-11-07")
 ONLY = set(argv[argv.index("--only") + 1].lower().split(",")) if "--only" in argv else None
 OUT = os.path.join(ROOT, "wardrobe", "data")
-PTEX = os.path.join(ROOT, "props", "tex")
+PTEX = os.path.join(OUT, "props", "tex")         # the page's ${DATA}props/tex/
 CLASSES = ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "sheep", "whale", "wolf"]
 WEAPON_PARTS = {"weapons": "studentWeapon", "bow": "studentBow", "arrow": "studentArrow", "lance": "studentLance",
                 "shield": "studentShield"}
