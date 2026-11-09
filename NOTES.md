@@ -558,3 +558,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
     Also: sets, moves and effects checks `errors: []`, 46 unit tests, the publish's page rewrite. Heredoc trap seen
     twice this session: a `\n` inside a Python heredoc came out as a real line break in the written file (a toast string
     split in two, a PNG signature turned into raw bytes); edit such lines with the Edit tool.
+- **2026-11-09, the piece menu published (built, not deployed)** (user: "rebuild it to publish"): `wardrobe_dist` 6,899
+  files, `data-7e0350ddb2` (unchanged: only the page changed, +10 KB, so visitors keep the cached data), check: no
+  problems, `FX_ON = false`, no `#vmode` / clipboard code. Smoke test of the built copy served on its own (hover on the
+  outfit, its menu: view / change / png / glb / up, no errors). The user deploys; the trailer fix waits in HANDOFF
+  "Video repo".
