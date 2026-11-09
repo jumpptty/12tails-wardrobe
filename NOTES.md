@@ -266,6 +266,32 @@ copy of that folder).
     camera, its limits, the character and the picker exactly. บันทึกภาพ in the viewer saves the floating piece alone.
     Viewing never adds an undo step; renderer.info.memory stays flat over 30 steps (8 geometries / 10 textures).
 
+## Thai text: centring by eye (user 2026-11-09)
+
+User: "when attempting to align Thai text to the middle of the text box height almost assume and measure all the
+วรรณยุกต์ and สระ like สระ ุ that make the text not look centered by eye even though it is middle aligned by the code
+convention".
+
+- **Why code centring looks wrong:** flexbox `align-items: center`, `line-height`, `vertical-align: middle` and a
+  canvas's `textBaseline = "middle"` centre the font's line box (its ascent + descent), not the letters you see. A Thai
+  font's line box keeps room for the marks above (วรรณยุกต์ ่ ้ ๊ ๋; สระบน ิ ี ึ ื; ั ็ ์, and stacks of two, as in
+  ที่ ปั้ ชื่อ) and below (สระล่าง ุ ู, ฺ, the tails of ฎ ฏ ญ ฐ), and the Thai and Latin metrics of one font differ.
+  So a word without marks sits off-centre in its box, and a word with many marks reads crowded at one edge.
+- **Measure the ink, not the box:** the text's real height, marks included. In a page, a canvas with the same font
+  and size: `ctx.font = getComputedStyle(el).font; const m = ctx.measureText(text);` then `m.actualBoundingBoxAscent`
+  (above the baseline) and `m.actualBoundingBoxDescent` (below). The ink's middle is
+  `(actualBoundingBoxAscent - actualBoundingBoxDescent) / 2` above the baseline; move the text (`transform:
+  translateY(...)`, or uneven padding) until that middle is the box's middle. Wait for the web font first
+  (`document.fonts.ready`), or the fallback font gets measured.
+- **Assume the marks when the text can change** (a label that swaps, a name from data, หยุดท่า / เล่นต่อ): measure a
+  reference that holds the tallest upper stack and the deepest lower vowel the box may show (for example `ปั้ญู`), so
+  the text stays put when it changes; for fixed text, measure that exact string.
+- **Check by eye, then by pixels:** screenshot the box, find the first and last rows that have text ink; the gap above
+  and the gap below should match within about 1 px (at 2x, 2 px). Digits stay in JetBrains Mono, whose metrics differ
+  again: measure a mixed run (Thai + digits) as it renders.
+- Everywhere Thai text sits in a box: buttons, tiles, chips and badges (`.sk-badge`), the toolbar, the key hints'
+  `<kbd>` row, toasts, the piece menu, the nameplate, 3D labels drawn on canvases.
+
 ## Session log
 
 Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then this repo's own.

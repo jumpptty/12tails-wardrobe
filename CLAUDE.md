@@ -55,6 +55,10 @@ the Bible under either PC's path.
 
 - The audience is Thai: every on-screen word is Thai, numbers stay digits; check Thai mark placement wherever text is
   rendered.
+- Thai text centred in a box is centred **by eye, on the measured ink**, not by the code's convention (flex /
+  line-height / `vertical-align: middle` centre the font's line box, and Thai marks above and below make that look off).
+  Measure the text with its วรรณยุกต์ and สระ (่ ้ ๊ ๋, ิ ี ึ ื ั ็ ์ above, ุ ู below), assume they may be there
+  when the text can change, and offset to match; check with a screenshot. Method: NOTES.md "Thai text: centring by eye".
 - When a look is being picked, mock several variants side by side so the user picks visually.
 - Game behaviour (skill clips, their order and timing): read the Bible first, `12t_reference/<class>-skill-reference.md`
   and the skill cards in `12t_projects/bible/index.html`; the decompiled code only for what they don't cover
