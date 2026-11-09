@@ -1,0 +1,13 @@
+# A whitelist, like 12tails-video's: everything at the top level is ignored unless it is listed here.
+# Untracked by design: wardrobe/data (built from the game rips, moved between PCs by pipeline/transfer_to_drive.ps1),
+# wardrobe_dist (the published copy, rebuilt by pipeline/wardrobe_publish.py), checks/, tto_config/, .superpowers/.
+/*
+!/.gitignore
+!/CLAUDE.md
+!/NOTES.md
+!/wardrobe.cmd
+!/pipeline/
+!/plans/
+!/wardrobe/
+/wardrobe/data/
+__pycache__/
