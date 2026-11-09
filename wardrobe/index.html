@@ -916,20 +916,25 @@ function buildClip(name) {
 // "castbar is lessened by INT, don't touch them, assume high INT, no cast bar"; the bar's loop shows for one frame, as
 // the game's at zero cast time; Barrel Railgun's fixed 6 s stays), a charge = full charge, a channel = its duration, or
 // three hits (at least 3 s) when it runs until the player moves, combo stages start where the range preview starts them. Look-alike names that are NOT sequences stay single: Book Bash 1-3 (a random pick),
-// the Bison's spins cAttack3-6 (one per Improved Swing rank), damageCast (a passive's version of cast). Blade Song 1-3 is
-// one clip per rank, joined by the user's ask (2026-11-09: "merge them all"), each cut where Last Blade's bladeSong4
-// takes over (0.3 + 0.4 + 0.2 × (5 + 2 × rank) s, Wolf.cs:30500, :30502, :30273, :30289). After the last step the
-// sequence starts again with a 0.2 s crossfade.
+// damageCast (a passive's version of cast). Every skill at its max rank (user 2026-11-09: "for all animations, assume max
+// rank, eg. Blade Song currently runs thru all ranks"): Blade Song 3 only (the game plays bladeSong<rank>, Wolf.cs:30332),
+// cut where Last Blade's bladeSong4 takes over, 0.9 + 0.2 × 11 slashes = 3.1 s (:30273, :30289); Blade Fang's 4 slashes
+// at rank 3, 1 → 2 → 3 → 2, the clip changing right after each hit at 0.2 / 0.5 / 0.8 s (:26402, :26640, :26063, the
+// bladeFang_count >= sLv checks :26055, :26627); the Bison's Charge Attack at rank 2 with Improved Swing 3: full charge
+// 8 s, then cAttack6 (the spin by Improved Swing rank, Bison.cs:20318) for 8 hits × 2 × (0.2 − 0.033 × 3) = 1.6 s; Quick
+// Fire at rank 4: quickFire2 from the opening shot (0.4 s) through 2 × 4 shots 0.1 s apart, quickFire3 on the closing
+// shot (Chameleon.cs:19660, :20061, :19787; Added Fire #402 would double the loop). LOWER_RANK = clips only lower ranks
+// play, kept out of the move list. After the last step the sequence starts again with a 0.2 s crossfade.
 const SEQ = {
   bat: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Drain Life: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
     "Nightmare: cast1 cast2*@0 cast3~@0.5 channel*~@9", "Guardian of the Night: bigCast1 bigCast2*@0 bigCast3~"],
-  bison: ["Normal Attack: nAttack1@0.7 nAttack2@0.7 nAttack3@0.8 nAttack4@0.8 nAttack5", "Charge Attack: cAttack1 cAttack2*~@3 cAttack3*@1.6",
+  bison: ["Normal Attack: nAttack1@0.7 nAttack2@0.7 nAttack3@0.8 nAttack4@0.8 nAttack5", "Charge Attack: cAttack1 cAttack2*~@7 cAttack6*@1.6",
     "Trample: trample1@0.9 trample2*@2.6"],
   cat: ["Normal Attack: nAttack1 nAttack2^ nAttack3 nAttack4", "Charge Attack: cAttack1 cAttack2*@3.4",
     "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2*@13.5 grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*@3",
     "Heart Ripper: heartRipper1 heartRipper2", "Finishing Blow: finishingBlow1 finishingBlow2", "Crescent Eclipse: crescentEclipse1 crescentEclipse2"],
   chameleon: ["Charge Attack: cAttack1 cAttack2*@9 cAttack3*@3.6 cAttack4", "Cast: cast1 cast2*@0 cast3~",
-    "Quick Fire: quickFire1 quickFire2* quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
+    "Quick Fire: quickFire1@0.4 quickFire2*@0.9 quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
     "Thunder Dragon: thunderDragon1@0.8 thunderDragon2*@3", "Focus Fire: focusFire1 focusFire2", "Venom Phantom: venomPhantom1 venomPhantom2 venomPhantom3"],
   mole: ["Normal Attack: nAttack1 nAttack2", "Assemble: assemble1 assemble2*@0", "Flame Turret: flameTurret1 flameTurret2*@3",
     "Barrel Railgun: barrelRailgun1 barrelRailgun2*@6 barrelRailgun3@0.65 barrelRailgun4"],
@@ -947,12 +952,13 @@ const SEQ = {
   whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
     "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0"],
   wolf: ["Normal Attack: nAttack1@0.8 nAttack2^@0.96 nAttack3~ nAttack4~", "Charge Attack: cAttack1 cAttack2*~@4.8 cAttack3",
-    "Blade Fang: bladeFang1 bladeFang2 bladeFang3", "Blade Song: bladeSong1@2.3 bladeSong2~@2.7 bladeSong3~@3.1 bladeSong4~",
+    "Blade Fang: bladeFang1@0.2 bladeFang2@0.3 bladeFang3@0.3 bladeFang2", "Blade Song: bladeSong3@3.1 bladeSong4~",
     "Counter: counter1@0.8 counter2", "Mirror Blade: mirrorCounter1@1.2 mirrorCounter2", "Cast: cast1 cast2*@0 cast3"],
 };
 // single moves the game itself loops (wrapMode Loop in the BB code; the data's own loop flag adds the rest)
 const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chameleon: ["silentWalk"], mole: ["advanceRepair"],
   monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
+const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // the class's sequences whose clips are all in this copy (the online copy has no TTO clips), parsed once per class
@@ -2322,7 +2328,7 @@ async function openPicker(t, opts = {}) {
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
     // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
-    const seqs = moveTab === "skill" ? chains() : [], used = new Set(seqs.flatMap(ch => ch.steps.map(s => s.clip)));
+    const seqs = moveTab === "skill" ? chains() : [], used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(LOWER_RANK[C.cls] || [])]);
     const names = Object.keys(C.clipsData).filter(k => moveGroup(k) === moveTab && !used.has(k)).sort(moveSort);
     const tiles = [...seqs.map(ch => ({ id: ch.id, tto: ch.tto, title: esc(moveText(ch.id)) })), ...names.map(n => ({ id: n, tto: C.clipsData[n].tto }))]
       .sort((a, b) => a.tto - b.tto);

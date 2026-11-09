@@ -1,7 +1,7 @@
 """Headless check of the wardrobe's move player (2026-11-09): every class's skill / base tiles to <out>/tiles.json, a
 screenshot of the Sheep's skill tab, every class's parsed sequences with their step times to <out>/chains.json, then
-timed traces (step:clip@seconds since the pick) of the Sheep's sequences and the Wolf's Blade Song, ko holding, run /
-falling looping, getUp back to idle.
+timed traces (step:clip@seconds since the pick) of the Sheep's sequences, the Wolf's Blade Song and Blade Fang, the
+Bison's Charge Attack and the Chameleon's Quick Fire (max rank), ko holding, run / falling looping, getUp back to idle.
 uv run --no-project --with playwright python -I pipeline/wardrobe_moves_check.py D:/12tails-wardrobe checks/<dir> [page path]"""
 import asyncio, functools, http.server, json, sys, threading
 from pathlib import Path
@@ -79,8 +79,19 @@ async def main():
         await run("base", "getUp", 3)
         await run("emote", "bow", 3.5)
         await page.evaluate("c => wardrobe.show(c)", "wolf")
-        await run("skill", "@BladeSong", 12)
+        await run("skill", "@BladeSong", 9)               # max rank (2026-11-09): bladeSong3 @3.1, bladeSong4
+        await run("skill", "@BladeFang", 3.5)             # 1 -> 2 (0.2) -> 3 (0.5) -> 2 (0.8)
         await run("skill", "@Counter", 2.5)
+        for cls, m, secs in (("bison", "@ChargeAttack", 12), ("chameleon", "@QuickFire", 3.5)):
+            await page.evaluate("c => wardrobe.show(c)", cls)
+            await run("skill", m, secs)
+        for cls, low in (("wolf", ["bladeSong1", "bladeSong2"]), ("bison", ["cAttack3", "cAttack4", "cAttack5"])):
+            await page.evaluate("c => wardrobe.show(c)", cls)
+            await tab("skill")
+            shown = [t.split("=")[0] for t in await tiles()]
+            listed = [m for m in low if m in shown]
+            print(f"{cls}: {len(shown)} skill tiles, lower-rank clips listed: {listed}")
+            if listed or not shown: errors.append(f"{cls} lists lower-rank clips {listed}")
         print(json.dumps(report, ensure_ascii=False)[:200])
         print("errors:", errors)
         await b.close()

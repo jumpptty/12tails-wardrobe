@@ -85,8 +85,7 @@ copies the loadout line. CSS `saturate(1.15)` on the canvas = the V07 saturation
     Nightmare / Mind Control end in a channel loop; the Chameleon's volley loops cAttack3 and ends on cAttack4
     (`Chameleon.cs:17200`); Raijin Ken = cAttack1 → cAttack2 loop → raijinKen1 → raijinKen2.
   - **Look-alike names that are not sequences stay single tiles:** Book Bash 1-3 is a random pick (`Random.Range(0, 3)`,
-    `Sheep.cs:37523`), the Bison's spins cAttack3-6 one per Improved Swing
-    rank (`Bison.cs:20318`; Charge Attack shows cAttack3), Monkey damageCast1/2 replace cast1/2 when its damage-cast passive
+    `Sheep.cs:37523`), Monkey damageCast1/2 replace cast1/2 when its damage-cast passive
     is learned (the release is cast3 either way; damageCast3 is never played by BB), Whale Wave divingWave / malStorm,
     Medical Shot gilShot / medicalShot and the Mole's superDig / dig1 by a learned skill.
   - Normal-attack combos (nAttack1 → 2 → ...) are one tile, each stage cut where the next press can come when its clip
@@ -103,12 +102,26 @@ copies the loadout line. CSS `saturate(1.15)` on the canvas = the V07 saturation
     Whale 6, Tempest Dance 5, Grand Casino Arcade 5 rolls × 2.7 = 13.5), or three hits (at least 3 s) when the game runs
     them until the player moves (Holy Light's beam, Lullaby, Cosmic Friday 6 s, Support Fire, Flame Turret, Grand Tide,
     the Panda's and Penguin's charge ticks). Charges = full charge (Sheep 0.8 + 4 s at rank 4, Chameleon 9 s then 18 shots
-    × 0.2, Wolf 5.8 s for the third wave, Cat 4 stacks, Bison 4 s then 4 hits × 0.4); Qi Strike 4 s, Counter's stance
+    × 0.2, Wolf 5.8 s for the third wave, Cat 4 stacks, Bison 8 s then 8 hits × 0.202 on cAttack6); Qi Strike 4 s, Counter's stance
     0.8 s, Mirror Blade's 1.2 s, Trample's two phases 0.9 / 2.6 s (`Bison.cs:22696`, `:22515`), the Bison's combo stages
-    at the range preview's 0 / 0.7 / 1.4 / 2.2 s. Blade Song is one tile (the user's ask; the game plays one of 1-3 by
-    rank): each song is cut where Last Blade's bladeSong4 takes over, 0.3 + 0.4 + 0.2 × (5 + 2 × rank) = 2.3 / 2.7 / 3.1 s
-    (`Wolf.cs:30500`, `:30502`, `:30273`, `:30289`), songs 2 and 3 blend in (0.2 s), then bladeSong4. Skills the skill
-    details give no timing for keep their clip lengths.
+    at the range preview's 0 / 0.7 / 1.4 / 2.2 s. Skills the skill details give no timing for keep their clip lengths.
+  - **Max rank everywhere (2026-11-09; user: "for all animations, assume max rank, eg. Blade Song currently runs thru all
+    ranks and is very weird. Blade Fang why stuck at Rank 2 with wrong timing"):** Blade Song was songs 1 → 2 → 3 → 4
+    (the user's earlier "merge them all"); the game plays `bladeSong<rank>` (switch at `Wolf.cs:30332`), so now
+    bladeSong3 cut at 0.9 + 0.2 × 11 = 3.1 s, then bladeSong4 (0.2 s fade). Blade Fang was bladeFang1-3 at full clip
+    length = rank 2's three slashes; rank 3 slashes four times, 1 → 2 → 3 → 2, the clip changing right after each hit:
+    0 / 0.2 / 0.5 / 0.8 s (hits 0.2 / 0.4 / 0.7 / 1.0, end 1.2; `:26402`, `:26640`, `:26063`, the `bladeFang_count >= sLv`
+    checks `:26055`, `:26627`, waits `:26652-26694`). Bison Charge Attack was cAttack3 × 4 hits = rank 1 without Improved
+    Swing; now rank 2's full 8 s charge (cAttack1 1 s + cAttack2 7 s) and Improved Swing 3's cAttack6 (`Bison.cs:20318`)
+    for 8 × 0.202 = 1.6 s. Quick Fire had no times: rank 4 = quickFire1 0.4 s, quickFire2 0.9 s (opening shot + 8 shots
+    0.1 s apart), quickFire3 (`Chameleon.cs:19660`, `:20061`, `:19787`); Added Fire #402 (Lv 55 passive) would make it
+    1.7 s, not assumed. Lower-rank clips (`LOWER_RANK`: bladeSong1-2, the Bison's cAttack3-5) are left out of the move
+    list. How found: every skill coroutine whose flow branches on `sLv` (`clip_flow.js` with `sLv` as the extra pattern:
+    46 do), kept only where rank picks the clip or the length of a held / looped part; Trample (2.6 s), Grand Casino
+    Arcade (5 rolls), the Chameleon's Charge Attack (9 s, 18 swings), Qi Strike (4 s) were already at max rank; the
+    Rabbit's, Monkey's and Whale's charges have no charge-time clamp. Checked: `wardrobe_moves_check.py` traces (Blade
+    Song 3 → 4 at 3.1, Blade Fang 0.2 / 0.5 / 0.9, Bison 1.0 / 8.0, Quick Fire 0.5 / 1.4 at swiftshader's ~0.1 s lag),
+    the lower-rank clips not listed, no page errors.
   - Tools: `pipeline/clip_calls.js` (every class's skill clips per coroutine, with fades and wrap modes),
     `pipeline/clip_flow.js` (one coroutine's flow: the order and the waits), `pipeline/wardrobe_moves_check.py` (headless:
     all tiles, every class's parsed sequences with their step times in `chains.json`, timed traces of the Sheep's
@@ -344,3 +357,31 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `<drive>:\12tails-wardrobe-transfer\` = `wardrobe_data.tar` (0.35 GB, 7,668 files, prop textures included, 6 s),
   `12tails-wardrobe.bundle`, `README.txt` (restore: clone, `tar -xf ... -C C:\work\12tails-wardrobe`, then once
   `adopt_from_video.ps1 -SetAside`, which renames the office's older `<video>\wardrobe\data` to `wardrobe_data_old`).
+- **2026-11-09, the switchover on the office PC**: the video's `move_project.ps1` ran from this session with VS Code
+  open on this folder (its dry run found 0 holders: only a window on `comic-skit` itself blocks it): 48 items up into
+  `C:\work\12tails-video`, origin -> `jumpptty/12tails-video`. Then `adopt_from_video.ps1 -SetAside`: the office's
+  04/11 data is `C:\work\12tails-video\wardrobe_data_old` (delete when happy), 0 prop textures missing, the empty
+  `<video>\wardrobe` removed. The move left two Desktop shortcuts stale, fixed by hand: `wd.lnk` (pointed at the
+  video's gone `wardrobe.cmd`, now this folder's) and `comic-skit.lnk` (its target was the old folder itself, which
+  the move only matches for paths inside it; now `C:\work\12tails-video`). `subst D: C:\work` drops at every sign-out,
+  so the office's Startup folder has `map_D.cmd` (`if not exist D:\ if exist C:\work\ subst D: C:\work`; tested by
+  unmapping and running it). `wardrobe_data_old` deleted (user's go, 6,455 files, 277 MB). Checks: 42 unit tests, the adopt test, `wardrobe_moves_check.py` `errors: []` (Playwright's headless
+  Chromium had to be installed here first: `uv run --no-project --with playwright playwright install chromium`).
+- **2026-11-09, two bug reports traced (no fix yet)**: (1) "Chameleon Legend set doesn't have legend bow": the set wears
+  standardBow + legendArrow. Cause: `item_map.json` from `bb_item_codes.py`, whose rule "each load belongs to the compare
+  just before it" fails on the obfuscated nesting in `<Class>Equipment.cs`: `if (!(nWeapon == "w_chm60")) { if w_chm61
+  {empty} else if w_chm62 {legendBowR/ArrowR} else if w_chm82 {...} else {standardBow} }` then legendBow / legendArrow
+  AFTER the block (the w_chm60 body; w_chm61's empty branch falls through to it: its decoy `31401 - 585668 != -554267`
+  is false). So w_chm60 is skipped (negated), w_chm61 keeps the TTO trace (standardBow + legendArrow, wrong), and the
+  weapon `cur` never resets, so w_chm82 collects 7 loads. buildSets then reads legendArrow as w_chm61's second piece
+  and puts its first, standardBow, in the main hand; legendBow is in no two-piece code, so it is never a first piece.
+  Same cause, second symptom: legendBow's only code is w_chm82, so its icon is Flaming Arch's (`chm82.webp`).
+  Scale: the three shapes (negated-only 34, empty branch 19, glued 2) occur in every class's source, but mostly the
+  TTO trace happened to be right. Wrong and visible: only Chameleon legend (set + icon). Wrong, not visible: Whale
+  w_whl51 = standard (game: royal), w_whl61 = ladybug R (game: legend), w_whl79 glued 8 loads (the royal / legend
+  sets get their pairs from w_whl50 / 60, right by luck). `pipeline/wardrobe_sets_check.py` (new, headless) over 12
+  classes / 454 sets: one set with another set's weapon, Chameleon legend (Penguin box + paperCup is the beggar
+  costume joined by code 5, not flagged). (2) "Panda doesn't have Worm R in the armor selection, but the set has it":
+  by design since 2026-11-07 (editions picked in the set tab): the ชุด picker lists each outfit once
+  (`C.outfits.map`), so all 132 R / V editions (11 per class) are missing from it, not only Worm R; the check finds
+  every one reachable through some set (0 unreached).
