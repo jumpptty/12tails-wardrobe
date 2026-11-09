@@ -979,14 +979,23 @@ const SEQ = {
     "Holy Light: holyLight1@0.6 holyLight2*@0 holyLight3@0.4 holyLight4*@3", "Lullaby: holyLight1@0.6 holyLight2*@0 lullaby*@3"],
   whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
     "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0"],
-  wolf: ["Normal Attack: nAttack1@0.8 nAttack2^@0.96 nAttack3~ nAttack4~", "Charge Attack: cAttack1 cAttack2*~@4.8 cAttack3",
-    "Blade Fang: bladeFang1@0.2 bladeFang2@0.3 bladeFang3@0.3 bladeFang2", "Blade Song: bladeSong3@3.1 bladeSong4~",
-    "Counter: counter1@0.8 counter2", "Mirror Blade: mirrorCounter1@1.2 mirrorCounter2", "Cast: cast1 cast2*@0 cast3"],
+  // the Wolf's step times corrected from the code 2026-11-09 (plans/fx_wolf/attacks.md, checked by hand): stage 2 from 0.8 s,
+  // stage 3 from 1.44 s after stage 1 (the dispatcher's windows, Wolf.cs:7540-7830); cAttack1 cut at 0.8 s (:19217
+  // Yield(2, 0.8)) and the full-charge ring 5.0 s into cAttack2; Blade Fang's first slash 0.5 s after the press, its hit
+  // at 0.7 s, then bladeFang2 (Yield(2, 0.5) then Yield(3, 0.2), :26652); bladeSong4 right after the 11th slash at
+  // 0.9 + 0.2 x 10 = 2.9 s (no wait after the last one when skill 354 is learned)
+  wolf: ["Normal Attack: nAttack1@0.8 nAttack2^@0.64 nAttack3~ nAttack4~", "Charge Attack: cAttack1@0.8 cAttack2*~@5.1 cAttack3",
+    "Blade Fang: bladeFang1@0.7 bladeFang2@0.3 bladeFang3@0.3 bladeFang2", "Blade Song: bladeSong3@2.9 bladeSong4~",
+    // Mirror Blade switches at 0.2 + 0.8 = 1.0 s (RPC_mirrorBlade's Yield(2, 0.2) then Yield(3, 0.8); was 1.2 from the skill details)
+    "Counter: counter1@0.8 counter2", "Mirror Blade: mirrorCounter1@1.0 mirrorCounter2"],   // no Cast: see NEVER_PLAYED
 };
 // single moves the game itself loops (wrapMode Loop in the BB code; the data's own loop flag adds the rest)
 const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chameleon: ["silentWalk"], mole: ["advanceRepair"],
   monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
 const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"] };
+// clips the class's code never plays, left out of the list (2026-11-09: no Wolf skill plays cast1-3, the Cast tile was
+// copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile")
+const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // the class's sequences whose clips are all in this copy (the online copy has no TTO clips), parsed once per class
@@ -1064,7 +1073,7 @@ function startStep(i, fade) {
   if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
   C.action = act;
   S.i = i; S.t = 0;
-  fxStart(st.clip);                          // its effects and voice, every time the clip starts (the loop too)
+  fxStart(st.clip, i);                       // its effects and voice, every time the clip starts (the loop too)
   S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
     : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
 }
@@ -2636,7 +2645,7 @@ async function openPicker(t, opts = {}) {
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
     // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
-    const seqs = moveTab === "skill" ? chains() : [], used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(LOWER_RANK[C.cls] || [])]);
+    const seqs = moveTab === "skill" ? chains() : [], used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(LOWER_RANK[C.cls] || []), ...(NEVER_PLAYED[C.cls] || [])]);
     const names = Object.keys(C.clipsData).filter(k => moveGroup(k) === moveTab && !used.has(k)).sort(moveSort);
     const tiles = [...seqs.map(ch => ({ id: ch.id, tto: ch.tto, title: esc(moveText(ch.id)) })), ...names.map(n => ({ id: n, tto: C.clipsData[n].tto }))]
       .sort((a, b) => a.tto - b.tto);
@@ -2947,7 +2956,7 @@ const vA = a => V(a[0], a[1], a[2]);
 const nz = v => (v.lengthSq() < 1e-10 ? V() : v.clone().normalize());         // Unity's normalized: zero below 1e-5
 
 class Fx {
-  constructor(cls, name, d, dist = 0) {
+  constructor(cls, name, d, at = {}) {        // at: a cue's placement (d ahead, x right, y up, rot [x, y, z] degrees), Unity's space
     const def = d.effects[name];
     this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false;
     this.group = new THREE.Group();
@@ -2957,7 +2966,12 @@ class Fx {
     def.nodes.forEach((n, i) => {
       const o = this.nodes[i];
       o.name = n.name;
-      if (n.parent < 0) { o.position.set(0, 0, dist); o.scale.fromArray(n.scale || [1, 1, 1]); this.mirror.add(o); }   // Instantiate(prefab, pos, rot)
+      if (n.parent < 0) {                      // Instantiate(prefab, hero position + offset, hero rotation x Euler(rot))
+        o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]);
+        // Unity's Quaternion.Euler turns z, then x, then y: three's intrinsic "YXZ"; inside the mirror Unity's numbers apply as they are
+        if (at.rot) o.quaternion.setFromEuler(new THREE.Euler(...at.rot.map(v => v * Math.PI / 180), "YXZ"));
+        this.mirror.add(o);
+      }
       else { o.position.fromArray(n.pos); o.quaternion.fromArray(n.rot); o.scale.fromArray(n.scale); this.nodes[n.parent].add(o); }
       const mat = n.mats?.[0] ? fxMaterial(cls, n.mats[0], d.materials[n.mats[0]]) : null;
       const em = n.comps.find(c => c.type === "EllipsoidParticleEmitter");
@@ -3220,10 +3234,35 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 }
 
 // a clip's cues start with it (startStep) and run on the render clock; a new pick clears what was left
-function fxStart(clip) {
+// A cue: [t, kind, name, distance, cut] as before, or [t, kind, name, {options}] (2026-11-09, the Wolf's research):
+//   kind  "fx" (an effect prefab), "voice" (the hero's Voices/ clip, file v_<name>.mp3), "sound" (a Sounds/ clip the
+//         hero's code plays, file <name>.mp3: voices and sounds share names, crusader1 / nAttack1 ...)
+//   name  "a|b" = the game's random pick, made when the clip starts (effects and sounds alike)
+//   options d (metres ahead), x (right), y (up), rot ([x, y, z] degrees, Unity's Euler, after the hero's facing), vol,
+//         cut (the clip time the hero's action changes: ends a followState effect), p (chance, 0-1: a rolled proc),
+//         roll (cues sharing a roll name share one roll per play: Double Art's effect and Sublime Art's ring)
+// An entry is { why, cues } or, for a clip several skills share, { why, skills: { skill: { why, cues } } }: one skill
+// per play, even chance (the user: instantCast), kept for every step of a sequence. step = the sequence step (0 = a
+// new play: a new pick, new rolls)
+const cueOf = c => {
+  const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
+  return { at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
+    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll };
+};
+const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
+function fxStart(clip, step = 0) {
   FX.t = 0;
-  FX.cues = (FX.cueTab[C?.cls]?.[clip]?.cues || []).map(c => ({ at: c[0], kind: c[1], name: c[2], dist: c[3] || 0, cut: c[4] }));
-  for (const c of FX.cues) if (c.kind === "voice" && Sound.ctx) c.name.split("|").forEach(n => Sound.get(C.cls, n).catch(() => {}));
+  const e = FX.cueTab[C?.cls]?.[clip];
+  let cues = e?.cues || [];
+  if (e?.skills) {
+    const names = Object.keys(e.skills);
+    if (step === 0 || !e.skills[FX.pick]) FX.pick = names[Math.floor(Math.random() * names.length)];
+    cues = e.skills[FX.pick].cues || [];
+  }
+  if (step === 0 || !FX.rolls) FX.rolls = {};
+  const rolled = c => c.p == null || (c.roll ? (FX.rolls[c.roll] ??= Math.random() < c.p) : Math.random() < c.p);
+  FX.cues = cues.map(cueOf).filter(rolled);
+  for (const c of FX.cues) if (c.kind !== "fx" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
 }
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
 // the เสียงท่าทาง button: on by default, remembered in this browser; the first click or key press starts the audio
@@ -3241,11 +3280,11 @@ function fxTick(dt) {
   for (const c of FX.cues) {
     if (c.done || c.at > FX.t) continue;
     c.done = true;
-    if (c.kind === "voice") { const ns = c.name.split("|"); Sound.play(cls, ns[Math.floor(Math.random() * ns.length)]); }
+    if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
-      const f = new Fx(cls, c.name, d, c.dist); f.cutAt = c.cut; FX.live.push(f);
+      const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error);
   }

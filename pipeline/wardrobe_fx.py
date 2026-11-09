@@ -218,7 +218,12 @@ def effect(game, cls, name, mats, texs, sounds):
     return {"nodes": nodes}
 
 
-def rip_wav(cls, name):
+def rip_wav(cls, name, folder=None):
+    """The rip's WAV: from the class's voices/ or sounds/ when the cue says which (they share names: crusader1, nAttack1
+    ... are different recordings in each, 2026-11-09), else sounds/ then voices/ then anywhere (an effect's own sound)."""
+    if folder:
+        p = os.path.join(RIP, "characters", "heroes", cls, folder, name + ".wav")
+        return p if os.path.exists(p) else None
     for sub in (f"characters/heroes/{cls}/sounds", f"characters/heroes/{cls}/voices"):
         p = os.path.join(RIP, *sub.split("/"), name + ".wav")
         if os.path.exists(p):
@@ -229,33 +234,51 @@ def rip_wav(cls, name):
     return None
 
 
+def cue_lists(entry):
+    """An entry's cue lists: its cues, or every skill's of a shared clip ({skills: {name: {cues}}})."""
+    return [entry.get("cues", [])] + [s.get("cues", []) for s in entry.get("skills", {}).values()]
+
+
 def cue_names(cls):
-    """The effects and voices the class's cue file names, as --fx / --voices strings (in cue order, no repeats)."""
+    """The effects, voices and sounds the class's cue file names, as --fx / --voices / --sounds strings (in cue order, no
+    repeats; "a|b" = both)."""
     path = os.path.join(os.path.dirname(DATA), "fx_cues", cls + ".json")
-    names = {"fx": [], "voice": []}
-    for skill in json.load(open(path, encoding="utf-8")).values():
-        for cue in skill["cues"]:
-            for n in cue[2].split("|"):
-                if n not in names[cue[1]]:
-                    names[cue[1]].append(n)
-    return ",".join(names["fx"]), ",".join(names["voice"])
+    names = {"fx": [], "voice": [], "sound": []}
+    for entry in json.load(open(path, encoding="utf-8")).values():
+        for cues in cue_lists(entry):
+            for cue in cues:
+                for n in str(cue[2]).split("|"):
+                    if n not in names[cue[1]]:
+                        names[cue[1]].append(n)
+    return ",".join(names["fx"]), ",".join(names["voice"]), ",".join(names["sound"])
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cls")
     ap.add_argument("--fx", default="", help="effects to build instead of the cue file's")
-    ap.add_argument("--voices", default="")
+    ap.add_argument("--voices", default="", help="Voices/ clips -> sfx/v_<name>.mp3")
+    ap.add_argument("--sounds", default="", help="Sounds/ clips the hero's code plays -> sfx/<name>.mp3")
+    ap.add_argument("--probe", default="", help="print these effects' nodes and components as JSON; writes nothing")
     a = ap.parse_args()
+    if a.probe:                          # read only (the research agents' ask: --fx writes the shared data)
+        game = Game()
+        for n in a.probe.split(","):
+            try:
+                print(json.dumps({n: effect(game, a.cls, n, {}, {}, set())}, indent=1))
+            except Exception as e:      # noqa: BLE001 (a script with no layout yet: say so, go on)
+                print(json.dumps({n: f"{type(e).__name__}: {e}"}))
+        return
     if not a.fx:
-        a.fx, a.voices = cue_names(a.cls)
-        if not a.fx and not a.voices:
+        a.fx, a.voices, a.sounds = cue_names(a.cls)
+        if not a.fx and not a.voices and not a.sounds:
             ap.error(f"wardrobe/fx_cues/{a.cls}.json has no cues; write them first, or pass --fx")
     game = Game()
     mats, texs, sounds, effects = {}, {}, set(), {}
     for n in [n for n in a.fx.split(",") if n]:
         effects[n] = effect(game, a.cls, n, mats, texs, sounds)
     voices = [v for v in a.voices.split(",") if v]
+    hero_sounds = [v for v in a.sounds.split(",") if v]
     # textures -> data/fx/tex (shared by every class), sounds -> data/<cls>/sfx
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)
     for n, o in texs.items():
@@ -263,17 +286,20 @@ def main():
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     sdir = os.path.join(DATA, a.cls, "sfx"); os.makedirs(sdir, exist_ok=True)
-    missing = []
-    for n in sorted(sounds | set(voices)):
-        src = rip_wav(a.cls, n)
+    missing, jobs = [], []
+    # an effect's own sound and a Sounds/ cue: <name>.mp3 (from sounds/ first); a voice: v_<name>.mp3 from voices/ only
+    jobs += [(n, rip_wav(a.cls, n), n) for n in sorted(sounds)]
+    jobs += [(n, rip_wav(a.cls, n, "sounds"), n) for n in sorted(set(hero_sounds) - sounds)]
+    jobs += [(n, rip_wav(a.cls, n, "voices"), "v_" + n) for n in sorted(set(voices))]
+    for n, src, out_name in jobs:
         if not src:
-            missing.append(n); continue
-        subprocess.run([ff, "-y", "-loglevel", "error", "-i", src, "-ac", "1", "-b:a", "64k", os.path.join(sdir, n + ".mp3")], check=True)
+            missing.append(out_name); continue
+        subprocess.run([ff, "-y", "-loglevel", "error", "-i", src, "-ac", "1", "-b:a", "64k", os.path.join(sdir, out_name + ".mp3")], check=True)
     out = os.path.join(DATA, a.cls, "fx.json")
     old = json.load(open(out, encoding="utf-8")) if os.path.exists(out) else {}
     merged = {"effects": {**old.get("effects", {}), **effects}, "materials": {**old.get("materials", {}), **mats}}
     json.dump(merged, open(out, "w", encoding="utf-8"), indent=1)
-    print(f"{a.cls}: {len(effects)} effects, {len(mats)} materials, {len(texs)} textures, {len(sounds | set(voices)) - len(missing)} sounds"
+    print(f"{a.cls}: {len(effects)} effects, {len(mats)} materials, {len(texs)} textures, {len(jobs) - len(missing)} sounds"
           + (f", missing sounds: {missing}" if missing else ""))
 
 

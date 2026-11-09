@@ -5,16 +5,18 @@ sequence tile when the clip is one of its steps), which effects are alive (and t
 over time, a screenshot shortly after each effect first appears and one at the busiest frame (peak), once per backdrop
 (?fxbg=dark / spot / white, side by side in <out>/compare.html). Fails on a missing file, a cued effect that never
 spawns, a page error, a console error or a failed request.
-  uv run --no-project --with playwright python -I pipeline/wardrobe_fx_check.py D:/12tails-wardrobe checks/<dir> [dark,spot,white] [--cls wolf]"""
-import argparse, asyncio, functools, http.server, json, threading
+  uv run --no-project --with playwright python -I pipeline/wardrobe_fx_check.py D:/12tails-wardrobe checks/<dir> [dark,spot,white] [--cls wolf]
+--files-only: only the file checks (no browser; 2026-11-09, the user tests the page by hand): every effect, voice
+(v_<name>.mp3) and sound (<name>.mp3) the cues name, every cue's shape, and that each cue key is a clip of the class."""
+import argparse, asyncio, functools, http.server, json, sys, threading
 from pathlib import Path
-from playwright.async_api import async_playwright
 
 ap = argparse.ArgumentParser()
 ap.add_argument("root", type=Path)
 ap.add_argument("out", type=Path)
 ap.add_argument("variants", nargs="?", default="dark,spot,white")
 ap.add_argument("--cls", default="", help="classes to check (default: every class whose cue file has cues)")
+ap.add_argument("--files-only", action="store_true", help="the file checks alone, no browser")
 A = ap.parse_args()
 ROOT, OUT, VARIANTS = A.root, A.out, A.variants.split(",")
 OUT.mkdir(parents=True, exist_ok=True)
@@ -25,16 +27,42 @@ SHOT_AFTER = 0.15     # seconds after an effect first appears
 SETTLE, CAP = 1.5, 15.0   # stop a tile this long after its last expected effect appeared, or at CAP
 
 
+def cue_lists(entry):
+    """An entry's cue lists: its cues, or every skill's of a shared clip ({skills: {name: {cues}}})."""
+    return [entry.get("cues", [])] + [s.get("cues", []) for s in entry.get("skills", {}).values()]
+
+
+def all_cues(cls):
+    return [c for e in CUES[cls].values() for cues in cue_lists(e) for c in cues]
+
+
 def names(cls, kind):
-    return sorted({n for s in CUES[cls].values() for c in s["cues"] if c[1] == kind for n in c[2].split("|")})
+    return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")})
+
+
+OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll"}
 
 
 def file_errors(cls):
     fx = DATA / cls / "fx.json"
     effects = json.loads(fx.read_text(encoding="utf-8"))["effects"] if fx.exists() else {}
     errs = [f"{cls}: effect {n} is not in {fx.relative_to(ROOT)} (run wardrobe_fx.py {cls})" for n in names(cls, "fx") if n not in effects]
-    errs += [f"{cls}: voice {n}.mp3 is missing from data/{cls}/sfx (run wardrobe_fx.py {cls})" for n in names(cls, "voice")
+    errs += [f"{cls}: voice v_{n}.mp3 is missing from data/{cls}/sfx (run wardrobe_fx.py {cls})" for n in names(cls, "voice")
+             if not (DATA / cls / "sfx" / f"v_{n}.mp3").exists()]
+    errs += [f"{cls}: sound {n}.mp3 is missing from data/{cls}/sfx (run wardrobe_fx.py {cls})" for n in names(cls, "sound")
              if not (DATA / cls / "sfx" / f"{n}.mp3").exists()]
+    clips = json.loads((DATA / cls / "clips.json").read_text(encoding="utf-8"))
+    for key, e in CUES[cls].items():
+        if key not in clips:
+            errs.append(f"{cls}: cue key {key} is not a clip of the class")
+        if not isinstance(e.get("why"), str) or ("cues" in e) == ("skills" in e):
+            errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
+        for cues in cue_lists(e):
+            for c in cues:
+                ok = (isinstance(c, list) and 3 <= len(c) <= 5 and isinstance(c[0], (int, float)) and c[1] in ("fx", "voice", "sound")
+                      and isinstance(c[2], str) and (len(c) < 4 or isinstance(c[3], (int, float)) or (isinstance(c[3], dict) and set(c[3]) <= OPTS)))
+                if not ok:
+                    errs.append(f"{cls}: {key}: bad cue {c}")
     return errs
 
 
@@ -93,6 +121,10 @@ async def play_tile(page, var, cls, tile, expect, shots):
 
 async def main():
     errors = [e for c in CLASSES for e in file_errors(c)]
+    if A.files_only:
+        print("\n".join(errors) or f"files: no problems ({', '.join(CLASSES)})")
+        raise SystemExit(1 if errors else 0)
+    from playwright.async_api import async_playwright
     shots = {}
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required"])
@@ -112,8 +144,10 @@ async def main():
                 clips = list(CUES[cls])
                 tile_of = dict(zip(clips, await page.evaluate(TILES, clips)))
                 for tile in dict.fromkeys(tile_of.values()):                  # in cue order, one play per tile
-                    expect = sorted({n for c in clips if tile_of[c] == tile for cue in CUES[cls][c]["cues"] if cue[1] == "fx"
-                                     for n in cue[2].split("|")})
+                    # effects every play must show: a plain entry's (its "a|b" picks and rolled procs vary: not expected);
+                    # a shared clip's skills are picked at random, so none of theirs is expected either
+                    expect = sorted({cue[2] for c in clips if tile_of[c] == tile for cue in CUES[cls][c].get("cues", [])
+                                     if cue[1] == "fx" and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
                     errs = await play_tile(page, var, cls, tile, expect, shots)
                     errors += [e for e in errs if e not in errors]
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")
