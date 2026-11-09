@@ -830,9 +830,15 @@ function finishProp(root) {
 // where a prop goes on the hero (setProp; ชมชิ้นส่วน turns a floating piece the way it sits): TTO's own placement for
 // this hero + item code (wardrobe_placements.py: bone, pos, euler, scale), else the class's fallback, else BB's rule
 // (pl null: the slot's MOUNT bone, MOUNT_ROT). The slot decides the hand: any weapon can go in either
+// classes whose main weapon (the code's first piece: the page's อาวุธหลัก) is TTO's second slot (user 2026-11-09: "Whale
+// weapon left and right seems to be swapped"): BB's WhaleEquipment puts getWeapon(code, 1) = the lance on mount_Hand_R and
+// getWeapon(code, 0) = the shield on mount_Hand_L (WhaleEquipment.cs:416-445, :1645, :1677), while TTO's table has
+// "whale" (slot 0) = mount_Hand_L. The Chameleon's bow (first piece) does belong on the left, as its table says
+const SWAP_HANDS = new Set(["whale"]);
 function placementOf(slot, p) {
   const table = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" }[slot];
-  const hero = slot === "L" ? C.cls + "#2" : C.cls;
+  const second = SWAP_HANDS.has(C.cls) && (slot === "R" || slot === "L") ? slot === "R" : slot === "L";
+  const hero = second ? C.cls + "#2" : C.cls;
   const T = PL[table]?.[hero];
   const codes = iconOf(SLOT_KEY[slot], p.name)?.codes || [];
   // TTO's PlaceTrinket / PlaceAccessory / PlaceWeapon: the class + code entry, else the class's fallback (TTO1102

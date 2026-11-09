@@ -675,3 +675,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
     bladeSong4's cue at 0; Twin Resonance's fire sound plays once (loops in the game); effects that outlive their clip
     restart with each replay; TTO sounds from other classes' folders (shatteringDream_hit, iceBreak) can't be cued;
     luck's bonus to Double Art ignored; old pilot voice files without `v_` are left in `data/wolf/sfx`.
+- **2026-11-09, the Whale's lance and shield were in the wrong hands** (user: "Whale weapon left and right seems to be
+  swapped"). BB's WhaleEquipment puts `getWeapon(code, 1)` = the lance on `mount_Hand_R` and `getWeapon(code, 0)` = the
+  shield on `mount_Hand_L` (`WhaleEquipment.cs:416-445`, `:1645`, `:1677`). The page's main slot (อาวุธหลัก) holds the
+  code's first piece, the lance (item_map order), but TTO's placement table numbers the Whale's slots the shield's way
+  ("whale" = mount_Hand_L), so the lance went left. `SWAP_HANDS` (index.html, above `placementOf`) uses the "#2" entry
+  for the Whale's main slot and the plain one for its second. The Chameleon (bow first, on the left) matches its table
+  and is unchanged. Not deployed yet; the user tests.
