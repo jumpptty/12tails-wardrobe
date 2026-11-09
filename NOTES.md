@@ -643,3 +643,14 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   row: คลิกที่ชิ้น... | WASD เลื่อนกล้อง | Space หยุดท่า (เล่นต่อ while paused) | R ท่ายืน. Checked in
   `wardrobe_menu_check.py` (pause holds the mixer, resume, a new move resumes, R from an emote to root); moves check
   `errors: []`. Not deployed yet.
+- **2026-11-09, the key-hint row centred by eye** (user: "try fixing the hint container first", then "then deploy").
+  `pipeline/thai_center_check.py <url> <selector>` (2x screenshot; per text run and per child box, the ink's gap above
+  and below inside the box) measured: the keys' letters 0.8 px high (the key box was centred, its 2 px bottom edge
+  lifts the letter's middle), the Thai runs 0.5 px high counted with their marks (ที่ ชิ้น เลื่อน above, ดู หยุด below).
+  Fixed: kbd line-height 15 px + 1.5 px padding on top (same box, letter +0.75 px, now within 0.2 px); the Thai runs in
+  `.kh-t` moved down by `transform: translateY(.5px)` (`top: .5px` snapped to a whole pixel and overshot to 0.5 px low).
+  The run with marks both ways (คลิกที่ชิ้น...ดูเมนู) is now 6.5 / 6.5 px; the others share its baseline (the rule: as
+  if they had the marks). Space reads lower than the capitals because of its p (a descender), as it should. Rebuilt
+  (data unchanged, `data-a6cc4a90e6`), `wardrobe_dist_check.py` passed, deployed from a fresh empty folder (the last
+  deploy's folder holds wrangler's `.wrangler` cache now): version `c1753290-953d-4a5c-a23d-f7b8968b9d9c`, Space / R and
+  the hint live. Same deploy carries Space / R (555e6b0) and drops the stale `.pm-lock` rule.

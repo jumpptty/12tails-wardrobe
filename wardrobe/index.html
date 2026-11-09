@@ -153,7 +153,12 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 /* WASD hint (task 12): only where a keyboard and mouse exist; dark brown on a pale chip so it reads on the white stage (13:1) */
 .keyhint { display: none; position: absolute; right: 14px; bottom: 12px; align-items: center; gap: 5px; color: var(--on-stage); font-size: 12px; pointer-events: none;
   background: rgba(255, 255, 255, .9); border: 1px solid #e3d8c6; border-radius: 6px; padding: 4px 8px; }
-.keyhint kbd { font: inherit; font-weight: 600; font-size: 11px; line-height: 1.5; border: 1px solid #cdbfa8; border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+/* centred by eye on the measured ink (NOTES.md "Thai text: centring by eye"; pipeline/thai_center_check.py): a key's
+   letter sat 0.8 px high (its box is centred, but the thicker bottom edge pushes the letter's middle up), so it goes
+   down 0.75 px inside a box of the same size (line-height 16.5 -> 15 px + 1.5 px on top); the Thai runs, measured with
+   their marks above and below (ที่ ชิ้น เลื่อน over, ดู หยุด under), sat 0.5 px high: .kh-t moves them down alone */
+.keyhint kbd { font: inherit; font-weight: 600; font-size: 11px; line-height: 15px; border: 1px solid #cdbfa8; border-bottom-width: 2px; border-radius: 4px; padding: 1.5px 5px 0; }
+.kh-t { transform: translateY(.5px); display: inline-block; }   /* `top: .5px` snapped to a whole pixel (measured +1 px) */
 .kh-sep { width: 1px; align-self: stretch; margin: 2px 4px; background: #e3d8c6; }
 @media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
 /* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
@@ -431,7 +436,7 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
       <section class="showcase" id="showcase" hidden aria-label="ชมชิ้นส่วน"></section>
     </div>
-    <div class="keyhint" id="keyhint" aria-hidden="true">คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู<span class="kh-sep"></span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เลื่อนกล้อง<span class="kh-sep"></span><kbd>Space</kbd> <span id="khPause">หยุดท่า</span><span class="kh-sep"></span><kbd>R</kbd> ท่ายืน</div>
+    <div class="keyhint" id="keyhint" aria-hidden="true"><span class="kh-t">คลิกที่ชิ้นบนตัวละครเพื่อดูเมนู</span><span class="kh-sep"></span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span class="kh-t">เลื่อนกล้อง</span><span class="kh-sep"></span><kbd>Space</kbd><span class="kh-t" id="khPause">หยุดท่า</span><span class="kh-sep"></span><kbd>R</kbd><span class="kh-t">ท่ายืน</span></div>
     <section class="picker" id="picker" hidden aria-labelledby="pkTitle">
       <div class="pk-head"><h2 id="pkTitle"></h2><div class="pk-tools" id="pkTools"></div>
         <button type="button" class="pk-close" id="pkClose" aria-label="ปิด" title="ปิด (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
