@@ -159,6 +159,10 @@ _DOC = re.compile(r"^--- !u!(\d+) &(-?\d+)(?: stripped)?\n", re.M)
 _GUID = re.compile(r"^guid: ([0-9a-f]{32})", re.M)
 _STREAM = re.compile(r"^    m_Streams\[\d\]:\n      channelMask: (\d+)\n      offset: (\d+)\n      stride: (\d+)\n", re.M)
 _SUBMESH = re.compile(r"^  - firstByte: (\d+)\n    indexCount: (\d+)\n    isTriStrip: (\d+)\n", re.M)
+# the newer layout (the Reborn rip, a later Unity: VertexData serializedVersion 3): channels instead of streams, and a
+# topology per submesh (0 triangles, 1 = Unity's internal triangle strip, BB's isTriStrip)
+_CHANNEL = re.compile(r"^    - stream: (\d+)\n      offset: (\d+)\n      format: (\d+)\n      dimension: (\d+)\n", re.M)
+_SUBMESH_NEW = re.compile(r"^    firstByte: (\d+)\n    indexCount: (\d+)\n    topology: (\d+)\n", re.M)
 _VEC = re.compile(r"([xyzw]): ([^,}]+)")
 CURVE_SLOTS = {"m_RotationCurves": ("q", "xyzw"), "m_PositionCurves": ("p", "xyz"), "m_ScaleCurves": ("s", "xyz")}
 
@@ -178,7 +182,8 @@ def read_mesh_shape(path):
     """(vertex positions in Unity space, triangle count) of an uncompressed Unity 4 YAML mesh (unity_yaml.read_mesh's
     rules: interleaved streams, 16-bit indices, strips without their degenerate triangles)."""
     text = Path(path).read_text(encoding="utf-8")
-    if not re.search(r"^  m_MeshCompression: 0$", text, re.M):
+    comp = re.search(r"^  m_MeshCompression: (\d+)$", text, re.M)
+    if comp and comp.group(1) != "0":
         raise BBDataError(f"{Path(path).name}: a compressed mesh")
     nv = re.search(r"^    m_VertexCount: (\d+)$", text, re.M)
     vdata = re.search(r"^    _typelessdata: ([0-9a-fA-F]*)$", text, re.M)
@@ -186,7 +191,16 @@ def read_mesh_shape(path):
     if not (nv and vdata and ibuf):
         raise BBDataError(f"{Path(path).name}: no vertex count, vertex data or index buffer")
     nv, raw = int(nv.group(1)), bytes.fromhex(vdata.group(1))
-    stream = next(((int(o), int(s)) for m, o, s in _STREAM.findall(text) if int(m) & 1), None)
+    chans = [tuple(map(int, c)) for c in _CHANNEL.findall(text)]
+    if chans:                                      # the newer layout: position = channel 0, float32 x 3
+        s0, off0, fmt0, dim0 = chans[0]
+        if fmt0 != 0 or (dim0 & 15) < 3 or any(s for s, _, _, d in chans if d & 15):
+            raise BBDataError(f"{Path(path).name}: positions not float32 xyz in a single stream")
+        if not nv or len(raw) % nv:
+            raise BBDataError(f"{Path(path).name}: vertex data is not a whole number of vertices")
+        stream = (off0, len(raw) // nv)            # one stream: its stride = the data / the vertices
+    else:
+        stream = next(((int(o), int(s)) for m, o, s in _STREAM.findall(text) if int(m) & 1), None)
     if stream is None:
         raise BBDataError(f"{Path(path).name}: no stream holds the positions")
     offset, stride = stream
@@ -194,9 +208,18 @@ def read_mesh_shape(path):
         raise BBDataError(f"{Path(path).name}: vertex data shorter than {nv} vertices")
     positions = [struct.unpack_from("<3f", raw, offset + i * stride) for i in range(nv)]
     hexidx = ibuf.group(1)
+    if re.search(r"^  m_IndexFormat: 1$", text, re.M):
+        raise BBDataError(f"{Path(path).name}: 32-bit indices")
     idx = struct.unpack(f"<{len(hexidx) // 4}H", bytes.fromhex(hexidx)) if hexidx else ()
+    subs = _SUBMESH.findall(text)
+    if not subs:
+        subs = []
+        for first, count, topo in _SUBMESH_NEW.findall(text):
+            if topo not in ("0", "1"):
+                raise BBDataError(f"{Path(path).name}: submesh topology {topo}")
+            subs.append((first, count, topo))
     tris = 0
-    for first, count, strip in _SUBMESH.findall(text):
+    for first, count, strip in subs:
         seq = idx[int(first) // 2: int(first) // 2 + int(count)]
         if int(strip):
             tris += sum(1 for i in range(len(seq) - 2) if len({seq[i], seq[i + 1], seq[i + 2]}) == 3)
@@ -285,7 +308,7 @@ class BBRip:
     """The BB client rip: case-insensitive lookups (AssetRipper keeps BB's casing: heroes/Bat1.png), a GUID index,
     and the comparisons of the wardrobe's 3D files with BB's."""
 
-    def __init__(self, resources):
+    def __init__(self, resources, fallback=None):
         self.res = Path(resources)
         self.assets = self.res.parent
         self.heroes = self.res / "gameassets" / "characters" / "heroes"
@@ -294,6 +317,10 @@ class BBRip:
         if not self.heroes.is_dir():
             raise PublishError(f"no BB rip at {self.res} (no gameassets/characters/heroes)")
         self._listings, self._guids, self._clips, self._meshes = {}, None, {}, {}
+        # the Reborn rip (a BB-client build) for a prop whose BB prefab this rip has lost (2026-11-09: the office's rip has
+        # 24 zero-filled Monkey trinket prefabs and 2 missing): the prop is compared with Reborn's prefab and meshes
+        # instead, so it still has to equal them exactly; a BB prefab that reads fine is never replaced
+        self.fallback, self.fallback_used = fallback, []
 
     def find(self, folder, name):
         """folder/<name> matched without case; None when absent or when several names differ only in case."""
@@ -409,6 +436,13 @@ class BBRip:
     def compare_prop(self, cls, kind, prop):
         """None when every mesh (and an animated prop's every clip track) equals the BB prefab's, else the reason."""
         prefab = self.prop_prefab(cls, kind, prop["name"])
+        lost = "missing" if prefab is None else "zero-filled" if zero_filled(prefab) else None
+        if lost and self.fallback is not None:
+            why = self.fallback.compare_prop(cls, kind, prop)
+            if why is None:
+                self.fallback_used.append(f"{cls}/{prop['name']}: BB's prefab is {lost} in this rip; equal to Reborn's copy")
+                return None
+            return f"{why} (compared with Reborn's copy: BB's prefab is {lost} in this rip)"
         if prefab is None:
             return f"no BB prefab heroes/{cls}/{kind}/{prop['name']}.prefab, so it cannot be compared"
         pf = read_prefab(prefab)
@@ -451,6 +485,23 @@ class BBRip:
                 bb.setdefault((target, slot), []).append(prop_rows(keys, slot))
         return all(rows in bb.get((nodes[int(idx)]["name"], slot), [])
                    for idx, tr in tracks.items() for slot, rows in tr.items())
+
+
+def zero_filled(path):
+    """A rip file that is all zeros at the start: a damaged copy (the office's rip, 2026-11-09)."""
+    with open(path, "rb") as fh:
+        head = fh.read(64)
+    return len(head) > 0 and not any(head)
+
+
+def reborn_rip(bb_rip):
+    """The Reborn rip beside the BB rip in the same Bible folder (<bible>\\RippedAssets_Reborn\\ExportedProject\\Assets\\
+    Resources for <bible>\\RippedAssets\\ExportedProject\\Assets\\Resources), or None."""
+    p = Path(bb_rip)
+    if len(p.parents) < 4 or p.parents[2].name != "RippedAssets":
+        return None
+    r = p.parents[3] / "RippedAssets_Reborn" / p.parents[1].name / p.parents[0].name / p.name
+    return r if (r / "gameassets" / "characters" / "heroes").is_dir() else None
 
 
 def read_clip_name(path):
@@ -856,7 +907,7 @@ def verify_ui_icons(src, bb):
     return names
 
 
-def publish(src, out, bb_rip, data=None):
+def publish(src, out, bb_rip, data=None, fallback_rip="beside"):
     """Build the public copy of src (wardrobe/: index.html, its icons and ui pictures) with the data in data (default
     src/data) in out. Returns {files, bytes, data_dir, ui_dir, ui_files, dropped: {kind: [{name, reason}]},
     tto_faces: {cls: [kept numbers]}, warnings}. The previous copy stays whole until the new data is staged; then its files are moved aside into
@@ -872,7 +923,8 @@ def publish(src, out, bb_rip, data=None):
         raise PublishError(f"the page's icon files {missing} are not in {src}")
     if not (data / "meta.json").is_file():
         raise PublishError(f"no wardrobe data at {data} (no meta.json); --data names the data folder")
-    bb = BBRip(bb_rip)
+    fallback_rip = reborn_rip(bb_rip) if fallback_rip == "beside" else fallback_rip
+    bb = BBRip(bb_rip, fallback=BBRip(fallback_rip) if fallback_rip else None)
     ui_files = verify_ui_icons(src, bb)             # before anything is written
     ui_dir = "ui-" + tree_hash(src / UI_DIR)        # its name changes with any of its pictures (a year-long cache)
     out.mkdir(parents=True, exist_ok=True)
@@ -881,6 +933,7 @@ def publish(src, out, bb_rip, data=None):
     remove(previous)                                # a run killed mid-swap: the data rebuilds the copy anyway
     try:
         dropped, tto_faces, warnings = stage_data(data, stage, bb)
+        warnings = warnings + bb.fallback_used
         data_dir = "data-" + tree_hash(stage)
         previous.mkdir()
     except BaseException:

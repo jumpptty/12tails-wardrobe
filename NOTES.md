@@ -173,7 +173,8 @@ copy of that folder).
   USER uploads from an EMPTY folder (never from the 12tails-video folder: its git-ignored `wrangler.jsonc` makes wrangler upload
   `review/` instead, which once published the private review notes for a few minutes):
   `npx wrangler deploy --assets D:\12tails-wardrobe\wardrobe_dist --name 12tails-wardrobe --compatibility-date 2026-11-07`.
-  Claude cannot run the upload (the auto-mode classifier blocks publishing). Only changed files are sent; the page is
+  Office PC (2026-11-09): the same with `--assets C:\work\12tails-wardrobe\wardrobe_dist` (first time there: `npx wrangler
+  login`). Claude cannot run the upload (the auto-mode classifier blocks publishing). Only changed files are sent; the page is
   served no-cache, so visitors get a new page at once and keep the data cache when the data folder name is unchanged.
 - **Round 2 features (2026-11-08):** the Bible's Ledger palette, a pure white stage, a phone layout (bottom-sheet picker,
   no keyboard pop, no page scroll at headed-Chrome sizes 390x700 / 360x620), the left panel rows (class + face box,
@@ -477,3 +478,13 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   ERR_CONNECTION_REFUSED in the headless checks was the stdlib test server's 5-connection queue (the page loads dozens
   of icons at once); all three checks now set `request_queue_size = 128`. `wardrobe_fx_check.py` also shoots each
   skill's busiest frame (`_peak`), since short-lived parts fall between swiftshader's slow frames.
+- **2026-11-09, office publishing** (user: "hide the pilot in public copy and deploy from office made possible";
+  "check RippedAsset from all servers"). Page: the effects pilot hangs on `const FX_ON = true;`, the publish sets it
+  false and hides the sound button. `wardrobe_publish.py`: the rip found under either PC's Bible. The office rip has 177
+  zero-filled files, all under heroes\monkey (armour textures, face overlays, .fbm, 24 trinket prefabs, effect
+  prefabs, sounds). Textures: `pipeline/bb_rip_fix.py` exports them again from BB's game data into data/bb_rip_fix
+  (self-check: re-exported intact PNGs equal the rip's pixel for pixel), used only when the rip's file can't be read.
+  Props: when BB's prefab is missing or zero-filled, `compare_prop` compares with the Reborn rip beside it
+  (`RippedAssets_Reborn`, all 24 intact); `read_mesh_shape` reads Reborn's newer mesh layout (channels, topology 1 =
+  strip); 11 Wolf meshes readable in both rips are identical. Office build: 6,896 files (= home's count); 4 Monkey back
+  items still dropped (their Reborn meshes are multi-stream / skinned). Tested (fallback test in test_wardrobe_publish).

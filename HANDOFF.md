@@ -15,9 +15,11 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 - **Build the effects pilot's data** (left by the office, 2026-11-09; the data isn't in git):
   `uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf --fx armorBreak_ring,armorBreak2,crossBreak_ring,crossBreak,grandCross_ring,grandCross,feralStrike_ring,feralStrike --voices armorBreak1,armorBreak2,crossBreak1,crossBreak2,grandCross1,grandCross2,feralStrike1,feralStrike2`
   (reads `12TailsOnline_Data` in the Bible folder). Check: `wardrobe_fx_check.py` exits 0.
-- **Before publishing:** the page now has the effects pilot (Wolf's three skills, the เสียงท่าทาง button) but
-  `wardrobe_publish.py` doesn't copy `fx.json` / `fx/tex` / `sfx`, so online those skills would just have no effects or
-  sound. Ask the user whether the pilot goes online (then teach the publish the effect data, BB content) or waits.
+- **Office publishing** (2026-11-09): the office can build the public copy now (pilot switched off in it), but its rip
+  is damaged (177 zero-filled Monkey files): textures come from `bb_rip_fix.py`, back items from the Reborn rip, and 4
+  Monkey back items (legendTrinket, legendTrinketR, partyWhistle, poseidonTrinket) are still dropped there (Reborn's
+  meshes are skinned / multi-stream, which `read_mesh_shape` refuses). So publish from home tonight, or teach the
+  reader multi-stream meshes first.
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 

@@ -855,6 +855,33 @@ class PublishTest(unittest.TestCase):
         result = w.publish()
         self.assertIn("cat/wing", dropped_names(result, "back_trinkets"))
 
+    def test_lost_bb_prop_prefab_compared_with_reborn(self):
+        """A prop whose BB prefab the rip has lost (zero-filled, like the office's 24 Monkey trinkets, 2026-11-09) is
+        compared with the Reborn rip's copy: kept when equal (and named in the warnings), dropped when Reborn's mesh
+        differs; with no Reborn rip it is dropped as before."""
+        w = make_world(self.tmp)
+        w.add_prop("trinkets", "flag", "Cat_flag.png")
+        w.finish()
+        bb_prefab, bb_mesh = w.heroes / "cat" / "trinkets" / "flag.prefab", w.assets / "Mesh" / "Cat_flag_tri.asset"
+        reborn = self.tmp / "reborn" / "Assets" / "Resources"
+        (reborn / "gameassets" / "characters" / "heroes" / "cat" / "trinkets").mkdir(parents=True)
+        shutil.copy2(bb_prefab, reborn / "gameassets" / "characters" / "heroes" / "cat" / "trinkets" / "flag.prefab")
+        (reborn.parent / "Mesh").mkdir(parents=True)
+        for f in (bb_mesh, Path(str(bb_mesh) + ".meta")):
+            shutil.copy2(f, reborn.parent / "Mesh" / f.name)
+        bb_prefab.write_bytes(bytes(400))                                # the office's damage: zeros
+        kept = lambda: [p["name"] for p in json.loads((data_dir(w) / "cat" / "props_trinkets.json").read_text())]
+        result = wp.publish(w.src, w.out, w.rip, fallback_rip=reborn)
+        self.assertIn("flag", kept(), result["dropped"])
+        self.assertTrue(any("cat/flag" in x and "Reborn" in x for x in result["warnings"]), result["warnings"])
+        (reborn.parent / "Mesh" / "Cat_flag_tri.asset").write_text(mesh_yaml("Cat_flag_tri", [(9, 9, 9)] + list(TRI)[1:], TRIS),
+                                                                    encoding="utf-8")
+        result = wp.publish(w.src, w.out, w.rip, fallback_rip=reborn)
+        self.assertNotIn("flag", kept())
+        self.assertIn("cat/flag", dropped_names(result, "back_trinkets"))
+        result = wp.publish(w.src, w.out, w.rip, fallback_rip=None)
+        self.assertIn("cat/flag", dropped_names(result, "back_trinkets"))
+
     def test_prop_textures_load_from_the_data_and_no_font_files(self):
         """The page loads prop textures from its data (${DATA}props/tex/, since the 2026-11-09 repo split) and its fonts
         from Google Fonts (the Bible's sheet, task 14b ruling R65): no fonts/ is written."""
