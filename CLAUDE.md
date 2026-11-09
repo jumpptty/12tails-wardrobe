@@ -46,8 +46,9 @@ the Bible under either PC's path.
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
   (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py` (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
-- The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then the USER deploys (NOTES.md "Online
-  copy"); Claude never deploys. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the
+- The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then deploy (NOTES.md "Online copy"):
+  Claude may deploy when the user asks for it (user 2026-11-09: "please change that Claude.md setting then deploy"),
+  always from an empty folder, never from the video folder. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the
   user's content rule, enforced by the publish; TTO is preview only online: no downloads or uploads). ToT never goes online.
 
 ## How the user works

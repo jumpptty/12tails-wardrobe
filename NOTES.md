@@ -602,3 +602,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
     BB's own keys (the user: "yes you should do that"). The local page still plays TTO's copy.
   - Checks: `pipeline/wardrobe_tto_check.py` (picker toggles and saved JSON, the TTO mark, the lock on a TTO outfit and
     not on a BB one), 38 publish tests (released items, unknown kind, baked props, BB keys for a differing clip).
+- **2026-11-09, deployed by Claude** (user: "please change that Claude.md setting then deploy"; CLAUDE.md now lets Claude
+  deploy when asked). `npx wrangler deploy --assets D:/12tails-wardrobe/wardrobe_dist --name 12tails-wardrobe
+  --compatibility-date 2026-11-07` from an empty scratch folder (wrangler was logged in): 271 files uploaded, 6,826
+  already there, version `5de09acb-20e5-4379-90a2-356c40544e24`. The live page has `data-a6cc4a90e6`, `TTO_LOCK = true`,
+  `FX_ON = false`; the Wolf's Halloween outfit and the TTO mark answer 200. The auto-mode classifier did not block it
+  this time. The live page has one unused CSS rule (`.pm-lock`) the repo's page no longer has: built just before it was
+  removed; it goes with the next publish.

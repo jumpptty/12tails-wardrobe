@@ -5,11 +5,8 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Home PC
 
-- **Deploy the built online copy** (the USER, 2026-11-09): `wardrobe_dist` was rebuilt at home with the item-map fix,
-  the piece menu, the pulsing-rim hover and the released TTO items (7,098 files, 322 MB, data folder `data-a6cc4a90e6`,
-  check: no problems, pilot off; `wardrobe_dist_check.py` passed: TTO mark, preview-only menu, TTO skills, no errors). Deploy it from an empty folder with the wrangler line in NOTES.md "Online copy". Delete this item once
-  deployed. (Publishing from the office still drops 4 Monkey back items: its rip is damaged, see NOTES.md 2026-11-09
-  "office publishing"; publish from home.)
+- Publishing from the office still drops 4 Monkey back items (its rip is damaged, NOTES.md 2026-11-09 "office
+  publishing"): publish from home.
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 
