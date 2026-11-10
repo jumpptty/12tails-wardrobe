@@ -42,6 +42,6 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   and `plans/fx_sheep/decisions.md` apply to every class by analogy; missing parts are always built (memory
   "feedback-build-missing-fx-parts", `plans/fx_recipe.md`).
 - Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);
-  effects on an enemy go to the target point 10 m ahead; the user doesn't want Bible findings offered (2026-11-10: "no
-  need to offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched
+  effects on an enemy go to the target point 10 m ahead; the user declined the Sheep's Bible findings (2026-11-10: "no need to
+  offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched
   slashes.
