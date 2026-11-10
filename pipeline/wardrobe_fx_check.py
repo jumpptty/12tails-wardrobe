@@ -3,18 +3,20 @@ Strike). For every class with cues (wardrobe/fx_cues/<cls>.json, or --cls a,b): 
 names in data/<cls>/fx.json and every voice in data/<cls>/sfx; then the page, each cued clip's tile played (the
 sequence tile when the clip is one of its steps), which effects are alive (and their emitters' vertex counts) sampled
 over time, a screenshot shortly after each effect first appears and one at the busiest frame (peak), once per backdrop
-(?fxbg=dark / spot / white, side by side in <out>/compare.html). Fails on a missing file, a cued effect that never
+(?fxbg=dark = the page's dark background, white = its default, side by side in <out>/compare.html). Fails on a missing file, a cued effect that never
 spawns, a page error, a console error or a failed request.
   uv run --no-project --with playwright python -I pipeline/wardrobe_fx_check.py D:/12tails-wardrobe checks/<dir> [dark,spot,white] [--cls wolf]
 --files-only: only the file checks (no browser; 2026-11-09, the user tests the page by hand): every effect, voice
-(v_<name>.mp3) and sound (<name>.mp3) the cues name, every cue's shape, and that each cue key is a clip of the class."""
-import argparse, asyncio, functools, http.server, json, sys, threading
+(v_<name>.mp3) and sound (<name>.mp3) the cues name, every cue's shape, and that each cue key is a clip of the class.
+A key "@<sequence>:<clip>" (2026-11-10, the Sheep: index.html cueOf) is that clip's cues when the sequence plays it: the
+sequence must be one of the class's in index.html's SEQ and play the clip, and its tile is played."""
+import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
 ap = argparse.ArgumentParser()
 ap.add_argument("root", type=Path)
 ap.add_argument("out", type=Path)
-ap.add_argument("variants", nargs="?", default="dark,spot,white")
+ap.add_argument("variants", nargs="?", default="dark,white")
 ap.add_argument("--cls", default="", help="classes to check (default: every class whose cue file has cues)")
 ap.add_argument("--files-only", action="store_true", help="the file checks alone, no browser")
 A = ap.parse_args()
@@ -23,8 +25,43 @@ OUT.mkdir(parents=True, exist_ok=True)
 CUE_DIR, DATA = ROOT / "wardrobe" / "fx_cues", ROOT / "wardrobe" / "data"
 CUES = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in sorted(CUE_DIR.glob("*.json"))}
 CLASSES = A.cls.split(",") if A.cls else [c for c, t in CUES.items() if t]
+
+
+def seqs():
+    """index.html's SEQ: {cls: {sequence id (its name without spaces): [step clips]}}."""
+    html = (ROOT / "wardrobe" / "index.html").read_text(encoding="utf-8")
+    block = re.sub(r"//[^\n]*", "", re.search(r"\nconst SEQ = \{(.*?)\n\};", html, re.S).group(1))
+    out, cls = {}, None
+    for m in re.finditer(r'(\w+): \[|"([^"]+)"', block):
+        if m.group(1):
+            cls = m.group(1); out[cls] = {}
+        else:
+            name, body = m.group(2).split(": ", 1)
+            out[cls][name.replace(" ", "")] = [re.match(r"\w+", t).group(0) for t in body.split()]
+    return out
+
+
+SEQS = seqs()
+
+
+def split_key(key):
+    """A cue key's (sequence id or None, clip): "@Eden Sanctuary:cast3" and "@EdenSanctuary:cast3" are one key."""
+    if key.startswith("@") and ":" in key:
+        sq, clip = key[1:].split(":", 1)
+        return sq.replace(" ", ""), clip
+    return None, key
+
+
+def entry_for(cls, sq, clip):
+    """The entry the page runs for a clip in a play of sequence sq (None: a single clip), as fxStart looks it up."""
+    for key, e in CUES[cls].items():
+        if sq and split_key(key) == (sq, clip):
+            return e
+    return CUES[cls].get(clip, {})
+
+
 SHOT_AFTER = 0.15     # seconds after an effect first appears
-SETTLE, CAP = 1.5, 15.0   # stop a tile this long after its last expected effect appeared, or at CAP
+SETTLE, CAP = 1.5, 15.0   # stop a tile this long after its last expected effect appeared, or at CAP + its last cue's time
 
 
 def cue_lists(entry):
@@ -40,7 +77,7 @@ def names(cls, kind):
     return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")})
 
 
-OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill"}
+OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone"}   # index.html cueOf
 
 
 def file_errors(cls):
@@ -53,8 +90,11 @@ def file_errors(cls):
              if not (DATA / cls / "sfx" / f"{n}.mp3").exists()]
     clips = json.loads((DATA / cls / "clips.json").read_text(encoding="utf-8"))
     for key, e in CUES[cls].items():
-        if key not in clips:
+        sq, clip = split_key(key)
+        if clip not in clips:
             errs.append(f"{cls}: cue key {key} is not a clip of the class")
+        elif sq and clip not in SEQS.get(cls, {}).get(sq, []):
+            errs.append(f"{cls}: cue key {key}: no sequence {sq} in index.html's SEQ that plays {clip}")
         if not isinstance(e.get("why"), str) or ("cues" in e) == ("skills" in e):
             errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
         for cues in cue_lists(e):
@@ -79,14 +119,17 @@ URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"
 LIVE = """() => { const { FX } = wardrobe.debug();
   return FX.live.map(f => f.name + ':' + f.emitters.reduce((s, e) => s + (f.attached(e.node) ?
     (e.node.children.find(c => c.isMesh)?.geometry.attributes.position?.count || 0) : 0), 0) + 'v'); }"""
-# the tile that plays a clip and its picker tab: the sequence holding it (ท่าสกิล lists those instead of their clips),
-# else the clip in its own group's tab (อีโมต / ท่าพื้นฐาน cues since 2026-11-10: the Wolf's emote voices)
+# the tile that plays a cue key and its picker tab: "@<sequence>:<clip>" that sequence's; a clip the sequence holding it
+# (ท่าสกิล lists those instead of their clips), else the clip in its own group's tab (อีโมต / ท่าพื้นฐาน cues since
+# 2026-11-10: the Wolf's emote voices)
 TILES = """clips => { const { chains, C } = wardrobe.debug(), ch = chains();
-  return clips.map(c => { const s = ch.find(s => s.steps.some(st => st.clip === c));
+  return clips.map(c => { const k = c.match(/^@([^:]+):(.+)$/);
+    if (k) { const s = ch.find(s => s.id === "@" + k[1].replace(/\\s+/g, "")); return s ? [s.id, "skill"] : [c, "skill"]; }
+    const s = ch.find(s => s.steps.some(st => st.clip === c));
     return s ? [s.id, "skill"] : [c, /^walk$/i.test(c) ? "base" : C.clipsData[c]?.group || "skill"]; }); }"""
 
 
-async def play_tile(page, var, cls, tile, group, expect, shots):
+async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
     await page.evaluate("() => { const { FX } = wardrobe.debug(); FX.spawned = {}; FX.missing = {}; }")
     if await page.locator('#picker').is_hidden():                      # reopen the move picker
         await page.click('button.topic[data-t="move"]')
@@ -113,7 +156,7 @@ async def play_tile(page, var, cls, tile, group, expect, shots):
         tally = await page.evaluate("() => { const { FX } = wardrobe.debug(); return { s: FX.spawned, m: FX.missing }; }")
         done = all(n in tally["s"] or n in tally["m"] for n in expect)
         last = max([first.get(n, 0) for n in expect] or [0])
-        if (done and now > last + SETTLE) or now > CAP:
+        if (done and now > last + SETTLE) or now > cap:
             break
         await page.wait_for_timeout(30)
     print(f"== {var} {cls} {tile}: " + " | ".join(samples[::3]))
@@ -147,9 +190,14 @@ async def main():
                 for tile, group in dict.fromkeys(map(tuple, tile_of.values())):   # in cue order, one play per tile
                     # effects every play must show: a plain entry's (its "a|b" picks and rolled procs vary: not expected);
                     # a shared clip's skills are picked at random, so none of theirs is expected either
-                    expect = sorted({cue[2] for c in clips if tile_of[c][0] == tile for cue in CUES[cls][c].get("cues", [])
+                    # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)
+                    sq = tile[1:] if tile.startswith("@") and tile[1:] in SEQS.get(cls, {}) else None
+                    entries = [entry_for(cls, sq, c) for c in SEQS[cls][sq]] if sq else [CUES[cls].get(tile, {})]
+                    expect = sorted({cue[2] for e in entries for cue in e.get("cues", [])
                                      if cue[1] == "fx" and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
-                    errs = await play_tile(page, var, cls, tile, group, expect, shots)
+                    # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
+                    cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
+                    errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)
                     errors += [e for e in errs if e not in errors]
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")
         print("sound:", snd)

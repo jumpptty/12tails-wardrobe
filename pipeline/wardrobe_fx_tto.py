@@ -27,6 +27,19 @@ left-handed space (the page mirrors, tto.md 4.4). Components:
   (ref()); a ParticleSystem's disabled modules shrink to {"enabled": false}; AudioSource also carries BB's keys clip /
   volume / playOnAwake / loop (what the page plays); a renderer's first materials also go to the node's "mats" (the page
   hands mats[0] to the part)
+- meshes (2026-11-10, the Sheep's Codex book and its shards / prism shells): a MeshFilter with a mesh also gets a
+  {"type": "StaticMesh", <mesh>} after it (wardrobe/fxparts/mesh.js draws it with the node's MeshRenderer materials); a
+  ParticleSystemRenderer's m_Mesh (mesh render mode) carries its geometry inline as "mesh": <mesh>; <mesh> = the BB
+  build's shape (pipeline/wardrobe_fx_mesh.py mesh_dict: name, verts, pos, nrm, uv, col, idx, sub). A Mesh reference
+  anywhere else is written {"mesh": name}
+- Unity 5.5+'s TrailRenderer (its LineParameters: widthCurve, colorGradient, ...) is written as type
+  "TrailRendererModern", so wardrobe/fxparts/trail.js (Unity 3.5's layout, BB's) never misreads it; tto_sheep.js draws it
+  and LineRenderer. Both lose the shadow / light-probe / ray-tracing plumbing, as MeshRenderer does
+- a material whose shader is not one of Unity's legacy particle shaders also carries "props": its floats and colours by
+  name (TTO's own TTO/Sheep/* shaders, Standard, Particles/Standard Unlit: tto_sheep.js reads them)
+- CODE_MOVERS: a prefab the game's code moves every frame gets that code as a component of its own at the head of the
+  root's comps ({"type": "Sheep.BreathFly"}: the coroutine, not a script in the prefab; tto_sheep.js runs it)
+- sounds: BB's rip WAV of the clip's name, else TTO's own AudioClip from the bundle (FMOD through UnityPy)
 """
 import argparse
 import glob
@@ -66,6 +79,22 @@ SKILL_FX = {
         # Wind Bound Domain: <RPC_windBoundDomain>d__313::MoveNext@0x1F51890 (+ CharacterControl::AddWindBoundFx@0x24AF350)
         "windBoundDomain_cast", "windBoundDomain_plant", "windBoundDomain_domain", "windBoundDomain_pulse", "windBound",
     ],
+    # plans/fx_sheep/tto.md section 3: all 24 Sheep TTO-only prefabs (no arcana style); the ones the page cannot cue (on
+    # an enemy, an attacker's reflected hit, the revived ally's status look) are built too
+    "sheep": [
+        # Gleaming Breath: TTO1102:Sheep.<RPC_gleamingBreath>d__260::MoveNext@0x1E892F0, <BreathFly>d__261@0x1E72EA0,
+        # CharacterControl::AddSheepRow6Fx@0x24AE620 (the status look)
+        "gleamingBreath_cast", "gleamingBreath_exhale", "gleamingBreath_wisp", "gleamingBreath_land", "gleamingBreath",
+        # Lucent Barrier: <RPC_lucentBarrier>d__262::MoveNext@0x1E919A0, Sheep::Row6Beam@0x1E5D640, AddSheepRow6Fx;
+        # CharacterControl::LucentReflectFx@0x24B5840 (a reflected hit)
+        "lucentBarrier_cast", "lucentBarrier_beam", "lucentBarrier_land", "lucentBarrier",
+        "lucentBarrier_reflect", "lucentBarrier_reflectBeam", "lucentBarrier_panel",
+        # Grand Codex: <RPC_grandCodex>d__263@0x1E89740, <CodexOpen>d__265@0x1E73940, Sheep::CodexRead@0x1E55B60,
+        # <VerdictFall>d__269@0x1E9ECD0, AddSheepRow6Fx (scriptureBind on slowed enemies)
+        "grandCodex_cast", "grandCodex_field", "grandCodex_book", "grandCodex_close",
+        "grandCodex_page_psalm", "grandCodex_page_seal", "grandCodex_page_verdict",
+        "grandCodex_psalm", "grandCodex_seal", "grandCodex_verdict", "grandCodex_spear", "scriptureBind",
+    ],
 }
 # Unity's built-in legacy particle shaders by name, to wardrobe_fx.BUILTIN_BLEND's words (the page's fxMaterial knows
 # these); any other shader -> "shader:<name>"
@@ -74,6 +103,19 @@ SHADER_BLEND = {"Legacy Shaders/Particles/Additive": "add", "Legacy Shaders/Part
 DROP = {"m_GameObject"}                          # dropped from every Unity component's dict
 MESH_RENDERER_KEEP = {"type", "m_Enabled", "m_Materials", "m_SortingLayerID", "m_SortingLayer", "m_SortingOrder",
                       "m_RendererPriority"}
+# the shadow / lightmap / probe / ray-tracing plumbing of a Line- or TrailRenderer (unlit lines never read it)
+RENDERER_PLUMBING = ("m_CastShadows", "m_ReceiveShadows", "m_DynamicOccludee", "m_StaticShadowCaster", "m_MotionVectors",
+                     "m_LightProbe", "m_ReflectionProbe", "m_RayTrac", "m_SmallMeshCulling", "m_ForceMeshLod",
+                     "m_MeshLodSelectionBias", "m_RenderingLayerMask", "m_Lightmap", "m_StaticBatch", "m_ProbeAnchor")
+# prefabs the game's code moves every frame (not a script in the prefab): the code becomes the root's first component,
+# so the page runs it before the prefab's own parts each frame (wardrobe/fxparts/tto_sheep.js)
+CODE_MOVERS = {
+    # TTO1102:Sheep.<BreathFly>d__261::MoveNext@0x1E72EA0: mouth -> the revived ally's chest on an up-arc, then Destroy 0.3
+    "gleamingBreath_wisp": "Sheep.BreathFly",
+    # TTO1102:Sheep.<CodexOpen>d__265::MoveNext@0x1E73940: the book's drop and bob (CodexBob@0x1E55980), its FlipPivot
+    # page turns (CodexFlipAngle@0x1E55A00) before each of the ten reads, Destroy(book, 0.1) after the last
+    "grandCodex_book": "Sheep.CodexOpen",
+}
 MB_HEADER = {"m_GameObject", "m_Enabled", "m_Script", "m_Name", "m_EditorHideFlags", "m_EditorClassIdentifier"}
 
 
@@ -86,6 +128,15 @@ def load_path(name, path):
 
 
 _bb = None
+_mesh = None
+
+
+def mesh():
+    """pipeline/wardrobe_fx_mesh.py (mesh_dict: the BB build's mesh shape)."""
+    global _mesh
+    if _mesh is None:
+        _mesh = load_path("wardrobe_fx_mesh", os.path.join(HERE, "wardrobe_fx_mesh.py"))
+    return _mesh
 
 
 def bb():
@@ -169,7 +220,7 @@ class Build:
         self.mats = {}           # output name -> material dict
         self.texs = {}           # output name -> Texture2D object reader
         self.names = {}          # (type, file, pathID) -> output name (materials and textures named apart)
-        self.sounds = set()
+        self.sounds = {}         # clip name -> its AudioClip object (TTO's own, used when BB's rip has no such WAV)
 
     def out_name(self, o, name):
         key = (o.type.name, o.assets_file.name, o.path_id)
@@ -207,6 +258,8 @@ class Build:
         colors = {k: [num(v[c]) for c in "rgba"] for k, v in props["m_Colors"]}
         self.mats[n] = {"blend": SHADER_BLEND.get(shn, "shader:" + shn), "tex": tex, "scale": scale, "offset": offset,
                         "tint": colors.get("_TintColor"), "color": colors.get("_Color")}
+        if not shn.startswith("Legacy Shaders/"):  # TTO's own shaders, Standard, Particles/Standard Unlit: every number
+            self.mats[n]["props"] = {**{k: num(v) for k, v in props["m_Floats"]}, **colors}
         return n
 
 
@@ -262,10 +315,11 @@ def effect(tto, b, name):
             return b.texture(to) if to is not None else None
         if ty == "AudioClip":
             n = o.read_typetree()["m_Name"]
-            b.sounds.add(n)
+            b.sounds.setdefault(n, o)
             return n
-        # not exported (a Mesh: none of the Wolf's TTO effects names one, every MeshFilter's m_Mesh is null, the
-        # scripts build their meshes at run time); say so, so the next class's run shows what needs writing
+        if ty == "Mesh":                       # geometry is exported where it is drawn (MeshFilter, mesh particles)
+            return {"mesh": o.read_typetree().get("m_Name")}
+        # not exported; say so, so the next class's run shows what needs writing
         n = o.read_typetree().get("m_Name")
         print(f"warning: {name}: a {ty} reference ({n}) is written by name only, not exported", file=sys.stderr)
         return {"asset": ty, "name": n}
@@ -348,6 +402,19 @@ def effect(tto, b, name):
                 node["comps"].append(entry)
                 continue
             entry = {"type": ty, **{k: safe(co, v) for k, v in t.items() if k not in DROP}}
+            if ty in ("MeshFilter", "ParticleSystemRenderer"):
+                mo = tto.deref(co.assets_file, t["m_Mesh"]) if (t.get("m_Mesh") or {}).get("m_PathID") else None
+                md = mesh().mesh_dict(mo.read()) if mo is not None else None
+                if md and md["verts"]:
+                    if ty == "ParticleSystemRenderer":
+                        entry["mesh"] = md
+                    else:
+                        node["comps"] += [entry, {"type": "StaticMesh", **md}]
+                        continue
+            if ty in ("LineRenderer", "TrailRenderer"):
+                entry = {k: v for k, v in entry.items() if not k.startswith(RENDERER_PLUMBING)}
+                if ty == "TrailRenderer" and "m_Parameters" in t:
+                    entry["type"] = "TrailRendererModern"
             if ty == "ParticleSystem":             # a disabled module's settings are never read by Unity: kept out
                 for k, v in list(entry.items()):
                     if isinstance(v, dict) and v.get("enabled") in (False, 0) and k.endswith("Module"):
@@ -362,6 +429,8 @@ def effect(tto, b, name):
             if "m_Materials" in entry and ty.endswith("Renderer") and "mats" not in node:
                 node["mats"] = list(entry["m_Materials"])
             node["comps"].append(entry)
+    if name in CODE_MOVERS:
+        nodes[0]["comps"].insert(0, {"type": CODE_MOVERS[name]})
     return {"nodes": nodes}
 
 
@@ -410,18 +479,28 @@ def main():
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     sdir = os.path.join(DATA, a.cls, "sfx"); os.makedirs(sdir, exist_ok=True)
-    missing = []
+    missing, own = [], []
     for n in sorted(b.sounds):
         src = bb().rip_wav(a.cls, n)
-        if not src:
-            missing.append(n); continue
+        if not src:                            # a TTO-only clip: its own samples (UnityPy decodes them with FMOD)
+            try:
+                wav = next(iter(b.sounds[n].read().samples.values()))
+            except Exception as e:
+                print(f"warning: sound {n}: {e!r}", file=sys.stderr)
+                missing.append(n); continue
+            src = os.path.join(sdir, f"_{n}.wav")
+            open(src, "wb").write(wav)
+            own.append(n)
         subprocess.run([ff, "-y", "-loglevel", "error", "-i", src, "-ac", "1", "-b:a", "64k", os.path.join(sdir, n + ".mp3")], check=True)
+        if n in own:
+            os.remove(src)
     out = os.path.join(DATA, a.cls, "fx.json")
     old = json.load(open(out, encoding="utf-8")) if os.path.exists(out) else {}
     merged = {**old, "effects": {**old.get("effects", {}), **effects}, "materials": {**old.get("materials", {}), **b.mats}}
-    json.dump(merged, open(out, "w", encoding="utf-8"), indent=1)
+    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"))   # compact, as wardrobe_fx.py writes it
     print(f"{a.cls}: {len(effects)} TTO effects, {len(b.mats)} materials, {len(b.texs)} textures, "
-          f"{len(b.sounds) - len(missing)} sounds" + (f", missing sounds: {missing}" if missing else ""))
+          f"{len(b.sounds) - len(missing)} sounds" + (f" ({len(own)} TTO's own: {own})" if own else "")
+          + (f", missing sounds: {missing}" if missing else ""))
 
 
 if __name__ == "__main__":

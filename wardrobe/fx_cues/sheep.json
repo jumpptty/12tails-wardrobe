@@ -1,1 +1,525 @@
-{}
+{
+  "nAttack1": {
+    "why": "Sheep.cs RPC_nAttack1: clip (animation.Play, :17530) and voice nAttack1 at 0 (:17571, :17606); 0.5 s (Yield(2, 0.5) :17612) the shot, Sounds/nAttack at 0.7 (:11534-11544), out of town only (mGameType > 3, :17376); Homing Light #401 on (decision 7): RPC_homingLight_fire (:17394-17400) Instantiates homingLight at firePos = 1 m up, 0.3 m ahead (TransformDirection(0, 1, 0.3), :17384), LookRotation(fireDir), fireDir = tDir - (0, 1, 0.3) (:17389): aimed at the 10 m target point on the ground, pitch atan(1 / 9.7) = 5.89 deg down (decision 3); fxparts/sheep.js's Sheep_homingLight flies it 12 m/s (Sheep_homingLight.cs:26, :51) and ends it on the floor after 9.75 m / 12 = 0.81 s (OnTriggerEnter destroys it on any collider not of the owner's layer, Sheep_homingLight.cs:261-279); standby 0.8 s (Yield(3, 0.3) :17610, :17457) unless stage 2 is pressed (stage 2 starts at 0.7 s, decision 12: its entry carries this ball's landing at 0.5 + 0.8125 - 0.7 = 0.6125 s)",
+    "cues": [
+    [0, "voice", "nAttack1"],
+    [0.5, "sound", "nAttack", {"vol": 0.7}],
+    [0.5, "fx", "homingLight", {"d": 0.3, "y": 1, "rot": [5.89, 0, 0]}]
+    ]
+  },
+  "nAttack2": {
+    "why": "Sheep.cs RPC_nAttack2 (its clip 0.7 s after stage 1: Yield(2, actionTime - now + 0.7) :18060): clip (0.1 s fade, :17814) and voice nAttack2 at 0 (:17861, :18057); 0.5 s (Yield(3, 0.5) :18055) the shot, Homing Light on (:17923-17929), Sounds/nAttack at 0.7 (:11544), homingLight as in nAttack1 (:17913); standby 0.8 s (Yield(4, 0.3) :18051, :17986) unless stage 3 is pressed (at 0.8 s here, :18496); at 0.6125 s stage 1's ball lands (0.5 + 0.8125 - 0.7): the ball meeting the ground at the 10 m point calls RPC_nAttack_hit at the contact point before any Player / Enemy test (Sheep_homingLight.cs:279-313, :320): Sounds/nAttack at 0.7 (PlayOneShot :9400) and nAttack_hit there (its own Sounds/nAttack_hit), LookRotation(Vector3.forward) (:9403-9419)",
+    "cues": [
+    [0, "voice", "nAttack2"],
+    [0.5, "sound", "nAttack", {"vol": 0.7}],
+    [0.5, "fx", "homingLight", {"d": 0.3, "y": 1, "rot": [5.89, 0, 0]}],
+    [0.6125, "fx", "nAttack_hit", {"d": 10}],
+    [0.6125, "sound", "nAttack", {"vol": 0.7}]
+    ]
+  },
+  "nAttack3": {
+    "why": "Sheep.cs RPC_nAttack3 (its clip 1.5 s after stage 1, :18496): clip (cut, :18259) and voice nAttack3 at 0 (:18306, :18500); 0.5 s (Yield(3, 0.5) :18502) the shot, Homing Light on (:18368-18374), Sounds/nAttack at 0.7, homingLight as in nAttack1 (:18358); standby 0.8 s (Yield(4, 0.3) :18507, :18431); the landings: stage 2's ball at 0.5 + 0.8125 - 0.8 = 0.5125 s, this one's at 1.3125 s (in the idle tail): the ball meeting the ground at the 10 m point calls RPC_nAttack_hit at the contact point before any Player / Enemy test (Sheep_homingLight.cs:279-313, :320): Sounds/nAttack at 0.7 (PlayOneShot :9400) and nAttack_hit there (its own Sounds/nAttack_hit), LookRotation(Vector3.forward) (:9403-9419)",
+    "cues": [
+    [0, "voice", "nAttack3"],
+    [0.5, "sound", "nAttack", {"vol": 0.7}],
+    [0.5, "fx", "homingLight", {"d": 0.3, "y": 1, "rot": [5.89, 0, 0]}],
+    [0.5125, "fx", "nAttack_hit", {"d": 10}],
+    [0.5125, "sound", "nAttack", {"vol": 0.7}],
+    [1.3125, "fx", "nAttack_hit", {"d": 10}],
+    [1.3125, "sound", "nAttack", {"vol": 0.7}]
+    ]
+  },
+  "cAttack1": {
+    "why": "Sheep.cs RPC_cAttack1: clip (0.2 s fade, :18827) and voice charge1 / charge2 (Random.Range(0, 2), :18868-18981) at 0; at 0.8 s (Yield(2, 0.8) :18970) it changes to the looped cAttack0 (:18676), whose cues hold the charge",
+    "cues": [
+    [0, "voice", "charge1|charge2"]
+    ]
+  },
+  "cAttack0": {
+    "why": "Sheep.cs RPC_cAttack1 case 2 (the change to cAttack0, looped, 0.8 s in: :18676-18681): cAttack_charge 2.7 m above the hero (position + 2.7 up, identity, :18698-18710; plays its own looping Sounds/cAttack_ring) and cAttack_ring at the hero (:18730-18742), mission / arena only (mGameType > 4, :18686); every 0.1 s the code regrows the ball's particles (:18952-18957; fxparts/sheep.js fx:cAttack_charge, BB's max: full size 1.3-1.6 m by the release, ATK 101 taken); both followState (EffectControl.cs:194-232): they end at the release, when RPC_cAttack2 sets myCommand cAttack3 (:19275): cut 3.95, the page's step ends at 4 s",
+    "cues": [
+    [0, "fx", "cAttack_charge", {"y": 2.7, "cut": 3.95}],
+    [0, "fx", "cAttack_ring", {"cut": 3.95}]
+    ]
+  },
+  "cAttack2": {
+    "why": "Sheep.cs RPC_cAttack2 (doReleaseCharge after at least 2 s held, :9585): clip (cut, :19287) and the voice at 0: TTO's fix cAttack1 / cAttack2 (decision 10; BB's two Random.Range(0, 2) branches both load Voices/cAttack1, :19322-19404; TTO1102 <RPC_cAttack2>d__155 picks either, pseudo/Sheep.c:4363-4434); 0.5 s (Yield(2, 0.5) :19399) Sounds/cAttack at full volume (:19169-19181) and the shot 3 m up (RPC_cAttack :19203-19213): cAttack (Instantiate :9829; fxparts/sheep.js Sheep_cAttack: 8 m/s, Sheep_cAttack.cs:28, :57, and Init's +1.6 m on its glow, :76-79, decision 8: cDmg 400); the game fires it level (fireDir = tDir, :19208) and curves it onto the target by homing; with no target (decision 3) it is pitched straight at the 10 m floor point, atan(3 / 10) = 16.70 deg (APPROXIMATED: a line, not the homing curve), 10.44 m / 8 = 1.305 s; it meets the ground at 1.805 s: White Burst #411 on, OnTriggerEnter calls RPC_whiteBurst_hit at the contact point (Sheep_cAttack.cs:223-274), whiteBurst_hit there, LookRotation(the ball's forward) (Sheep.cs:11564-11577); standby 1.0 s (Yield(3, 0.5) :19395, :19247)",
+    "cues": [
+    [0, "voice", "cAttack1|cAttack2"],
+    [0.5, "sound", "cAttack"],
+    [0.5, "fx", "cAttack", {"y": 3, "rot": [16.7, 0, 0]}],
+    [1.805, "fx", "whiteBurst_hit", {"d": 10, "rot": [16.7, 0, 0]}]
+    ]
+  },
+  "cast1": {
+    "why": "Sheep.cs RPC_cast1 (:19654-21836), the cast channel for every cast-time skill (:20003-21127; Soul of Arms, and in TTO Gleaming Breath / Lucent Barrier after Revive's / Reverse's): clip cast1 (0.2 fade, :21618) and voice cast1 / cast2 (Random.Range(0, 2), :21659-21758) at 0; Yield 0.1 (:21755): castRing at the hero, Quaternion.Euler(270, 90, 0) (:19822; the hero prefab's castRing field = Resources sheep/effects/castRing, :16721; EffectControl life 60 + afterLife 1, followState; plays its own looping Sounds/cast); Yield 0.5 (:21751): cast2 looped and the ring's root clip at 0.6 s (:19859-19874), then the cast bar (:19879; the page: none) and the skill's RPC_<skill>_cast, which sets myCommand: the ring's followState cut at the step edge 0.6 s, where EffectControl plays its destroy clip (EffectControl.cs:122-291), cued 0.55 because the page restarts FX.t at each step; left out: Over Heal's overHeal_ring on the enemy target every 1 s while casting (:21137-21184)",
+    "cues": [
+    [0, "voice", "cast1|cast2"],
+    [0.1, "fx", "castRing", {"rot": [270, 90, 0], "cut": 0.55}]
+    ]
+  },
+  "cast3": {
+    "why": "The cast3 clip after the RPC_cast1 channel: 21 Sheep skills (Sheep.cs :22032 ... :38159), one per play, even chance, picked anew on every play (decision 14: FX.pick cleared on step 0); Seal of Attack / Seal of Defense (:32731) and Eden Sanctuary (:36960) play cast3 without the channel and have their own tiles and keys (decision 17); Soul of Arms plays its own clip after the channel",
+    "skills": {
+      "heal": {
+        "why": "Sheep.cs RPC_heal_cast (:21837-22435): clip cast3 (0.2 fade, :22032), all at 0: Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :22044 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:22056; the hero prefab's castEffect1 field, :16724), voice heal1 / heal2 (:22091-22146), the heal on the target ally at its feet: Radiant Heal #402 on: radiantHeal (:22201-22225; plays its own Sounds/heal); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); Yield 0.5 (:22369): standby 0.5 s (:21973); Radiant Heal's 40 % splash on allies within 8 m draws nothing (:22299-22337)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "heal1|heal2"],
+        [0, "fx", "radiantHeal"]
+        ]
+      },
+      "bless": {
+        "why": "Sheep.cs RPC_bless_cast (:22436-22888): clip cast3 (0.2 fade, :22658), all at 0: voice bless1 / bless2 (:22693-22748), castEffect1 at the hero x Euler(270, 90, 0) (:22767), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :22779 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), the bless status on the target ally (:22824), whose apply draws Effects/bless at the receiver's feet, identity (CharacterControl.cs:39189-39198; plays its own Sounds/bless); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); Yield 0.5 (:22844): standby 0.5 s (:22593)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "bless1|bless2"],
+        [0, "fx", "bless"]
+        ]
+      },
+      "allHeal": {
+        "why": "Sheep.cs RPC_allHeal_cast (:22889-23361): clip cast3 (0.2 fade, :23073), all at 0: Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :23085 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:23097), voice allHeal1 / allHeal2 (:23132-23187), heal at every player of the Sheep's team container, the Sheep included (transform.parent, tag Player, :23200-23259; plays its own Sounds/heal); KO Heal #422 changes only the amount (:23289); Yield 0.5 (:23315): standby 0.5 s (:23014)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "allHeal1|allHeal2"],
+        [0, "fx", "heal"]
+        ]
+      },
+      "pacify": {
+        "why": "Sheep.cs RPC_pacify_cast (:23362-23949): clip cast3 (0.2 fade, :23585), all at 0: voice pacify1 / pacify2 (:23620-23675), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :23694 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:23706), pacify at the target ally's feet (:23760-23772; no sound of its own); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); the hate cut on enemies within 40 m draws nothing (:23786-23842); Yield 0.5 (:23882): standby 0.5 s (:23520)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "pacify1|pacify2"],
+        [0, "fx", "pacify"]
+        ]
+      },
+      "sleep": {
+        "why": "Sheep.cs RPC_sleep_cast (:23950-24451): clip cast3 (0.2 fade, :24172), all at 0: voice sleep1 / sleep2 (:24207-24262; voices/: voices/sleep.wav and sounds/sleep.wav are other recordings), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :24281 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:24293); Yield 0.5 (:24405): standby 0.5 s (:24107); left out: sleep at the enemy target's collider centre (:24347-24359) and its sleep status (:24382), on an enemy",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "sleep1|sleep2"]
+        ]
+      },
+      "clear": {
+        "why": "Sheep.cs RPC_clear_cast (:24452-24945): clip cast3 (0.2 fade, :24674), all at 0: voice clear1 / clear2 (:24709-24764), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :24783 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:24795), clear at the target ally's feet (:24849-24861; plays its own Sounds/cleanse); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); Purify #442 changes only the status level and time (:24881); Yield 0.5 (:24903): standby 0.5 s (:24609)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "clear1|clear2"],
+        [0, "fx", "clear"]
+        ]
+      },
+      "cleanse": {
+        "why": "Sheep.cs RPC_cleanse_cast (:24946-25444): clip cast3 (0.2 fade, :25168), all at 0: voice cleanse1 / cleanse2 (:25203-25258), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :25277 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:25289), cleanse at the target ally's feet (:25343-25355; plays its own Sounds/cleanse); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); Purify #442 changes only the status level and time (:25375); Yield 0.5 (:25398): standby 0.5 s (:25103)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "cleanse1|cleanse2"],
+        [0, "fx", "cleanse"]
+        ]
+      },
+      "allCleanse": {
+        "why": "Sheep.cs RPC_allCleanse_cast (:25445-25901): clip cast3 (0.2 fade, :25629), all at 0: the voice, TTO's fix allClear1 / allClear2 (decision 10; BB loads Voices/allCleanse1 / allCleanse2, :25664-25719, files the game doesn't have, so BB says nothing; TTO1102 <RPC_allCleanse_cast>d__173 loads allClear1 / allClear2, pseudo/Sheep.c:1145-1147), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :25738 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:25750), cleanse at every player of the Sheep's team container, the Sheep included (:25756-25815; plays its own Sounds/cleanse); Yield 0.5 (:25861): standby 0.5 s (:25570)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "allClear1|allClear2"],
+        [0, "fx", "cleanse"]
+        ]
+      },
+      "overHeal": {
+        "why": "Sheep.cs RPC_overHeal_cast (:25902-26431): clip cast3 (0.2 fade, :26124), all at 0: voice overHeal1 / overHeal2 (:26159-26214), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :26233 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:26245); Yield 0.5 (:26382): standby 0.5 s (:26059); left out: overHeal at the enemy target (:26293-26305) and its strike (:26337-26357), on an enemy",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "overHeal1|overHeal2"]
+        ]
+      },
+      "revive": {
+        "why": "Sheep.cs RPC_revive_cast (:26432-26941): clip cast3 (0.2 fade, :26654), all at 0: voice revive1 / revive2 (:26689-26744), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :26763 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:26775), revive at the knocked-out ally's feet (:26829-26841, ReviveEvent :26867; never the Sheep herself): the ally 10 m ahead (decision 1: the target-point rule, as Gleaming Breath's, decision 4); Yield 0.5 (:26892): standby 0.5 s (:26589)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "revive1|revive2"],
+        [0, "fx", "revive", {"d": 10}]
+        ]
+      },
+      "revert": {
+        "why": "Sheep.cs RPC_revert_cast (:26942-27436): clip cast3 (0.2 fade, :27164), all at 0: voice revert1 / revert2 (:27199-27254), Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :27273 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661), castEffect1 at the hero x Euler(270, 90, 0) (:27285), revert at the target ally's feet (:27339-27351; plays its own Sounds/revert); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921); Yield 0.5 (:27394): standby 0.5 s (:27099)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "voice", "revert1|revert2"],
+        [0, "fx", "revert"]
+        ]
+      },
+      "lightBind": {
+        "why": "Sheep.cs RPC_lightBind_cast (:28501-28974, enemy target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :28832 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (0.2 s fade, :28723) and voice lightBind1 / lightBind2 (Random.Range(0, 2), :28758-28813) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :28844; plays its own Sounds/castEffect); Yield 0.5 (:28922): standby 0.5 s (:28658); left out: the lightBind status's Effects/lightBind on the enemy (RPC_AddStatus :28899-28902, CharacterControl.cs:39611), on an enemy",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "lightBind1|lightBind2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "illuminate": {
+        "why": "Sheep.cs RPC_illuminate_cast (:28975-29478, ally target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :29306 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:29197) and voice illuminate1 / illuminate2 (:29232-29287) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :29318; plays its own Sounds/castEffect); illuminate at the ally's body centre (createEffect(.., collider.bounds.center), :29372-29384; plays its own Sounds/illuminate), shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921), 0.8 m up (Sheep.prefab m_Center y 0.8, :789); the illuminate status for chaAdjust(12) = 12 s (:29411; CHA 1, the tooltip's base), whose tick (every 0.5 s, CharacterControl.cs:8667-8676) heals and draws illuminate_hit at her bounds centre when floor(2 x time left) mod 6 = 0 (:9378-9414, Math.mod floors, Math.cs:39-60): once in each of 2.5-3, 5.5-6, 8.5-9 and 11.5-12 s after the cast, cued at their middles (APPROXIMATED: the exact moment depends on the 0.5 s tick's phase); Blinding Light #413 changes only the status level; standby 0.5 s (Yield :29433, :29132)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "illuminate1|illuminate2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "illuminate", {"y": 0.8}],
+        [2.75, "fx", "illuminate_hit", {"y": 0.8}],
+        [5.75, "fx", "illuminate_hit", {"y": 0.8}],
+        [8.75, "fx", "illuminate_hit", {"y": 0.8}],
+        [11.75, "fx", "illuminate_hit", {"y": 0.8}]
+        ]
+      },
+      "feather": {
+        "why": "Sheep.cs RPC_feather_cast (:29479-29957, ally target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :29810 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:29701) and voice feather1 / feather2 (:29736-29791) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :29822; plays its own Sounds/castEffect); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921): the wing status (Floating Wing #423 on: wing, not feather) puts Effects/wing on her back: Instantiate at her rotation, parented, localPosition (0, 0.85 x height, -radius) = 1.275 m up, 0.3 m behind (CharacterControl.cs:39840-39864; Sheep.prefab m_Height 1.5, m_Radius 0.3, :783-784), destroyed when the status ends (:18004-18017) after chaAdjust(15) = 15 s (CHA 1; its EffectControl life is 300: kill 15) (:29876-29889); standby 0.5 s (Yield :29910, :29636)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "feather1|feather2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "wing", {"d": -0.3, "y": 1.275, "kill": 15}]
+        ]
+      },
+      "allFeather": {
+        "why": "Sheep.cs RPC_allFeather_cast (:29958-30428, every ally within 12 m of the Sheep, herself included: FindAreaTarget(her position, 12, 3, her own layer) :30303-30306, Damage.cs:963-1080 has no self-exclusion): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :30279 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:30170) and voice allFeather1 / allFeather2 (:30205-30260) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :30291; plays its own Sounds/castEffect); on her, the wing status (Floating Wing #423 on: wing, not feather) puts Effects/wing on her back: Instantiate at her rotation, parented, localPosition (0, 0.85 x height, -radius) = 1.275 m up, 0.3 m behind (CharacterControl.cs:39840-39864; Sheep.prefab m_Height 1.5, m_Radius 0.3, :783-784), destroyed when the status ends (:18004-18017) after chaAdjust(15) = 15 s (CHA 1; its EffectControl life is 300: kill 15) (:30335-30349); standby 0.5 s (Yield :30380, :30105); the wings on the other allies have no ally to sit on",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "allFeather1|allFeather2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "wing", {"d": -0.3, "y": 1.275, "kill": 15}]
+        ]
+      },
+      "divinitySword": {
+        "why": "Sheep.cs RPC_divinitySword_cast (:30429-30903, enemy target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :30827 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:30718) and voice divinitySword1 / divinitySword2 (:30753-30808) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :30839; plays its own Sounds/castEffect); Yield 0.2 (:30860): RPC_divinitySword_fire at the target's position (:30613): Effects/divinitySword there, LookRotation(hero forward) (:31107-31117), at the target point 10 m ahead (decision 2) (AlphaTimer fades it in at 0.3 s, out by 1.5 s; FX/Phoenix material; plays its own Sounds/divinitySword); Yield 0.3 (:30863): standby 0.5 s (:30653); the hit 0.8 s after the fire (:31137, :31044-31072) draws nothing more",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "divinitySword1|divinitySword2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "divinitySword", {"d": 10}]
+        ]
+      },
+      "divinitySpear": {
+        "why": "Sheep.cs RPC_divinitySpear_cast (:31186-31618, enemy target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :31544 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:31435) and voice divinitySpear1 / divinitySpear2 (:31470-31525) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :31556; plays its own Sounds/castEffect); Yield 0.2 (:31580): divinitySpear_fire starts (:31343): divinitySpear_ring at the enemy's position (tChar.createEffect, :31886-31898; plays its own Sounds/divinitySpear_ring), then three strikes 1 s apart (Yield 1 :31924, i < 3 :31840): 0.2 + 1 = 1.2, 2.2, 3.2 s, each RPC_divinitySpear_fire at the target's position (:31749-31809): Effects/divinitySpear, LookRotation(flat hero-to-target) (:10739-10770; AlphaTimer, FX/Phoenix), all at the target point 10 m ahead (decision 2); Yield 0.3 (:31575): standby 0.5 s (:31370); the strikes run on in the idle tail",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "divinitySpear1|divinitySpear2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "divinitySpear_ring", {"d": 10}],
+        [1.2, "fx", "divinitySpear", {"d": 10}],
+        [2.2, "fx", "divinitySpear", {"d": 10}],
+        [3.2, "fx", "divinitySpear", {"d": 10}]
+        ]
+      },
+      "repel": {
+        "why": "Sheep.cs RPC_repel_cast (:32840-33266, ally target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :33143 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:33034) and voice repel1 / repel2 (:33069-33124) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :33155; plays its own Sounds/castEffect); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921): the repel status (RPC_AddStatus :33209) puts Effects/repel at her collider centre, identity, parented, scale clamp(height + 0.2, 1, 3) = 1.7 (CharacterControl.cs:39743-39746), removed with the status (:17953-17957) after chaAdjust(6) = 6 s (CHA 1; no EffectControl: kill 6); standby 0.5 s (Yield :33226, :32975)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "repel1|repel2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "repel", {"y": 0.8, "scale": 1.7, "kill": 6}]
+        ]
+      },
+      "reverse": {
+        "why": "Sheep.cs RPC_reverse_cast (:33267-33695, ally target): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :33570 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:33461) and voice reverse1 / reverse2 (:33496-33551) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :33582; plays its own Sounds/castEffect); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921): the reverse status (RPC_AddStatus :33636) puts Effects/reverse at her collider centre, identity, parented, scale 1.7 (CharacterControl.cs:39770-39778; its AudioSource plays Sounds/repel), removed with the status (:17975-17979) after chaAdjust(3) = 3 s (CHA 1; no EffectControl: kill 3); standby 0.5 s (Yield :33659, :33402)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "reverse1|reverse2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "reverse", {"y": 0.8, "scale": 1.7, "kill": 3}]
+        ]
+      },
+      "divinityAxe": {
+        "why": "Sheep.cs RPC_divinityAxe_cast (:35975-36446, enemy target): Free Cast rolled only with Return Cast #431 (on, :36362-36368): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :36368 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 (:36253) and voice divinityAxe1 / divinityAxe2 (:36288-36343) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :36381; plays its own Sounds/castEffect); Yield 0.2 (:36409): RPC_divinityAxe_fire at the target's position (:36148-36161): Effects/divinityAxe there, Quaternion.identity (:36690-36700; drawn in the hero's facing, APPROXIMATED; AlphaTimer 0-2.4 s; plays its own looping Sounds/divinityAxe), at the target point 10 m ahead (decision 2); Yield 0.3 (:36403): standby 0.5 s (:36188); left out: its 5 strikes' divinityAxe_hit on each struck enemy at 1.2 / 1.6 / 2.0 / 2.4 / 2.8 s (:36564-36662, :11744-11757), on enemies",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "divinityAxe1|divinityAxe2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "divinityAxe", {"d": 10}]
+        ]
+      },
+      "worldEncarta": {
+        "why": "Sheep.cs RPC_worldEncarta_cast (:37948-38425, ally target): clip cast3 (:38159) and voice worldEncarta1 / worldEncarta2 (:38194-38249) at 0; castEffect1 at the hero turned hero rotation x Euler(270, 90, 0) (:38262-38268; no castEffect2); Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :38354 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661) (no Return Cast gate); shown as a self-cast (decision 1: the ally check takes the Sheep herself, GameGui.cs:37904-37921): worldEncarta_ring at her feet (tChar.createEffect at its position, :38322-38334) and the worldEncarta status (:38357) for chaAdjust(9) = 9 s (CHA 1), whose apply puts Effects/worldEncarta at her collider centre in her rotation, parented (CharacterControl.cs:39886-39911; a looping sound; no EffectControl: kill 9), its eight nodes holding copies of the caster's mWep1, the worn main weapon, at local Euler(0, 0, 90), scale 1.5 (CharacterControl.cs:39912-39975; fxparts/sheep.js fx:worldEncarta; with no weapon worn, the game shows only the ring too); standby 0.5 s (Yield :38386, :38094); left out: OnWorldEncarta's worldEncarta_hit on enemies next to her every 0.5 s (:38360, :11858-11912), on enemies",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "voice", "worldEncarta1|worldEncarta2"],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}],
+        [0, "fx", "worldEncarta_ring"],
+        [0, "fx", "worldEncarta", {"y": 0.8, "kill": 9}]
+        ]
+      }
+    }
+  },
+  "@SealofAttack:cast3": {
+    "why": "Seal of Attack places a red seal (sLv 1 = redSeal, Sheep.cs:32179-32191); as the third seal it completes one of the fields it takes part in (red-red-red Attack, red-red-blue Heaven, blue-blue-red Earth, Bible sheep-skill-reference.md:450, :455): each play shows one, even chance (the page has no earlier seals; which forms depends on the two before it)",
+    "skills": {
+      "sealOfAttack": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Attack (sLv 1, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): redSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): red x 3 -> type 1: RPC_seal_create Instantiates sealOfAttack at the centroid, identity (:10822-10834), voice sealofAttack1 / sealofAttack2 (Random.Range(0, 2), :10889-10920; the rip's spelling); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "redSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfAttack", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofAttack1|sealofAttack2"]
+        ]
+      },
+      "sealOfHeaven": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Attack (sLv 1, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): redSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): red x 2 + blue -> type 4, with Seal of Heaven #344 (hasSkill(344) :11231): sealOfHeaven, identity (:11243-11255), voice sealofHeaven1 / sealofHeaven2 (:11310-11341); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "redSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfHeaven", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofHeaven1|sealofHeaven2"]
+        ]
+      },
+      "sealOfEarth": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Attack (sLv 1, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): redSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): blue x 2 + red -> type 3, with Seal of Earth #343 (passives on, hasSkill(343) :11088): sealOfEarth, identity (:11100-11112), voice sealofEarth1 / sealofEarth2 (:11167-11198); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "redSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfEarth", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofEarth1|sealofEarth2"]
+        ]
+      }
+    }
+  },
+  "@SealofDefense:cast3": {
+    "why": "Seal of Defense places a blue seal (sLv 2 = blueSeal, Sheep.cs:32179, :32226); as the third seal it completes one of the fields it takes part in (blue-blue-blue Defense, blue-blue-red Earth, red-red-blue Heaven, Bible sheep-skill-reference.md:450, :455): each play shows one, even chance",
+    "skills": {
+      "sealOfDefense": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Defense (sLv 2, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): blueSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): blue x 3 -> type 2: sealOfDefense, identity (:10958-10970), voice TTO's fix sealofDefend1 / sealofDefend2 (decision 10; BB loads Voices/sealOfDefense1 / 2, :11025, :11056, files the game doesn't have; TTO1102 RPC_seal_create loads sealofDefend1 / 2, pseudo/Sheep.c:30124, :30139); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "blueSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfDefense", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofDefend1|sealofDefend2"]
+        ]
+      },
+      "sealOfEarth": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Defense (sLv 2, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): blueSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): blue x 2 + red -> type 3, with Seal of Earth #343 (passives on, hasSkill(343) :11088): sealOfEarth, identity (:11100-11112), voice sealofEarth1 / sealofEarth2 (:11167-11198); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "blueSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfEarth", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofEarth1|sealofEarth2"]
+        ]
+      },
+      "sealOfHeaven": {
+        "why": "Sheep.cs RPC_seal (:31985-32839), Seal of Defense (sLv 2, decision 18), started straight from the press (:8189): no voice of its own; Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :32749 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731: the tile's '!') and castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2, :16727) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :32761; plays its own Sounds/castEffect) at 0; Yield 0.2 (:32783): blueSeal on the ground 1 m ahead (mPos + forward, raycast down to the ground, :32147-32238), life chaAdjust(60) (:32284), and, this being the third of the Sheep's last three seals (:32290-32330), the field at their centroid (:32380-32656, Bible sheep-skill-reference.md:450, :455): red x 2 + blue -> type 4, with Seal of Heaven #344 (hasSkill(344) :11231): sealOfHeaven, identity (:11243-11255), voice sealofHeaven1 / sealofHeaven2 (:11310-11341); the old field destroyed (:10802); the field drawn where this seal goes (as Eden's, decision 20: the other two seals stand 12 m or more away, :8170) and both ended at 10 s (decision 19: kill 10; 60 s+ in the game, the field going with its first seal, Sheep_seal.cs:170-320); Sheep_seal's buff every 5 s draws nothing; Yield 0.3 (:32781): standby 0.5 s (:32678)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "blueSeal", {"d": 1, "kill": 10}],
+        [0.2, "fx", "sealOfHeaven", {"d": 1, "kill": 10}],
+        [0.2, "voice", "sealofHeaven1|sealofHeaven2"]
+        ]
+      }
+    }
+  },
+  "@EdenSanctuary:cast3": {
+    "why": "Sheep.cs RPC_edenSanctuary (:36772-37219; started straight from the press, :7539-7565, it needs a seal field in place, :7545-7551): Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :37075 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661) (no Return Cast gate); clip cast3 (0.2 s fade, :36960) and voice edenSanctuary1 / edenSanctuary2 (:37001-37056) at 0; edenSanctuary_ring at the hero (createEffect(.., position, rotation), :37087-37099; its own flash 0.7 m ahead 1 m up and a ground ring; plays its own Sounds/edenSanctuary_ring); no castEffect2; Effects/edenSanctuary at the current seal field's position and rotation (jl98IkUjQ5, :37123-37133; the field's rotation is identity, :10834), 1 m ahead where the seal goes (decision 20), and SendMessage(InitEdenSanctuary) (:37142): fxparts/sheep.js's Sheep_edenSanctuary rises it with the create clip (Sheep_edenSanctuary.cs:64), cross-fades to destroy past 12 s (:73, :129-135, :409) and destroys it 1 s later (:423, :372): 13 s (decision 19); AlphaTimer fades it 0-1 s in and 12-13 s out; its own looping Sounds/edenSanctuary; standby 0.5 s (Yield :37186, :36907)",
+    "cues": [
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "voice", "edenSanctuary1|edenSanctuary2"],
+    [0, "fx", "edenSanctuary_ring"],
+    [0, "fx", "edenSanctuary", {"d": 1}]
+    ]
+  },
+  "holyLight1": {
+    "why": "Sheep.cs RPC_holyLight (:27437-28500): clip (0.2 s fade, :28265), voice cast1 / cast2 (Random.Range(0, 2), :28306-28361) and the Sheep's castRing field Instantiated at the hero, turned Euler(270, 90, 0) in world space, owned (:28374-28380; plays its own looping Sounds/cast) at 0; Yield 0.6 (:28429): holyLight2 and the cast bar magAdjust(6) (:27584-27620; 0 on the page), then holyLight3 in the same frame (:28022), which destroys the castRing (Object.Destroy, :28050-28056: kill 0.6, no destroy clip)",
+    "cues": [
+    [0, "voice", "cast1|cast2"],
+    [0, "fx", "castRing", {"rot": [270, 90, 0], "kill": 0.6}]
+    ]
+  },
+  "holyLight3": {
+    "why": "Sheep.cs RPC_holyLight at the cast bar's end (actionTime + magAdjust(6) + 0.6, :28022): clip (:28028); Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play: roll returnCast): getFreeCast :28044 rolls Random.Range(0, 100) < lckAdjust(12 x 2) = 24 % (Sheep.cs:10049-10070), a proc Instantiates returnCast at the hero (RPC_returnCast :10085-10101, :11651-11661); the castRing destroyed (:28056); Sounds/holyLight_start, full volume (:28062-28080); holylight_ring at the hero turned Euler(270, 90, 0) in world space (createEffect :28100-28112; EffectControl life 300 + afterLife 0.5, followState; plays its own looping Sounds/holyLight; 0.1 s into holyLight4 the code plays its root clip, :27700: fxparts/sheep.js fx:holylight_ring at 0.5 s); voice holyLight1 / holyLight2 (Random.Range(0, 2), :28157-28224, :28402-28407); Yield 0.4 (:28400): holyLight4. The light lasts until the hero moves or MP runs short (RPC_holyLight0 :10609-10640 sets standby), on the page holyLight4's 3 s: cut 2.95 on the step clock (FX.t restarts with holyLight4; a cut at the step's very end is dropped)",
+    "cues": [
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "sound", "holyLight_start"],
+    [0, "fx", "holylight_ring", {"rot": [270, 90, 0], "cut": 2.95}],
+    [0, "voice", "holyLight1|holyLight2"]
+    ]
+  },
+  "holyLight4": {
+    "why": "Sheep.cs RPC_holyLight from holyLight4 (:27652; 0.4 s after holyLight3, :28400): ticks every 1 s from 0.1 s (:28410, :27706, :27804; 0.1 / 1.1 / 2.1 s in the page's 3 s): the MP cost and holylight at each enemy within 24 m (:27834-27958; on enemies, left out); the channel ends when the hero moves or MP < 4 x sLv + 4 (:27749-27775): RPC_holyLight0 sets standby and plays Sounds/holyLight_end (:10609-10670); the page's step ends at 3 s, so 2.95 (a cue at the step's very end is dropped)",
+    "cues": [
+    [2.95, "sound", "holyLight_end"]
+    ]
+  },
+  "@Lullaby:holyLight1": {
+    "why": "Sheep.cs RPC_lullaby (:35225-35974), the Lullaby tile's holyLight1 (decision 13): clip holyLight1 (0.2 s fade, :35768), voice lullaby1 / lullaby2 (Random.Range(0, 2), :35809-35864) and castRing at the hero, turned Euler(270, 90, 0) in world space, owned (:35877-35883) at 0; Yield 0.6 (:35901): holyLight2 and the cast bar magAdjust(9) (:35361-35405; 0 on the page), then lullaby in the same frame (:35643), which destroys the castRing (:35678-35684: kill 0.6)",
+    "cues": [
+    [0, "voice", "lullaby1|lullaby2"],
+    [0, "fx", "castRing", {"rot": [270, 90, 0], "kill": 0.6}]
+    ]
+  },
+  "lullaby": {
+    "why": "Sheep.cs RPC_lullaby at the cast bar's end (actionTime + magAdjust(9) + 0.6, :35643): clip (:35649); Return Cast #431 learned: getFreeCast(lullaby, 5) (:35659-35671) rolls 24 % (:10049-10070), a proc Instantiates returnCast at the hero (:11651-11661; roll returnCast); the castRing destroyed (:35684, its holyLight1 cue's kill); lullaby_ring at the hero, identity (createEffect :35690-35708; EffectControl life 99, followState; AlphaTimer fades it in over 1 s; plays its own looping Sounds/lullaby); the sleep tick at once and every 1 s (:35722-35725, :35502-35589; on the characters within 12 m); the channel runs until the hero moves or MP < 12 / SP < 3 (:35449-35499; RPC_lullaby0 :11688-11720, standby, no sound): the page's 3 s, cut 2.95 on the step clock",
+    "cues": [
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "fx", "lullaby_ring", {"cut": 2.95}]
+    ]
+  },
+  "purifyingTear": {
+    "why": "Sheep.cs RPC_purifyingTear (:34699-35224): Return Cast #431 learned: getFreeCast(purifyingTear, 5) at the press (:35014-35026), 24 % (:10049-10070), a proc Instantiates returnCast at the hero (:11651-11661); clip (:35039) and voice purifyingTear1 / purifyingTear2 (Random.Range(0, 2), :35080-35171) at 0; Yield 0.2 (:35162): purifyingTear_ring at the hero (createEffect, hero rotation, :34835-34853; EffectControl life 2 + afterLife 1, no followState; plays its own Sounds/purifyingTear); Yield 0.2 (:35167): enemies within 40 m drop the Sheep's hate at 0.4 s (:34890-34934, no visual); Yield 0.2 (:35157): standby 0.6 s (:34967)",
+    "cues": [
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "voice", "purifyingTear1|purifyingTear2"],
+    [0.2, "fx", "purifyingTear_ring"]
+    ]
+  },
+  "soulOfArms": {
+    "why": "Sheep.cs RPC_soulOfArms_cast (:33696-34698), after the shared cast (RPC_cast1(soulOfArms) :7992, :20966-20991; the tile's cast1 > cast2 > soulOfArms, decision 16): clip (0.2 s fade, :33886), voice soulOfArms1 / soulOfArms2 (Random.Range(0, 2), :33925-33980; the rip's files voices/soulofArms1-2) and soulOfArms_ring at the hero (createEffect, hero rotation, :33993-34011; EffectControl life 10 + afterLife 0.5, followState) at 0; soulOfArms_trail parented to mount_Hand_R, localPosition 0, localRotation identity (:34025-34058; cue bone; EffectControl life 10, followState; its TrailRenderer streaks the hand); soulOfArms, the summoned arms, on the target at its collider centre, LookRotation(tDir) (tChar.createEffect :34073-34118): it hits that target (hit(370 + sLv, target), :34100-34118), so an enemy skill: at the target point 10 m ahead (decision 2; decision 1 had listed it as an ally buff by mistake, QA 2026-11-10), its collider centre 0.8 m up, facing as the hero (tDir) (AlphaTimer fades the four FX/Phoenix weapons 0-0.5 s in, out 9.7-10 s; EffectControl life 10 + afterLife 2, no followState; plays its own Sounds/soulOfArms); no Free Cast roll; a timer from 0 (:34134) paces the hits on the target at 4.6, 5.1, 5.3, 5.5, 5.7, 6.2 and 9.5 s (:34218-34555), standby at 9.8 s (:34572-34598), which ends the ring and the trail (followState: cut 9.8)",
+    "cues": [
+    [0, "voice", "soulofArms1|soulofArms2"],
+    [0, "fx", "soulOfArms_ring", {"cut": 9.8}],
+    [0, "fx", "soulOfArms_trail", {"bone": "mount_Hand_R", "cut": 9.8}],
+    [0, "fx", "soulOfArms", {"d": 10, "y": 0.8}]
+    ]
+  },
+  "bookBash1": {
+    "why": "Sheep.cs RPC_bookBash (:37224-37900): each press plays one of three clips, Random.Range(0, 3): 1 = bookBash1, 2 = bookBash2, 0 = bookBash3, even chance (:37523-37758; three tiles, decision 15); clip (no fade, :37532) and bookBash_ring1 at the hero (createEffect, hero rotation, :37537-37555; EffectControl life 0.5 + afterLife 1, no followState; plays its own Sounds/bookBash) at 0; voice bookBash1 only once 2 s have passed since the last Book Bash voice (:37569-37627; a single play always speaks); Yield 0.3 (:37893): the hit, bookBash_hit at each struck enemy (:37360-37437, :11814-11824; on enemies, left out); Yield 0.2 (:37896): standby 0.5 s (:37470); no Free Cast roll",
+    "cues": [
+    [0, "voice", "bookBash1"],
+    [0, "fx", "bookBash_ring1"]
+    ]
+  },
+  "bookBash2": {
+    "why": "Sheep.cs RPC_bookBash, Random.Range(0, 3) == 2 (:37523, :37641): clip (no fade, :37647) and bookBash_ring2 at the hero (createEffect, hero rotation, :37652-37670; life 0.5 + afterLife 1; plays its own Sounds/bookBash) at 0; voice bookBash2 only once 1 s has passed since the last Book Bash voice (:37684-37742); Yield 0.3 (:37893): the hit (bookBash_hit on enemies, left out); Yield 0.2 (:37896): standby 0.5 s (:37470)",
+    "cues": [
+    [0, "voice", "bookBash2"],
+    [0, "fx", "bookBash_ring2"]
+    ]
+  },
+  "bookBash3": {
+    "why": "Sheep.cs RPC_bookBash, Random.Range(0, 3) == 0 (:37523, :37756): clip (no fade, :37758) and bookBash_ring3 at the hero (createEffect, hero rotation, :37763-37781; life 0.5 + afterLife 1; plays its own Sounds/bookBash) at 0; voice bookBash3 only once 2 s have passed since the last Book Bash voice (:37795-37853); Yield 0.3 (:37893): the hit (bookBash_hit on enemies, left out); Yield 0.2 (:37896): standby 0.5 s (:37470)",
+    "cues": [
+    [0, "voice", "bookBash3"],
+    [0, "fx", "bookBash_ring3"]
+    ]
+  },
+  "gleamingBreath": {
+    "why": "TTO1102:Sheep.<RPC_gleamingBreath>d__260::MoveNext@0x1E892F0 (in place of Revive's landing after its cast channel, StartGleamingBreath@0x1E5EEB0; plans/fx_sheep/tto.md 2.1): 0: Row6Begin (Sheep::Row6Begin@0x1E5D850, PlayAnimation(gleamingBreath, 0.1)), voice revive1 / revive2 (Sheep::Row6Voice@0x1E5EBD0: Random.Range(0, 2)); the owner's Free Cast roll getFreeCast(\"revive\") (Sheep::getFreeCast@0x1E64E40: Random.Range(0, 100) < lckAdjust(24) with Free Cast 2; Return Cast 431 on, decision 6: RPC_returnCast@0x1E5B0F0, returnCast at the hero; roll returnCast); gleamingBreath_cast owned at the hero (Row6Spawn@0x1E5E900 -> createEffect; EffectControl 1.7 + 0.5, followState: cut 1.65 for Row6End at 1.7); Until 0.62: gleamingBreath_exhale at the mouth (Row6Mouth@0x1E5E4A0: Head + 0.22 forward - 0.04 up = 0.35 m ahead, 1.21 m up at 0.62 s from the Sheep's rig) in the hero's rotation, and BreathFly@0x1E72EA0: gleamingBreath_wisp from the mouth to the revived ally's chest (decision 4: an ally 10 m ahead, chest 0.8 m: to [0, 0.8, 10]; fxparts/tto_sheep.js Sheep.BreathFly: flight clamp(9.66 x 0.0625, 0.15, 0.6) = 0.6 s with the up-arc u x 0.9 x (1 - u), Destroy 0.3 s after; APPROXIMATED: the ally stands still), then gleamingBreath_land at the ally's feet, identity, at 0.62 + 0.6 = 1.22 s; Until 1.7: Row6End; the 15 s gleamingBreath status look over the ally (AddSheepRow6Fx@0x24AE620) is not floated over the empty spot (decision 4); the revive itself (ReviveEvent) draws nothing",
+    "cues": [
+    [0, "voice", "revive1|revive2"],
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "fx", "tto/gleamingBreath_cast", {"cut": 1.65}],
+    [0.62, "fx", "tto/gleamingBreath_exhale", {"d": 0.35, "y": 1.21}],
+    [0.62, "fx", "tto/gleamingBreath_wisp", {"d": 0.35, "y": 1.21, "to": [0, 0.8, 10]}],
+    [1.22, "fx", "tto/gleamingBreath_land", {"d": 10}]
+    ]
+  },
+  "lucentBarrier": {
+    "why": "TTO1102:Sheep.<RPC_lucentBarrier>d__262::MoveNext@0x1E919A0 (in place of Reverse's landing after its cast channel, StartLucentBarrier@0x1E5F100; plans/fx_sheep/tto.md 2.2), cast on herself (decision 1; Row6Begin turns to the target only when body != the Sheep): 0: Row6Begin, voice reverse1 / reverse2 (Sheep::Row6Voice@0x1E5EBD0), the owner's Free Cast roll getFreeCast(\"reverse\") (Sheep::getFreeCast@0x1E64E40: Random.Range(0, 100) < lckAdjust(24) with Free Cast 2; Return Cast 431 on, decision 6: RPC_returnCast@0x1E5B0F0, returnCast at the hero; roll returnCast), lucentBarrier_cast owned at the hero (EffectControl 1.4 + 0.4, followState: cut 1.35 for Row6End at 1.4); Until 0.58: Row6Beam@0x1E5D640: lucentBarrier_beam at the right hand (mount_Hand_R at 0.58 s: 0.49 m ahead, 1.12 m up), LookRotation(chest - hand) = 33 deg down, turned back (rot [33, 180, 0]), RabbitTracer.Set(hand, her chest 0.8 m: to [0, 0.8, 0]; fxparts/tto_sheep.js RabbitTracer, Set@0x1E6F280 / Update@0x1E6F420: the line shoots in 0.08 s, thins and fades, gone at 0.45 s); lucentBarrier_land at her chest (Row6Chest@0x1E5DB80: collider centre 0.8 m), identity; chaAdjust(3) s (3 s, the tooltip's, decision 9) of reverse and lucentBarrier on her: BB's Effects/reverse at the collider centre, scale clamp(1.5 + 0.2, 1, 3) = 1.7 (CharacterControl.cs:39770-39778, no EffectControl: kill 3) and tto/lucentBarrier at the collider centre, scale 1 (CharacterControl::AddSheepRow6Fx@0x24AE620, no EffectControl, destroyed by removeStatus@0x24E2990: kill 3); Until 1.4: Row6End; left out: lucentBarrier_reflect / _reflectBeam / _panel (CharacterControl::LucentReflectFx@0x24B5840, only from LucentReflect@0x24B5FD0) need an attacker's reflected hit",
+    "cues": [
+    [0, "voice", "reverse1|reverse2"],
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}],
+    [0, "fx", "tto/lucentBarrier_cast", {"cut": 1.35}],
+    [0.58, "fx", "tto/lucentBarrier_beam", {"d": 0.49, "y": 1.12, "rot": [33, 180, 0], "to": [0, 0.8, 0]}],
+    [0.58, "fx", "tto/lucentBarrier_land", {"y": 0.8}],
+    [0.58, "fx", "reverse", {"y": 0.8, "scale": 1.7, "kill": 3}],
+    [0.58, "fx", "tto/lucentBarrier", {"y": 0.8, "kill": 3}]
+    ]
+  },
+  "grandCodex": {
+    "why": "TTO1102:Sheep.<RPC_grandCodex>d__263::MoveNext@0x1E89740 (plans/fx_sheep/tto.md 2.3), the codex spot 10 m ahead on the ground (decision 5; DoRow6Skill@0x1E56590 caps it at 16 m): 0: Row6Begin facing the spot, grandCodex_cast owned at the hero (EffectControl 1.4 + 0.5, followState: cut 1.35 for Row6End at 1.4), no voice and no Free Cast roll (decision 6: TTO1102 never rolls it); Until 0.7: CodexOpen@0x1E73940 (t0 = 0.7): grandCodex_field at the spot in the hero's facing (its own life 20.6 + 0.6), grandCodex_book at the spot + 2.6 up, rotated CodexRotation@0x1E563A0 = facing x Euler(-35, 0, 0) (fxparts/tto_sheep.js Sheep.CodexOpen: dropped from 5.6 m over 0.6 s, then bobbing 0.12 sin(2.2 t), CodexBob@0x1E55980; its FlipPivot page turns -180 deg over the 0.45 s before each read, CodexFlipAngle@0x1E55A00; Destroy(book, 0.1) after the last); Until 1.4: Row6End; page k = 0..9 at 0.7 + 2(k + 1) s, kind psalm / seal / verdict by k % 3 (Sheep::.cctor@0x1E5F5A0), each grandCodex_page_<kind> at the book (its height then: 2.6 + 0.12 sin(2.2 x 2(k + 1))) and grandCodex_<kind> at the spot, identity (Sheep::CodexRead@0x1E55B60; drawn in the hero's facing, APPROXIMATED); 20.7: grandCodex_close at the book, its rotation; the cues after 1.4 s run on in the idle tail; left out: grandCodex_spear (book -> each of the 3 nearest enemies, VerdictFall@0x1E9ECD0), grandCodex_verdict at each speared enemy's chest and the scriptureBind look on slowed enemies (CharacterControl::AddSheepRow6Fx@0x24AE620): on enemies; the heals draw nothing",
+    "cues": [
+    [0, "fx", "tto/grandCodex_cast", {"cut": 1.35}],
+    [0.7, "fx", "tto/grandCodex_field", {"d": 10}],
+    [0.7, "fx", "tto/grandCodex_book", {"d": 10, "y": 2.6, "rot": [-35, 0, 0]}],
+    [2.7, "fx", "tto/grandCodex_page_psalm", {"d": 10, "y": 2.486}],
+    [2.7, "fx", "tto/grandCodex_psalm", {"d": 10}],
+    [4.7, "fx", "tto/grandCodex_page_seal", {"d": 10, "y": 2.67}],
+    [4.7, "fx", "tto/grandCodex_seal", {"d": 10}],
+    [6.7, "fx", "tto/grandCodex_page_verdict", {"d": 10, "y": 2.671}],
+    [6.7, "fx", "tto/grandCodex_verdict", {"d": 10}],
+    [8.7, "fx", "tto/grandCodex_page_psalm", {"d": 10, "y": 2.486}],
+    [8.7, "fx", "tto/grandCodex_psalm", {"d": 10}],
+    [10.7, "fx", "tto/grandCodex_page_seal", {"d": 10, "y": 2.599}],
+    [10.7, "fx", "tto/grandCodex_seal", {"d": 10}],
+    [12.7, "fx", "tto/grandCodex_page_verdict", {"d": 10, "y": 2.715}],
+    [12.7, "fx", "tto/grandCodex_verdict", {"d": 10}],
+    [14.7, "fx", "tto/grandCodex_page_psalm", {"d": 10, "y": 2.531}],
+    [14.7, "fx", "tto/grandCodex_psalm", {"d": 10}],
+    [16.7, "fx", "tto/grandCodex_page_seal", {"d": 10, "y": 2.528}],
+    [16.7, "fx", "tto/grandCodex_seal", {"d": 10}],
+    [18.7, "fx", "tto/grandCodex_page_verdict", {"d": 10, "y": 2.714}],
+    [18.7, "fx", "tto/grandCodex_verdict", {"d": 10}],
+    [20.7, "fx", "tto/grandCodex_page_psalm", {"d": 10, "y": 2.602}],
+    [20.7, "fx", "tto/grandCodex_psalm", {"d": 10}],
+    [20.7, "fx", "tto/grandCodex_close", {"d": 10, "y": 2.602, "rot": [-35, 0, 0]}]
+    ]
+  },
+  "wave": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:40694) and emo_wave (:40702) both play the wave clip (:41144): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_ty (:40712) and emo_bow (:40719) both play the bow clip (:41130): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_laugh (:40726-40732)",
+    "cues": [
+    [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_sleep (:40758-40764): voices/sleep (not sounds/sleep, the Sleep skill's sound, nor its voices sleep1 / sleep2)",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cheer (:40770-40776)",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_beg (:40782-40788)",
+    "cues": [
+    [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cry (:40794-40800)",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_chat (:40815) plays the talk clip (:41108) with chat1-5 at random (Random.Range(1, 6), :40638); emo_talk (:40808) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_battle (:41078-41084): voice battle; the battle stance in a fight plays the clip silent: the tile takes the emote's voice",
+    "cues": [
+    [0, "voice", "battle"]
+    ]
+  },
+  "ko": {
+    "why": "Sheep.cs RPC_ko (:46219) and RPC_dead (:46597) both play the ko clip (:46433, :46794); their voices ko1 / ko2 / dead1 / dead2 (:46478-46509, :46841-46872) are not in BB's data (rip voices/ and mainData have none: silent in the game); RPC_dead always puts deadEffect at the hero's position and rotation (:46903-46913; EffectControl life 3), RPC_ko nothing (getUp after 3 s, :46546): one of the two at random, even chance (decision 11)",
+    "cues": [
+    [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

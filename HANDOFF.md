@@ -5,6 +5,15 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Home PC
 
+- **The Sheep's effects data was built at the office** (NOTES.md 2026-11-10 "the Sheep's effects: built and cued"):
+  `wardrobe\data\sheep\fx.json`, `wardrobe\data\sheep\sfx\`, the new `wardrobe\data\fx\tex\` textures (tto_*,
+  sheep's) and `wardrobe\data\wolf\fx.json` + `fx\tex\wolf_dead.webp` (the Wolf's deadEffect). `wardrobe\data` is
+  tracked in git since 2026-11-10 (NOTES.md "`wardrobe\data` in git"), so they come with the commit: `git add` the
+  untracked data files with it, then a plain pull at home brings them (check: `wardrobe_fx_check.py ... --cls sheep
+  --files-only`). Only if they were left out of the commit: rebuild at home, `uv run --no-project --with UnityPy --with
+  imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py sheep`, then the same with `pipeline/wardrobe_fx_tto.py
+  sheep`, and `pipeline/wardrobe_fx.py wolf --fx deadEffect` (not a full Wolf rebuild: NOTES.md 2026-11-10).
+
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 

@@ -482,3 +482,106 @@ The numbers are re-derived by `checks/fx_sheep_research/verify/tto_parts_numbers
 - That TTO's `Sheep.prefab` CharacterController matches BB's (centre 0.8, height 1.5).
 - That TTO's four voices are the same recordings as BB's.
 - The mouth and hand positions carry head.py's stated ±5 cm (the rig's +x is taken as forward).
+
+## Probed 2026-11-10 (office PC, TTO's 2026-11-09 bundles; agent "tto", Build phase)
+
+Read from `tto_assets\2026-11-09` (the office's own decrypted TTO install) with
+`uv run --no-project --with UnityPy --with pillow --with imageio-ffmpeg python -I pipeline/wardrobe_fx_tto.py sheep --probe`
+(all 24 prefabs, now `SKILL_FX["sheep"]`). Probe outputs and helper scripts are in `checks/fx_sheep_build/tto/`
+(`summary.txt` lists every node and part). Built into `wardrobe/data/sheep/fx.json`: 24 `tto/` effects, 26 `tto_`
+materials, 15 textures, 14 sounds.
+
+### Per prefab (EffectControl life + afterLife and follow flags; what draws; sounds)
+
+| Prefab | EffectControl | Parts | AudioSource (play on awake) |
+|---|---|---|---|
+| gleamingBreath_cast | 1.7 + 0.5, followPosition, **followState** | GroundHug (Consecration), 3 ImageEmitters (Prayer, Hand, Halo), 2 ParticleSystems (Gather, Motes) | castEffect 0.7 |
+| gleamingBreath_exhale | 0.9 + 0.4 | 2 ImageEmitters, PS Mist (stretched), PS Sparks (**Collision**, Force) | holyLight_start 0.6 |
+| gleamingBreath_wisp | 1.4 + 0.5 | 3 ImageEmitters, 2 **TrailRenderers** (Trail 0.4 s, TrailCore 0.28 s), 3 PS (Orbit local, Sparkle world, Feathers) | none |
+| gleamingBreath_land | 2.8 + 0.6 | 3 GroundHugs (seal, echo, ring), 19 ImageEmitters (pillar, crown, two 6-feather seraph wings), PS Feathers | heal 0.9, holyArmor_ring 0.6 |
+| gleamingBreath (status look) | **none** (removeStatus destroys it) | 4 PS (Halo flat, Glow, Motes, Feathers; 2 loop) | none |
+| lucentBarrier_cast | 1.4 + 0.4, followPosition, **followState** | ImageEmitter + LineEmitter (Cast), PS Shards (**mesh** sheepRow6_shard), PS Motes, 3 ImageEmitters (hex sigil, prism, push) | castEffect 1.0 (on Cast), revert 0.6 |
+| lucentBarrier_beam | **none** (RabbitTracer's Destroy(life + 0.05)) | **LineRenderer** + **RabbitTracer** (life 0.4, travel 0.08, width 0.34, head = Head), Head/Glint ImageEmitter | none |
+| lucentBarrier_land | 1.4 + 0.4 | PS Inrush (mesh shard), PS Shell (mesh **sheepRow6_prismShell**, Prism Veil), 3 ImageEmitters, PS PrismDust | iceShield 0.7 |
+| lucentBarrier (status look) | **none** | 4 PS: Shell, Shimmer (loop 2.8 s; both prism-shell meshes), Orbit (shard meshes), Seal (flat) | none |
+| lucentBarrier_reflect | 0.7 + 0.3 | ImageEmitter, PS Shards (mesh), PS Sparks (Collision) | shieldReflect 0.55 |
+| lucentBarrier_reflectBeam | **none** | LineRenderer + RabbitTracer (life 0.3, travel 0.05, width 0.18, no head) | none |
+| lucentBarrier_panel | 0.6 + 0.2 | 4 ImageEmitters | none |
+| grandCodex_cast | 1.4 + 0.5, followPosition, **followState** | 2 GroundHugs, PS Glyphs (UV sheet), 3 ImageEmitters, PS Sparks (Collision) | worldEncarta 0.7 |
+| grandCodex_field | **20.6 + 0.6** | 6 GroundHugs (Circle, Boundary, InnerSanctum, CounterScript, Glow, Open), PS Motes (20 s) | edenSanctuary_ring 0.7 |
+| grandCodex_book | **none** (CodexOpen's Destroy(book, 0.1)) | **Mesh "Codex"** (13,046 vertices, 7 submeshes, 7 Standard materials), child **FlipPivot** (its own mesh, 754 vertices, manuscript material), Glow / OrbitA / OrbitB / Cone ImageEmitters, PS Astrolabe (flat, local), PS Glyphs (world) | none |
+| grandCodex_close | 1.4 + 0.4 | 2 ImageEmitters, PS Glyphs, PS Dust | bookBash_hit 0.8 |
+| grandCodex_page_psalm / _seal / _verdict | 1.2 + 0.4 each | 3 ImageEmitters, PS Glyphs (the same build in each) | none |
+| grandCodex_psalm | 1.8 + 0.5 | 3 GroundHugs, PS Rise | heal 0.8 |
+| grandCodex_seal | 1.6 + 0.5 | 3 GroundHugs, PS Chains | seal 0.8, lightBind 0.5 |
+| grandCodex_verdict | 1.1 + 0.3 | 3 ImageEmitters, PS VerdictSplinters (mesh shard) | divinitySpear_ring 0.8 |
+| grandCodex_spear | 1.0 + 0.3 | 3 ImageEmitters (shaft, cross shaft, tip), TrailRenderer | divinitySpear 0.6 |
+| scriptureBind (status look) | **none** | PS Ring (flat), PS Glyphs (loop) | none |
+
+- **Sounds.** All 14 are BB's recordings. Each is the same length as the rip's WAV to the millisecond (`sounds.py`).
+  - 11 come from the Sheep's own `sounds/`.
+  - `holyArmor_ring` comes from the Wolf's, `iceShield` from the Penguin's, `shieldReflect` from the Whale's. `rip_wav`'s
+    search finds them in BB's rip.
+  - None is TTO-only. The build can now also export a TTO-only clip from the bundle (FMOD through UnityPy), should a
+    later class need one.
+- **Materials and shaders.**
+  - Three are TTO's own procedural shaders, disassembled from their D3D11 bytecode (`dxbc_*.txt`):
+    - `TTO/Sheep/Celestial Ring` (`sheepRow6_celestial`, no texture): a star-chart disc drawn from the uv, orbiting at
+      `_Speed` 0.12;
+    - `TTO/Sheep/Celestial Ray` (`sheepRow6_ray`, no texture): a soft beam along u;
+    - `TTO/Sheep/Prism Veil` (`sheepRow6_veil`): a fresnel shell over the prism lattice, with a band scrolling up.
+  - The book uses Unity's `Standard` (metallic, smoothness, emission).
+  - The Sparks use `Particles/Standard Unlit` (`tto_Point`: Fade, HDR `_Color` 6.35).
+  - Everything else is Unity's legacy Additive / Additive (Soft) / Alpha Blended.
+- **Unity parts the page lacked:**
+  - LineRenderer;
+  - Unity 5.5+'s TrailRenderer;
+  - mesh particles (shuriken m_RenderMode 4): `sheepRow6_shard` (30 vertices) and `sheepRow6_prismShell` (240 vertices,
+    with normals);
+  - a real MeshFilter mesh (the book);
+  - ParticleSystem World collision (3 Sparks systems).
+
+  No Sheep prefab has HelixRibbonEmitter, BoltEmitter or GroundConformParticles, and none has ArcRibbon or GroundFollower.
+  The rest is what the page already drew (GroundHug, Image / Line emitters, shuriken).
+
+### Corrections to the report above
+
+- `gleamingBreath_cast`, `lucentBarrier_cast` and `grandCodex_cast` all have **followState**. So the possible cuts in
+  2.1, 2.2 and 2.3 are real: `cut` 1.65, 1.35 and 1.35 (Row6End at 1.7 / 1.4 / 1.4, minus the Wolf's 0.05).
+- The `gleamingBreath`, `lucentBarrier` and `scriptureBind` status looks and the book have **no EffectControl**. They
+  live until the code destroys them.
+  - `lucentBarrier`'s cue `kill 3` is needed, as written.
+  - The book's `kill 20.1` is now also done by its part (Sheep.CodexOpen, below). The cue's kill is harmless but no
+    longer needed.
+- `grandCodex_field`'s own life is 20.6 + 0.6 s. Spawned at 0.7, it starts its after-life at 21.3 and is gone at 21.9,
+  which is 0.6 s after the close at 20.7. No change to 2.3's note: the game never destroys it.
+- `lucentBarrier_beam` and `gleamingBreath_wisp` are no longer "left out". RabbitTracer and the wisp's flight
+  (Sheep.BreathFly) are built (below).
+- RabbitTracer, decompiled (TTO1102, `RabbitTracer.c`): Set@0x1E6F280, Update@0x1E6F420, Apply@0x1E6EF20, .ctor@0x1E6F4A0.
+  Its constants were read at their addresses (`consts.py`).
+  - h = clamp01(t / travel); f = clamp01((t - travel) / max(0.01, life - travel)).
+  - The line runs from lerp(from, to, clamp01(0.85 f²)) to lerp(from, to, h).
+  - Widths: 0.5 w at the start and w at the end, with w = (1 - 0.7 f) x width. Both colours' alpha x (1 - f).
+  - The head node sits at the line's head. The object is destroyed life + 0.05 s after Set.
+
+  So the beam shoots from the hand to the chest in 0.08 s. Then its tail catches up while it thins and fades. It is
+  gone at 0.45 s.
+
+### Cue changes the tto/ entries need (for the cue file's owner)
+
+A new cue option, `to`, drives the two code-driven parts. It is [x, y, d]: metres right, up and ahead of the hero, the
+point the game aims at. index.html must pass it through (see the shared changes).
+
+```json
+[0.62, "fx", "tto/gleamingBreath_wisp", {"d": 0.35, "y": 1.21, "to": [0, 0.8, 10]}]
+[0.58, "fx", "tto/lucentBarrier_beam", {"d": 0.49, "y": 1.12, "rot": [33, 180, 0], "to": [0, 0.8, 0]}]
+```
+
+- The wisp needs no `kill`. Its part destroys it 0.3 s after the 0.6 s flight: 0.9 s after spawning, 1.52 s clip time.
+  Without `to` it takes the game's no-target path (3 m ahead, 0.1875 s).
+- The beam goes on herself (decision 1). Its root needs no `kill`: RabbitTracer destroys it at 0.45 s. Without `to` it is
+  not drawn.
+- `cut`s: `tto/gleamingBreath_cast` `{"cut": 1.65}`, `tto/lucentBarrier_cast` `{"cut": 1.35}`, `tto/grandCodex_cast`
+  `{"cut": 1.35}`. All three have followState.
+- `tto/grandCodex_book`: keep `{"d": 10, "y": 2.6, "rot": [-35, 0, 0]}`; `kill 20.1` is optional. Here y is the hover
+  height. The part adds the drop from 3 m higher and the bob, and turns the page before each read.

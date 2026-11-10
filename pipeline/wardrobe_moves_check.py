@@ -75,7 +75,8 @@ async def main():
         await run("skill", "@HolyLight", 11)
         await run("skill", "@ChargeAttack", 8)
         await run("skill", "@NormalAttack", 4)
-        await run("skill", "soulOfArms", 1)
+        await run("skill", "@SoulofArms", 2)               # 2026-11-10 decision 16: cast1 > cast2 (0 s) > soulOfArms
+        await run("skill", "@SealofAttack", 1.5)           # decision 17: cast3 alone, cut in ("!")
         await run("base", "ko", 3)
         await run("base", "run", 2)
         await run("base", "falling", 1.5)

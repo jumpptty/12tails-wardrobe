@@ -5,11 +5,13 @@
 //   StaticMesh           a MeshFilter's mesh drawn with the node's MeshRenderer materials (mirrorBlade_mirror's pane)
 //   SkinnedMeshRenderer  a mesh skinned to the effect's own nodes (bladeFang / bloodFang's fan)
 //   Animation            the Animation component's default clip, played on the effect's nodes (Blade Fang, Crusader,
-//                        Dual Brand 1 / 2 / 4 swing their slash nodes with it)
+//                        Dual Brand 1 / 2 / 4 swing their slash nodes with it); node.userData.fxAnim.play(name, fade)
+//                        switches the clip (Eden Sanctuary's destroy)
 //   ShatterMesh          ShatterMesh.cs: the StaticMesh breaks into its triangles, which fly apart (Mirror Blade)
 // Wolf: bladefang_underslash / upperslash, bloodfang_underslash / upperslash (Animation + SkinnedMeshRenderer), crusader,
 // lawbringer, dualbrand_slash1 / 2 / 4 (Animation; their trails are trail.js), mirrorblade_mirror (StaticMesh +
-// ShatterMesh).
+// ShatterMesh). Sheep (2026-11-10): the FX/Phoenix material (Soul of Arms, Divinity Spear / Sword), faded by
+// alphatimer.js.
 
 export default function register(api) {
   const { THREE, hermite, rnd, clamp01, fxMaterial, texLoader, DATA } = api;
@@ -37,9 +39,28 @@ export default function register(api) {
       "#include <dithering_fragment>\n\tgl_FragColor.a = 1.0 - dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));"); };
     return m;
   };
+  // FX/Phoenix (the game's own; rip Assets/Resources/gameassets/shader/Phoenix.shader:1-23; the Sheep's Soul of Arms
+  // weapons, Divinity Spear / Sword, Penguin's absoluteZero): fixed-function lit, Material { Ambient [_Color] Diffuse
+  // [_Color] Emission [_Emission] } (:12-16), SetTexture combine texture * primary double, texture alpha * primary alpha
+  // (:21: rgb = 2 x texture x (_Emission + _Color x the lights), alpha = texture.a x _Color.a), Blend SrcAlpha
+  // OneMinusSrcAlpha, AlphaTest Greater 0, ZWrite and Cull left at their defaults (on, Back). As a Lambert: map x
+  // 2 _Color x the page's lights + map x 2 _Emission (emissiveMap = map), the gamma colours as sRGB; the default _Color
+  // (1, 1, 1, 1) and _Emission (0, 0, 0, 0) (:3-4) when the data has none. Front faces only: inside the mirror group
+  // three flips the front face with the negative determinant, so its front faces are Unity's. AlphaTimer drives opacity.
+  // APPROXIMATED: the game's own ambient and light colours (the page's lights instead); the game clamps the lit colour at
+  // 1 before the doubling (with the Sheep's colours the page's lights, about 1.1 at most, stay under it); ColorMask RGB (:20)
+  // leaves the frame's alpha alone, but here the canvas is transparent over the stage's CSS colour, so alpha is written
+  const phoenix = d => {
+    const c = d.color || [1, 1, 1, 1], e = d.emission || [0, 0, 0, 0];
+    const m = new THREE.MeshLambertMaterial({ transparent: true, opacity: c[3], alphaTest: 1e-4, side: THREE.FrontSide });
+    m.color.setRGB(2 * c[0], 2 * c[1], 2 * c[2], THREE.SRGBColorSpace);
+    m.emissive.setRGB(2 * e[0], 2 * e[1], 2 * e[2], THREE.SRGBColorSpace);
+    if (d.tex) m.map = m.emissiveMap = texture(d);
+    return m;
+  };
   // a renderer's material: the game's particle shaders through the page's fxMaterial; Diffuse (opaque) as a lit
-  // Lambert, _Color x texture (both sides drawn: the mirror group flips the winding, and the effect meshes are thin);
-  // DistortGlass as above; any other shader of the game's falls back to fxMaterial (alpha blended) with a warning
+  // Lambert, _Color x texture (both sides drawn); DistortGlass and Phoenix as above; any other shader of the game's falls
+  // back to fxMaterial (alpha blended) with a warning. userData.fxBlend = the data's blend (alphatimer.js reads it)
   const material = (fx, data, name) => {
     const d = name && data.materials?.[name];
     if (!d) return null;
@@ -47,14 +68,17 @@ export default function register(api) {
     if (mats[k]) return mats[k];
     let m;
     if (d.blend === "shader:FX/DistortGlass") m = glass(d);
+    else if (d.blend === "shader:FX/Phoenix") m = phoenix(d);
     else if (d.blend === "opaque") {
       m = new THREE.MeshLambertMaterial({ side: THREE.DoubleSide });
       if (d.color) m.color.setRGB(d.color[0], d.color[1], d.color[2], THREE.SRGBColorSpace);
       if (d.tex) m.map = texture(d);
     } else {
-      if (String(d.blend).startsWith("shader:")) console.warn("effect mesh: shader drawn as a particle material", d.blend, name);
+      // a shader a part module draws itself (api.shader: fxparts/tto_sheep.js's Standard ...) comes back from fxMaterial
+      if (String(d.blend).startsWith("shader:") && !api.shaders?.[d.blend]) console.warn("effect mesh: shader drawn as a particle material", d.blend, name);
       m = fxMaterial(fx.cls, name, d);
     }
+    m.userData.fxBlend = d.blend;
     return (mats[k] = m);
   };
   // Unity draws submesh i with material i; materials past the last submesh draw the last submesh again; submeshes
@@ -117,31 +141,58 @@ export default function register(api) {
   // quaternion's four curves sampled apart, then normalised). The clip's wrap mode, else the component's: 0 Default and
   // 1 Once play once and the nodes keep the last pose (parts.md: the legacy end-of-clip hold, medium sure; it matters only
   // for crusader's last 0.6 s), 2 Loop, 4 PingPong, 8 ClampForever holds. No clip in any class has float curves or
-  // events (wardrobe_fx_mesh.py). The effect's root (node 0) is never posed: the cue places it (no clip animates it)
+  // events (wardrobe_fx_mesh.py). The effect's root (node 0) is never posed: the cue places it (no clip animates it).
+  // Another part switches the clip with node.userData.fxAnim.play(name, fade) (2026-11-10, Eden Sanctuary's
+  // CrossFade("destroy", 0.2), Sheep_edenSanctuary.cs:409), as Unity's legacy Animation does it:
+  //   play(name)        Animation.Play: a cut to the clip from its start; a clip already playing is not rewound
+  //   play(name, fade)  Animation.CrossFade: the same, its weight rising 0 -> 1 over fade seconds
+  // The pose is set at once (Unity samples the animation after Update, in the same frame). Returns false for a clip the
+  // component lacks. APPROXIMATED in the cross-fade: the outgoing side is the pose at the moment of the call, held (a
+  // clip that is still playing would run on in Unity while it fades out), and rotations blend by slerp; Eden's two clips
+  // meet at the same pose (plans/fx_sheep/parts.md), so there the result is the game's. No part calls it for an
+  // Animation that does not play by itself, so those stay unbuilt
   api.part("Animation", (fx, node, c) => {
-    const clip = c.play && c.clips?.[c.clip];
-    if (!clip) return null;
-    const wrap = clip.wrap || c.wrap || 1, len = clip.len;
-    const tracks = Object.entries(clip.tracks).map(([i, tr]) => ({ o: fx.nodes[+i], tr })).filter(x => x.o && x.o !== fx.nodes[0]);
+    if (!c.play || !c.clips?.[c.clip]) return null;
+    let cur, wrap, len, tracks, t = 0, fade = 0, from = null;
+    const use = name => {
+      const clip = c.clips[name];
+      cur = name; wrap = clip.wrap || c.wrap || 1; len = clip.len;
+      tracks = Object.entries(clip.tracks).map(([i, tr]) => ({ o: fx.nodes[+i], tr })).filter(x => x.o && x.o !== fx.nodes[0]);
+    };
     const local = t => {
       if (!(len > 0)) return 0;
       if (wrap === 2) return t % len;
       if (wrap === 4) { const k = t % (2 * len); return k > len ? 2 * len - k : k; }
       return Math.min(t, len);
     };
-    const pose = t => {
+    const q = new THREE.Quaternion();
+    const pose = () => {
+      const k = local(t), w = from ? Math.min(1, t / fade) : 1;
       for (const { o, tr } of tracks) {
-        if (tr.q) o.quaternion.fromArray(hermite(tr.q, 4, t)).normalize();
-        if (tr.p) o.position.fromArray(hermite(tr.p, 3, t));
-        if (tr.s) o.scale.fromArray(hermite(tr.s, 3, t));
+        if (tr.q) o.quaternion.fromArray(hermite(tr.q, 4, k)).normalize();
+        if (tr.p) o.position.fromArray(hermite(tr.p, 3, k));
+        if (tr.s) o.scale.fromArray(hermite(tr.s, 3, k));
+        const f = w < 1 && from.get(o);
+        if (!f) continue;
+        o.position.lerpVectors(f.p, o.position, w); o.scale.lerpVectors(f.s, o.scale, w);
+        o.quaternion.copy(q.copy(f.q).slerp(o.quaternion, w));
       }
-    };
-    let t = 0;                                   // fxTick updates a new Fx before its first frame is drawn
-    return { node, update(dt) {
-      t += dt;
-      pose(local(t));
+      if (w >= 1) from = null;
       node.updateMatrixWorld(true);              // the parts after this one this frame (trails) read the new pose
-    } };
+    };
+    use(c.clip);                                 // fxTick updates a new Fx before its first frame is drawn
+    const em = { node, update(dt) { t += dt; pose(); },
+      play(name, fadeLen = 0) {
+        if (!c.clips[name]) return false;
+        if (name === cur && (wrap === 2 || wrap === 4 || wrap === 8 || t < len)) return true;   // still playing
+        use(name);
+        from = fadeLen > 0 ? new Map(tracks.map(({ o }) => [o, { p: o.position.clone(), q: o.quaternion.clone(), s: o.scale.clone() }])) : null;
+        t = 0; fade = fadeLen;
+        pose();
+        return true;
+      } };
+    node.userData.fxAnim = em;
+    return em;
   });
 
   // ---- ShatterMesh (ShatterMesh.cs, LateUpdate :53-165, CreateClone :169-397): its own clock from the spawn.

@@ -84,6 +84,19 @@ LAYOUTS.update({
     "ShatterMesh": [("Life", "f"), ("Delay", "f"), ("worldVelocity", "v3"), ("localVelocity", "v3"),
                     ("rndVelocity", "v3"), ("rndRotation", "v3")],
 })
+# the Sheep's parts (plans/fx_sheep/parts.md, 2026-11-10): every AlphaTimer (56) and ProjectileControl (20) in the 12
+# classes and the Sheep's 4 Sheep_seal decode and use up exactly their bytes; the Sheep's movers and Eden Sanctuary keep
+# every field private (0 field bytes: the empty layout makes the self-check say so)
+LAYOUTS.update({
+    # AlphaTimer.cs:378-402 (36 bytes): fades its own renderer's _Color, else _TintColor (wardrobe/fxparts/alphatimer.js)
+    "AlphaTimer": [("MinAlpha", "f"), ("MaxAlpha", "f"), ("FadeDelay", "f"), ("FadeEaseIn", "f"), ("FadeMiddle", "f"),
+                   ("FadeEaseOut", "f"), ("eraseShadow", "b"), ("repeat", "b"), ("endDestroy", "b")],
+    # ProjectileControl.cs:72-87 (32 bytes): data only; life is the hero code's (Sheep.cs:9343, :11472, :9838), not this
+    "ProjectileControl": [("life", "f"), ("dmg", "f"), ("velocity", "v3"), ("OwnerID", "i"), ("isInitialized", "b"),
+                          ("isDestroyed", "b")],
+    "Sheep_seal": [("mSealType", "i")],             # Sheep_seal.cs:348 (0 attack, 1 defense, 2 earth, 3 heaven)
+    "Sheep_nAttack": [], "Sheep_homingLight": [], "Sheep_cAttack": [], "Sheep_edenSanctuary": [],
+})
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -191,7 +204,9 @@ def material(game, pptr, base, mats, texs):
             scale = [v["m_Scale"]["x"], v["m_Scale"]["y"]]; offset = [v["m_Offset"]["x"], v["m_Offset"]["y"]]
     colors = {key(k): [v["r"], v["g"], v["b"], v["a"]] for k, v in props["m_Colors"]}
     mats[name] = {"blend": blend, "tex": tex, "scale": scale, "offset": offset,
-                  "tint": colors.get("_TintColor"), "color": colors.get("_Color")}
+                  "tint": colors.get("_TintColor"), "color": colors.get("_Color"),
+                  # FX/Phoenix's Emission [_Emission] (rip Assets/Resources/gameassets/shader/Phoenix.shader; fxparts/mesh.js)
+                  "emission": colors.get("_Emission")}
     return name
 
 
@@ -333,8 +348,11 @@ def main():
             ap.error(f"wardrobe/fx_cues/{a.cls}.json has no cues; write them first, or pass --fx")
     game = Game()
     mats, texs, sounds, effects = {}, {}, set(), {}
+    # the page looks an effect up by the cue's name: a --fx name in another case (the inventory's lower-case returncast,
+    # plans/fx_sheep/tto.md) is stored under the cue's spelling (the prefab itself is found in any case, effect())
+    spell = {n.lower(): n for n in cue_names(a.cls)[0].split(",") if n} if os.path.exists(os.path.join(os.path.dirname(DATA), "fx_cues", a.cls + ".json")) else {}
     for n in [n for n in a.fx.split(",") if n]:
-        effects[n] = effect(game, a.cls, n, mats, texs, sounds)
+        effects[spell.get(n.lower(), n)] = effect(game, a.cls, n, mats, texs, sounds)
     voices = [v for v in a.voices.split(",") if v]
     hero_sounds = [v for v in a.sounds.split(",") if v]
     # textures -> data/fx/tex (shared by every class), sounds -> data/<cls>/sfx

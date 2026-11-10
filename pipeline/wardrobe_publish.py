@@ -1004,10 +1004,12 @@ def publish_fx(run, classes):
         d = json.loads(fx.read_text(encoding="utf-8"))
         texs = {m.get("tex") for m in d.get("materials", {}).values()} | {c.get("imageTex") for e in d.get("effects", {}).values()
                                                                           for n in e.get("nodes", []) for c in n.get("comps", [])}
-        missing = [t for t in sorted(t for t in texs if t) if not run.local_copy(f"fx/tex/{t}.webp")]
+        # TTO's effect textures (tto_*) and a fx.json holding TTO effects (the Sheep's Grand Codex book is a whole 3D model)
+        # are scrambled like TTO's items (user 2026-11-10: "stop casual copying"); the page's dataBytes() undoes both
+        missing = [t for t in sorted(t for t in texs if t) if not run.local_copy(f"fx/tex/{t}.webp", scrambled=t.startswith("tto_"))]
         if missing:
             run.warnings.append(f"{cls}: effect textures not in the data: {missing}")
-        run.copy(f"{cls}/fx.json")
+        run.copy(f"{cls}/fx.json", scrambled=any(k.startswith("tto/") for k in d.get("effects", {})))
         sfx = run.data / cls / "sfx"
         for f in sorted(sfx.glob("*.mp3")) if sfx.is_dir() else []:
             run.copy(f"{cls}/sfx/{f.name}")

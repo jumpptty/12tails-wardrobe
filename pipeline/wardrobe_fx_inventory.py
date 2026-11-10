@@ -24,7 +24,11 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          "ParticleRenderer", "AudioSource",
          # 2026-11-09, wardrobe/fxparts (plans/fx_wolf/build_rules.md): vortex, emblem, trail, control, mesh
          "VortexEmitter", "EmblemEmitter", "TrailEmitter", "TrailRenderer", "EmitterControl", "EffectControl(child)",
-         "StaticMesh", "Animation", "SkinnedMeshRenderer", "ShatterMesh"}
+         "StaticMesh", "Animation", "SkinnedMeshRenderer", "ShatterMesh",
+         # 2026-11-10, the Sheep (plans/fx_sheep/parts.md): fxparts/alphatimer.js; fxparts/sheep.js (the three movers read
+         # ProjectileControl's velocity, Eden Sanctuary's clip switch and end); Sheep_seal draws nothing (data only)
+         "AlphaTimer", "ProjectileControl", "Sheep_seal", "Sheep_nAttack", "Sheep_homingLight", "Sheep_cAttack",
+         "Sheep_edenSanctuary"}
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it
 # for hits, which the wardrobe has no targets for)
@@ -72,12 +76,12 @@ def main():
     inv, cache = {}, {}
     for cls in CLASSES:
         src = os.path.join(SRC, cls.capitalize() + ".cs")
-        loads = {}
+        loads = {}                                         # Resources path (lower case, as the container) -> (line, the code's spelling)
         for i, line in enumerate(open(src, encoding="utf-8", errors="replace"), 1):
             for p in PATH.findall(line):
-                loads.setdefault(p.lower(), i)
+                loads.setdefault(p.lower(), (i, p))
         own, others = {}, []
-        for key, line in sorted(loads.items()):
+        for key, (line, spelt) in sorted(loads.items()):
             if key not in game.container:
                 continue                                   # a folder prefix built at run time, or not a Resources asset
             if key not in cache:
@@ -88,11 +92,13 @@ def main():
             if f"/heroes/{cls}/effects/" not in key:       # a pet's, or another class's shown on this one (a buff, a potion)
                 others.append(key)
                 continue
-            own[key.rsplit("/", 1)[1]] = e = {"line": line, "parts": cache[key]}
+            # named as the code spells it, the name a cue gives (2026-11-10: returnCast, not the container's returncast)
+            name = spelt.rsplit("/", 1)[1]
+            own[name] = e = {"line": line, "parts": cache[key]}
             # a ready effect must also extract (every script's field bytes decoded); in memory only, nothing written
             if set(cache[key]) <= BUILT:
                 try:
-                    effect(game, cls, key.rsplit("/", 1)[1], {}, {}, set())
+                    effect(game, cls, name, {}, {}, set())
                 except Exception as ex:                    # noqa: BLE001 (reported, the run goes on)
                     e["extract_error"] = f"{type(ex).__name__}: {ex}"
         inv[cls] = {"own": own, "others": others}

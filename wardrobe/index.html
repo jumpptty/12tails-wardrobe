@@ -75,13 +75,15 @@ input[type=search] { width: 100%; background: var(--well); border: 1px solid var
 input[type=search]:focus { border-color: var(--gold); }
 main { position: relative; background: linear-gradient(var(--stage-top), var(--stage-bottom)); overflow: hidden; }
 main canvas { display: block; width: 100%; height: 100%; filter: saturate(1.15); }   /* the V07 look's +15 % */
-/* the skill effects' backdrop (pilot 2026-11-09): the game's effects add light, which a white stage swallows; while a move
-   with effects plays, ?fxbg=dark darkens the stage, ?fxbg=spot darkens a glow behind the hero, ?fxbg=white keeps it white */
+/* the stage's background (user 2026-11-10: "make it a manual toggle for background color default to white"; it replaced
+   the dark backdrop that came up by itself while effects played): white, or dark with the พื้นหลัง button (#bg), where
+   the effects' added light reads best. On the dark stage the nameplate's text turns light (the WASD hint keeps its chip) */
 main { isolation: isolate; }
-main::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s; }
-main.fx-on::before { opacity: 1; }
-main[data-fxbg=dark]::before { background: linear-gradient(#211c27, #2d2634); }
-main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50% 56%, rgba(28, 23, 34, .95), rgba(28, 23, 34, .72) 48%, rgba(28, 23, 34, 0) 100%); }
+main::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s;
+  background: linear-gradient(#211c27, #2d2634); }
+main.bg-dark::before { opacity: 1; }
+main.bg-dark .plate { --on-stage: #f3e7d3; --on-stage-2: #cdbd9f; }   /* 13:1 / 9:1 on #2d2634 */
+main.bg-dark .status.err { color: #f0937c; }
 /* one floating toolbar (V5): undo / redo | camera | the gold บันทึกภาพ, icon buttons with Thai names */
 .bar { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 3px;
   background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 10px 24px -14px rgba(0, 0, 0, .45); }
@@ -426,6 +428,9 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 /* the toolbar grew a VFX button (2026-11-10): on a narrow phone the gold บันทึกภาพ keeps its camera alone, so the bar
    stays clear of the Bible logo (at 360 px it covered ย้อนกลับ) */
 @media (max-width: 400px) { .bar .l-short { display: none; } .bar .tb.primary { padding: 0 10px; } }
+/* ... and the พื้นหลัง button (2026-11-10): on a phone the bar's buttons go a little narrower (36 -> 32 px, still a fair
+   touch target at 36 px tall), so it stays clear of the logo at 360-430 px */
+@media (max-width: 760px) { .bar .tb { min-width: 32px; padding: 0 5px; } .bar .tb.fxt { padding: 0 5px; } .bar .tb-sep { margin: 6px 1px; } }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -446,6 +451,7 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button type="button" class="tb fxt" id="sound" title="เสียงประกอบท่าทาง (SFX)" aria-label="เสียงประกอบ SFX" aria-pressed="true">SFX</button>
       <button type="button" class="tb fxt" id="vfx" title="เอฟเฟกต์ท่าทาง (VFX)" aria-label="เอฟเฟกต์ VFX" aria-pressed="true">VFX</button>
+      <button type="button" class="tb" id="bg" title="พื้นหลังมืด" aria-label="พื้นหลังมืด" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
@@ -574,8 +580,8 @@ const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if
 // copying"; reading this code undoes it, which the user accepts). The data files the page decodes pass here; one without
 // the mark (all of BB's, and every file of the local copy) comes back as it is. SCR_KEY = the publish's SCRAMBLE_KEY
 const SCR_MARK = [84, 84, 79, 120], SCR_KEY = new TextEncoder().encode("12tails-wardrobe-tto-preview-only");
-async function dataBytes(url) {
-  const r = await fetch(url);
+async function dataBytes(url, init) {
+  const r = await fetch(url, init);
   if (!r.ok) throw new Error(`${url} ${r.status}`);
   const b = new Uint8Array(await r.arrayBuffer());
   if (b.length < 4 || SCR_MARK.some((m, i) => b[i] !== m)) return b;
@@ -590,7 +596,8 @@ const loadImage = src => imgCache[src] ||= (src.startsWith(DATA)
   : Promise.resolve(src)).then(u => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = u; }));
 // a data texture through loadImage (a scrambled one too); its picture arrives later, as with TextureLoader
 const loadTex = url => { const t = new THREE.Texture(); loadImage(url).then(i => { t.image = i; t.needsUpdate = true; }, e => console.warn(e)); return t; };
-const texLoader = new THREE.TextureLoader();
+// every effect texture (index.html and the parts' api.texLoader) through loadTex: TTO's are scrambled online too
+const texLoader = { load: url => loadTex(url) };
 
 // ---------- class ----------
 async function loadClass(cls) {
@@ -983,9 +990,10 @@ function buildClip(name) {
 // as the one sequence the game plays them in). SEQ = the skills whose clips the BB code plays one after another (traced
 // in DecompiledSource, NOTES.md "Wardrobe moves"; the TTO-only ones by their names). A step "clip" plays once; "clip*" is
 // the part the game loops (a charge held, a cast bar, a channel), shown for about 1.5 s unless "@t" gives its time; "~" /
-// "^" = the game's 0.2 / 0.1 s crossfade into the step (else a cut, as the game's PlayAnimation(x, 0)); "@t" = the next
-// step starts after t s. Timings (user 2026-11-09: "look at their timings referring to skill-details tool"): the Bible's
-// skill details at max rank, checked against the coroutine waits: a cast bar the stats shorten = 0 (user 2026-11-09:
+// "^" = the game's 0.2 / 0.1 s crossfade into the step (else a cut, as the game's PlayAnimation(x, 0)); a first step
+// always fades in over 0.2 s (the sequence starting again too) unless it says "!" = a cut there as well (Seal's
+// PlayAnimation("cast3", 0), Sheep.cs:32731); "@t" = the next step starts after t s. Timings (user 2026-11-09: "look
+// at their timings referring to skill-details tool"): the Bible's skill details at max rank, checked against the coroutine waits: a cast bar the stats shorten = 0 (user 2026-11-09:
 // "castbar is lessened by INT, don't touch them, assume high INT, no cast bar"; the bar's loop shows for one frame, as
 // the game's at zero cast time; Barrel Railgun's fixed 6 s stays), a charge = full charge, a channel = its duration, or
 // three hits (at least 3 s) when it runs until the player moves, combo stages start where the range preview starts them. Look-alike names that are NOT sequences stay single: Book Bash 1-3 (a random pick),
@@ -1020,8 +1028,19 @@ const SEQ = {
     "Cosmic Friday: cast1@0.7 cast2*@0 cast3 cosmicFriday*@6"],
   rabbit: ["Charge Attack: cAttack1 cAttack2* cAttack3", "Mix: mix1 mix2*@0 mix3~", "Sticky Gum: mix1 mix2*@0 mix4~", "Bounce: bounce1 bounce2",
     "Mall: mall1* mall2*"],
-  sheep: ["Normal Attack: nAttack1@0.8 nAttack2^ nAttack3", "Charge Attack: cAttack1@0.8 cAttack0*~@4 cAttack2", "Cast: cast1 cast2*@0 cast3~",
-    "Holy Light: holyLight1@0.6 holyLight2*@0 holyLight3@0.4 holyLight4*@3", "Lullaby: holyLight1@0.6 holyLight2*@0 lullaby*@3"],
+  // the Sheep (plans/fx_sheep, decisions.md 12, 16, 17): Normal Attack's stage 2 at 0.7 s and stage 3 at 0.7 + 0.8 = 1.5 s
+  // (RPC_nAttack2's Yield(2, actionTime - Time.time + 0.7) Sheep.cs:18060, RPC_nAttack3's + 1.5 :18496, actionTime never
+  // reset; plans/fx_sheep/attacks_emotes.md "Normal Attack stage times"; were 0.8 / 1.8 from the skill details); Soul of
+  // Arms after the shared cast channel (RPC_cast1 :21618 cast1 0.2 fade, :19859 cast2 looped, the bar 0 s), then
+  // soulOfArms with a 0.2 s fade (:33886); Gleaming Breath / Lucent Barrier (TTO, in place of Revive's / Reverse's release
+  // after the same channel: StartGleamingBreath@0x1E5EEB0, StartLucentBarrier@0x1E5F100) start their clip with
+  // Row6Begin's PlayAnimation(command, 0.1) (TTO1102 Sheep::Row6Begin@0x1E5D850, plans/fx_sheep/tto.md 1);
+  // Seal of Attack / Seal of Defense (two skills, decision 18: RPC_seal sLv 1 / 2) and Eden Sanctuary start from the key
+  // press with no channel (:8189, :7565): cast3 cut in (:32731) / 0.2 s (:36960)
+  sheep: ["Normal Attack: nAttack1@0.7 nAttack2^@0.8 nAttack3", "Charge Attack: cAttack1@0.8 cAttack0*~@4 cAttack2", "Cast: cast1 cast2*@0 cast3~",
+    "Holy Light: holyLight1@0.6 holyLight2*@0 holyLight3@0.4 holyLight4*@3", "Lullaby: holyLight1@0.6 holyLight2*@0 lullaby*@3",
+    "Soul of Arms: cast1 cast2*@0 soulOfArms~", "Seal of Attack: cast3!", "Seal of Defense: cast3!", "Eden Sanctuary: cast3",
+    "Gleaming Breath: cast1 cast2*@0 gleamingBreath^", "Lucent Barrier: cast1 cast2*@0 lucentBarrier^"],
   whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
     "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0"],
   // the Wolf's step times corrected from the code 2026-11-09 (plans/fx_wolf/attacks.md, checked by hand): stage 2 from 0.8 s,
@@ -1049,8 +1068,8 @@ function chains() {
   return (C.chains = (SEQ[C.cls] || []).map(line => {
     const [name, body] = line.split(": ");
     const steps = body.split(" ").map(tok => {
-      const m = tok.match(/^(\w+)(\*)?([~^])?(?:@([\d.]+))?$/);
-      return { clip: m[1], hold: !!m[2], fade: m[3] === "~" ? 0.2 : m[3] === "^" ? 0.1 : 0, t: m[4] ? +m[4] : null };
+      const m = tok.match(/^(\w+)(\*)?([~^!])?(?:@([\d.]+))?$/);
+      return { clip: m[1], hold: !!m[2], fade: m[3] === "~" ? 0.2 : m[3] === "^" ? 0.1 : 0, cut: m[3] === "!", t: m[4] ? +m[4] : null };
     });
     return { id: "@" + name.replace(/\s+/g, ""), name, steps, tto: steps.some(s => C.clipsData[s.clip]?.tto) };
   }).filter(ch => ch.steps.every(s => C.clipsData[s.clip])));
@@ -1120,7 +1139,7 @@ function play(name, tail = false) {
   C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail, round: 0 };
   C.cur = name;
   if (!tail) fxClear();                      // a new pick: the last move's effects go with it (not the way back to idle)
-  startStep(0, 0.2);
+  startStep(0, steps[0].cut ? 0 : 0.2);
   renderMovesUI();
 }
 function startStep(i, fade) {
@@ -1146,9 +1165,10 @@ function seqTick(dt) {
   if (!S || S.dur === Infinity || (S.t += dt) < S.dur) return;
   // back: after the last step, idle (ลุกขึ้น; a skill played once: its effects and later cues run on)
   if (S.mode === "back" && S.i + 1 >= S.steps.length) { play(idleName(), true); if (openTopic === "move") syncPressed(); return; }
+  if (!S.tail) fxDue(S.dur, false);          // the step's own cues it has not reached yet (fxDue); the idle tail's cues are the skill's
   const n = S.i + 1 < S.steps.length ? S.i + 1 : 0;
   if (!n) S.round++;
-  startStep(n, n ? S.steps[n].fade : 0.2);
+  startStep(n, n || S.steps[0].cut ? S.steps[n].fade : 0.2);
 }
 // a tile's name, icon and tooltip; a sequence's icon is the skill's own (by its name), else its first clip's that has one
 const moveName = n => chainOf(n)?.name || label(n);
@@ -2114,7 +2134,7 @@ renderer.domElement.addEventListener("pointerleave", () => { Hover.at = null; })
 // character); it turns about the centre of the smallest circle around its footprint; only a
 // left-button (or one-finger) drag pauses the turntable (it resumes 3 s after the drag ends); a click, the wheel, a pinch
 // and WASD leave it spinning (user 2026-11-08: "the only thing stopping the rotation is drag left click"). Zoom and orbit
-// limits scale with the piece, no pan; WASD moves the view but the look-at point stays near the piece (scClamp). The
+// limits scale with the piece, no pan; WASD moves the view freely (2026-11-10). The
 // open viewer is the mode (F4): while it is open a tile click in the picker shows that tile's piece and
 // never wears it. Ways in: the cube on an item tile; the toolbar's ชมชิ้นส่วน (it opens on the open picker's worn piece, or
 // the outfit, and closes again); a double-click on a piece of the character. Esc / กลับ / the toolbar button: back to the
@@ -2212,7 +2232,7 @@ const Showcase = {
       camFinish();
       const K = C;
       this.saved = { pos: camera.position.clone(), target: controls.target.clone(), lim: { minDistance: controls.minDistance, maxDistance: controls.maxDistance,
-        minPolarAngle: controls.minPolarAngle, maxPolarAngle: controls.maxPolarAngle }, pan: controls.enablePan, fitBox, fitH,
+        minPolarAngle: controls.minPolarAngle, maxPolarAngle: controls.maxPolarAngle }, pan: controls.enablePan, fitH,
         floor: floor.visible, floorWide: floorWide.visible, root: K.root.visible, cls: K.cls };
       this.on = true; this.phase = "in"; this.t = 0; this.fitted = false; this.refitHero = false; wReset();
       controls.enablePan = false;
@@ -2325,7 +2345,7 @@ const Showcase = {
     for (const k of [0, .34, .67, 1]) { target.set(0, this.h0 + (mid - this.h0) * k, 0); const d = nearest(); if (!best || d < best.d - 1e-6) best = { d, y: target.y }; }
     target.set(0, best.y, 0);
     const d = best.d, pos = target.clone().addScaledVector(dir, d), lift = phone ? 0 : vh / 2 - cy;
-    this.look.copy(target); this.fitD = d;                                      // scClamp keeps WASD near these
+    this.look.copy(target); this.fitD = d;
     const lim = { minDistance: d * 0.4, maxDistance: d * 10, minPolarAngle: 0, maxPolarAngle: Math.PI };   // free orbit, top to bottom (user 2026-11-08); out to 10 x (was 2.5 x, user 2026-11-09)
     this.fitKey = `${vw}x${vh}/${stageInset}`;
     stopTween(this.liftTw);
@@ -2368,7 +2388,7 @@ const Showcase = {
     // the character changed while it was hidden (ใส่ชิ้นนี้, undo) and its camera was the fitted one: back to its new fit (F1)
     if (this.refitHero && atFit(S.pos, S.target)) {
       const f = heroFitPose(); setFit(f);
-      Object.assign(S, { pos: f.pos, target: f.target, lim: f.lim, fitBox: f.fitBox, fitH: f.h });
+      Object.assign(S, { pos: f.pos, target: f.target, lim: f.lim, fitH: f.h });
     }
     this.refitHero = false;
     camTo(S.pos, S.target, .3, S.lim, () => this.finishExit());
@@ -2385,7 +2405,7 @@ const Showcase = {
     controls.enableDamping = false; controls.update();
     Object.assign(controls, S.lim, { enablePan: S.pan });
     camera.position.copy(S.pos); controls.target.copy(S.target); controls.update(); controls.enableDamping = true;
-    fitBox = S.fitBox; fitH = S.fitH; this.lift = 0; viewOff = -1;
+    fitH = S.fitH; this.lift = 0; viewOff = -1;
     const refit = same && this.refitHero && atFit(S.pos, S.target);
     this.phase = "off"; this.on = false; this.refitHero = false;
     document.querySelector(".app").classList.remove("viewing"); renderCard(); syncViewing();
@@ -2427,15 +2447,6 @@ renderer.domElement.addEventListener("pointermove", e => {
 for (const ev of ["pointerup", "pointercancel"]) renderer.domElement.addEventListener(ev, e => {
   if (scPtr.delete(e.pointerId)) { if (!scPtr.size) scMoved = scMulti = false; scSync(); }
 }, scCap);
-const scOff = new THREE.Vector3();
-// WASD in the viewer: the look-at point stays near the fit's (a quarter of the piece's radius at the fitted distance, more
-// when zoomed in), so the piece can be looked over but never pushed out of view
-function scClamp() {
-  const S = Showcase, dist = camera.position.distanceTo(controls.target);
-  scOff.copy(controls.target).sub(S.look);
-  const len = scOff.length(), R = S.r * Math.min(1, .25 * Math.max(1, S.fitD / Math.max(dist, 1e-6)));
-  if (len > R) { scOff.multiplyScalar(R / len - 1); controls.target.add(scOff); camera.position.add(scOff); }
-}
 // the card (a Ledger slip centred under the piece; on a phone the bottom area). F2: its buttons never move: the name and
 // ‹ i / n › on the first line, the slot / sets / colour line (never empty: the slot is always there), then the action row
 // with the same buttons for every piece (worn = ใส่อยู่, disabled; two textures = one ดาวน์โหลดลาย that turns into
@@ -2864,19 +2875,18 @@ function heroFitPose() {
     for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; }
     d = hi;
   }
-  // limits (F5): no flying into the head or out of sight, the look-at point stays near the hero (clampTarget: right-drag
-  // pan and WASD alike). The orbit itself is free, straight down to straight up and from under the floor too (user
+  // limits (F5): no flying into the head; right-drag pan and WASD take the look-at point anywhere (user 2026-11-10:
+  // "unlock ASWD 100% free movement"). The orbit itself is free, straight down to straight up and from under the floor too (user
   // 2026-11-08: "lift the limit on left drag rotation, user should be able to freely do with all objects"); the shadow
   // discs are front-sided, so from below they vanish instead of covering the feet.
   return { pos: target.clone().addScaledVector(FIT_DIR, d), target, h, h0,
     // zoom out to 40 x the hero's height (user 2026-11-09: "please allow much further zoom out"; was 6 x): effects reach
     // 10 m and more ahead (casts with a target, Feral Assault's dash)
-    lim: { minDistance: h * .55, maxDistance: h * 40, minPolarAngle: 0, maxPolarAngle: Math.PI },
-    fitBox: new THREE.Box3(box.min.clone().add(new THREE.Vector3(-h * .5, 0, -h * .5)), box.max.clone().add(new THREE.Vector3(h * .5, h * .25, h * .5))) };
+    lim: { minDistance: h * .55, maxDistance: h * 40, minPolarAngle: 0, maxPolarAngle: Math.PI } };
 }
 let fitAt = null;                         // the pose the last fit put the camera in (autoFit follows only from there)
 function setFit(f) {
-  fitBox = f.fitBox; fitH = f.h; fitAt = { pos: f.pos.clone(), target: f.target.clone() };
+  fitH = f.h; fitAt = { pos: f.pos.clone(), target: f.target.clone() };
   floor.scale.setScalar(f.h0 * .26); floorWide.scale.setScalar(f.h0 * .5);
 }
 function fitCamera(animate = false) {
@@ -2896,7 +2906,7 @@ function autoFit() {
   if (Showcase.phase !== "off") { Showcase.refitHero = true; return; }
   if (!camTw && atFit()) fitCamera(true);
 }
-let fitBox = null, fitH = 1, viewOff = -1;
+let fitH = 1, viewOff = -1;
 // the camera's view offset: x = half the desktop picker's width (F1), y = on a phone, half the toolbar's band (the hero
 // stands in the part of the small stage the toolbar leaves free)
 function applyViewOffset() {
@@ -2904,11 +2914,6 @@ function applyViewOffset() {
   // ชมชิ้นส่วน on a desktop: the floating piece centred in the stage above its card (task 16)
   const dy = isPhone() ? 22 : -Showcase.lift;
   if (insetNow > 0 || dy) camera.setViewOffset(vw, vh, -insetNow / 2, -dy, vw, vh); else camera.clearViewOffset();
-}
-function clampTarget() {
-  if (!fitBox) return;
-  const t = controls.target, c = t.clone().clamp(fitBox.min, fitBox.max);
-  if (!c.equals(t)) { const d = c.sub(t); t.add(d); camera.position.add(d); }
 }
 $("resetCam").onclick = () => C && (Showcase.on ? Showcase.fit(true, true) : fitCamera(true));
 // WASD camera (task 12, like the Bible's reach preview): W / S move the look-at point up / down along world Y, A / D strafe on the ground plane;
@@ -2939,7 +2944,7 @@ function wReset() { wHeld.clear(); wPend.set(0, 0, 0); }
 addEventListener("keydown", e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target, a = WASD[e.code];
-  if (!a || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;   // the viewer too (user 2026-11-08), held near the piece by scClamp
+  if (!a || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;   // the viewer too (user 2026-11-08), free like the character's
   e.preventDefault(); camFinish(); wHeld.add(a); wWake();
 });
 addEventListener("keyup", e => { const a = WASD[e.code]; if (a) wHeld.delete(a); });
@@ -3024,19 +3029,24 @@ const Sound = {                          // Web Audio: started by the first pick
     return this.bufs[k] ||= fetch(`${DATA}${cls}/sfx/${n}.mp3`).then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(n))))
       .then(b => this.ctx.decodeAudioData(b));
   },
-  async play(cls, n, vol = 1) {
-    if (!soundOn || !this.ctx) return;
-    try {
-      const b = await this.get(cls, n), s = this.ctx.createBufferSource(), g = this.ctx.createGain();
-      s.buffer = b; g.gain.value = vol; s.connect(g).connect(this.ctx.destination); s.start();
-    } catch (e) {}
+  // returns a handle: stop() ends it, or keeps it from starting while the file still loads; loop = an AudioSource's Loop
+  // (it plays until its effect ends, Fx.dispose: Unity stops a looping source only with its GameObject)
+  play(cls, n, vol = 1, loop = false) {
+    const h = { src: null, off: false, stop() { this.off = true; try { this.src?.stop(); } catch (e) {} } };
+    if (!soundOn || !this.ctx) return h;
+    this.get(cls, n).then(b => {
+      if (h.off) return;
+      const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+      s.buffer = b; s.loop = loop; g.gain.value = vol; s.connect(g).connect(this.ctx.destination); s.start(); h.src = s;
+    }).catch(() => {});
+    return h;
   },
 };
 const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: {}, missing: {} };   // spawned / missing: tallies for the checks
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
 // (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
-  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), getJSON(`${DATA}${cls}/fx.json`)) : null)).catch(() => null);
+  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null)).catch(() => null);
 // Effect parts in modules of their own (2026-11-09, the Wolf's missing effects: plans/fx_wolf/parts.md, tto.md), so each
 // part is written apart from this page: wardrobe/fxparts/<file>.js default-exports register(api) and calls
 // api.part(type, build) for each component type it draws (a game script's name, a Unity built-in like
@@ -3045,18 +3055,33 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // remove node and everything under it), stop?() (the after-life: stop emitting) } or null. fx = the Fx (its nodes,
 // emitters, age, uMatrix / uQuat / uDir); node = the component's Object3D in Unity space (inside the mirror group); mat
 // = the node's first material (fxMaterial) or null; nodeDef = the node's data; data = the class's fx.json. Loaded only
-// with the effects on (FX_ON); a module that fails to load is reported and skipped
-const FXPARTS = {};
-const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken"];
+// with the effects on (FX_ON); a module that fails to load is reported and skipped. A particle size added for one spawn
+// (metres, 2026-11-10; Sheep_cAttack.Init's Clamp(0.004 x cDmg, 0, 2.5) on its own particleEmitter's min / maxSize,
+// Sheep_cAttack.cs:76-79): the node's legacy emitter's addSize(m) (it is built before the node's scripts, so a part's
+// build finds it in fx.emitters), or fx.addSize = m for the root node's emitter; either is read at each spawn; setSize(min,
+// max) replaces the emitter's own sizes (the hero's code rewriting them). A part named "fx:<effect>" is the hero's code
+// acting on that effect: built once on its root when it is made (comp null). api.shader(blend, make) gives a data blend
+// ("shader:<name>") its own material, made by make(d, name, cls) in fxMaterial (fxparts/tto_sheep.js)
+const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
+const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
+  "alphatimer", "sheep", "tto_sheep"];
 let fxPartsReady = null;
 function loadFxParts() {
-  const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
+  const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
     fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
-const FXBG = new URLSearchParams(location.search).get("fxbg") || "dark";   // pilot: the backdrop to compare (CSS above)
-stage.dataset.fxbg = FXBG;
+// the พื้นหลัง button: white by default, dark when pressed, remembered in this browser; ?fxbg=dark starts dark without
+// remembering it (the headless checks' screenshots, pipeline/wardrobe_fx_check.py / _probe.py / _trace.py)
+let bgDark = new URLSearchParams(location.search).get("fxbg") === "dark";
+if (!bgDark) try { bgDark = localStorage.getItem("wardrobe.bg") === "dark"; } catch (e) {}
+const bgBtn = $("bg"), syncBg = () => { stage.classList.toggle("bg-dark", bgDark); bgBtn.setAttribute("aria-pressed", bgDark); };
+bgBtn.onclick = () => {
+  bgDark = !bgDark; syncBg(); toast(bgDark ? "พื้นหลังมืด" : "พื้นหลังสว่าง");
+  try { localStorage.setItem("wardrobe.bg", bgDark ? "dark" : "white"); } catch (e) {}
+};
+syncBg();
 const rnd = (a, b) => a + Math.random() * (b - a);
 const clamp01 = x => Math.min(1, Math.max(0, x));
 const toLin = c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);   // the game's colours are gamma values
@@ -3070,6 +3095,7 @@ function ramp(e, u, span = 4) {
 function fxMaterial(cls, name, d) {
   const k = cls + "/" + name;
   if (FX.mats[k]) return FX.mats[k];
+  if (FXSHADERS[d.blend]) return (FX.mats[k] = FXSHADERS[d.blend](d, name, cls));   // a part module's own shader (fxparts/tto_sheep.js: TTO/Sheep/*, Standard, Particles/Standard Unlit)
   // Unity 3.5's particle shaders: Additive (200) and Alpha Blended (203) = 2 x _TintColor x vertex colour x texture (the
   // default tint 0.5 makes the factor 1); Additive (Soft) (202) = vertex colour x texture, rgb x alpha, Blend One
   // OneMinusSrcColor (a screen: bright parts add less over bright ground). The canvas is transparent over the page's stage
@@ -3106,11 +3132,13 @@ const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 const vA = a => V(a[0], a[1], a[2]);
 const nz = v => (v.lengthSq() < 1e-10 ? V() : v.clone().normalize());         // Unity's normalized: zero below 1e-5
 
+const MIRROR_X = new THREE.Matrix4().makeScale(-1, 1, 1);
 class Fx {
   constructor(cls, name, d, at = {}) {        // at: a cue's placement (d ahead, x right, y up, rot [x, y, z] degrees), Unity's space
     const def = d.effects[name];
-    this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false;
-    this.group = new THREE.Group();
+    this.at = at;                              // the cue, for parts that need its placement options (to)
+    this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false; this.loops = [];
+    this.group = new THREE.Group(); this.group.visible = vfxOn;
     C.root.getWorldPosition(this.group.position); C.root.getWorldQuaternion(this.group.quaternion);
     this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
     this.nodes = def.nodes.map(() => new THREE.Object3D());
@@ -3132,11 +3160,19 @@ class Fx {
         else if (c.type === "RingEmitter" && mat) this.emitters.push(ringEmitter(this, o, c, mat));
         else if (c.type === "ImageEmitter" && mat) this.emitters.push(imageEmitter(this, o, c, mat));
         else if (c.type === "LineEmitter" && mat) this.emitters.push(lineEmitter(this, o, c, mat));
-        else if (c.type === "AudioSource" && c.playOnAwake) Sound.play(cls, c.clip, c.volume);
+        else if (c.type === "AudioSource" && c.playOnAwake) {
+          const h = Sound.play(cls, c.clip, c.volume, c.loop);
+          if (c.loop) this.loops.push({ node: o, h });      // lullaby_ring, edenSanctuary, divinityAxe, cAttack_charge ...
+        }
         else if (FXPARTS[c.type]) { const em = FXPARTS[c.type](this, o, c, mat, n, d); if (em) this.emitters.push(em); }   // wardrobe/fxparts/
       }
     });
     this.root = this.nodes[0];
+    this.bone = at.bone || null;
+    // the hero's own code acting on this effect once it is made (a part registered as "fx:<effect name>", built like a
+    // component's on the root: Sheep.cs's charge ball growth, Holy Light's ring clip; fxparts/sheep.js)
+    const hook = FXPARTS["fx:" + name];
+    if (hook) { const em = hook(this, this.root, null, null, def.nodes[0], d); if (em) this.emitters.push(em); }
     // EffectControl's Awake turns velocity by the spawned rotation (TransformDirection): a cue's rot sends it that way
     // (2026-11-09; user: Resonance Claw's waves "should go 3 directions, but now it only go one direction": the -45 / +45
     // waves flew straight ahead); the hero's facing is the group's, above
@@ -3153,16 +3189,26 @@ class Fx {
   uDir(v) { return v.clone().transformDirection(this.mirrorInv); }
   update(dt) {
     this.age += dt;
+    this.group.visible = vfxOn;                  // VFX off: the effect runs unseen, so its sounds (a loop too) last as long
     if (this.killAt != null && this.age >= this.killAt) return this.dispose();   // a cue's kill: the game's Destroy(obj, t)
     const ec = this.ec;
     if (this.vel) this.root.position.addScaledVector(this.vel, dt);
     // followState: the hero's action changed (the skill ended): straight to the after-life (EffectControl.cs:194-300)
-    if (ec?.followState && this.cutAt != null && FX.t >= this.cutAt && this.age < ec.life) this.age = ec.life;
+    // and its Animation plays its "destroy" clip, if it has one (EffectControl.cs:252-291: animation.Play("destroy"), wrapMode
+    // Once; castRing's 0.53 s shrink, 2026-11-10)
+    if (ec?.followState && this.cutAt != null && FX.t >= this.cutAt && this.age < ec.life) { this.age = ec.life; this.root.userData.fxAnim?.play("destroy"); }
     if (ec) {
       if (this.age >= ec.life + ec.afterLife) return this.dispose();
       // live phase: the hero never moves here, so following is a no-op; after-life: legacy emitters and ImageEmitters stop
       // emitting (EffectControl.cs:421-512); RingEmitters run on
       if (this.age >= ec.life && !this.stopped) { this.stopped = true; for (const e of this.emitters) e.stop?.(); }
+    }
+    if (this.bone) {                             // a cue's bone: parented to it, localPosition 0, localRotation identity
+      const b = C?.byName?.[this.bone];
+      // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
+      // as the effect, wardrobe_data.py); the scale stays the spawned one (Unity keeps the world scale on a reparent)
+      if (b) { b.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
+        this.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, V()); }
     }
     this.group.updateMatrixWorld(true);
     this.mirrorInv = this.mirror.matrixWorld.clone().invert();
@@ -3175,9 +3221,11 @@ class Fx {
         e.node.parent?.remove(e.node);
       }
     }
+    for (const s of this.loops) if (!this.attached(s.node)) s.h.stop();   // its node destroyed: its looping sound with it
     if (!this.ec && !this.emitters.some(e => this.attached(e.node))) this.dispose();
   }
   dispose() {
+    for (const s of this.loops) s.h.stop();
     this.alive = false; scene.remove(this.group);
     this.group.traverse(o => o.geometry?.dispose());
   }
@@ -3327,7 +3375,7 @@ function lineEmitter(fx, node, e, mat) {
 // = forward), 4 flat on the ground, 5 upright facing the camera
 function legacyParticles(fx, node, em, an, rd, mat) {
   const world = !!em["Simulate in Worldspace?"], m = fxMesh(world ? fx.mirror : node, mat);
-  const parts = []; let emit = !!em.m_Emit, emitted = false, acc = 0;
+  const parts = []; let emit = !!em.m_Emit, emitted = false, acc = 0, sizeAdd = 0, minS = em.minSize, maxS = em.maxSize;   // sizeAdd: addSize(), this spawn only; minS / maxS: setSize()
   const key = x => { const v = x.rgba >>> 0; return linRGBA([(v & 255) / 255, ((v >>> 8) & 255) / 255, ((v >>> 16) & 255) / 255, (v >>> 24) / 255]); };
   const keys = an?.["Does Animate Color?"] ? [0, 1, 2, 3, 4].map(i => key(an[`colorAnimation[${i}]`])) : null;
   const vv = o => V(o.x, o.y, o.z), rv = o => V(rnd(-o.x, o.x), rnd(-o.y, o.y), rnd(-o.z, o.z));
@@ -3342,11 +3390,12 @@ function legacyParticles(fx, node, em, an, rd, mat) {
     const q = fx.uQuat(node), vel = vv(em.localVelocity).add(rv(em.rndVelocity)).applyQuaternion(q).add(vv(em.worldVelocity));
     const e = rnd(em.minEnergy, em.maxEnergy);
     parts.push({ p: world ? p.applyMatrix4(fx.uMatrix(node)) : p, v: world ? vel : vel.applyQuaternion(q.clone().invert()), age: 0, energy: e,
-                 size: rnd(em.minSize, em.maxSize), rot: em.rndRotation ? rnd(0, 2 * Math.PI) : 0,
+                 size: rnd(minS, maxS) + sizeAdd + (node === fx.nodes[0] ? fx.addSize || 0 : 0), rot: em.rndRotation ? rnd(0, 2 * Math.PI) : 0,
                  spin: THREE.MathUtils.degToRad(em.angularVelocity + rnd(-em.rndAngularVelocity, em.rndAngularVelocity)) });
     emitted = true;
   };
-  return { node, stop() { emit = false; }, setEmit(on) { emit = on; }, update(dt, cam) {   // setEmit: fxparts/control.js's EmitterControl
+  return { node, stop() { emit = false; }, setEmit(on) { emit = on; }, addSize(a) { sizeAdd += a; }, setSize(a, b) { minS = a; maxS = b; },   // setEmit: fxparts/control.js's EmitterControl; setSize: the hero's code rewriting particleEmitter.minSize / maxSize (fxparts/sheep.js, the charge ball)
+    update(dt, cam) {
     for (let i = parts.length - 1; i >= 0; i--) if ((parts[i].age += dt) >= parts[i].energy) parts.splice(i, 1);
     if (an?.autodestruct && emitted && !parts.length) return "destroy";
     if (emit) {
@@ -3403,71 +3452,93 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //   options d (metres ahead), x (right), y (up), rot ([x, y, z] degrees, Unity's Euler, after the hero's facing), vol,
 //         cut (the clip time the hero's action changes: ends a followState effect), p (chance, 0-1: a rolled proc),
 //         roll (cues sharing a roll name share one roll per play: Double Art's effect and Sublime Art's ring),
-//         scale (the spawned root's scale x this), kill (seconds after spawning: the effect is destroyed, Destroy(obj, t))
+//         scale (the spawned root's scale x this), kill (seconds after spawning: the effect is destroyed, Destroy(obj, t)),
+//         to ([x, y, d] metres right / up / ahead of the hero: the point the game's code aims at, RabbitTracer.Set's to and
+//         BreathFly's target; fxparts/tto_sheep.js reads it as fx.at.to), bone (a bone of the hero the effect rides:
+//         transform.parent = it, localPosition 0, localRotation identity; Soul of Arms' trail on mount_Hand_R, Sheep.cs:34048-34058);
+//         a roll name "!name" plays when that roll failed (the KO tile: RPC_ko's voices or RPC_dead's, 2026-11-10 decision 11)
 // An entry is { why, cues } or, for a clip several skills share, { why, skills: { skill: { why, cues } } }: one skill
 // per play, even chance (the user: instantCast), kept for every step of a sequence. step = the sequence step (0 = a
-// new play: a new pick, new rolls)
+// new play: a new pick, new rolls; every play of a tile, the loop's next round too, 2026-11-10 decision 14: the Cast
+// tile's cast3 pool is step 2, and it kept the first play's skill). An entry's key is the clip, or "@<sequence id>:<clip>"
+// for that clip when the sequence plays it (2026-11-10 decision 13: Holy Light and Lullaby both open with holyLight1,
+// with other voices), tried first; the sequence id is its SEQ name without spaces ("@Lullaby:holyLight1",
+// "@EdenSanctuary:cast3", "@SoulofArms:soulOfArms"; the name as written, "@Eden Sanctuary:cast3", is taken too)
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
   return { at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
-    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill };
+    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
 };
 const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
 function fxStart(clip, step = 0) {
   FX.t = 0;
-  const e = FX.cueTab[C?.cls]?.[clip];
+  const tab = FX.cueTab[C?.cls] || {}, ch = chainOf(C?.cur);
+  const e = (ch && (tab[ch.id + ":" + clip] ?? tab["@" + ch.name + ":" + clip])) ?? tab[clip];
   let cues = e?.cues || [];
+  if (step === 0) FX.pick = null;
   if (e?.skills) {
     const names = Object.keys(e.skills);
-    if (step === 0 || !e.skills[FX.pick]) FX.pick = names[Math.floor(Math.random() * names.length)];
+    if (!e.skills[FX.pick]) FX.pick = names[Math.floor(Math.random() * names.length)];
     cues = e.skills[FX.pick].cues || [];
   }
   if (step === 0 || !FX.rolls) FX.rolls = {};
-  const rolled = c => c.p == null || (c.roll ? (FX.rolls[c.roll] ??= Math.random() < c.p) : Math.random() < c.p);
+  const rolled = c => {                          // roll "!name": the cue plays exactly when "name"'s roll failed
+    if (c.p == null) return true;
+    if (!c.roll) return Math.random() < c.p;
+    const no = c.roll[0] === "!", r = (FX.rolls[no ? c.roll.slice(1) : c.roll] ??= Math.random() < c.p);
+    return no ? !r : r;
+  };
   FX.cues = cues.map(cueOf).filter(rolled);
   for (const c of FX.cues) if (c.kind !== "fx" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
 }
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
 // the SFX and VFX buttons: on by default, remembered in this browser; the first click or key press starts the audio.
-// VFX off: no effect is drawn (the live ones go at once), but an effect's own sound still plays with SFX on
+// VFX off: no effect is drawn (the live ones are hidden at once), but each still runs unseen, so its own sounds play
+// with SFX on for as long as the effect lives (a looping one too, 2026-11-10); SFX off also stops the loops playing
 let vfxOn = true;
 try { vfxOn = localStorage.getItem("wardrobe.vfx") !== "0"; } catch (e) {}
 const sndBtn = $("sound"), vfxBtn = $("vfx");
 const syncSound = () => { sndBtn.setAttribute("aria-pressed", soundOn); vfxBtn.setAttribute("aria-pressed", vfxOn); };
 sndBtn.onclick = () => {
   soundOn = !soundOn; syncSound(); toast(soundOn ? "เปิดเสียงประกอบ" : "ปิดเสียงประกอบ");
+  if (!soundOn) for (const f of FX.live) for (const s of f.loops) s.h.stop();
   try { localStorage.setItem("wardrobe.sound", soundOn ? "1" : "0"); } catch (e) {}
 };
 vfxBtn.onclick = () => {
   vfxOn = !vfxOn; syncSound(); toast(vfxOn ? "เปิดเอฟเฟกต์" : "ปิดเอฟเฟกต์");
-  if (!vfxOn) fxClear();
+  for (const f of FX.live) f.group.visible = vfxOn;
   try { localStorage.setItem("wardrobe.vfx", vfxOn ? "1" : "0"); } catch (e) {}
 };
 syncSound();
-// an effect's sounds without the effect (VFX off): its play-on-awake AudioSources, as the Fx constructor plays them
-const fxSounds = (cls, def) => def.nodes.forEach(n => n.comps.forEach(c => c.type === "AudioSource" && c.playOnAwake && Sound.play(cls, c.clip, c.volume)));
 for (const ev of ["pointerdown", "keydown"]) addEventListener(ev, () => Sound.unlock(), { capture: true });
-function fxTick(dt) {
-  if (!C) return;
-  FX.t += dt;
+// fire the current step's cues due by time t (inclusive: the render clock; else before t: a step ending, seqTick, so a cue
+// inside the step still fires when one long frame (a clip or file loading) jumps past both it and the step's end;
+// 2026-11-10, the Sheep's Soul of Arms tile lost cast1's castRing at 0.1 s of 0.6 to a 0.6 s frame in the headless check)
+function fxDue(t, inclusive) {
   const cls = C.cls;
   for (const c of FX.cues) {
-    if (c.done || c.at > FX.t) continue;
+    if (c.done || (inclusive ? c.at > t : c.at >= t)) continue;
     c.done = true;
     if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
-      if (!vfxOn) return fxSounds(cls, d.effects[c.name]);
       const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error);
   }
+}
+function fxTick(dt) {
+  if (!C) return;
+  FX.t += dt;
+  const cls = C.cls;
+  fxDue(FX.t, true);
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
   // back in the idle stance after a skill: once its last cue has fired and its last effect gone, the move is over
   if (C.seq?.tail && FX.cues.length && FX.cues.every(c => c.done) && !FX.live.length) FX.cues = [];
-  stage.classList.toggle("fx-on", FXBG !== "white" && (FX.cues.length > 0 || FX.live.length > 0));   // the whole move, no flicker between loops
+  // the whole move, no flicker between loops; not with VFX off (2026-11-10 QA: hidden effects now live their full time,
+  // so a 13 s Eden Sanctuary kept the dark backdrop up over nothing)
 }
 
 // ---------- go ----------
@@ -3484,11 +3555,9 @@ renderer.setAnimationLoop(() => {
   insetNow += (stageInset - insetNow) * .2;
   if (Math.abs(stageInset - insetNow) < .5) insetNow = stageInset;
   if (insetNow !== viewOff) applyViewOffset();
-  // a camera glide drives the camera itself; the viewer has its own limits; the character's camera keeps to its own
-  const S = Showcase;
-  if (camStep(dt)) {}
-  else if ((S.phase === "on" && S.fitted) || (S.phase === "out" && S.piece)) { controls.update(); scClamp(); }
-  else { controls.update(); clampTarget(); }
+  // a camera glide drives the camera itself; otherwise the controls, with no bounds on where the look-at point goes
+  // (user 2026-11-10: "unlock ASWD 100% free movement"; until then clampTarget / scClamp held it near the hero / piece)
+  if (!camStep(dt)) controls.update();
   renderer.render(scene, camera);
 });
 resize();

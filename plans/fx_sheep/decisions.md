@@ -7,8 +7,9 @@ is left out for a missing part). The Wolf's decisions (plans/fx_wolf/decisions.m
 
 ## Who the effects land on
 1. Ally-targeted skills show as self-casts on the Sheep (the game lets her target herself, GameGui.cs:37904-37921):
-   Heal, Bless, Pacify, Clear, Cleanse, Revert, Illuminate, Feather, Repel, Reverse, World Encarta, Soul of Arms,
-   Lucent Barrier. Revive (a knocked-out ally) and effects on enemies follow the target-point rule below.
+   Heal, Bless, Pacify, Clear, Cleanse, Revert, Illuminate, Feather, Repel, Reverse, World Encarta,
+   Lucent Barrier. (Soul of Arms was listed here by mistake: its arms hit the target, Sheep.cs:34100-34118, so they go
+   to the 10 m target point by decision 2; QA 2026-11-10.) Revive (a knocked-out ally) and effects on enemies follow the target-point rule below.
 2. Divinity Sword / Spear / Axe (summoned at the enemy) show at the target point 10 m ahead, strikes and Spear's ring
    included.
 3. The normal-attack ball (homingLight) and the charge ball end where they meet the ground at the 10 m target point

@@ -856,3 +856,57 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   fixed them (Bible findings to offer). The user took all 20 recommendations: `plans/fx_sheep/decisions.md`, and set
   the rule that missing parts are always built (memory + plans/fx_recipe.md). Workflow 2 (build) started: AlphaTimer +
   Phoenix material, the Sheep's projectiles / Eden, page + pipeline changes, the TTO side; one editor; one QA pass.
+- **2026-11-10, the Sheep's effects: built and cued** (workflow 2: four builders, then one editor). Parts:
+  `fxparts/alphatimer.js` (AlphaTimer), the FX/Phoenix material and `fxAnim.play(name, fade)` in `mesh.js`,
+  `fxparts/sheep.js` (the three projectile movers, Sheep_edenSanctuary, and two "fx:<effect>" hooks: the held charge
+  ball's growth, Sheep.cs:18952-18957, ATK 101 taken; Holy Light's ring root clip at 0.5 s, :27700), `fxparts/tto_sheep.js`
+  (TTO's three Sheep shaders, Standard, LineRenderer, TrailRendererModern, RabbitTracer, BreathFly, CodexOpen); shuriken
+  reads the simulation space the right way round now (the Wolf's 12 TTO systems simulate in world space: re-check its
+  TTO skills). index.html: `FX_PART_FILES` += alphatimer, sheep, tto_sheep; `api.shader` / FXSHADERS; a part named
+  `fx:<effect>` = the hero's code on that effect; the legacy emitter's `addSize` / `setSize`; cue options `to` and
+  `bone` (Soul of Arms' trail on mount_Hand_R), a roll `"!name"` (plays when that roll failed: the KO tiles); a
+  followState cut plays the effect's `destroy` clip (EffectControl.cs:252-291, castRing's shrink); a step's cues it
+  never reached fire when the step ends (a long frame dropped cast1's castRing in the check); looping AudioSources play
+  until their effect goes; VFX off runs effects hidden; cue keys `@<sequence id>:<clip>`; SEQ `!` = a cut first step;
+  Normal Attack 0.7 / 1.5 s; tiles Soul of Arms, Seal of Attack, Seal of Defense (two skills, decision 18; each a pool
+  of the three fields its seal can complete), Eden Sanctuary, Gleaming Breath, Lucent Barrier. `wardrobe/fx_cues/
+  sheep.json`: 34 keys, the Cast tile's cast3 pool of 21 skills (decisions 1-20: self-casts with their status looks,
+  Divinity Sword / Spear / Axe and Revive at 10 m, the balls ending on the floor at 10 m with their ground hits,
+  Return Cast `roll returnCast`, TTO's voice fixes). Wolf: `ko` shows deadEffect on half the plays with RPC_dead's
+  voices (`!dead` = RPC_ko's), `wardrobe/data/wolf/fx.json` gained only deadEffect + material wolf_dead (written back
+  in its committed indent-1 CRLF form). Data built at the office: `wardrobe_fx.py sheep` (47 BB effects, 117 sounds),
+  then `wardrobe_fx_tto.py sheep` (24 TTO effects): 71 effects, nothing missing. Checks: files-only and the dark
+  browser check exit 0, errors []; the Wolf's dark check too; unit tests OK. Not yet looked at by the user.
+- **2026-11-10, the Sheep's effects: QA pass** (workflow 2's last step). Checks: `wardrobe_fx_check.py ... checks/
+  fx_sheep_qa dark --cls sheep` and `... checks/fx_wolf_qa dark --cls wolf` exit 0, errors [] (both run again after the
+  fixes); `--files-only` no problems (sheep, wolf); `wardrobe_moves_check.py` errors [] (after the fix below);
+  `wardrobe_menu_check.py` errors []; unit tests 52 OK; `test_adopt_from_video.ps1` fails 0. The check's screenshots
+  miss most of the 10 m effects (the default camera faces the hero, so "ahead" is behind it) and come late under
+  swiftshader: `pipeline/wardrobe_fx_probe.py` (camera views side / back / book..., per-effect world boxes, a pool forced
+  to one skill, props worn) and `pipeline/wardrobe_fx_trace.py` (per-frame age / position / vertices / opacity) are the tools for that;
+  the "back" view (behind the hero, looking ahead) shows the 10 m point. Fixed: (1) World Encarta's status look drew
+  nothing: the prefab is an Animation and eight empty nodes, the status code hangs eight copies of the caster's mWep1
+  on them (CharacterControl.cs:39912-39975): `fxparts/sheep.js` `fx:worldEncarta` copies the worn อาวุธหลัก (none worn:
+  nothing, as the game); (2) `wardrobe_moves_check.py` still clicked the retired `soulOfArms` tile (now `@SoulofArms`,
+  plus `@SealofAttack` for the `!` cut); (3) with VFX off the hidden effects kept the dark backdrop up for their whole
+  life (13 s for Eden): `fx-on` now needs VFX on; (4) HANDOFF: the office-built data travels in git (it is tracked),
+  not by Drive. Open: decision 1 lists Soul of Arms as ally-targeted, but its hits damage the target (Bible
+  sheep-skill-reference.md:444, `hit(370 + sLv, target, ...)`): the arms may belong at the 10 m point (decision 2's
+  rule) - asked the user. The Sheep's `fx.json` online carries TTO's Grand Codex book mesh (13,046 vertices) as plain
+  JSON (the Wolf's TTO effects had no models): a policy question for the user, since TTO models are otherwise scrambled.
+- **2026-11-10, after the Sheep build: free camera, background toggle, TTO effects scrambled, Soul of Arms at 10 m**
+  (user: "unlock ASWD 100% free movement"; "remove the black screen dim too" -> "just make it a manual toggle for
+  background color deafult to white"; "deploy automatically after all work is done"). Camera: `clampTarget` (the
+  look-at point held in a box around the hero, WASD and right-drag pan alike) and `scClamp` (the viewer's, around the
+  piece) are gone with their `fitBox` state; WASD / pan go anywhere, the reset button comes back (checked: D then W
+  carried the target from (0, 0.77, 0) to (5.0, 4.1, 0)). Background: the พื้นหลัง button (`#bg`, half-filled circle,
+  next to VFX) = white by default, dark (#211c27 -> #2d2634) when pressed, remembered (`wardrobe.bg`); the automatic
+  dark backdrop while effects played (`fx-on`, FXBG) is gone; on the dark stage only the nameplate turns light (the
+  WASD hint keeps its pale chip); `?fxbg=dark` still starts dark (unsaved) for the headless checks / probes. Phones:
+  the bar's buttons go 36 -> 32 px wide under 760 px (gaps to the logo 5 / 22 / 30 px at 360 / 390 / 430). TTO: the
+  publish now also scrambles `tto_*` effect textures and any `<cls>/fx.json` with tto/ effects (the Sheep's holds the
+  Grand Codex book, a 13,046-vertex model); the page reads fx.json through `dataBytes` and every effect texture through
+  `texLoader = { load: loadTex }` (also the parts' api.texLoader). Soul of Arms: decision 1 had listed it as an ally
+  buff, but the arms hit the target (Sheep.cs:34100-34118, QA), so its cue is at the 10 m point (decision 2). Checks
+  (one at a time): unit tests OK, files no problems (sheep, wolf), fx check sheep / wolf dark exit 0 errors [], moves
+  check errors [], menu check errors [], adopt test fails 0.

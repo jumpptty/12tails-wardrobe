@@ -490,9 +490,11 @@
     ]
   },
   "ko": {
-    "why": "Wolf.cs RPC_ko (:45355): clip and voice ko1 or ko2 at 0 (:45604-45695), getUp after 3 s; RPC_dead (:45731) plays the same clip with dead1 or dead2 at 0 (:45975-46006): one of the four at random",
+    "why": "Wolf.cs RPC_ko (:45355): clip and voice ko1 or ko2 at 0 (:45604-45695), getUp after 3 s, no effect; RPC_dead (:45731) plays the same clip with dead1 or dead2 at 0 (:45975-46006) and always puts deadEffect at the hero's position and rotation (:46037-46047; EffectControl life 3): one of the two at random, even chance (2026-11-10, the Sheep's decision 11, plans/fx_sheep/decisions.md: roll dead, its voices with it; '!dead' = RPC_ko's)",
     "cues": [
-    [0, "voice", "ko1|ko2|dead1|dead2"]
+    [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+    [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+    [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
     ]
   }
 }
