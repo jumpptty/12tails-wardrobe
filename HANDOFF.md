@@ -13,10 +13,6 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 - The TTO effects (`pipeline\wardrobe_fx_tto.py`) build at home only (it reads the video folder's
   `tto_assets\2026-11-04`); the BB effects (`pipeline\wardrobe_fx.py <cls>`) and the skill icons
   (`pipeline\wardrobe_skill_icons.py`) build on either PC.
-- Deploying from here needs wrangler logged in once (`npx wrangler login`, the user's browser sign-in); until then
-  the built `wardrobe_dist` (2026-11-10: emote voices, 4 Monkey trinkets back, 7,499 files) waits for that deploy.
-  Publishing works on either PC now (NOTES.md 2026-11-10 "office publishes in full").
-
 ## Video repo (either PC)
 
 - The rebuilt `wardrobe_dist` (2026-11-09, the piece menu) breaks the trailer script: `trailer_features.py` clicks

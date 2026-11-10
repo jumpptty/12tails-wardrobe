@@ -804,3 +804,9 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   equal Reborn's mesh and clip: office build 7,499 files (= home's 7,480 deployed + the 19 Wolf voices),
   `data-d24944ba10`, check no problems, `wardrobe_dist_check.py` errors []. Two tests (multi-stream mesh, new key
   form); 52 tests pass. Deploy waits for `npx wrangler login` on this PC (not logged in).
+- **2026-11-10, deployed from the office** (user: "commit push and deploy"). Wrangler login: a `wrangler login` run by
+  Claude timed out (the browser's callback can't reach the sandboxed listener); the user ran it in VS Code's terminal,
+  and the token (`%APPDATA%\xdg.config\.wrangler\config\default.toml`) works for Claude's deploys after that. From a
+  fresh empty folder: 30 uploaded, 7,468 already there, version `56977780-5fe4-4940-a76d-de27b148ecd3`. Live:
+  `data-d24944ba10`, the Wolf's `v_cry` / `v_hi` 200, `fx_cues/wolf.json` with the emote cues, Monkey's legendTrinket /
+  legendTrinketR / partyWhistle / poseidonTrinket in props_trinkets.json. Either PC can now publish and deploy.
