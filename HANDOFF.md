@@ -5,13 +5,6 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Home PC
 
-- **Publish + deploy the Wolf's emote voices and the self-closing server** (office 2026-11-10, user: "commit push and
-  deploy"; NOTES.md 2026-11-10 "emote and basic-move voices"): `git pull`, then
-  `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then the user deploys (NOTES.md "Online copy"). Online
-  check: the Wolf's wave / cry / ko tiles speak with เสียงท่าทาง on, once per pick.
-
-- Publishing from the office still drops 4 Monkey back items (its rip is damaged, NOTES.md 2026-11-09 "office
-  publishing"): publish from home.
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 
@@ -20,8 +13,9 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 - The TTO effects (`pipeline\wardrobe_fx_tto.py`) build at home only (it reads the video folder's
   `tto_assets\2026-11-04`); the BB effects (`pipeline\wardrobe_fx.py <cls>`) and the skill icons
   (`pipeline\wardrobe_skill_icons.py`) build on either PC.
-- The online copy was deployed from home on 2026-11-09 (effects on, version 00f769bf); publishing from the office still
-  drops 4 Monkey back items (its damaged rip), so publish from home (Home PC section).
+- Deploying from here needs wrangler logged in once (`npx wrangler login`, the user's browser sign-in); until then
+  the built `wardrobe_dist` (2026-11-10: emote voices, 4 Monkey trinkets back, 7,499 files) waits for that deploy.
+  Publishing works on either PC now (NOTES.md 2026-11-10 "office publishes in full").
 
 ## Video repo (either PC)
 

@@ -207,11 +207,29 @@ def read_mesh_shape(path):
     chans = [tuple(map(int, c)) for c in _CHANNEL.findall(text)]
     if chans:                                      # the newer layout: position = channel 0, float32 x 3
         s0, off0, fmt0, dim0 = chans[0]
-        if fmt0 != 0 or (dim0 & 15) < 3 or any(s for s, _, _, d in chans if d & 15):
-            raise BBDataError(f"{Path(path).name}: positions not float32 xyz in a single stream")
-        if not nv or len(raw) % nv:
-            raise BBDataError(f"{Path(path).name}: vertex data is not a whole number of vertices")
-        stream = (off0, len(raw) // nv)            # one stream: its stride = the data / the vertices
+        if s0 != 0 or fmt0 != 0 or (dim0 & 15) < 3:
+            raise BBDataError(f"{Path(path).name}: positions not float32 xyz in stream 0")
+        if not any(s for s, _, _, d in chans if d & 15):
+            if not nv or len(raw) % nv:
+                raise BBDataError(f"{Path(path).name}: vertex data is not a whole number of vertices")
+            stream = (off0, len(raw) // nv)        # one stream: its stride = the data / the vertices
+        else:
+            # several streams (2026-11-10: Reborn's skinned Monkey trinkets keep UVs and bone weights in streams 1-2):
+            # each stream is its channels end to end (Unity 2019+ VertexFormat sizes), stream 0 first at byte 0, each
+            # next one 16-byte aligned; the sizes must add up to the data exactly, or the layout is not understood
+            size = (4, 2, 1, 1, 2, 2, 1, 1, 2, 2, 4, 4)
+            strides = {}
+            for s, o, f, d in chans:
+                if d & 15:
+                    if f >= len(size):
+                        raise BBDataError(f"{Path(path).name}: unknown vertex format {f}")
+                    strides[s] = max(strides.get(s, 0), o + (d & 15) * size[f])
+            total = 0
+            for s in sorted(strides):
+                total = -(-total // 16) * 16 + nv * strides[s]
+            if total != len(raw):
+                raise BBDataError(f"{Path(path).name}: vertex streams add up to {total} bytes, the data has {len(raw)}")
+            stream = (off0, strides[0])
     else:
         stream = next(((int(o), int(s)) for m, o, s in _STREAM.findall(text) if int(m) & 1), None)
     if stream is None:
@@ -260,6 +278,12 @@ def read_clip(path):
         elif (m := re.match(r"^      - time: (\S+)$", line)) and keys is not None:
             key = {"time": _f32(m.group(1))}
             keys.append(key)
+        # the newer layout (the Reborn rip, 2026-11-10): each key opens with its serializedVersion, time on the next line
+        elif re.match(r"^      - serializedVersion: \d+$", line) and keys is not None:
+            key = {}
+            keys.append(key)
+        elif (m := re.match(r"^        time: (\S+)$", line)) and key is not None:
+            key["time"] = _f32(m.group(1))
         elif (m := re.match(r"^        (value|inSlope|outSlope): \{(.*)\}$", line)) and key is not None:
             key[m.group(1)] = {c: _f32(v) for c, v in _VEC.findall(m.group(2))}
         elif (m := re.match(r"^    path: ?(.*)$", line)) and keys is not None:

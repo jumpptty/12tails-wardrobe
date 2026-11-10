@@ -984,6 +984,44 @@ class PublishTest(unittest.TestCase):
         result = wp.publish(w.src, w.out, w.rip, fallback_rip=None)
         self.assertIn("cat/flag", dropped_names(result, "back_trinkets"))
 
+    def test_reborn_multi_stream_mesh_reads_positions(self):
+        """Reborn's skinned meshes (2026-11-10, the office's 4 Monkey trinkets) keep UVs and bone weights in streams 1-2:
+        positions come from stream 0's own stride; data that doesn't add up to the streams is refused."""
+        pos = [(1.0, 2.0, 3.0), (4.0, 5.0, 6.0), (7.0, 8.0, 9.0)]
+        s0 = b"".join(struct.pack("<3f", *p) + bytes(28) for p in pos)            # position, normal, tangent: 40 bytes
+        # uv (stream 1), weights + bones (stream 2), each stream starting 16-byte aligned (120 -> 128, 152 -> 160)
+        raw = s0 + bytes(8) + bytes(8 * 3) + bytes(8) + bytes(32 * 3)
+        chans = [(0, 0, 0, 3), (0, 12, 0, 3), (0, 24, 0, 4), (0, 0, 0, 0), (1, 0, 0, 2), (2, 0, 0, 4), (2, 16, 10, 4)]
+
+        def mesh(data):
+            ch = "".join(f"    - stream: {s}\n      offset: {o}\n      format: {f}\n      dimension: {d}\n" for s, o, f, d in chans)
+            return (f"Mesh:\n  m_SubMeshes:\n  - serializedVersion: 2\n    firstByte: 0\n    indexCount: 3\n    topology: 0\n"
+                    f"  m_MeshCompression: 0\n  m_IndexFormat: 0\n  m_IndexBuffer: {struct.pack('<3H', 0, 1, 2).hex()}\n"
+                    f"  m_VertexData:\n    serializedVersion: 3\n    m_VertexCount: 3\n    m_Channels:\n{ch}"
+                    f"    m_DataSize: {len(data)}\n    _typelessdata: {data.hex()}\n")
+        p = self.tmp / "multi.asset"
+        p.write_text(mesh(raw), encoding="utf-8")
+        self.assertEqual(wp.read_mesh_shape(p), (pos, 1))
+        p.write_text(mesh(raw + bytes(3 * 4)), encoding="utf-8")                    # 4 stray bytes a vertex
+        with self.assertRaises(wp.BBDataError):
+            wp.read_mesh_shape(p)
+
+    def test_reborn_clip_keys_read_like_bbs(self):
+        """Reborn's clips (a later Unity) open each key with its serializedVersion, time on the next line: the keys read
+        the same as BB's `- time:` form."""
+        v = "{x: 1, y: 2, z: 3}"
+        old = f"      - time: 0.5\n        value: {v}\n        inSlope: {v}\n        outSlope: {v}\n"
+        new = (f"      - serializedVersion: 3\n        time: 0.5\n        value: {v}\n        inSlope: {v}\n        outSlope: {v}\n"
+               f"        tangentMode: 0\n        weightedMode: 0\n        inWeight: {v}\n        outWeight: {v}\n")
+        reads = []
+        for keys in (old, new):
+            p = self.tmp / "clip.anim"
+            p.write_text(f"AnimationClip:\n  m_Name: root\n  m_PositionCurves:\n  - curve:\n      serializedVersion: 2\n"
+                         f"      m_Curve:\n{keys}    path: a/b\n", encoding="utf-8")
+            reads.append(wp.read_clip(p))
+        self.assertEqual(reads[0], reads[1])
+        self.assertEqual(reads[0][1][0][2][0]["time"], 0.5)
+
     def test_prop_textures_load_from_the_data_and_no_font_files(self):
         """The page loads prop textures from its data (${DATA}props/tex/, since the 2026-11-09 repo split) and its fonts
         from Google Fonts (the Bible's sheet, task 14b ruling R65): no fonts/ is written."""

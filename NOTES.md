@@ -794,3 +794,13 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   servers and the public copy never ask); 10 s after the last one closes it exits (measured: survives a reload, gone
   15 s after the tab closed). Caveat: a browser that discards idle tabs (Chrome's Memory Saver) drops the stream too:
   run `wardrobe.cmd` again. Online: the emote voices go with the next publish (from home).
+- **2026-11-10, the office publishes in full** (user: "I thought we have made it so that both PCs can deploy"; "shouldn't
+  the 4 Monkey items be in the data you pulled?"). They were in the data; the publish dropped them because it proves
+  each item is BB's against a rip, and the office's BB prefabs are zero-filled, so it compares with Reborn's copy, which
+  a later Unity (2021.3) wrote in a newer layout: meshes with streams 1-2 (UVs, bone weights) and clips whose keys open
+  with `- serializedVersion: 3` (time on the next line). `read_mesh_shape` now reads several streams (stream 0's stride
+  from its channels, Unity 2019+ VertexFormat sizes, each stream 16-byte aligned; the sizes must add up to the data, or
+  it refuses); `read_clip` reads both key forms. legendTrinket, legendTrinketR, partyWhistle, poseidonTrinket now
+  equal Reborn's mesh and clip: office build 7,499 files (= home's 7,480 deployed + the 19 Wolf voices),
+  `data-d24944ba10`, check no problems, `wardrobe_dist_check.py` errors []. Two tests (multi-stream mesh, new key
+  form); 52 tests pass. Deploy waits for `npx wrangler login` on this PC (not logged in).
