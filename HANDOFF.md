@@ -40,7 +40,7 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   wrongly). Then three checkers (attacks_emotes + own_skills, cast_a + cast_b, tto + parts) re-trace and fix in place.
   Same method as the Sheep's (`plans/fx_sheep/*.md` and its decisions apply by analogy; ask the user only new
   questions); then the build workflow as the Sheep's (NOTES.md "the Sheep's effects: built and cued"). Start the usage
-  guard first.
+  guard first. The workflow scripts to copy are in `pipeline\workflows\` (its README: what to keep, the home paths).
 
 ## Video repo (either PC)
 
