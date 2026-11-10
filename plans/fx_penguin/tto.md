@@ -16,6 +16,20 @@ Times are seconds from the start of the clip the cue is keyed by. Every wait is 
 same machine code as the Sheep's (`comiss [this+0x20], Time.time`, yield while t > now). So a wait is an **absolute time
 from the coroutine start**, not a step to add. All three skills have one rank, so max rank changes nothing.
 
+**Re-checked 2026-11-10 (the resumed `tto` agent, office PC).** The first draft (commit 38b1c19) stopped unverified at the
+98 % limit; it was complete (sections 1-8). This pass re-traced every wait and spawn in `Penguin.c` (RPC_constellation
+:6849-7022, StarLines :22538-22981, RPC_frostFieldLeap :11395-11534, FrostFieldLoop :1324-1432, RPC_emperorPenguin
+:8645-9077, EmperorShot :292-852, AddFrostMarks :38229-38311, BurstFx :38592-38640), re-ran `calc.py` (same numbers),
+checked every sound against the rip's folders and the clip lengths in `clips.json` (1.0 / 1.1 / 1.6). All held. Two
+changes, both from the decisions, not new findings:
+- **Frost Burst is now cued, at the target** (it was left out under question 6). The task's rule puts effects on the
+  target at the target point, like Divinity Sword's strike (Sheep decision 2); `BurstFx@0x1DA3310` (`Penguin.c:38592-38640`)
+  spawns `frostField_burst` at the foe's transform (its feet), identity, plus `Row6Sound("frozenBlast")` (`sounds/`).
+  Emperors March: at 1.173 s, 10 m (section 2.3). Frost Field: at 4.8 s, 1.5 m (section 2.2). Question 6 is gone.
+- **The status looks stay out by Sheep decision 4** ("its buff look does not float over the empty spot"): `frostMarkFx`,
+  `frostBiteFx`, `manaFractureFx` ride the foe's body (`AddPenguinRow6Fx@0x24ADC20`), and `hit()` itself spawns no prefab
+  (`CharacterControl::hit@0x24D57E0`, `CharacterControl.c:6555`: no effect string), so the hits draw nothing to leave out.
+
 ## Read this first
 
 1. **This PC reads every Penguin TTO prefab.** There are 28 TTO-only prefabs; all of them are probed and listed in
@@ -30,6 +44,8 @@ from the coroutine start**, not a step to add. All three skills have one rank, s
    - Every sound goes through `Penguin::Row6Sound@0x1DB04B0` (`Penguin.c:41262`). It plays
      `GameAssets/characters/heroes/penguin/sounds/<name>` with `PlayOneShot` on the hero, volume 1 for the owner
      (0.75 for others). So every sound cue is kind **`"sound"`** (the `sounds/` folder).
+   - Every Row6Sound name is in the rip's `sounds/` and none in `voices/` (checked 2026-11-10, file by file), except
+     the two TTO-only ones (item 4).
    - The only `voices/` and `multiCast` loads in Penguin.c belong to BB skills (Arctic Wind, Blink, Falling Comets ...).
      So no 24 % roll applies here, by analogy with Sheep decision 6 (Grand Codex).
 4. **Two TTO-only sounds.** `emperorPenguin_whistle` (0.620 s) and `emperorPenguin_flock` (1.052 s) are in TTO's catalog
@@ -40,8 +56,8 @@ from the coroutine start**, not a step to add. All three skills have one rank, s
    - `emperorPenguin_whistle` is both an effect (`tto/emperorPenguin_whistle`) and a sound (`sounds/emperorPenguin_whistle`);
      both are used at 0 s. The cue kind keeps them apart.
    - These sounds share a name with a BB Penguin effect: `blink`, `iceBlock`, `blizzard`, `castEffect`, `fallingComet`,
-     `manaArc`, `absoluteZero`, `fallingStar_ring` (and the cued `frozenBlast`, which is left out). Every Row6 sound is a
-     `sounds/` clip, never an effect.
+     `manaArc`, `absoluteZero`, `fallingStar_ring`, `frozenBlast` (the Frost Burst's sound, now cued; BB also has a
+     `frozenBlast` effect prefab, never spawned here). Every Row6 sound is a `sounds/` clip, never an effect.
    - `iceBlock` plays **twice** at 0.3 s: `Row6Sound("iceBlock")` and `emperorPenguin_crack`'s own AudioSource
      (`sounds/iceBlock`, vol 0.8). The game does this; keep both.
    - BB's `voices/` has `marchofthePenguin1/2` and `frostBite1/2`, but no TTO code plays them.
@@ -77,14 +93,23 @@ from the coroutine start**, not a step to add. All three skills have one rank, s
     - So the last frost is at 0.45 + 20.8 = 20.85 m. In real numbers it would be 14 (`calc.py`).
     - This is a new finding for the Bible: offer it to the user.
 11. **SEQ:** nothing to fix in my scope.
-    - The three skills have no cast bar (Bible :770; they never call `RPC_cast1`), so they stay single tiles.
+    - The three skills have no cast bar (Bible :771; they never call `RPC_cast1`), so they stay single tiles.
     - Each clip's length equals its `Row6End` time: 1.0 = `Until(start + 1)`, `Penguin.c:7011`; 1.1 = `:11534`;
       1.6 = `:9077`.
 12. **Game quirk (harmless here).** `RPC_constellation` state 1 calls `Row6End` only on the path where the star list is
     non-empty (`Penguin.c:6886-7016`). With no stars at 0.4 s, the Penguin stays in `attack`.
     - The caster's own client always has at least the target (`PickStars@0x1DA8960` adds it first, `Penguin.c:37227`).
     - Offer it for the Bible only if the user wants such corner cases.
-13. **Focus Intellect turns Emperors March red.** `EmperorSpawn(..., red)@0x1DA44B0` (`Penguin.c:39744`) and `GoalFx`
+13. **Surprises the page will show (APPROXIMATED, no part fixes them):**
+    - Constellation's marks, stars, impacts and Giant Star spawn with **world identity**; the page turns every cue by the
+      hero's facing (`cueOf` comment, `index.html:3446-3466`). The meteors (`Meteor1` at local (−3, 12, 2.5), `Giant1` at
+      (−6, 22, 5): `summary.txt`) so come from a hero-relative side, not the map's fixed one. The Penguin faces the
+      target, so it looks right.
+    - Two of the five poofs at the Goal are at or below the ground (i 3: y −0.29): the flock's ring centre is ballAt's
+      0.2 m + 0.15 m, with a 0.65 m radius (`Penguin.c:612-626`). The game does the same.
+    - `frostField_trail` (2 TrailRendererModern, followPosition) rides a hero that doesn't travel on the page, so its
+      ribbons stay short (only the clip's own airborne Root motion, 0.2-0.73 s, moves it).
+14. **Focus Intellect turns Emperors March red.** `EmperorSpawn(..., red)@0x1DA44B0` (`Penguin.c:39744`) and `GoalFx`
     call `FocusRedden@0x1DA5630`, which swaps the materials for red copies.
     - `red` is set when the cast took Focus (`RPC_emperorPenguin` `<red> = coded.y > 0.5`, `Penguin.c:8594`; DoRow6Skill
       puts y = 1 when `TakeFocus() >= 1`).
@@ -301,7 +326,7 @@ whether the page should move the hero instead.
 
 ```json
   "frostFieldLeap": {
-    "why": "TTO1102:Penguin.<RPC_frostFieldLeap>d__349::MoveNext@0x1DEF770 (Penguin.c:11314-11556; plans/fx_penguin/tto.md 2.2): 0: Row6Begin (:11384), Row6Sound blink (sounds/, :11395); Until 0.2: frostField_leap at the takeoff spot, hero rotation (:11423), frostField_trail owned at the hero (:11438; EffectControl 0.75 + 0.6, followPosition), the 0.6 s leap (:11441-11485: lerp to the landing + up x 10u(1-u), 2.5 m peak; FieldLanding@0x1DA4590: 1.5 m short of the target, 8.5 m for the target 10 m ahead) - the page's hero doesn't travel, so the landing is at 0 (Feral Strike's convention, plans/fx_wolf/misc.md item 4); 0.8: frostField_land at the landing, hero rotation (:11523), Row6Sound iceBreak (:11525), FrostFieldLoop@0x1DC38F0 (:1268-1450): frostField_field at the centre, identity (:1324; EffectControl 8 + 0.6 ends it before the code's Destroy 9, :1335), Row6Sound blizzard (:1337); Until 1.1: Row6End (:11545); no voice, no Multi Cast roll; left out: frozenGround / the marks and their frostMarkFx / frostBiteFx looks, the Frost Burst (BurstFx@0x1DA3310: frostField_burst + Sounds/frozenBlast at the foe) and the 20 % freeze on foes in the field (on an enemy); the Penguin's own frostField buff has no look (AddPenguinRow6Fx@0x24ADC20 serves frostMark, frostBite, manaFracture only)",
+    "why": "TTO1102:Penguin.<RPC_frostFieldLeap>d__349::MoveNext@0x1DEF770 (Penguin.c:11314-11556; plans/fx_penguin/tto.md 2.2): 0: Row6Begin (:11384), Row6Sound blink (sounds/, :11395); Until 0.2: frostField_leap at the takeoff spot, hero rotation (:11423), frostField_trail owned at the hero (:11438; EffectControl 0.75 + 0.6, followPosition), the 0.6 s leap (:11441-11485: lerp to the landing + up x 10u(1-u), 2.5 m peak; FieldLanding@0x1DA4590: 1.5 m short of the target, 8.5 m for the target 10 m ahead) - the page's hero doesn't travel, so the landing is at 0 (Feral Strike's convention, plans/fx_wolf/misc.md item 4); 0.8: frostField_land at the landing, hero rotation (:11523), Row6Sound iceBreak (:11525), FrostFieldLoop@0x1DC38F0 (:1268-1450): frostField_field at the centre, identity (:1324; EffectControl 8 + 0.6 ends it before the code's Destroy 9, :1335), Row6Sound blizzard (:1337); ticks 1 s apart from the landing (:1345-1393), one Frost Mark each on the target 1.5 m past the landing (within 9 m, :1376; AddFrostMarks@0x1DA2E60 :1432): the 5th, at 0.8 + 4 = 4.8 s, sets off FrostBurst (:38311) = BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), cued at the target 1.5 m ahead (the target point, moved with the landing to the hero); Until 1.1: Row6End (:11545); the cues after 1.1 s run on in the idle tail; no voice, no Multi Cast roll; left out: the frostMarkFx / frostBiteFx / frozenGround / 20 % freeze looks on the foe (status looks on its body, Sheep decision 4); the Penguin's own frostField buff has no look (AddPenguinRow6Fx@0x24ADC20 serves frostMark, frostBite, manaFracture only)",
     "cues": [
     [0, "sound", "blink"],
     [0.2, "fx", "tto/frostField_leap"],
@@ -309,10 +334,17 @@ whether the page should move the hero instead.
     [0.8, "fx", "tto/frostField_land"],
     [0.8, "sound", "iceBreak"],
     [0.8, "fx", "tto/frostField_field"],
-    [0.8, "sound", "blizzard"]
+    [0.8, "sound", "blizzard"],
+    [4.8, "fx", "tto/frostField_burst", {"d": 1.5}],
+    [4.8, "sound", "frozenBlast"]
     ]
   },
 ```
+
+- The burst: the target stands 10 m from the cast point and the landing is 8.5 m (FieldLanding, 1.5 m short), so it is
+  1.5 m past the field's centre, inside the 9 m ring. Marks at 0.8, 1.8, 2.8, 3.8 s (looks only), the burst at the 5th,
+  **4.8 s** (Bible `penguin-skill-reference.md:795`: "burst at 4.8 s"). Its later marks (5.8 / 6.8 / 7.8 s) give Frost Bite, a look on the body only.
+- `mBurstDone` is cleared when a field starts (Bible `penguin-skill-reference.md:795`; the only clear is FrostFieldLoop's `HashSet.Clear` on `mBurstDone` at its start, `Penguin.c:1343`), so every play of the tile bursts: no roll.
 
 Variant "the hero leaps", if question 5 says so: leap and trail at 0 as above, then `frostField_land` and
 `frostField_field` at `{"d": 8.5}`. The hero would need a page-side mover for 0.2-0.8 s (not an effect part).
@@ -397,7 +429,7 @@ Coroutine `TTO1102:Penguin.<RPC_emperorPenguin>d__356::MoveNext@0x1DEA490` (`Pen
 - the owner's client does this. Other clients get the Goal through `RPC_emperorGoal`.
 
 Full reach (question 2's default) puts the Goal at 0.85 + 22 / 28 = **1.636 s** (the first frame with d ≥ 22), at
-0.45 + 22 = **22.45 m ahead, 0.45 m up** ✓ (Bible :808: 1.64 s, 22.45 m). Numbers from `calc.py`:
+0.45 + 22 = **22.45 m ahead, 0.45 m up** ✓ (Bible :809: 1.64 s, 22.45 m). Numbers from `calc.py`:
 - Flock spots (x, d): (−1.207, 0.324), (−0.761, 0.992), (0, 1.25), (0.761, 0.992), (1.207, 0.324). Each penguin starts
   0.495 m lower and 0.495 m behind its spot.
 - Frosts (t, d): (0.893, 1.65), (0.95, 3.25), (1.007, 4.85), (1.064, 6.45), (1.121, 8.05), (1.179, 9.65), (1.236, 11.25),
@@ -414,7 +446,7 @@ Full reach (question 2's default) puts the Goal at 0.85 + 22 / 28 = **1.636 s** 
 
 ```json
   "emperorPenguin": {
-    "why": "TTO1102:Penguin.<RPC_emperorPenguin>d__356::MoveNext@0x1DEA490 (Penguin.c:8457-9102; plans/fx_penguin/tto.md 2.3; 5 penguins, no Focus, the ball's full 22 m: checks/fx_penguin_research/tto/calc.py): 0: Row6Begin (:8628), Until(start + 0) (:8645), then emperorPenguin_whistle at Row6Beak@0x1DAF620 = Head + 0.16 fwd - 0.03 up (0.17 ahead, 0.04 right, 0.64 up on the page's rig) with the hero's rotation, emperorPenguin_summon at the hero, Row6Sound emperorPenguin_whistle (TTO's own sounds/ clip, :8656-8695); Until 0.3: emperorPenguin_crack 1.75 m ahead (:8720-8743; its own sounds/iceBlock 0.8) + Row6Sound iceBlock (:8744), per penguin i of 5 emperorPenguin_emerge at FlockSpot@0x1DA4BF0 (angle (150 i/4 - 75) deg, r 1.25, capstone 0x1DA4D4F-0x1DA4DDD) and emperorPenguin_penguin 0.7 m down the 45 deg tilt axis from it, turned LookRotation(dir) x Euler(45, 0, 0) (:8766-8829), rising along it for 0.25 s (FlockRise@0x1DC31F0, :986-1167); Until 0.55: emperorPenguin_ball 0.45 ahead, 1.0 up, dropped to 0.2 m by 0.8 (:8892-9055); 0.8: emperorPenguin_kick at Row6Foot@0x1DB0160 = Foot2_R (0.10 ahead, 0.19 right, 0.17 up), emperorPenguin_launch at the ball (0.45 ahead, 0.2 up), Row6Sound cAttack (:8963-9008); Until 0.85: Row6Sound emperorPenguin_flock (TTO's own), EmperorShot@0x1DC1520 (:103-969): the ball rolls 28 m/s to 22 m at ground + 0.45, spinning 900 deg/s, an emperorPenguin_frost on the ground every 1.6 m from 1.2 m (float32: 13, the last 20.85 m ahead, :428-552), the flock whirls round the lane (0.65 m, 540 deg/s, 0.06 + 0.035 i behind, :588-682); Until 1.6: Row6End (:9090); 0.85 + 22/28 = 1.636: GoalFx@0x1DA74E0 emperorPenguin_goal at the ball 22.45 m ahead, 0.45 up + Row6Sound absoluteZero (:852), Destroy(ball) (kill 1.086), Scatter@0x1DB09F0 emperorPenguin_poof at each penguin, then Destroy (kill 1.336) (:842-844); no voice, no Multi Cast roll; left out: the hits, the Frost Burst on the 10 m target when the ball passes it at 0.85 + (10 - 0.95)/28 = 1.17 s (5 marks = an instant burst: BurstFx@0x1DA3310 frostField_burst + Sounds/frozenBlast at the foe, and its frostMarkFx / frostBiteFx looks: on an enemy); constellation_impact 1.2 m ahead only with Constellation's +3 penguins (:8846-8862)",
+    "why": "TTO1102:Penguin.<RPC_emperorPenguin>d__356::MoveNext@0x1DEA490 (Penguin.c:8457-9102; plans/fx_penguin/tto.md 2.3; 5 penguins, no Focus, the ball's full 22 m: checks/fx_penguin_research/tto/calc.py): 0: Row6Begin (:8628), Until(start + 0) (:8645), then emperorPenguin_whistle at Row6Beak@0x1DAF620 = Head + 0.16 fwd - 0.03 up (0.17 ahead, 0.04 right, 0.64 up on the page's rig) with the hero's rotation, emperorPenguin_summon at the hero, Row6Sound emperorPenguin_whistle (TTO's own sounds/ clip, :8656-8695); Until 0.3: emperorPenguin_crack 1.75 m ahead (:8720-8743; its own sounds/iceBlock 0.8) + Row6Sound iceBlock (:8744), per penguin i of 5 emperorPenguin_emerge at FlockSpot@0x1DA4BF0 (angle (150 i/4 - 75) deg, r 1.25, capstone 0x1DA4D4F-0x1DA4DDD) and emperorPenguin_penguin 0.7 m down the 45 deg tilt axis from it, turned LookRotation(dir) x Euler(45, 0, 0) (:8766-8829), rising along it for 0.25 s (FlockRise@0x1DC31F0, :986-1167); Until 0.55: emperorPenguin_ball 0.45 ahead, 1.0 up, dropped to 0.2 m by 0.8 (:8892-9055); 0.8: emperorPenguin_kick at Row6Foot@0x1DB0160 = Foot2_R (0.10 ahead, 0.19 right, 0.17 up), emperorPenguin_launch at the ball (0.45 ahead, 0.2 up), Row6Sound cAttack (:8963-9008); Until 0.85: Row6Sound emperorPenguin_flock (TTO's own), EmperorShot@0x1DC1520 (:103-969): the ball rolls 28 m/s to 22 m at ground + 0.45, spinning 900 deg/s, an emperorPenguin_frost on the ground every 1.6 m from 1.2 m (float32: 13, the last 20.85 m ahead, :428-552), the flock whirls round the lane (0.65 m, 540 deg/s, 0.06 + 0.035 i behind, :588-682); Until 1.6: Row6End (:9090); 0.85 + 22/28 = 1.636: GoalFx@0x1DA74E0 emperorPenguin_goal at the ball 22.45 m ahead, 0.45 up + Row6Sound absoluteZero (:852), Destroy(ball) (kill 1.086), Scatter@0x1DB09F0 emperorPenguin_poof at each penguin, then Destroy (kill 1.336) (:842-844); no voice, no Multi Cast roll; the ball passes the 10 m target at 0.85 + (10 - 0.95)/28 = 1.173 s (lane test :790-791): AddFrostMarks(foe, 5) (:811) = an instant Frost Burst (:38311), BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), at the target point 10 m ahead; the cues after 1.6 s run on in the idle tail; left out: the frostMarkFx / frostBiteFx looks on the foe (status looks on its body, Sheep decision 4; the hits draw nothing); constellation_impact 1.2 m ahead only with Constellation's +3 penguins (:8846-8862)",
     "cues": [
     [0, "fx", "tto/emperorPenguin_whistle", {"d": 0.17, "x": 0.04, "y": 0.64}],
     [0, "fx", "tto/emperorPenguin_summon"],
@@ -441,6 +473,8 @@ Full reach (question 2's default) puts the Goal at 0.85 + 22 / 28 = **1.636 s** 
     [1.007, "fx", "tto/emperorPenguin_frost", {"d": 4.85}],
     [1.064, "fx", "tto/emperorPenguin_frost", {"d": 6.45}],
     [1.121, "fx", "tto/emperorPenguin_frost", {"d": 8.05}],
+    [1.173, "fx", "tto/frostField_burst", {"d": 10}],
+    [1.173, "sound", "frozenBlast"],
     [1.179, "fx", "tto/emperorPenguin_frost", {"d": 9.65}],
     [1.236, "fx", "tto/emperorPenguin_frost", {"d": 11.25}],
     [1.293, "fx", "tto/emperorPenguin_frost", {"d": 12.85}],
@@ -463,6 +497,13 @@ Full reach (question 2's default) puts the Goal at 0.85 + 22 / 28 = **1.636 s** 
 - `to` on the ball and the flock = where the ball stops (the Goal). `i` (new) = the penguin's index, which fixes its delay
   and ring angle. The flock size (5) is the mover's default, or a second key once +3 is wanted.
 - Each frost spawns on the first frame with d ≥ frostAt, which is at most one frame after its time.
+- **The Frost Burst on the 10 m target** (added 2026-11-10): the ball's lane test takes a foe once its centre is within
+  0.5 m ahead of the ball (`Penguin.c:790-791`), the ball starting 0.45 m ahead at 28 m/s, so the 10 m target is hit at
+  0.85 + (10 − 0.45 − 0.5) / 28 = 0.85 + 9.05 / 28 = 0.85 + 0.323 = **1.173 s** (Bible `penguin-skill-reference.md:808`:
+  `0.85 + max(0, d − 0.95) / 28`). `AddFrostMarks(foe, 5)` (`:811`) gives 5 marks at once (Bible `:810`), so the 5th is
+  this hit: `FrostBurst` → `BurstFx` (`:38311`, `:38592-38640`) = `frostField_burst` at the foe's feet, identity, and
+  `Row6Sound("frozenBlast")`. Its `mBurstDone` is cleared only by a Frost Field (Bible `:810`): in the game a foe bursts
+  once per map without one; the tile shows the first play's look every time (one play = one fresh foe).
 - Variant "+3 penguins" (question 3), n = 8:
   - extra spots at i 5-7, r 1.9;
   - u = i / 7 for every penguin, so all 8 spots move;
@@ -473,16 +514,17 @@ Full reach (question 2's default) puts the Goal at 0.85 + 22 / 28 = **1.636 s** 
 
 ## 3. What is left out, all three (only "on an enemy" / "needs an attacker")
 
-- The hits and their statuses on foes:
+- The statuses' looks on the foe's body (on an enemy with no target-point analogue: Sheep decision 4, a status look
+  does not float over the empty spot):
   - `manaFracture` → `manaFractureFx`;
   - `frostMark` → `frostMarkFx`;
   - `frostBite` → `frostBiteFx` (AddPenguinRow6Fx@0x24ADC20, section 1);
   - the 20 % `frost` freeze (`Penguin.<Freeze>d__352::MoveNext@0x1DC3720`, `Penguin.c:1186`; BB's frost look).
-- **Frost Burst** on a foe (`BurstFx@0x1DA3310`, `Penguin.c:38590`): `frostField_burst` at the foe's feet and
-  `Row6Sound("frozenBlast")`.
-  - It comes at a foe's 5th mark: Frost Field at landing + 4 s, and Emperors March on the ball's first hit.
-  - It is an effect on an enemy, like the Wolf's `nAttack_hit` and the Sheep's `grandCodex_verdict`. Question 6 checks
-    this.
+- The hits themselves draw nothing (`CharacterControl::hit@0x24D57E0`, `CharacterControl.c:6555`: no effect load).
+- **Cued now, not left out:** the Frost Burst on the target (`BurstFx@0x1DA3310`, `Penguin.c:38592-38640`:
+  `frostField_burst` at the foe's feet + `Row6Sound("frozenBlast")`), at the target point: Emperors March 1.173 s at
+  10 m, Frost Field 4.8 s at 1.5 m (sections 2.2, 2.3). The Frost Burst's splash on other foes within 3 m has no
+  look of its own.
 - Nothing is left out for a missing part: every effect is cued, and the parts are listed in section 6.
 
 ## 4. Sounds and voices
@@ -530,7 +572,7 @@ The catalog has 91 Penguin effects; these 28 are TTO-only. The rest are BB's nam
 | emperorPenguin_kick | 0.5 + 0.3 | 4 ImageEmitters, 2 PS | - |
 | emperorPenguin_launch | 0.9 + 0.3 | 3 PS Rings (mesh = **Unity built-in Quad**), PS Streaks, PS Gust, GroundHug, 2 ImageEmitters | - |
 | emperorPenguin_frost | 1.6 + 0.4 | 2 GroundHugs, 2 mesh PS (spike), PS Snow | - |
-| emperorPenguin_goal | 2.2 + 0.5 | 5 GroundHugs, 6 ImageEmitters, 7 mesh PS (spike), PS Net / Net2 (**built-in Quad**), 4 PS | - |
+| emperorPenguin_goal | 2.2 + 0.5 | 5 GroundHugs, 6 ImageEmitters, 7 mesh PS (spike), PS Net / Net2 (**built-in Quad**), 3 PS (Shards, Stars, Afterfall) | - |
 | emperorPenguin_poof | 0.8 + 0.3 | 3 ImageEmitters, 2 PS | - |
 | frostMarkFx / frostBiteFx / manaFractureFx | **none** (status looks on foes) | 3 PS each | - |
 
@@ -578,14 +620,19 @@ Build notes for the parts stage (home or office: this PC has the bundles):
    - A is one star: cast, mark, star, impact.
 2. **Emperors March: does the 10 m target stop the ball?** Only a foe of weight ≥ 60, or a structure, does.
    - Default: **no**: the full 22 m run and the Goal at 22.45 m, 1.636 s.
-   - Otherwise the Goal comes at about 10 m and 1.17 s, with the frosts up to 9.65 m.
+   - Otherwise the Goal comes at the target, 1.173 s: the ball stops "right after hitting" it (Bible
+     `penguin-skill-reference.md:809`), so the Goal, the burst and the poofs all at 1.173 s near 10 m, the frosts up
+     to 8.05 m (the 9.65 m one comes at 1.179, after the stop), the ball's and the flock's kills shortened to 0.623 /
+     0.873.
+   - Sheep decision 3 (the ball ends at the target point) was a homing ball that the game always ends on a hit; this
+     ball passes a light foe, so the decision doesn't settle it.
 3. **+3 penguins** (Constellation cast within the last 8 s): default **5** (the tile played alone).
 4. **Focus Intellect's red Emperors March** (FocusRedden): default **off**. Focus is a separate active skill, not a
    passive.
 5. **Frost Field's leap**: default **in place** (Feral Strike's convention: the land and the field at the hero). The
    alternative is a page hero mover (P7), with the land and the field 8.5 m ahead.
-6. **Frost Burst on the 10 m target** (`frostField_burst` + `frozenBlast` when the ball reaches it at 1.17 s): default
-   **left out** (the Wolf decision: effects on an enemy are left out).
+(The first draft's question 6, the Frost Burst on the target, is answered by the decisions: effects on the target go
+to the target point; cued, sections 2.2 / 2.3.)
 
 ## 8. For the Bible (offer to the user; that repo's own rules)
 
@@ -600,3 +647,67 @@ Build notes for the parts stage (home or office: this PC has the bundles):
   - with 2 stars the line vanishes 0.6 s after ignition;
   - with no stars the Penguin never leaves `attack` (`RPC_constellation` state 1).
 - Frost Field: the Penguin's `frostField` buff has no look.
+
+## Verification (2026-11-10)
+
+A skeptical re-trace by a checker agent (office PC). Probes in `checks/fx_penguin_research/verify/`:
+`tto_calc.py` (float32 frost count, flock spots, Goal and burst times) and `tto_probe4.json` (a fresh
+`wardrobe_fx_tto.py penguin --probe constellation_line,frostField_field,frostField_trail,constellation_cast`).
+
+**What I checked, against `DecompiledSource_TTO_2026-11-02\pseudo\Penguin.c` (function cites are the `// ====` header
+lines, 2 above the bodies; that is fine):**
+- RPC_constellation: Row6Begin :6849, ClearStarFx :6855, fallingStar_ring :6856, constellation_cast owned (flag 1)
+  :6871, Until 0.4 :6876, marks :6924, castEffect :6943, StarLineCount :6948, lines :6973, StarLines :7004, Until 1
+  :7011, Row6End :7022. All held.
+- StarLines: lastImpact = start + 1.1 + 0.6 + 0.3 (n − 1) (:22538-22539); draw f with 0.12 (:22658-22659); the star at
+  start + 1.1 + 0.3 i (:22715), the mark destroyed and StarImpact 0.6 s later (:22744-22770); ignite at lastImpact +
+  0.05 (:22778); lineFire at the midpoint of the two marks (fixedAt + up), LookRotation, localScale (1, 1, length)
+  (:22884-22904); ignite + manaArc, giant + fallingComet, ClearStarFx + giantImpact + novarFlare at + 0.6
+  (:22921-22981). Every string literal resolved (manaArc, fallingComet, novarFlare, constellation_star / lineFire /
+  ignite / giant / giantImpact). The variant B numbers re-derived by hand: pentagon vertices, the 5 midpoints, length
+  3.527, yaws 18 / 90 / 162 / −126 / −54, each line's `ignite` + spawn = 2.95 and `kill` + spawn = 3.55, mark kills.
+- RPC_frostFieldLeap: blink :11395, Until 0.2 :11400, leap :11423 (not owned), trail :11438 (owned), flight 0x3F19999A
+  :11441, arc ×10 :11478, land :11523 (not owned), iceBreak :11525, FrostFieldLoop :11528, Until 1.1 :11534, Row6End
+  :11545. FrostFieldLoop: field :1324, Destroy 9 :1335, blizzard :1337, mBurstDone cleared :1343, end = now + 8 :1345,
+  first tick = now (:1347), +1 s each (:1393), 9 m (81) :1376, AddFrostMarks(foe, 1, fromField) :1432. AddFrostMarks:
+  marks forgotten after 3 s, burst on the 5th (`< 5` test), FrostBurst :38311; BurstFx (:38590) spawns
+  frostField_burst and plays frozenBlast. FieldLanding: min(dist, 14) − 1.5, 9.5 m with no target, so 8.5 m for a
+  10 m target, the target 1.5 m past the centre: the 4.8 s / 1.5 m burst cue holds.
+- RPC_emperorPenguin: Until(start + 0.0) :8645, whistle / summon / whistle sound :8668-8695, Until 0.3 :8700, crack
+  1.75 :8720-8743, iceBlock :8744, emerge :8821, penguin :8829, constellation_impact 1.2 :8846-8862, FlockRise :8867,
+  Until 0.55 :8874, ballAt 0.45 dir + 0.2 up :8892-8908, ball + 0.8 up :8929, kick (Row6Foot) / launch (ballAt) /
+  cAttack :8963-9008, Until 0.85 :9013, flock :9063, EmperorShot :9068, Until 1.6 :9077, Row6End :9090. All strings
+  resolved. EmperorShot: reach 0x41B00000 = 22, 28 m/s, frostAt 0x3F99999A = 1.2 step 1.6, 900, 0.65, 0.15, 0.06,
+  0.035, 0.18 all present; the lane test (:790-791) is `proj(foe − from) ≤ d + 0.5`, so a foe 10 m from the hero
+  (9.55 m from `from`) is hit at d = 9.05: 0.85 + 9.05 / 28 = 1.1732 s; AddFrostMarks(foe, flock) right after the hit
+  (:811). Float32: 13 frosts (frostAt after 13 steps = 22.000002 > 22), Goal at 0.85 + 22 / 28 = 1.6357 s. Flock spots
+  (−1.207, 0.324) ... (1.207, 0.324) and the poofs' y (from.y 0.2 + 0.15 + 0.65 sin θ) re-derived.
+- Row6Beak (Head, 0.16, 0.03, fallback 0.67), Row6Foot (Foot2_R, fallback 0.3), Row6Sound (`sounds/` path, volume 1
+  owner / 0.75 others, PlayOneShot) held. `CharacterControl::hit` (TTO CharacterControl.c:6555-7090) loads no effect
+  (its only effect-like string is `BarrierFX`, a lookup on the hit one); AddPenguinRow6Fx's literals are frostBite,
+  frostMark, manaFracture (+ `Fx`).
+- Targets: Constellation and Emperors March hit foes only; Frost Field's only self status is `frostField` (0x3F7 on
+  the caster), which has no look. No ally effect is cued.
+- Sounds: all 13 BB names are in the rip's `penguin/sounds/` and none in `voices/` (42 files in `sounds/`); the two
+  TTO-only ones are in neither. Clip lengths 1.0 / 1.1 / 1.6 in `wardrobe/data/penguin/clips.json`.
+- Prefabs: `compact.txt` matches the table row by row (node counts recounted); `probe.json` has 28 effects and no
+  `followState: true`; my fresh probe gives the same EffectControl values (line 6 + 0.2, field 8 + 0.6, trail
+  0.75 + 0.6 followPosition, cast 1 + 0.5 followPosition) and both LineRenderers `m_Enabled` false.
+- Bible lines (`penguin-skill-reference.md`): 764, 782, 793, 795, 807, 808 (the `0.85 + max(0, d − 0.95) / 28` formula),
+  809, 810 held; two were off (below). Page: `index.html:3149` (scale × number), `:3467` cueOf (drops unknown keys,
+  passes `scale` through) held.
+
+**Corrections made in this file:**
+1. "no cast bar (Bible :770" -> ":771". Proof: `penguin-skill-reference.md:771` is "**Cast:** no cast bar (they never go
+   through `RPC_cast1` ..."; :770 is the skill-data line.
+2. "(Bible :808: 1.64 s, 22.45 m)" -> ":809". Proof: :809 "Stop and Goal ... (at full range 1.64 s, 22.45 m ahead)".
+3. "`mBurstDone` is cleared when a field starts (... AddFrostMarks :38268-38306)" -> FrostFieldLoop `Penguin.c:1343`.
+   Proof: :1343 `HashSet<T>::Clear(*(lVar1 + 0x6f8))`, and 0x6f8 is `mBurstDone` (AddFrostMarks :38270-38272 reads it,
+   :38306 only adds to it); `HashSet<int>::Clear` is used nowhere else in the file.
+4. Section 5, `emperorPenguin_goal`: "4 PS" -> "3 PS (Shards, Stars, Afterfall)". Proof: `compact.txt` line 24; the
+   other PS are the 7 mesh ones and Net / Net2.
+
+**Unresolved (not disproved, not re-run):** the 1102 = 1109 identity (`cmp1109.py`, capstone over both DLLs) and the
+AddPenguinRow6Fx dispatch addresses (`callers.py`, `jumps.py`) were not re-run; the rig-derived beak / foot offsets
+(`bones.py`) and the sign of `side` in the poofs' x were not re-derived; the 0.6 of the no-Giant `Until()` (capstone
+0x1E2D59A) was not re-read (it only matters for n = 1 / 2).

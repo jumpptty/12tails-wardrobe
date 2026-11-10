@@ -30,17 +30,13 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Either PC
 
-- **Continue the Penguin's effects research** (stopped at 98 % of the weekly limit, 2026-11-10; NOTES.md "the
-  Penguin's research stopped"). Done: `plans/fx_penguin/own_skills.md`. Possibly incomplete: `plans/fx_penguin/tto.md`
-  (its agent never returned: read its end; re-run its part if it stops short). Still to write: `attacks_emotes.md`
-  (Normal / Charge Attack, MP Transfer on nAttack1, activateIcon1 on cAttack2, emotes, KO), `cast_a.md` (the Cast
-  channel + cast3 skills manaMissile, manaBurn, fallingComets, manaVortex, meteora, frozenBlast, arcticWind,
-  iceShield), `cast_b.md` (iceBlock, snowMan, tornado, typhoon, absoluteZero, blizzard, snowBall, cosmicRift, Cosmic
-  Friday), `parts.md` (Penguin_tornado, _typhoon, _arcticEmperor, _cosmicFriday, _iceBlock, _nAttack + anything drawn
-  wrongly). Then three checkers (attacks_emotes + own_skills, cast_a + cast_b, tto + parts) re-trace and fix in place.
-  Same method as the Sheep's (`plans/fx_sheep/*.md` and its decisions apply by analogy; ask the user only new
-  questions); then the build workflow as the Sheep's (NOTES.md "the Sheep's effects: built and cued"). Start the usage
-  guard first. The workflow scripts to copy are in `pipeline\workflows\` (its README: what to keep, the home paths).
+- **Build the Penguin's effects** (research done at the office 2026-11-10, NOTES.md "the Penguin's research
+  finished"): first show the user the 17 new questions in `plans/fx_penguin/*.md` (each report's questions, with the
+  recommended defaults; the checkers' "unresolved" lists flag two convention choices: aim at the floor point or the
+  target's centre, and target-facing rotations) and write `plans/fx_penguin/decisions.md` from the answers. Then the
+  build workflow: copy `pipeline\workflows\sheep-fx-build.js`, swap the Sheep for the Penguin (builders from
+  `plans/fx_penguin/parts.md` "who builds what", the TTO side from tto.md), home paths (`D:\12tails-wardrobe`,
+  `D:\12tails`). Start the usage guard first. Afterwards: the user's hand checks, then deploy when they ask.
 
 ## Video repo (either PC)
 

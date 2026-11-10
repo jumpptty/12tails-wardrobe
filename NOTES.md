@@ -924,3 +924,12 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   returned**: tto (`plans/fx_penguin/tto.md`, maybe incomplete, not verified); **not started writing**: attacks_emotes,
   cast_a, cast_b, parts; no checker ran. The workflow's script is in this session's folder only; HANDOFF has the
   continuation (re-run the four, check tto.md, then the three checkers).
+- **2026-11-10 (17:08-17:43), the Penguin's research finished** (user: "continue your penguin research ... the handoff
+  commit push to home PC is done before 18.00"). The stopped workflow resumed in the same session (own_skills from
+  cache), 35 min: all six reports in `plans/fx_penguin/` written and checked (374 claims re-traced, each report's
+  "Verification" section). The researchers raised 17 new questions (beyond the Sheep / Wolf decisions), each with a
+  recommended default, in the reports' question sections: Double Spell reruns, Nova Flare at the vortex 5 m ahead,
+  Constellation's star count, Emperor's March stopping, Frost Field's leap, long statuses cut at 10 s, the Normal
+  Attack's aim point (a 0.35 m ball radius the Sheep's cues ignored too), Tornado / Typhoon as two pool members, Cosmic
+  Rift / Friday's hero-skin look, Snow Man hiding the hero, the Staff of Time's slow ball. Next: the user answers them
+  (or takes the defaults), then the build workflow (HANDOFF).
