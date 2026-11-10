@@ -836,3 +836,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   released-TTO test checks the scrambled files. The trailer is retired (user: "the trailer video is already published,
   you may delete everything related to it"): CLAUDE.md / NOTES no longer promise it `wardrobe_dist` or the hook; its
   files in the video repo: HANDOFF.
+- **2026-11-10, deployed** (user: "deploy"): SFX / VFX, the TTO guard, the phone toolbar. From a fresh empty folder:
+  234 uploaded (the scrambled TTO files and the page), 7,264 already there, version
+  `3d998061-2f7e-4fe2-8c79-393accb8b06e`. Live: `data-086254db3e`, the gated hook, `#vfx`; wolf/o_halloween.bin,
+  tex/halloween1.webp, faces/23.webp start with "TTOx", BB's standard1.webp is plain RIFF; the previous data folders
+  (data-d24944ba10, data-5b9c3cebb9) 404, so no plain TTO copy is left at an old address.
