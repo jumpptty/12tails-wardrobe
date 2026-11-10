@@ -1044,3 +1044,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   tile expecting its own cues, and skips the hidden hosts. Checks: files-only sheep / wolf no problems; dark wolf exit 0,
   errors [].
   Then: dark sheep exit 0 errors [] (all 21 Cast skills and Quick Heal played); moves check errors []; menu check errors [] (a first run's failed emote-icon requests did not repeat); unit tests 52 OK. New pipeline/wardrobe_picker_shot.py (screenshots of a class's picker tab).
+- **2026-11-10 (night, home), deployed** (user: "1." = everything, the Penguin as it is): the TTO lag fix, one tile per
+  skill (Wolf, Sheep, and the Penguin's pools), Quick Heal, the Penguin's effects (QA cut off, its effect-only skills not
+  yet in, not hand-checked). Publish: 7,906 files (+426), 337 MB, check no problems; `wardrobe_dist_check.py` errors [];
+  penguin / sheep / wolf fx.json and the 41 tto_* textures start with "TTOx". From a fresh empty folder: 230 uploaded,
+  7,675 already there, version `9d49453e-6890-4ae7-8783-3c7b64d1f2b5`. Live: `data-f37b6da64e`, poolChains and the
+  kept buffers in the page, fxparts penguin / tto_penguin, fx_cues/penguin.json, the Quick Heal icon 200; the old data
+  folder 404.
