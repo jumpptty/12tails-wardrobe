@@ -1,0 +1,1249 @@
+{
+ "bat": {
+  "cAttack": {
+   "icon": "icons/hd/bat/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "echoes": {
+   "icon": "icons/hd/bat/echoes.webp",
+   "clips": [
+    "echoes"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/bat/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3"
+   ]
+  },
+  "nightfallSwarm": {
+   "icon": "icons/hd/bat/nightfallSwarm.webp",
+   "clips": [
+    "nightfallSwarm"
+   ]
+  },
+  "soulEater": {
+   "icon": "icons/hd/bat/soulEater.webp",
+   "clips": [
+    "soulEater"
+   ]
+  }
+ },
+ "bison": {
+  "cAttack": {
+   "icon": "icons/hd/bison/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "cAttack3",
+    "cAttack4",
+    "cAttack5",
+    "cAttack6"
+   ]
+  },
+  "calamityHammer": {
+   "icon": "icons/hd/bison/calamityHammer.webp",
+   "clips": [
+    "calamityHammer"
+   ]
+  },
+  "earthRupture": {
+   "icon": "icons/hd/bison/earthRupture.webp",
+   "clips": [
+    "earthRupture"
+   ]
+  },
+  "earthSmasher": {
+   "icon": "icons/hd/bison/earthSmasher.webp",
+   "clips": [
+    "earthSmasher"
+   ]
+  },
+  "enrage": {
+   "icon": "icons/hd/bison/enrage.webp",
+   "clips": [
+    "enrage"
+   ]
+  },
+  "farStun": {
+   "icon": "icons/hd/bison/farStun.webp",
+   "clips": [
+    "farStun"
+   ]
+  },
+  "instantRush": {
+   "icon": "icons/hd/bison/instantRush.webp",
+   "clips": [
+    "instantRush"
+   ]
+  },
+  "knockDown": {
+   "icon": "icons/hd/bison/knockDown.webp",
+   "clips": [
+    "knockDown"
+   ]
+  },
+  "magmaClutter": {
+   "icon": "icons/hd/bison/magmaClutter.webp",
+   "clips": [
+    "magmaClutter"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/bison/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3",
+    "nAttack4",
+    "nAttack5"
+   ]
+  },
+  "overPower": {
+   "icon": "icons/hd/bison/overPower.webp",
+   "clips": [
+    "overPower"
+   ]
+  },
+  "overSwing": {
+   "icon": "icons/hd/bison/overSwing.webp",
+   "clips": [
+    "overSwing"
+   ]
+  },
+  "prideCrusher": {
+   "icon": "icons/hd/bison/prideCrusher.webp",
+   "clips": [
+    "prideCrusher"
+   ]
+  },
+  "slam": {
+   "icon": "icons/hd/bison/slam.webp",
+   "clips": [
+    "slam"
+   ]
+  },
+  "titanDrop": {
+   "icon": "icons/hd/bison/titanDrop.webp",
+   "clips": [
+    "titanDrop"
+   ]
+  },
+  "trample": {
+   "icon": "icons/hd/bison/trample.webp",
+   "clips": [
+    "trample1",
+    "trample2"
+   ]
+  },
+  "unchainedFury": {
+   "icon": "icons/hd/bison/unchainedFury.webp",
+   "clips": [
+    "unchainedFury"
+   ]
+  },
+  "warcry": {
+   "icon": "icons/hd/bison/warcry.webp",
+   "clips": [
+    "warcry"
+   ]
+  }
+ },
+ "cat": {
+  "backflip": {
+   "icon": "icons/hd/cat/backflip.webp",
+   "clips": [
+    "backflip"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/cat/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "crescentEclipse": {
+   "icon": "icons/hd/cat/crescentEclipse.webp",
+   "clips": [
+    "crescentEclipse1",
+    "crescentEclipse2"
+   ]
+  },
+  "deltaStrike": {
+   "icon": "icons/hd/cat/deltaStrike.webp",
+   "clips": [
+    "deltaStrike"
+   ]
+  },
+  "dropAnchor": {
+   "icon": "icons/hd/cat/dropAnchor.webp",
+   "clips": [
+    "dropAnchor"
+   ]
+  },
+  "finishingBlow": {
+   "icon": "icons/hd/cat/finishingBlow.webp",
+   "clips": [
+    "finishingBlow1",
+    "finishingBlow2"
+   ]
+  },
+  "forwardLunge": {
+   "icon": "icons/hd/cat/forwardLunge.webp",
+   "clips": [
+    "forwardLunge"
+   ]
+  },
+  "grandCasinoArcade": {
+   "icon": "icons/hd/cat/grandCasinoArcade.webp",
+   "clips": [
+    "grandCasinoArcade1",
+    "grandCasinoArcade2",
+    "grandCasinoArcade3"
+   ]
+  },
+  "heartRipper": {
+   "icon": "icons/hd/cat/heartRipper.webp",
+   "clips": [
+    "heartRipper1",
+    "heartRipper2"
+   ]
+  },
+  "moonBlade": {
+   "icon": "icons/hd/cat/moonBlade.webp",
+   "clips": [
+    "moonBlade"
+   ]
+  },
+  "moonStorm": {
+   "icon": "icons/hd/cat/moonStorm.webp",
+   "clips": [
+    "moonStorm"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/cat/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3",
+    "nAttack4"
+   ]
+  },
+  "reverseThrust": {
+   "icon": "icons/hd/cat/reverseThrust.webp",
+   "clips": [
+    "reverseThrust"
+   ]
+  },
+  "royalFlush": {
+   "icon": "icons/hd/cat/royalFlush.webp",
+   "clips": [
+    "royalFlush1"
+   ]
+  },
+  "supportFire": {
+   "icon": "icons/hd/cat/supportFire.webp",
+   "clips": [
+    "supportFire1",
+    "supportFire2"
+   ]
+  },
+  "swiftPace": {
+   "icon": "icons/hd/cat/swiftPace.webp",
+   "clips": [
+    "swiftPace"
+   ]
+  }
+ },
+ "chameleon": {
+  "allSlain": {
+   "icon": "icons/hd/chameleon/allSlain.webp",
+   "clips": [
+    "allSlain"
+   ]
+  },
+  "allSlayer": {
+   "icon": "icons/hd/chameleon/allSlayer.webp",
+   "clips": [
+    "allSlayer1",
+    "allSlayer2",
+    "allSlayer3"
+   ]
+  },
+  "apexHunt": {
+   "icon": "icons/hd/chameleon/apexHunt.webp",
+   "clips": [
+    "apexHunt"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/chameleon/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "cAttack3",
+    "cAttack4"
+   ]
+  },
+  "chainLightning": {
+   "icon": "icons/hd/chameleon/chainLightning.webp",
+   "clips": [
+    "chainLightning"
+   ]
+  },
+  "leftStride": {
+   "icon": "icons/hd/chameleon/leftStride.webp",
+   "clips": [
+    "leftStride"
+   ]
+  },
+  "massShot": {
+   "icon": "icons/hd/chameleon/massShot.webp",
+   "clips": [
+    "massShot"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/chameleon/nAttack.webp",
+   "clips": [
+    "nAttack1"
+   ]
+  },
+  "needlePrison": {
+   "icon": "icons/hd/chameleon/needlePrison.webp",
+   "clips": [
+    "needlePrison"
+   ]
+  },
+  "poisonVolley": {
+   "icon": "icons/hd/chameleon/poisonVolley.webp",
+   "clips": [
+    "poisonVolley"
+   ]
+  },
+  "quickFire": {
+   "icon": "icons/hd/chameleon/quickFire.webp",
+   "clips": [
+    "quickFire1",
+    "quickFire2",
+    "quickFire3"
+   ]
+  },
+  "rightStride": {
+   "icon": "icons/hd/chameleon/rightStride.webp",
+   "clips": [
+    "rightStride"
+   ]
+  },
+  "silentWalk": {
+   "icon": "icons/hd/chameleon/silentWalk.webp",
+   "clips": [
+    "silentWalk"
+   ]
+  },
+  "skinShift": {
+   "icon": "icons/hd/chameleon/skinShift.webp",
+   "clips": [
+    "skinShift"
+   ]
+  },
+  "slayer": {
+   "icon": "icons/hd/chameleon/slayer.webp",
+   "clips": [
+    "slayer1",
+    "slayer2",
+    "slayer3"
+   ]
+  },
+  "thunderDragon": {
+   "icon": "icons/hd/chameleon/thunderDragon.webp",
+   "clips": [
+    "thunderDragon1",
+    "thunderDragon2"
+   ]
+  },
+  "venomPhantom": {
+   "icon": "icons/hd/chameleon/venomPhantom.webp",
+   "clips": [
+    "venomPhantom1",
+    "venomPhantom2",
+    "venomPhantom3"
+   ]
+  },
+  "zeroShot": {
+   "icon": "icons/hd/chameleon/zeroShot.webp",
+   "clips": [
+    "zeroShot"
+   ]
+  }
+ },
+ "mole": {
+  "advanceRepair": {
+   "icon": "icons/hd/mole/advanceRepair.webp",
+   "clips": [
+    "advanceRepair"
+   ]
+  },
+  "barrelCannon": {
+   "icon": "icons/hd/mole/barrelCannon.webp",
+   "clips": [
+    "barrelCannon"
+   ]
+  },
+  "barrelRailgun": {
+   "icon": "icons/hd/mole/barrelRailgun.webp",
+   "clips": [
+    "barrelRailgun1",
+    "barrelRailgun2",
+    "barrelRailgun3",
+    "barrelRailgun4"
+   ]
+  },
+  "bunker": {
+   "icon": "icons/hd/mole/bunker.webp",
+   "clips": [
+    "bunker"
+   ]
+  },
+  "chopper": {
+   "icon": "icons/hd/mole/chopper.webp",
+   "clips": [
+    "chopper"
+   ]
+  },
+  "detonate": {
+   "icon": "icons/hd/mole/detonate.webp",
+   "clips": [
+    "detonate"
+   ]
+  },
+  "flameTurret": {
+   "icon": "icons/hd/mole/flameTurret.webp",
+   "clips": [
+    "flameTurret1",
+    "flameTurret2"
+   ]
+  },
+  "grenadeCluster": {
+   "icon": "icons/hd/mole/grenadeCluster.webp",
+   "clips": [
+    "grenadeCluster"
+   ]
+  },
+  "mine": {
+   "icon": "icons/hd/mole/mine.webp",
+   "clips": [
+    "mine"
+   ]
+  },
+  "missile": {
+   "icon": "icons/hd/mole/missile.webp",
+   "clips": [
+    "missile"
+   ]
+  },
+  "mortarShot": {
+   "icon": "icons/hd/mole/mortarShot.webp",
+   "clips": [
+    "mortarShot"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/mole/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2"
+   ]
+  },
+  "skyDrill": {
+   "icon": "icons/hd/mole/skyDrill.webp",
+   "clips": [
+    "skyDrill"
+   ]
+  },
+  "superDig": {
+   "icon": "icons/hd/mole/superDig.webp",
+   "clips": [
+    "superDig"
+   ]
+  },
+  "tnt": {
+   "icon": "icons/hd/mole/tnt.webp",
+   "clips": [
+    "tnt"
+   ]
+  },
+  "warFactory": {
+   "icon": "icons/hd/mole/warFactory.webp",
+   "clips": [
+    "warFactory"
+   ]
+  }
+ },
+ "monkey": {
+  "blazingArrow": {
+   "icon": "icons/hd/monkey/blazingArrow.webp",
+   "clips": [
+    "blazingArrow"
+   ]
+  },
+  "buitenBastion": {
+   "icon": "icons/hd/monkey/buitenBastion.webp",
+   "clips": [
+    "buitenBastion"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/monkey/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "damageCast": {
+   "icon": "icons/hd/monkey/damageCast.webp",
+   "clips": [
+    "damageCast1",
+    "damageCast2",
+    "damageCast3"
+   ]
+  },
+  "flashFire": {
+   "icon": "icons/hd/monkey/flashFire.webp",
+   "clips": [
+    "flashFire"
+   ]
+  },
+  "jaAscension": {
+   "icon": "icons/hd/monkey/jaAscension.webp",
+   "clips": [
+    "jaAscension"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/monkey/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2"
+   ]
+  },
+  "summonAttack": {
+   "icon": "icons/hd/monkey/summonAttack.webp",
+   "clips": [
+    "summonAttack"
+   ]
+  },
+  "summonDefense": {
+   "icon": "icons/hd/monkey/summonDefense.webp",
+   "clips": [
+    "summonDefense"
+   ]
+  },
+  "summonRelease": {
+   "icon": "icons/hd/monkey/summonRelease.webp",
+   "clips": [
+    "summonRelease"
+   ]
+  }
+ },
+ "panda": {
+  "ashura": {
+   "icon": "icons/hd/panda/ashura.webp",
+   "clips": [
+    "ashura"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/panda/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "climbingCliff": {
+   "icon": "icons/hd/panda/climbingCliff.webp",
+   "clips": [
+    "climbingCliff"
+   ]
+  },
+  "comboLink": {
+   "icon": "icons/hd/panda/comboLink.webp",
+   "clips": [
+    "comboLink"
+   ]
+  },
+  "crumblingMountain": {
+   "icon": "icons/hd/panda/crumblingMountain.webp",
+   "clips": [
+    "crumblingMountain"
+   ]
+  },
+  "drunkenFist": {
+   "icon": "icons/hd/panda/drunkenFist.webp",
+   "clips": [
+    "drunkenFist"
+   ]
+  },
+  "heavenPalm": {
+   "icon": "icons/hd/panda/heavenPalm.webp",
+   "clips": [
+    "heavenPalm"
+   ]
+  },
+  "lotusPalm": {
+   "icon": "icons/hd/panda/lotusPalm.webp",
+   "clips": [
+    "lotusPalm"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/panda/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3",
+    "nAttack4",
+    "nAttack5"
+   ]
+  },
+  "nineDragons": {
+   "icon": "icons/hd/panda/nineDragons.webp",
+   "clips": [
+    "nineDragons"
+   ]
+  },
+  "pummel": {
+   "icon": "icons/hd/panda/pummel.webp",
+   "clips": [
+    "pummel"
+   ]
+  },
+  "qiStrike": {
+   "icon": "icons/hd/panda/qiStrike.webp",
+   "clips": [
+    "qiStrike1",
+    "qiStrike2"
+   ]
+  },
+  "raijinKen": {
+   "icon": "icons/hd/panda/raijinKen.webp",
+   "clips": [
+    "raijinKen1",
+    "raijinKen2"
+   ]
+  },
+  "risingDragons": {
+   "icon": "icons/hd/panda/risingDragons.webp",
+   "clips": [
+    "risingDragons"
+   ]
+  },
+  "risingVortex": {
+   "icon": "icons/hd/panda/risingVortex.webp",
+   "clips": [
+    "risingVortex"
+   ]
+  },
+  "roll": {
+   "icon": "icons/hd/panda/roll.webp",
+   "clips": [
+    "roll"
+   ]
+  },
+  "rollAround": {
+   "icon": "icons/hd/panda/rollAround.webp",
+   "clips": [
+    "rollAround"
+   ]
+  },
+  "rushingFalcon": {
+   "icon": "icons/hd/panda/rushingFalcon.webp",
+   "clips": [
+    "rushingFalcon"
+   ]
+  },
+  "spTransfer": {
+   "icon": "icons/hd/panda/spTransfer.webp",
+   "clips": [
+    "spTransfer"
+   ]
+  },
+  "stasisBlow": {
+   "icon": "icons/hd/panda/stasisBlow.webp",
+   "clips": [
+    "stasisBlow"
+   ]
+  },
+  "tempestDance": {
+   "icon": "icons/hd/panda/tempestDance.webp",
+   "clips": [
+    "tempestDance",
+    "tempestDanceEnd"
+   ]
+  },
+  "threeSteps": {
+   "icon": "icons/hd/panda/threeSteps.webp",
+   "clips": [
+    "threeSteps"
+   ]
+  },
+  "tigerToss": {
+   "icon": "icons/hd/panda/tigerToss.webp",
+   "clips": [
+    "tigerToss"
+   ]
+  },
+  "towerRush": {
+   "icon": "icons/hd/panda/towerRush.webp",
+   "clips": [
+    "towerRush"
+   ]
+  },
+  "waterCrane": {
+   "icon": "icons/hd/panda/waterCrane.webp",
+   "clips": [
+    "waterCrane"
+   ]
+  },
+  "waterMonkey": {
+   "icon": "icons/hd/panda/waterMonkey.webp",
+   "clips": [
+    "waterMonkey"
+   ]
+  },
+  "yinYangFist": {
+   "icon": "icons/hd/panda/yinYangFist.webp",
+   "clips": [
+    "yinYangFist"
+   ]
+  }
+ },
+ "penguin": {
+  "arcticEmperor": {
+   "icon": "icons/hd/penguin/arcticEmperor.webp",
+   "clips": [
+    "arcticEmperor"
+   ]
+  },
+  "blink": {
+   "icon": "icons/hd/penguin/blink.webp",
+   "clips": [
+    "blink"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/penguin/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "constellation": {
+   "icon": "icons/hd/penguin/constellation.webp",
+   "clips": [
+    "constellation"
+   ]
+  },
+  "cosmicFriday": {
+   "icon": "icons/hd/penguin/cosmicFriday.webp",
+   "clips": [
+    "cosmicFriday"
+   ]
+  },
+  "focusIntellect": {
+   "icon": "icons/hd/penguin/focusIntellect.webp",
+   "clips": [
+    "focusIntellect"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/penguin/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3"
+   ]
+  }
+ },
+ "rabbit": {
+  "backpack": {
+   "icon": "icons/hd/rabbit/backpack.webp",
+   "clips": [
+    "backpack"
+   ]
+  },
+  "bounce": {
+   "icon": "icons/hd/rabbit/bounce.webp",
+   "clips": [
+    "bounce1",
+    "bounce2"
+   ]
+  },
+  "bountyHunt": {
+   "icon": "icons/hd/rabbit/bountyHunt.webp",
+   "clips": [
+    "bountyHunt"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/rabbit/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "cAttack3"
+   ]
+  },
+  "circleShot": {
+   "icon": "icons/hd/rabbit/circleShot.webp",
+   "clips": [
+    "circleShot"
+   ]
+  },
+  "coinRicochet": {
+   "icon": "icons/hd/rabbit/coinRicochet.webp",
+   "clips": [
+    "coinRicochet"
+   ]
+  },
+  "extravagance": {
+   "icon": "icons/hd/rabbit/extravagance.webp",
+   "clips": [
+    "extravagance"
+   ]
+  },
+  "fourShot": {
+   "icon": "icons/hd/rabbit/fourShot.webp",
+   "clips": [
+    "fourShot"
+   ]
+  },
+  "gilShot": {
+   "icon": "icons/hd/rabbit/gilShot.webp",
+   "clips": [
+    "gilShot"
+   ]
+  },
+  "gorgonShot": {
+   "icon": "icons/hd/rabbit/gorgonShot.webp",
+   "clips": [
+    "gorgonShot"
+   ]
+  },
+  "mall": {
+   "icon": "icons/hd/rabbit/mall.webp",
+   "clips": [
+    "mall1",
+    "mall2"
+   ]
+  },
+  "medicTurret": {
+   "icon": "icons/hd/rabbit/medicTurret.webp",
+   "clips": [
+    "medicTurret"
+   ]
+  },
+  "millionaire": {
+   "icon": "icons/hd/rabbit/millionaire.webp",
+   "clips": [
+    "millionaire"
+   ]
+  },
+  "mix": {
+   "icon": "icons/hd/rabbit/mix.webp",
+   "clips": [
+    "mix1",
+    "mix2",
+    "mix3",
+    "mix4"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/rabbit/nAttack.webp",
+   "clips": [
+    "nAttack"
+   ]
+  },
+  "rapidTrance": {
+   "icon": "icons/hd/rabbit/rapidTrance.webp",
+   "clips": [
+    "rapidTrance"
+   ]
+  },
+  "shootingArray": {
+   "icon": "icons/hd/rabbit/shootingArray.webp",
+   "clips": [
+    "shootingArray"
+   ]
+  },
+  "statScan": {
+   "icon": "icons/hd/rabbit/statScan.webp",
+   "clips": [
+    "statScan"
+   ]
+  },
+  "tenShot": {
+   "icon": "icons/hd/rabbit/tenShot.webp",
+   "clips": [
+    "tenShot"
+   ]
+  },
+  "truceTrading": {
+   "icon": "icons/hd/rabbit/truceTrading.webp",
+   "clips": [
+    "truceTrading"
+   ]
+  }
+ },
+ "sheep": {
+  "bookBash": {
+   "icon": "icons/hd/sheep/bookBash.webp",
+   "clips": [
+    "bookBash1",
+    "bookBash2",
+    "bookBash3"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/sheep/cAttack.webp",
+   "clips": [
+    "cAttack0",
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "gleamingBreath": {
+   "icon": "icons/hd/sheep/gleamingBreath.webp",
+   "clips": [
+    "gleamingBreath"
+   ]
+  },
+  "grandCodex": {
+   "icon": "icons/hd/sheep/grandCodex.webp",
+   "clips": [
+    "grandCodex"
+   ]
+  },
+  "holyLight": {
+   "icon": "icons/hd/sheep/holyLight.webp",
+   "clips": [
+    "holyLight1",
+    "holyLight2",
+    "holyLight3",
+    "holyLight4"
+   ]
+  },
+  "lucentBarrier": {
+   "icon": "icons/hd/sheep/lucentBarrier.webp",
+   "clips": [
+    "lucentBarrier"
+   ]
+  },
+  "lullaby": {
+   "icon": "icons/hd/sheep/lullaby.webp",
+   "clips": [
+    "lullaby"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/sheep/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3"
+   ]
+  },
+  "purifyingTear": {
+   "icon": "icons/hd/sheep/purifyingTear.webp",
+   "clips": [
+    "purifyingTear"
+   ]
+  },
+  "soulOfArms": {
+   "icon": "icons/hd/sheep/soulOfArms.webp",
+   "clips": [
+    "soulOfArms"
+   ]
+  }
+ },
+ "whale": {
+  "bowlingWhale": {
+   "icon": "icons/hd/whale/bowlingWhale.webp",
+   "clips": [
+    "bowlingWhale1",
+    "bowlingWhale2"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/whale/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "flyingShield": {
+   "icon": "icons/hd/whale/flyingShield.webp",
+   "clips": [
+    "flyingShield"
+   ]
+  },
+  "grandTide": {
+   "icon": "icons/hd/whale/grandTide.webp",
+   "clips": [
+    "grandTide0",
+    "grandTide1",
+    "grandTide2"
+   ]
+  },
+  "javelin": {
+   "icon": "icons/hd/whale/javelin.webp",
+   "clips": [
+    "javelin"
+   ]
+  },
+  "malStorm": {
+   "icon": "icons/hd/whale/malStorm.webp",
+   "clips": [
+    "malStorm"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/whale/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3"
+   ]
+  },
+  "peninsulaImpale": {
+   "icon": "icons/hd/whale/peninsulaImpale.webp",
+   "clips": [
+    "peninsulaImpale"
+   ]
+  },
+  "peninsulaRound": {
+   "icon": "icons/hd/whale/peninsulaRound.webp",
+   "clips": [
+    "peninsulaRound"
+   ]
+  },
+  "shieldBash": {
+   "icon": "icons/hd/whale/shieldBash.webp",
+   "clips": [
+    "shieldBash"
+   ]
+  },
+  "shieldRush": {
+   "icon": "icons/hd/whale/shieldRush.webp",
+   "clips": [
+    "shieldRush"
+   ]
+  },
+  "swallow": {
+   "icon": "icons/hd/whale/swallow.webp",
+   "clips": [
+    "swallow"
+   ]
+  },
+  "sweep": {
+   "icon": "icons/hd/whale/sweep.webp",
+   "clips": [
+    "sweep"
+   ]
+  }
+ },
+ "wolf": {
+  "armorBreak": {
+   "icon": "icons/hd/wolf/armorBreak.webp",
+   "clips": [
+    "armorBreak"
+   ]
+  },
+  "artBreaker": {
+   "icon": "icons/hd/wolf/artBreaker.webp",
+   "clips": [
+    "artBreaker"
+   ]
+  },
+  "artCancel": {
+   "icon": "icons/hd/wolf/artCancel.webp",
+   "clips": [
+    "artCancel"
+   ]
+  },
+  "bladeFang": {
+   "icon": "icons/hd/wolf/bladeFang.webp",
+   "clips": [
+    "bladeFang1",
+    "bladeFang2",
+    "bladeFang3"
+   ]
+  },
+  "bladeSong": {
+   "icon": "icons/hd/wolf/bladeSong.webp",
+   "clips": [
+    "bladeSong1",
+    "bladeSong2",
+    "bladeSong3",
+    "bladeSong4"
+   ]
+  },
+  "bladeSurge": {
+   "icon": "icons/hd/wolf/bladeSurge.webp",
+   "clips": [
+    "bladeSurge"
+   ]
+  },
+  "braveSpirit": {
+   "icon": "icons/hd/wolf/braveSpirit.webp",
+   "clips": [
+    "instantCast"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/wolf/cAttack.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "cAttack3"
+   ]
+  },
+  "counter": {
+   "icon": "icons/hd/wolf/counter.webp",
+   "clips": [
+    "counter1",
+    "counter2"
+   ]
+  },
+  "crossBreak": {
+   "icon": "icons/hd/wolf/crossBreak.webp",
+   "clips": [
+    "crossBreak"
+   ]
+  },
+  "crusader": {
+   "icon": "icons/hd/wolf/crusader.webp",
+   "clips": [
+    "crusader"
+   ]
+  },
+  "darkEdge": {
+   "icon": "icons/hd/wolf/darkEdge.webp",
+   "clips": [
+    "darkEdge"
+   ]
+  },
+  "dualBrand": {
+   "icon": "icons/hd/wolf/dualBrand.webp",
+   "clips": [
+    "dualBrand"
+   ]
+  },
+  "feralAssault": {
+   "icon": "icons/hd/wolf/feralAssault.webp",
+   "clips": [
+    "feralAssault"
+   ]
+  },
+  "feralStrike": {
+   "icon": "icons/hd/wolf/feralStrike.webp",
+   "clips": [
+    "feralStrike"
+   ]
+  },
+  "grandCross": {
+   "icon": "icons/hd/wolf/grandCross.webp",
+   "clips": [
+    "grandCross"
+   ]
+  },
+  "holyArmor": {
+   "icon": "icons/hd/wolf/holyArmor.webp",
+   "clips": [
+    "darkEdge"
+   ]
+  },
+  "holySword": {
+   "icon": "icons/hd/wolf/holySword.webp",
+   "clips": [
+    "instantCast"
+   ]
+  },
+  "lunarEclipse": {
+   "icon": "icons/hd/wolf/lunarEclipse.webp",
+   "clips": [
+    "instantCast"
+   ]
+  },
+  "massResurrection": {
+   "icon": "icons/hd/wolf/massResurrection.webp",
+   "clips": [
+    "resurrection"
+   ]
+  },
+  "mirrorBlade": {
+   "icon": "icons/hd/wolf/mirrorBlade.webp",
+   "clips": [
+    "mirrorCounter1",
+    "mirrorCounter2"
+   ]
+  },
+  "nAttack": {
+   "icon": "icons/hd/wolf/nAttack.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2",
+    "nAttack3",
+    "nAttack4"
+   ]
+  },
+  "powerBreak": {
+   "icon": "icons/hd/wolf/powerBreak.webp",
+   "clips": [
+    "powerBreak"
+   ]
+  },
+  "provoke": {
+   "icon": "icons/hd/wolf/provoke.webp",
+   "clips": [
+    "provoke"
+   ]
+  },
+  "resonanceClaw": {
+   "icon": "icons/hd/wolf/resonanceClaw.webp",
+   "clips": [
+    "resonanceClaw"
+   ]
+  },
+  "secondWind": {
+   "icon": "icons/hd/wolf/secondWind.webp",
+   "clips": [
+    "instantCast"
+   ]
+  },
+  "thirdRend": {
+   "icon": "icons/hd/wolf/thirdRend.webp",
+   "clips": [
+    "thirdRend"
+   ]
+  },
+  "twinResonance": {
+   "icon": "icons/hd/wolf/twinResonance.webp",
+   "clips": [
+    "twinResonance"
+   ]
+  },
+  "windBoundDomain": {
+   "icon": "icons/hd/wolf/windBoundDomain.webp",
+   "clips": [
+    "windBoundDomain"
+   ]
+  }
+ }
+}

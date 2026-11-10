@@ -1,0 +1,6518 @@
+{
+ "bat": {
+  "weapon": {
+   "w_bat51": [
+    "standardWand"
+   ],
+   "w_bat50": [
+    "royalWand"
+   ],
+   "w_bat3": [
+    "paperWand"
+   ],
+   "w_bat1": [
+    "noviceWand"
+   ],
+   "w_bat12": [
+    "standardWandV"
+   ],
+   "w_bat5": [
+    "bathBrush"
+   ],
+   "w_bat2": [
+    "commonWand"
+   ],
+   "w_bat14": [
+    "heartWand"
+   ],
+   "w_bat11": [
+    "standardWandR"
+   ],
+   "w_bat10": [
+    "poseidonWand"
+   ],
+   "w_bat15": [
+    "batWand"
+   ],
+   "w_bat66": [
+    "poseidonWand"
+   ],
+   "w_bat38": [
+    "dreamWandV"
+   ],
+   "w_bat19": [
+    "bdWeapon"
+   ],
+   "w_bat65": [
+    "japanWagasa"
+   ],
+   "w_bat39": [
+    "pinkLatern"
+   ],
+   "w_bat31": [
+    "shadowWand"
+   ],
+   "w_bat60": [
+    "legendWand"
+   ],
+   "w_bat61": [
+    "shadowWandR"
+   ],
+   "w_bat23": [
+    "warlockWandR"
+   ],
+   "w_bat33": [
+    "shadowWandR"
+   ],
+   "w_bat32": [
+    "dreamWand"
+   ],
+   "w_bat35": [
+    "hallowCandle"
+   ],
+   "w_bat22": [
+    "illusionWand"
+   ],
+   "w_bat34": [
+    "dreamWandR"
+   ],
+   "w_bat69": [
+    "timeWand"
+   ],
+   "w_bat21": [
+    "warlockWand"
+   ],
+   "w_bat84": [
+    "flamingLance"
+   ],
+   "w_bat36": [
+    "lizaWhip"
+   ],
+   "w_bat81": [
+    "flamingWand"
+   ],
+   "w_bat25": [
+    "teacherStick"
+   ],
+   "w_bat37": [
+    "halloweenWand"
+   ],
+   "w_bat82": [
+    "flamingBaton"
+   ],
+   "w_bat83": [
+    "flamingRod"
+   ],
+   "w_bat24": [
+    "illusionWandR"
+   ],
+   "w_bat43": [
+    "pvpWand"
+   ],
+   "w_bat40": [
+    "queenWand"
+   ],
+   "w_bat41": [
+    "queenWandR"
+   ],
+   "w_bat44": [
+    "pvpWandR"
+   ],
+   "w_bat45": [
+    "starMicrophone"
+   ],
+   "w_bat42": [
+    "queenWandV"
+   ],
+   "w_bat49": [
+    "goldenWand"
+   ],
+   "w_bat46": [
+    "mummyWand"
+   ],
+   "w_bat47": [
+    "butterflyWand"
+   ],
+   "w_bat58": [
+    "championRapier"
+   ],
+   "w_bat79": [
+    "eclipseWand"
+   ],
+   "w_bat48": [
+    "butterflyWandR"
+   ],
+   "w_bat52": [
+    "royalWandR"
+   ],
+   "w_bat56": [
+    "frozenWand"
+   ]
+  },
+  "armor": {
+   "a_all1": [
+    "Bat_scout"
+   ],
+   "a_bat33": [
+    "Bat_standard"
+   ],
+   "a_bat32": [
+    "Bat_dreamCaster"
+   ],
+   "a_bat24": [
+    "Bat_shadowCaller"
+   ],
+   "a_bat25": [
+    "Bat_teacher"
+   ],
+   "a_bat31": [
+    "Bat_shadowCaller"
+   ],
+   "a_bat47": [
+    "Bat_butterfly"
+   ],
+   "a_bat37": [
+    "Bat_halloween"
+   ],
+   "a_bat2": [
+    "Bat_shirt"
+   ],
+   "a_bat50": [
+    "Bat_royal"
+   ],
+   "a_bat34": [
+    "Bat_hallow"
+   ],
+   "a_bat21": [
+    "Bat_warlock"
+   ],
+   "a_bat35": [
+    "Bat_hallow"
+   ],
+   "a_bat45": [
+    "Bat_superStar"
+   ],
+   "a_bat51": [
+    "Bat_royal"
+   ],
+   "a_bat23": [
+    "Bat_standard"
+   ],
+   "a_bat52": [
+    "Bat_illusionist"
+   ],
+   "a_bat42": [
+    "Bat_dreamCaster"
+   ],
+   "a_bat22": [
+    "Bat_illusionist"
+   ],
+   "a_bat38": [
+    "Bat_queen"
+   ],
+   "a_bat5": [
+    "Bat_bathRobe"
+   ],
+   "a_bat41": [
+    "Bat_standard"
+   ],
+   "a_bat11": [
+    "Bat_queen"
+   ],
+   "a_bat10": [
+    "Bat_standard"
+   ],
+   "a_bat40": [
+    "Bat_queen"
+   ],
+   "a_bat15": [
+    "Bat_summer"
+   ],
+   "a_bat12": [
+    "Bat_santa"
+   ],
+   "a_bat61": [
+    "Bat_butterfly"
+   ],
+   "a_all15": [
+    "Bat_santa"
+   ],
+   "a_bat48": [
+    "Bat_legend"
+   ],
+   "a_bat62": [
+    "Bat_standard"
+   ],
+   "a_bat60": [
+    "Bat_legend"
+   ],
+   "a_all43": [
+    "Bat_pvpArmor"
+   ],
+   "a_bat65": [
+    "Bat_japan"
+   ],
+   "a_all44": [
+    "Bat_standard"
+   ]
+  },
+  "accessory": {
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_fem11": [
+    "flowerBand"
+   ],
+   "c_fem37": [
+    "lionHead"
+   ],
+   "c_bat19": [
+    "veggieHat"
+   ],
+   "c_bat61": [
+    "legendHelmet"
+   ],
+   "c_bat65": [
+    "japanSakura"
+   ],
+   "c_bat60": [
+    "legendHelmet"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_bat15": [
+    "summerHat"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_bat52": [
+    "royalCircletR"
+   ],
+   "c_bat5": [
+    "showerCap"
+   ],
+   "c_bat50": [
+    "royalCirclet"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_bat34": [
+    "dreamBandR"
+   ],
+   "c_bat45": [
+    "starGlasses"
+   ],
+   "c_bat51": [
+    "hallowCrown"
+   ],
+   "c_bat36": [
+    "lizaHood"
+   ],
+   "c_bat35": [
+    "hallowCrown"
+   ],
+   "c_bat37": [
+    "halloweenHat"
+   ],
+   "c_bat47": [
+    "butterflyHood"
+   ],
+   "c_bat31": [
+    "shadowHat"
+   ],
+   "c_bat41": [
+    "queenCrownR"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_bat25": [
+    "teacherHat"
+   ],
+   "c_bat32": [
+    "dreamBand"
+   ],
+   "c_bat40": [
+    "queenCrown"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_bat24": [
+    "illusionMaskR"
+   ],
+   "c_bat23": [
+    "warlockHoodR"
+   ],
+   "c_bat33": [
+    "shadowHatR"
+   ],
+   "c_bat42": [
+    "queenCrownV"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_bat21": [
+    "warlockHood"
+   ],
+   "c_bat22": [
+    "illusionMask"
+   ],
+   "c_bat48": [
+    "butterflyHoodR"
+   ],
+   "c_bat38": [
+    "dreamBandV"
+   ],
+   "c_all3": [
+    "paperHat"
+   ]
+  },
+  "trinket": {
+   "t_fem56": [
+    "frozenMask"
+   ],
+   "t_fem31": [
+    "chineseTalismanR"
+   ],
+   "t_fem66": [
+    "poseidonTrinket"
+   ],
+   "t_fem37": [
+    "chineseLantern"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_fem46": [
+    "maohWings"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_bat60": [
+    "legendTrinket"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_fem11": [
+    "magazine"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_fem15": [
+    "deerHorn"
+   ],
+   "t_fem14": [
+    "heartRing"
+   ],
+   "t_fem2": [
+    "bell"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ]
+  }
+ },
+ "bison": {
+  "weapon": {
+   "w_bsn66": [
+    "poseidonAxe"
+   ],
+   "w_bsn60": [
+    "legendHammer"
+   ],
+   "w_bsn61": [
+    "americanAxe"
+   ],
+   "w_bsn69": [
+    "timeHammer"
+   ],
+   "w_bsn65": [
+    "americanAxe"
+   ],
+   "w_bsn79": [
+    "eclipseAxe"
+   ],
+   "w_bsn45": [
+    "superStarBass"
+   ],
+   "w_bsn48": [
+    "beetleAxeR"
+   ],
+   "w_bsn49": [
+    "goldenHammer"
+   ],
+   "w_bsn46": [
+    "mummyMace"
+   ],
+   "w_bsn47": [
+    "beetleAxe"
+   ],
+   "w_bsn44": [
+    "pvpAxeR"
+   ],
+   "w_bsn43": [
+    "pvpAxe"
+   ],
+   "w_bsn40": [
+    "havocHammer"
+   ],
+   "w_bsn41": [
+    "havocHammerR"
+   ],
+   "w_bsn1": [
+    "noviceAxe"
+   ],
+   "w_bsn5": [
+    "stoneClub"
+   ],
+   "w_bsn42": [
+    "havocHammerV"
+   ],
+   "w_bsn81": [
+    "flamingAxe"
+   ],
+   "w_bsn2": [
+    "commonAxe"
+   ],
+   "w_bsn3": [
+    "paperAxe"
+   ],
+   "w_bsn14": [
+    "heartAxe"
+   ],
+   "w_bsn82": [
+    "flamingLance"
+   ],
+   "w_bsn83": [
+    "flamingScythe"
+   ],
+   "w_bsn10": [
+    "toyHammer"
+   ],
+   "w_bsn58": [
+    "championAxe"
+   ],
+   "w_bsn15": [
+    "toyHammer"
+   ],
+   "w_bsn39": [
+    "blueMoonAxe"
+   ],
+   "w_bsn11": [
+    "standardAxeR"
+   ],
+   "w_bsn59": [
+    "specialHammer"
+   ],
+   "w_bsn34": [
+    "warlordHammerR"
+   ],
+   "w_bsn50": [
+    "royalHammer"
+   ],
+   "w_bsn52": [
+    "royalHammerR"
+   ],
+   "w_bsn35": [
+    "hallowLance"
+   ],
+   "w_bsn19": [
+    "bdWeapon"
+   ],
+   "w_bsn51": [
+    "gotanHoe"
+   ],
+   "w_bsn37": [
+    "halloweenAxe"
+   ],
+   "w_bsn36": [
+    "gotanHoe"
+   ],
+   "w_bsn56": [
+    "frozenAxe"
+   ],
+   "w_bsn32": [
+    "warlordHammer"
+   ],
+   "w_bsn25": [
+    "barbell"
+   ],
+   "w_bsn31": [
+    "gladiatorAxe"
+   ],
+   "w_bsn23": [
+    "berserkerAxeR"
+   ],
+   "w_bsn33": [
+    "gladiatorAxeR"
+   ],
+   "w_bsn24": [
+    "defenderHammerR"
+   ],
+   "w_bsn21": [
+    "berserkerAxe"
+   ]
+  },
+  "armor": {
+   "a_bsn21": [
+    "Bison_berserker"
+   ],
+   "a_all1": [
+    "Bison_scout"
+   ],
+   "a_bsn22": [
+    "Bison_defender"
+   ],
+   "a_bsn23": [
+    "Bison_sportman"
+   ],
+   "a_bsn15": [
+    "Bison_summer"
+   ],
+   "a_bsn25": [
+    "Bison_sportman"
+   ],
+   "a_bsn10": [
+    "Bison_standard"
+   ],
+   "a_bsn24": [
+    "Bison_standard"
+   ],
+   "a_bsn37": [
+    "Bison_halloween"
+   ],
+   "a_bsn12": [
+    "Bison_standard"
+   ],
+   "a_bsn11": [
+    "Bison_warlord"
+   ],
+   "a_bsn35": [
+    "Bison_hallow"
+   ],
+   "a_bsn34": [
+    "Bison_warlord"
+   ],
+   "a_bsn33": [
+    "Bison_standard"
+   ],
+   "a_bsn32": [
+    "Bison_warlord"
+   ],
+   "a_bsn31": [
+    "Bison_gladiator"
+   ],
+   "a_bsn61": [
+    "Bison_santa"
+   ],
+   "a_bsn65": [
+    "Bison_america"
+   ],
+   "a_all15": [
+    "Bison_santa"
+   ],
+   "a_bsn62": [
+    "Bison_standard"
+   ],
+   "a_bsn60": [
+    "Bison_legend"
+   ],
+   "a_bsn50": [
+    "Bison_royal"
+   ],
+   "a_bsn48": [
+    "Bison_royal"
+   ],
+   "a_bsn52": [
+    "Bison_standard"
+   ],
+   "a_bsn51": [
+    "Bison_havoc"
+   ],
+   "a_bsn40": [
+    "Bison_havoc"
+   ],
+   "a_bsn41": [
+    "Bison_standard"
+   ],
+   "a_bsn42": [
+    "Bison_beetle"
+   ],
+   "a_bsn45": [
+    "Bison_superStar"
+   ],
+   "a_bsn47": [
+    "Bison_beetle"
+   ],
+   "a_all43": [
+    "Bison_pvpArmor"
+   ],
+   "a_bsn5": [
+    "Bison_stoneage"
+   ],
+   "a_all44": [
+    "Bison_standard"
+   ]
+  },
+  "accessory": {
+   "c_bsn32": [
+    "warlordHelmet"
+   ],
+   "c_bsn31": [
+    "gladiatorHelmet"
+   ],
+   "c_bsn23": [
+    "berserkerHelmetR"
+   ],
+   "c_bsn33": [
+    "gladiatorHelmetR"
+   ],
+   "c_bsn22": [
+    "defenderHelmet"
+   ],
+   "c_bsn34": [
+    "warlordHelmetR"
+   ],
+   "c_bsn21": [
+    "berserkerHelmet"
+   ],
+   "c_bsn35": [
+    "hallowHelmet"
+   ],
+   "c_bsn37": [
+    "halloweenHat"
+   ],
+   "c_bsn36": [
+    "gotanHat"
+   ],
+   "c_bsn24": [
+    "defenderHelmetR"
+   ],
+   "c_bsn25": [
+    "sportBand"
+   ],
+   "c_bsn51": [
+    "royalHelmetR"
+   ],
+   "c_bsn50": [
+    "royalHelmet"
+   ],
+   "c_bsn52": [
+    "royalHelmetR"
+   ],
+   "c_all66": [
+    "PoseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_bsn41": [
+    "havocHelmetR"
+   ],
+   "c_bsn5": [
+    "skull"
+   ],
+   "c_bsn42": [
+    "havocHelmetV"
+   ],
+   "c_bsn40": [
+    "havocHelmet"
+   ],
+   "c_bsn15": [
+    "summerHat"
+   ],
+   "c_bsn47": [
+    "beetleHelmet"
+   ],
+   "c_bsn45": [
+    "superStarWig"
+   ],
+   "c_bsn48": [
+    "beetleHelmetR"
+   ],
+   "c_bsn65": [
+    "americaHat"
+   ],
+   "c_bsn19": [
+    "veggieHat"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_bsn60": [
+    "legendHelmet"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ]
+  },
+  "trinket": {
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_bsn60": [
+    "legendTrinket"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_bsn61": [
+    "legendTrinketR"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ]
+  }
+ },
+ "cat": {
+  "weapon": {
+   "w_cat1": [
+    "noviceKnife"
+   ],
+   "w_cat3": [
+    "paperShuriken"
+   ],
+   "w_cat2": [
+    "commonKnife"
+   ],
+   "w_cat23": [
+    "adventurerKnifeR"
+   ],
+   "w_cat22": [
+    "rogueKnife"
+   ],
+   "w_cat5": [
+    "fishBone"
+   ],
+   "w_cat35": [
+    "hallowClaw"
+   ],
+   "w_cat21": [
+    "adventurerKnife"
+   ],
+   "w_cat44": [
+    "pvpKnifeR"
+   ],
+   "w_cat46": [
+    "mummyKnife"
+   ],
+   "w_cat34": [
+    "assassinDaggerR"
+   ],
+   "w_cat45": [
+    "starRadio"
+   ],
+   "w_cat24": [
+    "rogueKnifeR"
+   ],
+   "w_cat47": [
+    "dragonflyDagger"
+   ],
+   "w_cat37": [
+    "halloweenDagger"
+   ],
+   "w_cat56": [
+    "frozenKnife"
+   ],
+   "w_cat40": [
+    "pirateKnife"
+   ],
+   "w_cat36": [
+    "abetteKnife"
+   ],
+   "w_cat79": [
+    "eclipseDagger"
+   ],
+   "w_cat31": [
+    "gamblerKnife"
+   ],
+   "w_cat25": [
+    "chineseFan"
+   ],
+   "w_cat42": [
+    "pirateKnifeV"
+   ],
+   "w_cat41": [
+    "pirateKnifeR"
+   ],
+   "w_cat32": [
+    "assassinDagger"
+   ],
+   "w_cat43": [
+    "pvpKnife"
+   ],
+   "w_cat33": [
+    "gamblerKnifeR"
+   ],
+   "w_cat50": [
+    "royalDagger"
+   ],
+   "w_cat51": [
+    "defualt"
+   ],
+   "w_cat52": [
+    "royalDaggerR"
+   ],
+   "w_cat49": [
+    "goldenKnife"
+   ],
+   "w_cat39": [
+    "luckyStarKnife"
+   ],
+   "w_cat48": [
+    "dragonflyDaggerR"
+   ],
+   "w_cat81": [
+    "flamingDagger"
+   ],
+   "w_cat58": [
+    "championDagger"
+   ],
+   "w_cat59": [
+    "specialKnife"
+   ],
+   "w_cat11": [
+    "standardKnifeR"
+   ],
+   "w_cat12": [
+    "standardKnifeV"
+   ],
+   "w_cat19": [
+    "bdWeapon"
+   ],
+   "w_cat66": [
+    "poseidonKnife"
+   ],
+   "w_cat10": [
+    "standardKnife"
+   ],
+   "w_cat69": [
+    "timeClaw"
+   ],
+   "w_cat14": [
+    "heartKnife"
+   ],
+   "w_cat65": [
+    "moroccoLamp"
+   ],
+   "w_cat15": [
+    "bugZapper"
+   ],
+   "w_cat61": [
+    "legendDagger"
+   ]
+  },
+  "armor": {
+   "a_cat5": [
+    "Cat_fur"
+   ],
+   "a_all1": [
+    "Cat_scout"
+   ],
+   "a_cat11": [
+    "Cat_standard"
+   ],
+   "a_cat12": [
+    "Cat_standard"
+   ],
+   "a_cat10": [
+    "Cat_rogue"
+   ],
+   "a_cat15": [
+    "Cat_summer"
+   ],
+   "a_cat24": [
+    "Cat_adventurer"
+   ],
+   "a_cat22": [
+    "Cat_rogue"
+   ],
+   "a_cat21": [
+    "Cat_adventurer"
+   ],
+   "a_cat25": [
+    "Cat_chinese"
+   ],
+   "a_all15": [
+    "Cat_santa"
+   ],
+   "a_cat23": [
+    "Cat_pirate"
+   ],
+   "a_cat40": [
+    "Cat_pirate"
+   ],
+   "a_cat42": [
+    "Cat_pirate"
+   ],
+   "a_cat47": [
+    "Cat_dragonfly"
+   ],
+   "a_cat41": [
+    "Cat_superStar"
+   ],
+   "a_cat51": [
+    "Cat_halloween"
+   ],
+   "a_cat45": [
+    "Cat_superStar"
+   ],
+   "a_cat37": [
+    "Cat_halloween"
+   ],
+   "a_cat50": [
+    "Cat_royal"
+   ],
+   "a_cat35": [
+    "Cat_hallow"
+   ],
+   "a_cat33": [
+    "Cat_standard"
+   ],
+   "a_cat34": [
+    "Cat_dragonfly"
+   ],
+   "a_cat52": [
+    "Cat_standard"
+   ],
+   "a_cat48": [
+    "Cat_gambler"
+   ],
+   "a_cat60": [
+    "Cat_legend"
+   ],
+   "a_cat31": [
+    "Cat_gambler"
+   ],
+   "a_cat32": [
+    "Cat_assassin"
+   ],
+   "a_cat62": [
+    "Cat_standard"
+   ],
+   "a_cat61": [
+    "Cat_morocco"
+   ],
+   "a_all43": [
+    "Cat_pvpArmor"
+   ],
+   "a_cat65": [
+    "Cat_morocco"
+   ],
+   "a_all44": [
+    "Cat_standard"
+   ]
+  },
+  "accessory": {
+   "c_cat40": [
+    "pirateHat"
+   ],
+   "c_cat48": [
+    "dragonflyHatR"
+   ],
+   "c_cat42": [
+    "pirateHatV"
+   ],
+   "c_cat41": [
+    "pirateHatR"
+   ],
+   "c_cat45": [
+    "superStarCap"
+   ],
+   "c_cat52": [
+    "royalHelmetR"
+   ],
+   "c_cat50": [
+    "royalHelmet"
+   ],
+   "c_cat51": [
+    "dragonflyHat"
+   ],
+   "c_cat24": [
+    "rogueHatR"
+   ],
+   "c_cat47": [
+    "dragonflyHat"
+   ],
+   "c_cat22": [
+    "rogueHat"
+   ],
+   "c_cat25": [
+    "chineseHair"
+   ],
+   "c_cat21": [
+    "adventurerHat"
+   ],
+   "c_cat23": [
+    "adventurerHatR"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_fem11": [
+    "flowerBand"
+   ],
+   "c_fem37": [
+    "lionHead"
+   ],
+   "c_cat33": [
+    "gamblerHatR"
+   ],
+   "c_cat31": [
+    "gamblerHat"
+   ],
+   "c_cat32": [
+    "assassinHood"
+   ],
+   "c_cat60": [
+    "legendHelmet"
+   ],
+   "c_cat35": [
+    "hallowHat"
+   ],
+   "c_cat61": [
+    "assassinHoodR"
+   ],
+   "c_cat37": [
+    "halloweenHat"
+   ],
+   "c_cat34": [
+    "assassinHoodR"
+   ],
+   "c_cat65": [
+    "moroccoHair"
+   ],
+   "c_cat36": [
+    "abetteHat"
+   ],
+   "c_cat12": [
+    "standardHatV"
+   ],
+   "c_cat15": [
+    "summerHair"
+   ],
+   "c_cat10": [
+    "standardHat"
+   ],
+   "c_cat11": [
+    "standardHatR"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_cat19": [
+    "veggieHat"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_cat5": [
+    "catHead"
+   ]
+  },
+  "trinket": {
+   "t_fem37": [
+    "chineseLantern"
+   ],
+   "t_fem56": [
+    "frozenMask"
+   ],
+   "t_fem31": [
+    "chineseTalismanR"
+   ],
+   "t_fem46": [
+    "maohWings"
+   ],
+   "t_fem66": [
+    "poseidonTrinket"
+   ],
+   "t_cat60": [
+    "legendTrinket"
+   ],
+   "t_cat61": [
+    "sandTopaz"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_fem14": [
+    "heartRing"
+   ],
+   "t_fem11": [
+    "magazine"
+   ],
+   "t_cat5": [
+    "catBell"
+   ],
+   "t_fem15": [
+    "deerHorn"
+   ],
+   "t_fem2": [
+    "bell"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ]
+  }
+ },
+ "chameleon": {
+  "weapon": {
+   "w_chm23": [
+    "tacticianBowR",
+    "tacticianArrowR"
+   ],
+   "w_chm22": [
+    "busterBow",
+    "busterArrow"
+   ],
+   "w_chm21": [
+    "tacticianBow",
+    "tacticianArrow"
+   ],
+   "w_chm1": [
+    "noviceBow",
+    "noviceArrow"
+   ],
+   "w_chm25": [
+    "snookerBall",
+    "snookerCue"
+   ],
+   "w_chm24": [
+    "busterBowR",
+    "busterArrowR"
+   ],
+   "w_chm19": [
+    "bdBow",
+    "bdArrow"
+   ],
+   "w_chm3": [
+    "paperBow",
+    "paperArrow"
+   ],
+   "w_chm2": [
+    "commonBow",
+    "commonArrow"
+   ],
+   "w_chm79": [
+    "eclipseBow",
+    "eclipseArrow"
+   ],
+   "w_chm15": [
+    "plungerBow",
+    "plungerArrow"
+   ],
+   "w_chm5": [
+    "cupidBow",
+    "cupidArrow"
+   ],
+   "w_chm10": [
+    "heartBow",
+    "standardArrow"
+   ],
+   "w_chm11": [
+    "standardBowR",
+    "standardArrowR"
+   ],
+   "w_chm14": [
+    "heartBow",
+    "heartArrow"
+   ],
+   "w_chm33": [
+    "tricksterBowR",
+    "tricksterArrowR"
+   ],
+   "w_chm82": [
+    "flamingArch",
+    "flamingShot"
+   ],
+   "w_chm12": [
+    "standardBowV",
+    "standardArrowV"
+   ],
+   "w_chm31": [
+    "tricksterBow",
+    "tricksterArrow"
+   ],
+   "w_chm81": [
+    "flamingBow",
+    "flamingArrow"
+   ],
+   "w_chm32": [
+    "slayerBow",
+    "slayerArrow"
+   ],
+   "w_chm47": [
+    "mantisBow",
+    "mantisArrow"
+   ],
+   "w_chm37": [
+    "halloweenBow",
+    "halloweenArrow"
+   ],
+   "w_chm46": [
+    "mummyBow",
+    "mummyArrow"
+   ],
+   "w_chm35": [
+    "hallowBow",
+    "hallowArrow"
+   ],
+   "w_chm44": [
+    "pvpBowR",
+    "pvpArrowR"
+   ],
+   "w_chm36": [
+    "pantherBow",
+    "pantherArrow"
+   ],
+   "w_chm34": [
+    "slayerBowR",
+    "slayerArrowR"
+   ],
+   "w_chm59": [
+    "specialBow",
+    "specialArrow"
+   ],
+   "w_chm45": [
+    "superStarGuitar",
+    "superStarPick"
+   ],
+   "w_chm43": [
+    "pvpBow",
+    "pvpArrow"
+   ],
+   "w_chm58": [
+    "championBow",
+    "championArrow"
+   ],
+   "w_chm42": [
+    "commandBowV",
+    "commandArrowV"
+   ],
+   "w_chm41": [
+    "commandBowR",
+    "commandArrowR"
+   ],
+   "w_chm39": [
+    "salamanderBow",
+    "salamanderArrow"
+   ],
+   "w_chm40": [
+    "commandBow",
+    "commandArrow"
+   ],
+   "w_chm50": [
+    "royalBow",
+    "royalArrow"
+   ],
+   "w_chm69": [
+    "timeBow",
+    "timeArrow"
+   ],
+   "w_chm51": [
+    "royalBowR",
+    "royalArrowR"
+   ],
+   "w_chm49": [
+    "goldenBow",
+    "goldenArrow"
+   ],
+   "w_chm52": [
+    "royalBowR",
+    "royalArrowR"
+   ],
+   "w_chm48": [
+    "mantisBowR",
+    "mantisArrowR"
+   ],
+   "w_chm56": [
+    "frozenBow",
+    "frozenArrow"
+   ],
+   "w_chm66": [
+    "poseidonBow",
+    "poseidonArrow"
+   ],
+   "w_chm65": [
+    "chinaBow",
+    "chinaArrow"
+   ],
+   "w_chm61": [
+    "standardBow",
+    "legendArrow"
+   ]
+  },
+  "armor": {
+   "a_chm22": [
+    "Chameleon_buster"
+   ],
+   "a_all1": [
+    "Chameleon_scout"
+   ],
+   "a_chm21": [
+    "Chameleon_tactician"
+   ],
+   "a_chm23": [
+    "Chameleon_hallow"
+   ],
+   "a_chm45": [
+    "Chameleon_superStar"
+   ],
+   "a_chm35": [
+    "Chameleon_hallow"
+   ],
+   "a_chm37": [
+    "Chameleon_halloween"
+   ],
+   "a_chm34": [
+    "Chameleon_buster"
+   ],
+   "a_chm40": [
+    "Chameleon_commander"
+   ],
+   "a_chm24": [
+    "Chameleon_standard"
+   ],
+   "a_chm47": [
+    "Chameleon_mantis"
+   ],
+   "a_chm31": [
+    "Chameleon_trickster"
+   ],
+   "a_chm25": [
+    "Chameleon_snooker"
+   ],
+   "a_chm42": [
+    "Chameleon_standard"
+   ],
+   "a_chm41": [
+    "Chameleon_trickster"
+   ],
+   "a_chm32": [
+    "Chameleon_slayer"
+   ],
+   "a_chm33": [
+    "Chameleon_royal"
+   ],
+   "a_chm50": [
+    "Chameleon_royal"
+   ],
+   "a_chm51": [
+    "Chameleon_standard"
+   ],
+   "a_chm52": [
+    "Chameleon_mantis"
+   ],
+   "a_chm48": [
+    "Chameleon_santa"
+   ],
+   "a_chm12": [
+    "Chameleon_standard"
+   ],
+   "a_all15": [
+    "Chameleon_santa"
+   ],
+   "a_chm10": [
+    "Chameleon_standard"
+   ],
+   "a_chm11": [
+    "Chameleon_china"
+   ],
+   "a_chm62": [
+    "Chameleon_summer"
+   ],
+   "a_chm65": [
+    "Chameleon_china"
+   ],
+   "a_chm15": [
+    "Chameleon_summer"
+   ],
+   "a_chm61": [
+    "Chameleon_standard"
+   ],
+   "a_chm60": [
+    "Chameleon_legend"
+   ],
+   "a_all43": [
+    "Chameleon_pvpArmor"
+   ],
+   "a_chm5": [
+    "Chameleon_greek"
+   ],
+   "a_all44": [
+    "Chameleon_standard"
+   ]
+  },
+  "accessory": {
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_chm5": [
+    "oliveCrown"
+   ],
+   "c_chm19": [
+    "veggieHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_chm11": [
+    "standardGoggleR"
+   ],
+   "c_chm48": [
+    "mantisMaskR"
+   ],
+   "c_chm10": [
+    "standardGoggle"
+   ],
+   "c_chm42": [
+    "commandGoggleV"
+   ],
+   "c_chm12": [
+    "standardGoggleV"
+   ],
+   "c_chm40": [
+    "commandGoggle"
+   ],
+   "c_chm41": [
+    "commandGoggleR"
+   ],
+   "c_chm24": [
+    "busterGoggleR"
+   ],
+   "c_chm25": [
+    "snookerHat"
+   ],
+   "c_chm15": [
+    "summerGoggle"
+   ],
+   "c_chm37": [
+    "halloweenHat"
+   ],
+   "c_chm47": [
+    "mantisMask"
+   ],
+   "c_chm45": [
+    "superStarGoggle"
+   ],
+   "c_chm36": [
+    "pantherHelmet"
+   ],
+   "c_chm21": [
+    "tacticianGoggle"
+   ],
+   "c_chm51": [
+    "hallowFlame"
+   ],
+   "c_chm50": [
+    "royalHelmet"
+   ],
+   "c_chm35": [
+    "hallowFlame"
+   ],
+   "c_chm34": [
+    "slayerMaskR"
+   ],
+   "c_chm22": [
+    "busterGoggle"
+   ],
+   "c_chm33": [
+    "tricksterGoggleR"
+   ],
+   "c_chm23": [
+    "tacticianGoggleR"
+   ],
+   "c_chm32": [
+    "slayerMask"
+   ],
+   "c_chm52": [
+    "royalHelmetR"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_chm31": [
+    "tricksterGoggle"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_chm61": [
+    "standardGoggle"
+   ],
+   "c_chm60": [
+    "legendHelmet"
+   ],
+   "c_chm65": [
+    "chinaHelmet"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ]
+  },
+  "trinket": {
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_chm60": [
+    "legendTrinket"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ]
+  }
+ },
+ "mole": {
+  "weapon": {
+   "w_mol42": [
+    "capitalCannonV"
+   ],
+   "w_mol41": [
+    "capitalCannonR"
+   ],
+   "w_mol40": [
+    "capitalCannon"
+   ],
+   "w_mol52": [
+    "royalCannonR"
+   ],
+   "w_mol44": [
+    "pvpCannonR"
+   ],
+   "w_mol43": [
+    "pvpCannon"
+   ],
+   "w_mol46": [
+    "mummyCannon"
+   ],
+   "w_mol51": [
+    "defualt"
+   ],
+   "w_mol45": [
+    "drumSet"
+   ],
+   "w_mol48": [
+    "beeCannonR"
+   ],
+   "w_mol47": [
+    "beeCannon"
+   ],
+   "w_mol50": [
+    "royalCannon"
+   ],
+   "w_mol59": [
+    "specialCannon"
+   ],
+   "w_mol49": [
+    "goldenCannon"
+   ],
+   "w_mol56": [
+    "frozenCannon"
+   ],
+   "w_mol5": [
+    "barrelCannon"
+   ],
+   "w_mol79": [
+    "eclipseCannon"
+   ],
+   "w_mol58": [
+    "championCannon"
+   ],
+   "w_mol1": [
+    "noviceCannon"
+   ],
+   "w_mol3": [
+    "paperCannon"
+   ],
+   "w_mol2": [
+    "commonCannon"
+   ],
+   "w_mol81": [
+    "flamingCannon"
+   ],
+   "w_mol24": [
+    "steamCannonR"
+   ],
+   "w_mol22": [
+    "steamCannon"
+   ],
+   "w_mol39": [
+    "pumpkinCannon"
+   ],
+   "w_mol25": [
+    "trumpet"
+   ],
+   "w_mol21": [
+    "infantryCannon"
+   ],
+   "w_mol69": [
+    "timeCannon"
+   ],
+   "w_mol23": [
+    "infantryCannonR"
+   ],
+   "w_mol60": [
+    "legendCannon"
+   ],
+   "w_mol33": [
+    "bomberCannonR"
+   ],
+   "w_mol31": [
+    "bomberCannon"
+   ],
+   "w_mol35": [
+    "hallowCannon"
+   ],
+   "w_mol61": [
+    "defualt"
+   ],
+   "w_mol32": [
+    "machinistCannon"
+   ],
+   "w_mol34": [
+    "machinistCannonR"
+   ],
+   "w_mol66": [
+    "poseidonCannon"
+   ],
+   "w_mol19": [
+    "bdWeapon"
+   ],
+   "w_mol65": [
+    "africaCannon"
+   ],
+   "w_mol36": [
+    "zappaCannon"
+   ],
+   "w_mol37": [
+    "halloweenPot"
+   ],
+   "w_mol12": [
+    "standardCannonV"
+   ],
+   "w_mol14": [
+    "heartCannon"
+   ],
+   "w_mol15": [
+    "schoolCannon"
+   ],
+   "w_mol10": [
+    "standardCannon"
+   ]
+  },
+  "armor": {
+   "a_mol15": [
+    "Mole_summer"
+   ],
+   "a_all1": [
+    "Mole_scout"
+   ],
+   "a_mol65": [
+    "Mole_africa"
+   ],
+   "a_mol11": [
+    "Mole_standard"
+   ],
+   "a_mol60": [
+    "Mole_legend"
+   ],
+   "a_mol10": [
+    "Mole_standard"
+   ],
+   "a_mol61": [
+    "Mole_standard"
+   ],
+   "a_mol21": [
+    "Mole_infantry"
+   ],
+   "a_mol12": [
+    "Mole_standard"
+   ],
+   "a_mol62": [
+    "Mole_steam"
+   ],
+   "a_mol23": [
+    "Mole_standard"
+   ],
+   "a_mol22": [
+    "Mole_steam"
+   ],
+   "a_mol25": [
+    "Mole_trumpeter"
+   ],
+   "a_mol24": [
+    "Mole_barrel"
+   ],
+   "a_all15": [
+    "Mole_santa"
+   ],
+   "a_mol5": [
+    "Mole_barrel"
+   ],
+   "a_mol52": [
+    "Mole_royal"
+   ],
+   "a_mol50": [
+    "Mole_royal"
+   ],
+   "a_mol51": [
+    "Mole_bomber"
+   ],
+   "a_mol32": [
+    "Mole_machinist"
+   ],
+   "a_mol33": [
+    "Mole_bee"
+   ],
+   "a_mol31": [
+    "Mole_bomber"
+   ],
+   "a_mol48": [
+    "Mole_halloween"
+   ],
+   "a_mol47": [
+    "Mole_bee"
+   ],
+   "a_mol37": [
+    "Mole_halloween"
+   ],
+   "a_mol34": [
+    "Mole_hallow"
+   ],
+   "a_mol45": [
+    "Mole_superStar"
+   ],
+   "a_mol35": [
+    "Mole_hallow"
+   ],
+   "a_mol40": [
+    "Mole_capital"
+   ],
+   "a_mol42": [
+    "Mole_capital"
+   ],
+   "a_all43": [
+    "Mole_pvpArmor"
+   ],
+   "a_mol41": [
+    "Mole_champion"
+   ],
+   "a_all44": [
+    "Mole_standard"
+   ]
+  },
+  "accessory": {
+   "c_mol22": [
+    "steamHelmet"
+   ],
+   "c_mol5": [
+    "barrelHelmet"
+   ],
+   "c_mol21": [
+    "infantryHat"
+   ],
+   "c_mol23": [
+    "infantryHatR"
+   ],
+   "c_mol47": [
+    "beeHat"
+   ],
+   "c_mol45": [
+    "superStarWig"
+   ],
+   "c_mol40": [
+    "capitalHat"
+   ],
+   "c_mol24": [
+    "steamHelmetR"
+   ],
+   "c_mol41": [
+    "capitalHatR"
+   ],
+   "c_mol25": [
+    "trumpeterHat"
+   ],
+   "c_mol52": [
+    "royalHelmetR"
+   ],
+   "c_mol42": [
+    "capitalHatV"
+   ],
+   "c_mol50": [
+    "royalHelmet"
+   ],
+   "c_mol51": [
+    "beeHatR"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_mol48": [
+    "beeHatR"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_mol35": [
+    "hallowWig"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_mol37": [
+    "halloweenHat"
+   ],
+   "c_mol34": [
+    "machinistHelmetR"
+   ],
+   "c_mol31": [
+    "bomberHat"
+   ],
+   "c_mol36": [
+    "zappaHelmet"
+   ],
+   "c_mol32": [
+    "machinistHelmet"
+   ],
+   "c_mol33": [
+    "bomberHatR"
+   ],
+   "c_mol12": [
+    "standardGoggleV"
+   ],
+   "c_mol19": [
+    "veggieHat"
+   ],
+   "c_mol10": [
+    "standardGoggle"
+   ],
+   "c_mol11": [
+    "standardGoggleR"
+   ],
+   "c_mol65": [
+    "africaHat"
+   ],
+   "c_mol15": [
+    "summerHat"
+   ],
+   "c_mol60": [
+    "legendHelmet"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_mol61": [
+    "fanKingHat"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ]
+  },
+  "trinket": {
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mol60": [
+    "legendTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ]
+  }
+ },
+ "monkey": {
+  "weapon": {
+   "w_mnk48": [
+    "spiderMikeR"
+   ],
+   "w_mnk50": [
+    "royalMike"
+   ],
+   "w_mnk51": [
+    "goldenMike"
+   ],
+   "w_mnk59": [
+    "specialMike"
+   ],
+   "w_mnk49": [
+    "goldenMike"
+   ],
+   "w_mnk39": [
+    "goldMike"
+   ],
+   "w_mnk19": [
+    "bdWeapon"
+   ],
+   "w_mnk79": [
+    "eclipseMike"
+   ],
+   "w_mnk58": [
+    "championMike"
+   ],
+   "w_mnk69": [
+    "timeMike"
+   ],
+   "w_mnk11": [
+    "standardMikeR"
+   ],
+   "w_mnk12": [
+    "standardMikeV"
+   ],
+   "w_mnk15": [
+    "needleMike"
+   ],
+   "w_mnk66": [
+    "poseidonMike"
+   ],
+   "w_mnk10": [
+    "heartMike"
+   ],
+   "w_mnk60": [
+    "legendMike"
+   ],
+   "w_mnk14": [
+    "heartMike"
+   ],
+   "w_mnk65": [
+    "englishMike"
+   ],
+   "w_mnk3": [
+    "paperMike"
+   ],
+   "w_mnk2": [
+    "commonMike"
+   ],
+   "w_mnk61": [
+    "noviceMike"
+   ],
+   "w_mnk5": [
+    "moonMike"
+   ],
+   "w_mnk1": [
+    "noviceMike"
+   ],
+   "w_mnk44": [
+    "pvpMikeR"
+   ],
+   "w_mnk23": [
+    "fireMikeR"
+   ],
+   "w_mnk22": [
+    "earthMike"
+   ],
+   "w_mnk45": [
+    "superStarMike"
+   ],
+   "w_mnk35": [
+    "monkeyHead"
+   ],
+   "w_mnk21": [
+    "fireMike"
+   ],
+   "w_mnk37": [
+    "halloweenMike"
+   ],
+   "w_mnk46": [
+    "mummyMike"
+   ],
+   "w_mnk34": [
+    "geoMikeR"
+   ],
+   "w_mnk24": [
+    "earthMikeR"
+   ],
+   "w_mnk47": [
+    "spiderMike"
+   ],
+   "w_mnk56": [
+    "frozenMike"
+   ],
+   "w_mnk40": [
+    "theurgistMike"
+   ],
+   "w_mnk36": [
+    "mosolyMike"
+   ],
+   "w_mnk41": [
+    "theurgistMikeR"
+   ],
+   "w_mnk31": [
+    "pyroMike"
+   ],
+   "w_mnk25": [
+    "magicianMike"
+   ],
+   "w_mnk43": [
+    "pvpMike"
+   ],
+   "w_mnk33": [
+    "pyroMikeR"
+   ],
+   "w_mnk42": [
+    "theurgistMikeV"
+   ],
+   "w_mnk52": [
+    "royalMikeR"
+   ]
+  },
+  "armor": {
+   "a_all1": [
+    "Monkey_scout"
+   ],
+   "a_mnk22": [
+    "Monkey_earthShaman"
+   ],
+   "a_mnk21": [
+    "Monkey_fireSear"
+   ],
+   "a_mnk33": [
+    "Monkey_standard"
+   ],
+   "a_mnk23": [
+    "Monkey_earthShaman"
+   ],
+   "a_mnk32": [
+    "Monkey_geomancer"
+   ],
+   "a_mnk24": [
+    "Monkey_pyromancer"
+   ],
+   "a_mnk37": [
+    "Monkey_halloween"
+   ],
+   "a_mnk31": [
+    "Monkey_pyromancer"
+   ],
+   "a_mnk25": [
+    "Monkey_magician"
+   ],
+   "a_mnk34": [
+    "Monkey_standard"
+   ],
+   "a_mnk35": [
+    "Monkey_hallow"
+   ],
+   "a_mnk15": [
+    "Monkey_summer"
+   ],
+   "a_mnk5": [
+    "Monkey_pajamas"
+   ],
+   "a_mnk10": [
+    "Monkey_standard"
+   ],
+   "a_mnk11": [
+    "Monkey_santa"
+   ],
+   "a_mnk47": [
+    "Monkey_spider"
+   ],
+   "a_all15": [
+    "Monkey_santa"
+   ],
+   "a_mnk12": [
+    "Monkey_superStar"
+   ],
+   "a_mnk42": [
+    "Monkey_standard"
+   ],
+   "a_mnk45": [
+    "Monkey_superStar"
+   ],
+   "a_mnk41": [
+    "Monkey_standard"
+   ],
+   "a_mnk40": [
+    "Monkey_theurgist"
+   ],
+   "a_mnk50": [
+    "Monkey_royal"
+   ],
+   "a_mnk51": [
+    "Monkey_spider"
+   ],
+   "a_mnk52": [
+    "Monkey_pvpArmor"
+   ],
+   "a_mnk48": [
+    "Monkey_standard"
+   ],
+   "a_all43": [
+    "Monkey_pvpArmor"
+   ],
+   "a_all58": [
+    "Monkey_champion"
+   ],
+   "a_mnk65": [
+    "Monkey_english"
+   ],
+   "a_mnk61": [
+    "Monkey_standard"
+   ],
+   "a_mnk60": [
+    "Monkey_legend"
+   ],
+   "a_mnk62": [
+    "Monkey_standard"
+   ]
+  },
+  "accessory": {
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_mnk41": [
+    "theurgistHatR"
+   ],
+   "c_mnk40": [
+    "theurgistHat"
+   ],
+   "c_mnk52": [
+    "royalCircletR"
+   ],
+   "c_mnk42": [
+    "theurgistHatV"
+   ],
+   "c_mnk51": [
+    "standardBandana"
+   ],
+   "c_mnk45": [
+    "starBandana"
+   ],
+   "c_mnk47": [
+    "spiderBandana"
+   ],
+   "c_mnk50": [
+    "royalCirclet"
+   ],
+   "c_mnk5": [
+    "sleepHat"
+   ],
+   "c_mnk48": [
+    "spiderBandanaR"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_mnk24": [
+    "earthBandanaR"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_mnk22": [
+    "earthBandana"
+   ],
+   "c_mnk25": [
+    "magicianHat"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_mnk23": [
+    "fireBandanaR"
+   ],
+   "c_mnk21": [
+    "fireBandana"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_mnk31": [
+    "pyroHood"
+   ],
+   "c_mnk33": [
+    "pyroHoodR"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_mnk60": [
+    "legendHelmet"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_mnk61": [
+    "standardBandana"
+   ],
+   "c_mnk32": [
+    "geoBandana"
+   ],
+   "c_mnk19": [
+    "veggieHat"
+   ],
+   "c_mnk35": [
+    "hallowHead"
+   ],
+   "c_mnk34": [
+    "geoBandanaR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_mnk36": [
+    "mosolyWig"
+   ],
+   "c_mnk37": [
+    "halloweenHat"
+   ],
+   "c_mnk15": [
+    "summerCap"
+   ],
+   "c_mnk65": [
+    "englishHat"
+   ],
+   "c_mnk10": [
+    "standardBandanaV"
+   ],
+   "c_mnk11": [
+    "standardBandanaR"
+   ]
+  },
+  "trinket": {
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mnk45": [
+    "starGuitar"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_mnk61": [
+    "legendTrinketR"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_mnk60": [
+    "legendTrinket"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ]
+  }
+ },
+ "panda": {
+  "weapon": {
+   "w_pnd10": [
+    "standardGauntlet"
+   ],
+   "w_pnd42": [
+    "shinGauntletV"
+   ],
+   "w_pnd11": [
+    "standardGauntletR"
+   ],
+   "w_pnd12": [
+    "standardGauntletV"
+   ],
+   "w_pnd40": [
+    "shinGauntlet"
+   ],
+   "w_pnd43": [
+    "pvpGauntlet"
+   ],
+   "w_pnd15": [
+    "boxingGrove"
+   ],
+   "w_pnd41": [
+    "shinGauntletR"
+   ],
+   "w_pnd24": [
+    "wuxianGauntletR"
+   ],
+   "w_pnd46": [
+    "mummyClaw"
+   ],
+   "w_pnd25": [
+    "fighterFist"
+   ],
+   "w_pnd37": [
+    "halloweenScarecrow"
+   ],
+   "w_pnd47": [
+    "wormGauntlet"
+   ],
+   "w_pnd14": [
+    "heartGauntlet"
+   ],
+   "w_pnd36": [
+    "steinKnuckle"
+   ],
+   "w_pnd56": [
+    "frozenGauntlet"
+   ],
+   "w_pnd44": [
+    "pvpGauntletR"
+   ],
+   "w_pnd19": [
+    "bdWeapon"
+   ],
+   "w_pnd45": [
+    "superStarKnuckle"
+   ],
+   "w_pnd35": [
+    "hallowTonfa"
+   ],
+   "w_pnd21": [
+    "brawlerGauntlet"
+   ],
+   "w_pnd34": [
+    "sageGauntletR"
+   ],
+   "w_pnd22": [
+    "wuxianGauntlet"
+   ],
+   "w_pnd50": [
+    "royalGauntlet"
+   ],
+   "w_pnd48": [
+    "wormGauntletR"
+   ],
+   "w_pnd33": [
+    "strikeGauntletR"
+   ],
+   "w_pnd23": [
+    "brawlerGauntletR"
+   ],
+   "w_pnd49": [
+    "goldenGauntlet"
+   ],
+   "w_pnd32": [
+    "sageGauntlet"
+   ],
+   "w_pnd52": [
+    "royalGauntletR"
+   ],
+   "w_pnd59": [
+    "specialGauntlet"
+   ],
+   "w_pnd31": [
+    "strikeGauntlet"
+   ],
+   "w_pnd69": [
+    "timeGauntlet"
+   ],
+   "w_pnd39": [
+    "metalKnuckle"
+   ],
+   "w_pnd58": [
+    "championGauntlet"
+   ],
+   "w_pnd60": [
+    "legendGauntlet"
+   ],
+   "w_pnd1": [
+    "noviceGauntlet"
+   ],
+   "w_pnd79": [
+    "eclipseGauntlet"
+   ],
+   "w_pnd3": [
+    "paperKnuckle"
+   ],
+   "w_pnd2": [
+    "commonGauntlet"
+   ],
+   "w_pnd66": [
+    "poseidonKnuckle"
+   ],
+   "w_pnd65": [
+    "germanGlove"
+   ]
+  },
+  "armor": {
+   "a_all1": [
+    "Panda_scout"
+   ],
+   "a_pnd10": [
+    "Panda_standard"
+   ],
+   "a_pnd11": [
+    "a_none"
+   ],
+   "a_pnd41": [
+    "Panda_standard"
+   ],
+   "a_pnd40": [
+    "Panda_shinjitsu"
+   ],
+   "a_pnd52": [
+    "Panda_standard"
+   ],
+   "a_pnd42": [
+    "Panda_royal"
+   ],
+   "a_pnd50": [
+    "Panda_royal"
+   ],
+   "a_pnd51": [
+    "Panda_standard"
+   ],
+   "a_pnd45": [
+    "Panda_superStar"
+   ],
+   "a_pnd48": [
+    "Panda_standard"
+   ],
+   "a_pnd47": [
+    "Panda_worm"
+   ],
+   "a_pnd24": [
+    "Panda_standard"
+   ],
+   "a_all15": [
+    "Panda_santa"
+   ],
+   "a_pnd25": [
+    "Panda_fighter"
+   ],
+   "a_all43": [
+    "Panda_pvpArmor"
+   ],
+   "a_pnd5": [
+    "Panda_bib"
+   ],
+   "a_pnd23": [
+    "Panda_standard"
+   ],
+   "a_pnd22": [
+    "Panda_wuxian"
+   ],
+   "a_all58": [
+    "Panda_champion"
+   ],
+   "a_pnd21": [
+    "Panda_brawler"
+   ],
+   "a_pnd31": [
+    "Panda_striker"
+   ],
+   "a_all44": [
+    "Panda_legend"
+   ],
+   "a_pnd33": [
+    "Panda_standard"
+   ],
+   "a_pnd62": [
+    "Panda_sage"
+   ],
+   "a_pnd61": [
+    "Panda_legend"
+   ],
+   "a_pnd32": [
+    "Panda_sage"
+   ],
+   "a_pnd60": [
+    "Panda_legend"
+   ],
+   "a_pnd34": [
+    "Panda_standard"
+   ],
+   "a_pnd35": [
+    "Panda_hallow"
+   ],
+   "a_pnd65": [
+    "Panda_german"
+   ],
+   "a_pnd37": [
+    "Panda_halloween"
+   ],
+   "a_pnd12": [
+    "Panda_standard"
+   ]
+  },
+  "accessory": {
+   "c_pnd50": [
+    "royalHelmet"
+   ],
+   "c_pnd51": [
+    "royalHelmetR"
+   ],
+   "c_pnd33": [
+    "strikeHelmetR"
+   ],
+   "c_pnd52": [
+    "royalHelmetR"
+   ],
+   "c_pnd48": [
+    "wormHelmetR"
+   ],
+   "c_pnd32": [
+    "sageHat"
+   ],
+   "c_pnd37": [
+    "halloweenHat"
+   ],
+   "c_pnd31": [
+    "strikeHelmet"
+   ],
+   "c_pnd36": [
+    "mohawk"
+   ],
+   "c_pnd47": [
+    "wormHelmet"
+   ],
+   "c_pnd45": [
+    "superStarWig"
+   ],
+   "c_pnd35": [
+    "hallowHead"
+   ],
+   "c_pnd42": [
+    "shinHelmetV"
+   ],
+   "c_pnd34": [
+    "sageHatR"
+   ],
+   "c_pnd41": [
+    "shinHelmetR"
+   ],
+   "c_pnd40": [
+    "shinHelmet"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_pnd65": [
+    "germanHat"
+   ],
+   "c_pnd15": [
+    "summerWig"
+   ],
+   "c_pnd4": [
+    "bisonMask"
+   ],
+   "c_pnd60": [
+    "legendHelmet"
+   ],
+   "c_pnd19": [
+    "veggieHat"
+   ],
+   "c_pnd5": [
+    "wig"
+   ],
+   "c_pnd61": [
+    "brawlerCollar"
+   ],
+   "c_pnd22": [
+    "wuxianHat"
+   ],
+   "c_pnd21": [
+    "brawlerCollar"
+   ],
+   "c_pnd24": [
+    "wuxianHatR"
+   ],
+   "c_pnd23": [
+    "brawlerCollarR"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_pnd25": [
+    "fighterBand"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ]
+  },
+  "trinket": {
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_pnd60": [
+    "legendTrinket"
+   ],
+   "t_pnd45": [
+    "starGuitar"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ],
+   "t_pnd27": [
+    "turtleShell2"
+   ],
+   "t_pnd5": [
+    "gourd"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_pnd26": [
+    "turtleShell1"
+   ]
+  }
+ },
+ "penguin": {
+  "weapon": {
+   "w_pgn12": [
+    "standardWandV"
+   ],
+   "w_pgn11": [
+    "standardWandR"
+   ],
+   "w_pgn10": [
+    "shakerWand"
+   ],
+   "w_pgn19": [
+    "bdWeapon"
+   ],
+   "w_pgn15": [
+    "shakerWand"
+   ],
+   "w_pgn14": [
+    "heartScepter"
+   ],
+   "w_pgn60": [
+    "legendScepter"
+   ],
+   "w_pgn61": [
+    "standardWand"
+   ],
+   "w_pgn69": [
+    "timeScepter"
+   ],
+   "w_pgn66": [
+    "poseidonScepter"
+   ],
+   "w_pgn65": [
+    "franceSpyglass"
+   ],
+   "w_pgn79": [
+    "eclipseScepter"
+   ],
+   "w_pgn1": [
+    "noviceWand"
+   ],
+   "w_pgn2": [
+    "commonWand"
+   ],
+   "w_pgn3": [
+    "paperStaff"
+   ],
+   "w_pgn58": [
+    "championScepter"
+   ],
+   "w_pgn39": [
+    "griffinStaff"
+   ],
+   "w_pgn5": [
+    "paperCup"
+   ],
+   "w_pgn33": [
+    "astralScepterR"
+   ],
+   "w_pgn32": [
+    "frostStaff"
+   ],
+   "w_pgn59": [
+    "specialScepter"
+   ],
+   "w_pgn31": [
+    "astralScepter"
+   ],
+   "w_pgn81": [
+    "flamingScepter"
+   ],
+   "w_pgn36": [
+    "regguStaff"
+   ],
+   "w_pgn49": [
+    "goldenScepter"
+   ],
+   "w_pgn25": [
+    "fireExtinguisher"
+   ],
+   "w_pgn48": [
+    "mosquitoStaffR"
+   ],
+   "w_pgn56": [
+    "frozenScepter"
+   ],
+   "w_pgn24": [
+    "iceStaffR"
+   ],
+   "w_pgn34": [
+    "frostStaffR"
+   ],
+   "w_pgn47": [
+    "mosquitoStaff"
+   ],
+   "w_pgn37": [
+    "halloweenStaff"
+   ],
+   "w_pgn35": [
+    "hallowLattern"
+   ],
+   "w_pgn46": [
+    "mummyStaff"
+   ],
+   "w_pgn50": [
+    "royalScepter"
+   ],
+   "w_pgn45": [
+    "starRecord"
+   ],
+   "w_pgn51": [
+    "standardWand"
+   ],
+   "w_pgn21": [
+    "starScepter"
+   ],
+   "w_pgn23": [
+    "starScepterR"
+   ],
+   "w_pgn44": [
+    "pvpScepterR"
+   ],
+   "w_pgn52": [
+    "royalScepterR"
+   ],
+   "w_pgn42": [
+    "archScepterV"
+   ],
+   "w_pgn22": [
+    "iceStaff"
+   ],
+   "w_pgn43": [
+    "pvpScepter"
+   ],
+   "w_pgn40": [
+    "archScepter"
+   ]
+  },
+  "armor": {
+   "a_pgn10": [
+    "Penguin_scout"
+   ],
+   "a_pgn12": [
+    "Penguin_standard"
+   ],
+   "a_all1": [
+    "Penguin_scout"
+   ],
+   "a_pgn15": [
+    "Penguin_summer"
+   ],
+   "a_pgn11": [
+    "Penguin_france"
+   ],
+   "a_pgn62": [
+    "Penguin_standard"
+   ],
+   "a_pgn65": [
+    "Penguin_france"
+   ],
+   "a_pgn61": [
+    "Penguin_astralSage"
+   ],
+   "a_pgn32": [
+    "Penguin_frostMage"
+   ],
+   "a_pgn31": [
+    "Penguin_astralSage"
+   ],
+   "a_pgn60": [
+    "Penguin_legend"
+   ],
+   "a_pgn34": [
+    "Penguin_standard"
+   ],
+   "a_pgn33": [
+    "Penguin_hallow"
+   ],
+   "a_pgn37": [
+    "Penguin_halloween"
+   ],
+   "a_pgn35": [
+    "Penguin_hallow"
+   ],
+   "a_pgn5": [
+    "Penguin_box"
+   ],
+   "a_pgn40": [
+    "Penguin_archMage"
+   ],
+   "a_pgn41": [
+    "Penguin_standard"
+   ],
+   "a_all15": [
+    "Penguin_santa"
+   ],
+   "a_pgn45": [
+    "Penguin_superStar"
+   ],
+   "a_pgn42": [
+    "Penguin_mosquito"
+   ],
+   "a_pgn48": [
+    "Penguin_standard"
+   ],
+   "a_pgn47": [
+    "Penguin_mosquito"
+   ],
+   "a_pgn22": [
+    "Penguin_iceMage"
+   ],
+   "a_pgn23": [
+    "Penguin_fireFighter"
+   ],
+   "a_pgn24": [
+    "Penguin_starSage"
+   ],
+   "a_pgn25": [
+    "Penguin_fireFighter"
+   ],
+   "a_pgn21": [
+    "Penguin_starSage"
+   ],
+   "a_pgn50": [
+    "Penguin_royal"
+   ],
+   "a_pgn52": [
+    "Penguin_royal"
+   ],
+   "a_all43": [
+    "Penguin_pvpArmor"
+   ],
+   "a_pgn51": [
+    "Penguin_champion"
+   ],
+   "a_all44": [
+    "Penguin_standard"
+   ]
+  },
+  "accessory": {
+   "c_pgn23": [
+    "starHatR"
+   ],
+   "c_pgn21": [
+    "starHat"
+   ],
+   "c_pgn65": [
+    "franceHat"
+   ],
+   "c_pgn22": [
+    "iceHat"
+   ],
+   "c_pgn15": [
+    "garland"
+   ],
+   "c_pgn25": [
+    "fireFighterHat"
+   ],
+   "c_pgn10": [
+    "standardHat"
+   ],
+   "c_pgn24": [
+    "iceHatR"
+   ],
+   "c_pgn11": [
+    "standardHatR"
+   ],
+   "c_pgn61": [
+    "legendHelmet"
+   ],
+   "c_pgn12": [
+    "standardHatV"
+   ],
+   "c_pgn60": [
+    "legendHelmet"
+   ],
+   "c_pgn19": [
+    "veggieHat"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_pgn48": [
+    "mosquitoHatR"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_pgn50": [
+    "royalHat"
+   ],
+   "c_pgn42": [
+    "archMageHatV"
+   ],
+   "c_pgn52": [
+    "royalHatR"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_pgn41": [
+    "archMageHatR"
+   ],
+   "c_pgn36": [
+    "regguHat"
+   ],
+   "c_pgn40": [
+    "archMageHat"
+   ],
+   "c_pgn37": [
+    "halloweenHat"
+   ],
+   "c_pgn47": [
+    "mosquitoHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_pgn34": [
+    "frostHatR"
+   ],
+   "c_pgn35": [
+    "hallowBandana"
+   ],
+   "c_pgn45": [
+    "superStarWig"
+   ],
+   "c_pgn32": [
+    "frostHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_pgn33": [
+    "astralHatR"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_pgn31": [
+    "astralHat"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_pgn5": [
+    "beggarHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ]
+  },
+  "trinket": {
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_pgn60": [
+    "legendTrinket"
+   ],
+   "t_pgn62": [
+    "legendTrinket_R"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_pgn61": [
+    "legendTrinketR"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ]
+  }
+ },
+ "rabbit": {
+  "weapon": {
+   "w_rab12": [
+    "standardGunV"
+   ],
+   "w_rab11": [
+    "standardGunR"
+   ],
+   "w_rab10": [
+    "waterGun"
+   ],
+   "w_rab19": [
+    "bdWeapon"
+   ],
+   "w_rab15": [
+    "waterGun"
+   ],
+   "w_rab14": [
+    "heartGun"
+   ],
+   "w_rab33": [
+    "alchemistGunR"
+   ],
+   "w_rab32": [
+    "merchantGun"
+   ],
+   "w_rab39": [
+    "flowerGun"
+   ],
+   "w_rab49": [
+    "goldenGun"
+   ],
+   "w_rab25": [
+    "medicGun"
+   ],
+   "w_rab31": [
+    "alchemistGun"
+   ],
+   "w_rab48": [
+    "antShotgunR"
+   ],
+   "w_rab24": [
+    "traderGunR"
+   ],
+   "w_rab36": [
+    "italusRevolver"
+   ],
+   "w_rab34": [
+    "merchantGunR"
+   ],
+   "w_rab47": [
+    "antShotgun"
+   ],
+   "w_rab37": [
+    "halloweenRifle"
+   ],
+   "w_rab21": [
+    "nurseGun"
+   ],
+   "w_rab35": [
+    "hallowGun"
+   ],
+   "w_rab46": [
+    "mummyShotgun"
+   ],
+   "w_rab44": [
+    "pvpBowR"
+   ],
+   "w_rab45": [
+    "keytar"
+   ],
+   "w_rab22": [
+    "traderGun"
+   ],
+   "w_rab43": [
+    "pvpBow"
+   ],
+   "w_rab23": [
+    "nurseGunR"
+   ],
+   "w_rab40": [
+    "magistrateGun"
+   ],
+   "w_rab41": [
+    "magistrateGunR"
+   ],
+   "w_rab42": [
+    "magistrateGunV"
+   ],
+   "w_rab1": [
+    "noviceGun"
+   ],
+   "w_rab2": [
+    "commonGun"
+   ],
+   "w_rab3": [
+    "paperGun"
+   ],
+   "w_rab69": [
+    "timeShotgun"
+   ],
+   "w_rab5": [
+    "umbrella"
+   ],
+   "w_rab59": [
+    "specialGun"
+   ],
+   "w_rab61": [
+    "standardGun"
+   ],
+   "w_rab58": [
+    "championGun"
+   ],
+   "w_rab65": [
+    "spainMusket"
+   ],
+   "w_rab79": [
+    "eclipseRifle"
+   ],
+   "w_rab60": [
+    "legendGun"
+   ],
+   "w_rab50": [
+    "royalGun"
+   ],
+   "w_rab66": [
+    "poseidonGun"
+   ],
+   "w_rab56": [
+    "frozenGun"
+   ],
+   "w_rab52": [
+    "royalGunR"
+   ]
+  },
+  "armor": {
+   "a_rab80": [
+    "Rabbit_moonGoddess"
+   ],
+   "a_all1": [
+    "Rabbit_scout"
+   ],
+   "a_rab48": [
+    "Rabbit_standard"
+   ],
+   "a_rab40": [
+    "Rabbit_magistrate"
+   ],
+   "a_rab12": [
+    "Rabbit_standard"
+   ],
+   "a_rab41": [
+    "Rabbit_standard"
+   ],
+   "a_rab42": [
+    "Rabbit_standard"
+   ],
+   "a_rab10": [
+    "Rabbit_superStar"
+   ],
+   "a_rab47": [
+    "Rabbit_ant"
+   ],
+   "a_rab45": [
+    "Rabbit_superStar"
+   ],
+   "a_rab11": [
+    "Rabbit_summer"
+   ],
+   "a_rab65": [
+    "Rabbit_spain"
+   ],
+   "a_rab15": [
+    "Rabbit_summer"
+   ],
+   "a_rab61": [
+    "Rabbit_standard"
+   ],
+   "a_rab62": [
+    "Rabbit_legend"
+   ],
+   "a_rab5": [
+    "Rabbit_rainCoat"
+   ],
+   "a_rab60": [
+    "Rabbit_legend"
+   ],
+   "a_rab32": [
+    "Rabbit_merchant"
+   ],
+   "a_rab31": [
+    "Rabbit_alchemist"
+   ],
+   "a_all15": [
+    "Rabbit_santa"
+   ],
+   "a_rab23": [
+    "Rabbit_standard"
+   ],
+   "a_rab33": [
+    "Rabbit_merchant"
+   ],
+   "a_rab22": [
+    "Rabbit_trader"
+   ],
+   "a_rab34": [
+    "Rabbit_hallow"
+   ],
+   "a_rab21": [
+    "Rabbit_nurse"
+   ],
+   "a_rab35": [
+    "Rabbit_hallow"
+   ],
+   "a_rab24": [
+    "Rabbit_halloween"
+   ],
+   "a_rab25": [
+    "Rabbit_medic"
+   ],
+   "a_rab37": [
+    "Rabbit_halloween"
+   ],
+   "a_rab50": [
+    "Rabbit_royal"
+   ],
+   "a_rab52": [
+    "Rabbit_royal"
+   ],
+   "a_all43": [
+    "Rabbit_pvpArmor"
+   ],
+   "a_rab51": [
+    "Rabbit_champion"
+   ],
+   "a_all44": [
+    "Rabbit_standard"
+   ]
+  },
+  "accessory": {
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_fem37": [
+    "lionHead"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_fem11": [
+    "flowerBand"
+   ],
+   "c_rab65": [
+    "spainHat"
+   ],
+   "c_rab60": [
+    "legendHelmet"
+   ],
+   "c_rab61": [
+    "antHelmetR"
+   ],
+   "c_rab50": [
+    "royalHat"
+   ],
+   "c_rab48": [
+    "antHelmetR"
+   ],
+   "c_rab52": [
+    "royalHatR"
+   ],
+   "c_rab51": [
+    "magistrateHatV"
+   ],
+   "c_rab41": [
+    "magistrateHatR"
+   ],
+   "c_rab42": [
+    "magistrateHatV"
+   ],
+   "c_rab36": [
+    "italusHat"
+   ],
+   "c_rab40": [
+    "magistrateHat"
+   ],
+   "c_rab37": [
+    "halloweenHat"
+   ],
+   "c_rab47": [
+    "antHelmet"
+   ],
+   "c_rab45": [
+    "superStarHood"
+   ],
+   "c_rab34": [
+    "merchantHatR"
+   ],
+   "c_rab32": [
+    "merchantHat"
+   ],
+   "c_rab35": [
+    "hallowHat"
+   ],
+   "c_rab31": [
+    "alchemistHat"
+   ],
+   "c_rab33": [
+    "alchemistHatR"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_rab80": [
+    "moonGoddessTiara"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_rab21": [
+    "nurseCap"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_rab22": [
+    "traderHat"
+   ],
+   "c_rab23": [
+    "nurseCapR"
+   ],
+   "c_rab15": [
+    "summerHat"
+   ],
+   "c_rab25": [
+    "medicHat"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_rab24": [
+    "traderHatR"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_rab10": [
+    "standardHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_rab11": [
+    "standardHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_rab12": [
+    "standardHatV"
+   ],
+   "c_rab5": [
+    "flogBand"
+   ],
+   "c_rab19": [
+    "veggieHat"
+   ]
+  },
+  "trinket": {
+   "t_fem37": [
+    "chineseLantern"
+   ],
+   "t_fem56": [
+    "frozenMask"
+   ],
+   "t_fem31": [
+    "chineseTalismanR"
+   ],
+   "t_fem46": [
+    "maohWings"
+   ],
+   "t_fem66": [
+    "poseidonTrinket"
+   ],
+   "t_rab60": [
+    "legendTrinket"
+   ],
+   "t_rab62": [
+    "legendTrinket_R"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_rab61": [
+    "legendTrinketR"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_fem11": [
+    "magazine"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_fem15": [
+    "deerHorn"
+   ],
+   "t_fem14": [
+    "heartRing"
+   ],
+   "t_fem2": [
+    "bell"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ]
+  }
+ },
+ "sheep": {
+  "weapon": {
+   "w_shp50": [
+    "royalCodex"
+   ],
+   "w_shp43": [
+    "pvpBook"
+   ],
+   "w_shp52": [
+    "royalCodexR"
+   ],
+   "w_shp56": [
+    "frozenCone"
+   ],
+   "w_shp41": [
+    "holyCodexR"
+   ],
+   "w_shp42": [
+    "holyCodexV"
+   ],
+   "w_shp47": [
+    "mothLatern"
+   ],
+   "w_shp36": [
+    "kuruScroll"
+   ],
+   "w_shp40": [
+    "holyCodex"
+   ],
+   "w_shp46": [
+    "mummyBook"
+   ],
+   "w_shp58": [
+    "championCodex"
+   ],
+   "w_shp37": [
+    "halloweenLantern"
+   ],
+   "w_shp45": [
+    "starMicrophone"
+   ],
+   "w_shp59": [
+    "specialOrb"
+   ],
+   "w_shp34": [
+    "enchanterScrollR"
+   ],
+   "w_shp32": [
+    "enchanterScroll"
+   ],
+   "w_shp44": [
+    "pvpBookR"
+   ],
+   "w_shp35": [
+    "hallowBaby"
+   ],
+   "w_shp31": [
+    "hierophantBook"
+   ],
+   "w_shp49": [
+    "goldenCodex"
+   ],
+   "w_shp33": [
+    "hierophantBookR"
+   ],
+   "w_shp23": [
+    "clericBookR"
+   ],
+   "w_shp21": [
+    "clericBook"
+   ],
+   "w_shp48": [
+    "mothLaternR"
+   ],
+   "w_shp25": [
+    "waitressTray"
+   ],
+   "w_shp39": [
+    "wolfDoll"
+   ],
+   "w_shp22": [
+    "lightScroll"
+   ],
+   "w_shp3": [
+    "paperBoat"
+   ],
+   "w_shp5": [
+    "sheepDoll"
+   ],
+   "w_shp24": [
+    "lightScrollR"
+   ],
+   "w_shp84": [
+    "flamingGuard"
+   ],
+   "w_shp1": [
+    "noviceBook"
+   ],
+   "w_shp2": [
+    "commonBook"
+   ],
+   "w_shp81": [
+    "flamingScroll"
+   ],
+   "w_shp82": [
+    "flamingBook"
+   ],
+   "w_shp83": [
+    "flamingShield"
+   ],
+   "w_shp19": [
+    "bdWeapon"
+   ],
+   "w_shp69": [
+    "timeCodex"
+   ],
+   "w_shp79": [
+    "eclipseCodex"
+   ],
+   "w_shp15": [
+    "diary"
+   ],
+   "w_shp65": [
+    "russiaMatryoshka"
+   ],
+   "w_shp14": [
+    "heartBox"
+   ],
+   "w_shp61": [
+    "poseidonBook"
+   ],
+   "w_shp10": [
+    "standardBook"
+   ],
+   "w_shp66": [
+    "poseidonBook"
+   ],
+   "w_shp12": [
+    "standardBookV"
+   ],
+   "w_shp60": [
+    "legendHarp"
+   ],
+   "w_shp11": [
+    "standardBookR"
+   ]
+  },
+  "armor": {
+   "a_shp31": [
+    "Sheep_hierophant"
+   ],
+   "a_all1": [
+    "Sheep_scout"
+   ],
+   "a_shp32": [
+    "Sheep_enchanter"
+   ],
+   "a_shp22": [
+    "Sheep_lightSeer"
+   ],
+   "a_shp23": [
+    "Sheep_hallow"
+   ],
+   "a_shp21": [
+    "Sheep_cleric"
+   ],
+   "a_shp35": [
+    "Sheep_hallow"
+   ],
+   "a_shp24": [
+    "Sheep_halloween"
+   ],
+   "a_shp25": [
+    "Sheep_waitress"
+   ],
+   "a_shp37": [
+    "Sheep_halloween"
+   ],
+   "a_shp50": [
+    "Sheep_royal"
+   ],
+   "a_shp52": [
+    "none"
+   ],
+   "a_shp5": [
+    "Sheep_fur"
+   ],
+   "a_shp51": [
+    "Sheep_santa"
+   ],
+   "a_shp80": [
+    "Sheep_divineGoddess"
+   ],
+   "a_all15": [
+    "Sheep_santa"
+   ],
+   "a_shp12": [
+    "Sheep_moth"
+   ],
+   "a_shp48": [
+    "Sheep_holyRobe"
+   ],
+   "a_shp40": [
+    "Sheep_holyRobe"
+   ],
+   "a_shp11": [
+    "Sheep_standard"
+   ],
+   "a_shp10": [
+    "Sheep_standard"
+   ],
+   "a_shp45": [
+    "Sheep_superStar"
+   ],
+   "a_shp65": [
+    "Sheep_russia"
+   ],
+   "a_shp15": [
+    "Sheep_summer"
+   ],
+   "a_shp47": [
+    "Sheep_moth"
+   ],
+   "a_shp62": [
+    "Sheep_legend"
+   ],
+   "a_all43": [
+    "Sheep_pvpArmor"
+   ],
+   "a_shp60": [
+    "Sheep_legend"
+   ],
+   "a_all58": [
+    "Sheep_champion"
+   ]
+  },
+  "accessory": {
+   "c_shp19": [
+    "veggieHat"
+   ],
+   "c_shp15": [
+    "summerHat"
+   ],
+   "c_shp60": [
+    "legendHelmet"
+   ],
+   "c_shp61": [
+    "russiaHat"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_shp65": [
+    "russiaHat"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_fem37": [
+    "lionHead"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_shp5": [
+    "sheepHat"
+   ],
+   "c_fem11": [
+    "flowerBand"
+   ],
+   "c_shp33": [
+    "hierophantHatR"
+   ],
+   "c_shp32": [
+    "enchantBand"
+   ],
+   "c_shp25": [
+    "waitressBand"
+   ],
+   "c_shp31": [
+    "hierophantHat"
+   ],
+   "c_shp36": [
+    "kuruHat"
+   ],
+   "c_shp80": [
+    "divineGoddessCrown"
+   ],
+   "c_shp48": [
+    "mothHatR"
+   ],
+   "c_shp24": [
+    "lightBandR"
+   ],
+   "c_shp47": [
+    "mothHat"
+   ],
+   "c_shp37": [
+    "halloweenHat"
+   ],
+   "c_shp50": [
+    "royalHat"
+   ],
+   "c_shp34": [
+    "enchantBandR"
+   ],
+   "c_shp51": [
+    "hallowFlower"
+   ],
+   "c_shp21": [
+    "clericHat"
+   ],
+   "c_shp35": [
+    "hallowFlower"
+   ],
+   "c_shp52": [
+    "royalHatR"
+   ],
+   "c_shp45": [
+    "superStarHat"
+   ],
+   "c_shp22": [
+    "lightBand"
+   ],
+   "c_shp23": [
+    "clericHatR"
+   ],
+   "c_shp41": [
+    "holyHatR"
+   ],
+   "c_shp42": [
+    "holyHatV"
+   ],
+   "c_shp40": [
+    "holyHat"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ]
+  },
+  "trinket": {
+   "t_fem37": [
+    "chineseLantern"
+   ],
+   "t_fem56": [
+    "frozenMask"
+   ],
+   "t_fem31": [
+    "chineseTalismanR"
+   ],
+   "t_fem46": [
+    "maohWings"
+   ],
+   "t_fem66": [
+    "poseidonTrinket"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_fem11": [
+    "magazine"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_fem15": [
+    "deerHorn"
+   ],
+   "t_fem14": [
+    "heartRing"
+   ],
+   "t_shp61": [
+    "legendTrinketR"
+   ],
+   "t_shp60": [
+    "legendTrinket"
+   ],
+   "t_fem2": [
+    "bell"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ]
+  }
+ },
+ "whale": {
+  "weapon": {
+   "w_whl58": [
+    "championLance",
+    "championShield"
+   ],
+   "w_whl66": [
+    "poseidonSpear",
+    "poseidonShield"
+   ],
+   "w_whl65": [
+    "koreaLance",
+    "koreaShield"
+   ],
+   "w_whl60": [
+    "legendLance",
+    "legendShield"
+   ],
+   "w_whl59": [
+    "specialLance",
+    "specialShield"
+   ],
+   "w_whl61": [
+    "ladybugLanceR",
+    "ladybugShieldR"
+   ],
+   "w_whl50": [
+    "royalLance",
+    "royalShield"
+   ],
+   "w_whl48": [
+    "ladybugLanceR",
+    "ladybugShieldR"
+   ],
+   "w_whl49": [
+    "goldenLance",
+    "goldenShield"
+   ],
+   "w_whl52": [
+    "royalLanceR",
+    "royalShieldR"
+   ],
+   "w_whl51": [
+    "standardLance",
+    "standardShield"
+   ],
+   "w_whl69": [
+    "timeLance",
+    "timeShield"
+   ],
+   "w_whl41": [
+    "justiceLanceR",
+    "justiceShieldR"
+   ],
+   "w_whl42": [
+    "justiceLanceV",
+    "justiceShieldV"
+   ],
+   "w_whl43": [
+    "pvpLance",
+    "pvpShield"
+   ],
+   "w_whl40": [
+    "justiceLance",
+    "justiceShield"
+   ],
+   "w_whl56": [
+    "frozenLance",
+    "frozenShield"
+   ],
+   "w_whl39": [
+    "ammoniteLance",
+    "ammoniteShield"
+   ],
+   "w_whl37": [
+    "halloweenSpear",
+    "halloweenShield"
+   ],
+   "w_whl47": [
+    "ladybugLance",
+    "ladybugShield"
+   ],
+   "w_whl36": [
+    "razanHammer",
+    "razanAnmil"
+   ],
+   "w_whl34": [
+    "templarLanceR",
+    "templarShieldR"
+   ],
+   "w_whl46": [
+    "mummyLance",
+    "mummyShield"
+   ],
+   "w_whl44": [
+    "pvpLanceR",
+    "pvpShieldR"
+   ],
+   "w_whl35": [
+    "hallowCleaver",
+    "hallowShield"
+   ],
+   "w_whl45": [
+    "starMicrophone",
+    "starDisc"
+   ],
+   "w_whl31": [
+    "aquaLance",
+    "aquaShield"
+   ],
+   "w_whl33": [
+    "aquaLanceR",
+    "aquaShieldR"
+   ],
+   "w_whl32": [
+    "templarLance",
+    "templarShield"
+   ],
+   "w_whl22": [
+    "partisanLance",
+    "partisanShield"
+   ],
+   "w_whl23": [
+    "lancerLanceR",
+    "lancerShieldR"
+   ],
+   "w_whl21": [
+    "lancerLance",
+    "lancerShield"
+   ],
+   "w_whl25": [
+    "chefLance",
+    "chefShield"
+   ],
+   "w_whl14": [
+    "heartLance",
+    "heartShield"
+   ],
+   "w_whl10": [
+    "toyLance",
+    "toyShield"
+   ],
+   "w_whl24": [
+    "partisanLanceR",
+    "partisanShieldR"
+   ],
+   "w_whl15": [
+    "toyLance",
+    "toyShield"
+   ],
+   "w_whl79": [
+    "eclipseLance",
+    "eclipseShield"
+   ],
+   "w_whl12": [
+    "standardLanceV",
+    "standardShieldV"
+   ],
+   "w_whl11": [
+    "standardLanceR",
+    "standardShieldR"
+   ],
+   "w_whl3": [
+    "paperLance",
+    "paperShield"
+   ],
+   "w_whl5": [
+    "beachShovel",
+    "beachBucket"
+   ],
+   "w_whl19": [
+    "bdLance",
+    "bdShield"
+   ],
+   "w_whl1": [
+    "noviceLance",
+    "noviceShield"
+   ]
+  },
+  "armor": {
+   "a_all1": [
+    "Whale_scout"
+   ],
+   "a_whl31": [
+    "Whale_aquaKnight"
+   ],
+   "a_whl5": [
+    "Whale_lifebuoy"
+   ],
+   "a_whl23": [
+    "Whale_templar"
+   ],
+   "a_whl33": [
+    "Whale_standard"
+   ],
+   "a_whl32": [
+    "Whale_templar"
+   ],
+   "a_whl22": [
+    "Whale_partisan"
+   ],
+   "a_whl34": [
+    "Whale_lancer"
+   ],
+   "a_all15": [
+    "Whale_santa"
+   ],
+   "a_whl21": [
+    "Whale_lancer"
+   ],
+   "a_whl35": [
+    "Whale_hallow"
+   ],
+   "a_whl25": [
+    "Whale_chef"
+   ],
+   "a_whl37": [
+    "Whale_halloween"
+   ],
+   "a_whl52": [
+    "Whale_standard"
+   ],
+   "a_whl24": [
+    "Whale_greek"
+   ],
+   "a_whl50": [
+    "Whale_royal"
+   ],
+   "a_whl80": [
+    "Whale_greek"
+   ],
+   "a_whl12": [
+    "Whale_royal"
+   ],
+   "a_whl41": [
+    "Whale_standard"
+   ],
+   "a_whl51": [
+    "Whale_justice"
+   ],
+   "a_whl10": [
+    "Whale_standard"
+   ],
+   "a_whl40": [
+    "Whale_justice"
+   ],
+   "a_all43": [
+    "Whale_pvpArmor"
+   ],
+   "a_whl42": [
+    "Whale_standard"
+   ],
+   "a_whl45": [
+    "Whale_superStar"
+   ],
+   "a_whl11": [
+    "Whale_summer"
+   ],
+   "a_whl65": [
+    "Whale_korea"
+   ],
+   "a_whl15": [
+    "Whale_summer"
+   ],
+   "a_whl47": [
+    "Whale_ladyBug"
+   ],
+   "a_whl48": [
+    "Whale_standard"
+   ],
+   "a_all58": [
+    "Whale_champion"
+   ],
+   "a_whl62": [
+    "Whale_standard"
+   ],
+   "a_all44": [
+    "Whale_legend"
+   ],
+   "a_whl60": [
+    "Whale_legend"
+   ]
+  },
+  "accessory": {
+   "c_whl32": [
+    "templarHood"
+   ],
+   "c_whl61": [
+    "legendHelmet"
+   ],
+   "c_whl33": [
+    "aquaHelmetR"
+   ],
+   "c_whl60": [
+    "legendHelmet"
+   ],
+   "c_whl25": [
+    "chefHat"
+   ],
+   "c_whl31": [
+    "aquaHelmet"
+   ],
+   "c_whl36": [
+    "razanBandana"
+   ],
+   "c_whl65": [
+    "koreaHat"
+   ],
+   "c_whl37": [
+    "halloweenHat"
+   ],
+   "c_whl24": [
+    "partisanHoodR"
+   ],
+   "c_whl34": [
+    "templarHoodR"
+   ],
+   "c_whl47": [
+    "ladybugHelmet"
+   ],
+   "c_whl21": [
+    "lancerHelmet"
+   ],
+   "c_whl35": [
+    "hallowAnchor"
+   ],
+   "c_whl50": [
+    "royalHelmet"
+   ],
+   "c_whl45": [
+    "superStarHat"
+   ],
+   "c_whl51": [
+    "royalHelmetR"
+   ],
+   "c_whl23": [
+    "lancerHelmetR"
+   ],
+   "c_whl52": [
+    "royalHelmetR"
+   ],
+   "c_whl42": [
+    "justiceHelmetV"
+   ],
+   "c_whl22": [
+    "partisanHood"
+   ],
+   "c_whl40": [
+    "justiceHelmet"
+   ],
+   "c_whl41": [
+    "justiceHelmetR"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_whl48": [
+    "ladybugHelmetR"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_whl15": [
+    "melonStem"
+   ],
+   "c_whl19": [
+    "veggieHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_whl5": [
+    "swimGoggle"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ]
+  },
+  "trinket": {
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_whl60": [
+    "legendTrinket"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ]
+  }
+ },
+ "wolf": {
+  "weapon": {
+   "w_wlf34": [
+    "knifeSwordR"
+   ],
+   "w_wlf50": [
+    "royalSword"
+   ],
+   "w_wlf52": [
+    "royalSwordR"
+   ],
+   "w_wlf36": [
+    "boldasSword"
+   ],
+   "w_wlf56": [
+    "frozenSword"
+   ],
+   "w_wlf51": [
+    "paladinSword"
+   ],
+   "w_wlf25": [
+    "butlerDuster"
+   ],
+   "w_wlf31": [
+    "paladinSword"
+   ],
+   "w_wlf37": [
+    "halloweenSword"
+   ],
+   "w_wlf24": [
+    "vagabondSwordR"
+   ],
+   "w_wlf32": [
+    "knifeSword"
+   ],
+   "w_wlf58": [
+    "championSword"
+   ],
+   "w_wlf23": [
+    "soldierSwordR"
+   ],
+   "w_wlf33": [
+    "paladinSwordR"
+   ],
+   "w_wlf39": [
+    "scissorSword"
+   ],
+   "w_wlf21": [
+    "soldierSword"
+   ],
+   "w_wlf22": [
+    "vagabondSword"
+   ],
+   "w_wlf1": [
+    "noviceSword"
+   ],
+   "w_wlf5": [
+    "fan"
+   ],
+   "w_wlf81": [
+    "flamingBrand"
+   ],
+   "w_wlf2": [
+    "commonSword"
+   ],
+   "w_wlf3": [
+    "paperSword"
+   ],
+   "w_wlf47": [
+    "scorpionSword"
+   ],
+   "w_wlf44": [
+    "pvpSwordR"
+   ],
+   "w_wlf45": [
+    "starBouquet"
+   ],
+   "w_wlf79": [
+    "eclipseSword"
+   ],
+   "w_wlf41": [
+    "heroSwordR"
+   ],
+   "w_wlf46": [
+    "mummySword"
+   ],
+   "w_wlf42": [
+    "heroSwordV"
+   ],
+   "w_wlf43": [
+    "pvpSword"
+   ],
+   "w_wlf40": [
+    "heroSword"
+   ],
+   "w_wlf49": [
+    "goldenSword"
+   ],
+   "w_wlf69": [
+    "timeSword"
+   ],
+   "w_wlf19": [
+    "bdWeapon"
+   ],
+   "w_wlf48": [
+    "scorpionSwordR"
+   ],
+   "w_wlf14": [
+    "heartSword"
+   ],
+   "w_wlf66": [
+    "poseidonSword"
+   ],
+   "w_wlf60": [
+    "legendSword"
+   ],
+   "w_wlf12": [
+    "standardSwordV"
+   ],
+   "w_wlf15": [
+    "lightStick"
+   ],
+   "w_wlf65": [
+    "thaiSword"
+   ],
+   "w_wlf11": [
+    "standardSwordR"
+   ],
+   "w_wlf10": [
+    "standardSword"
+   ]
+  },
+  "armor": {
+   "a_wlf61": [
+    "Wolf_scout"
+   ],
+   "a_all1": [
+    "Wolf_scout"
+   ],
+   "a_wlf60": [
+    "Wolf_legend"
+   ],
+   "a_wlf32": [
+    "Wolf_blade"
+   ],
+   "a_wlf62": [
+    "Wolf_standard"
+   ],
+   "a_wlf33": [
+    "Wolf_paladin"
+   ],
+   "a_wlf65": [
+    "Wolf_thai"
+   ],
+   "a_wlf31": [
+    "Wolf_paladin"
+   ],
+   "a_wlf34": [
+    "Wolf_halloween"
+   ],
+   "a_wlf47": [
+    "Wolf_scorpion"
+   ],
+   "a_wlf37": [
+    "Wolf_halloween"
+   ],
+   "a_wlf35": [
+    "Wolf_hallow"
+   ],
+   "a_wlf50": [
+    "Wolf_royal"
+   ],
+   "a_wlf45": [
+    "Wolf_superStar"
+   ],
+   "a_wlf51": [
+    "Wolf_royal"
+   ],
+   "a_wlf5": [
+    "Wolf_shirt"
+   ],
+   "a_wlf52": [
+    "Wolf_hero"
+   ],
+   "a_wlf40": [
+    "Wolf_hero"
+   ],
+   "a_wlf41": [
+    "Wolf_standard"
+   ],
+   "a_wlf42": [
+    "Wolf_scorpion"
+   ],
+   "a_wlf48": [
+    "Wolf_santa"
+   ],
+   "a_wlf25": [
+    "Wolf_butler"
+   ],
+   "a_all15": [
+    "Wolf_santa"
+   ],
+   "a_wlf21": [
+    "Wolf_soldier"
+   ],
+   "a_wlf24": [
+    "Wolf_vagabond"
+   ],
+   "a_wlf10": [
+    "Wolf_soldier"
+   ],
+   "a_wlf22": [
+    "Wolf_vagabond"
+   ],
+   "a_wlf23": [
+    "Wolf_standard"
+   ],
+   "a_wlf12": [
+    "Wolf_standard"
+   ],
+   "a_wlf11": [
+    "Wolf_summer"
+   ],
+   "a_all43": [
+    "Wolf_pvpArmor"
+   ],
+   "a_wlf15": [
+    "Wolf_summer"
+   ],
+   "a_all44": [
+    "Wolf_standard"
+   ]
+  },
+  "accessory": {
+   "c_wlf32": [
+    "bladeBandana"
+   ],
+   "c_wlf31": [
+    "paladinHelmet"
+   ],
+   "c_wlf23": [
+    "soldierHelmetR"
+   ],
+   "c_wlf33": [
+    "paladinHelmetR"
+   ],
+   "c_wlf22": [
+    "vagabondBandana"
+   ],
+   "c_wlf34": [
+    "bladeBandanaR"
+   ],
+   "c_wlf21": [
+    "soldierHelmet"
+   ],
+   "c_wlf35": [
+    "hallowMask"
+   ],
+   "c_wlf37": [
+    "halloweenHat"
+   ],
+   "c_wlf36": [
+    "ligerMask"
+   ],
+   "c_wlf24": [
+    "vagabondBandanaR"
+   ],
+   "c_wlf25": [
+    "butlerCap"
+   ],
+   "c_wlf50": [
+    "royalHelmet"
+   ],
+   "c_wlf52": [
+    "royalHelmetR"
+   ],
+   "c_all16": [
+    "pirateBandana"
+   ],
+   "c_wlf51": [
+    "poseidonHelmet"
+   ],
+   "c_all15": [
+    "santaHat"
+   ],
+   "c_all66": [
+    "poseidonHelmet"
+   ],
+   "c_all10": [
+    "candyHat"
+   ],
+   "c_all12": [
+    "afroC"
+   ],
+   "c_all18": [
+    "halo"
+   ],
+   "c_all11": [
+    "afro"
+   ],
+   "c_wlf48": [
+    "scorpionHelmetR"
+   ],
+   "c_all19": [
+    "horn"
+   ],
+   "c_wlf41": [
+    "heroHelmetR"
+   ],
+   "c_wlf19": [
+    "veggieHat"
+   ],
+   "c_wlf40": [
+    "heroHelmet"
+   ],
+   "c_wlf12": [
+    "simpleBandanaV"
+   ],
+   "c_wlf42": [
+    "heroHelmetV"
+   ],
+   "c_wlf10": [
+    "simpleBandanaR"
+   ],
+   "c_wlf45": [
+    "superStarHat"
+   ],
+   "c_wlf11": [
+    "simpleBandanaR"
+   ],
+   "c_wlf15": [
+    "summerGlasses"
+   ],
+   "c_wlf47": [
+    "scorpionHelmet"
+   ],
+   "c_wlf1": [
+    "simpleBandana"
+   ],
+   "c_wlf65": [
+    "thaiHelmet"
+   ],
+   "c_wlf60": [
+    "legendHelmet"
+   ],
+   "c_wlf61": [
+    "fcBandana"
+   ],
+   "c_all58": [
+    "championHelmet"
+   ],
+   "c_wlf5": [
+    "fcBandana"
+   ],
+   "c_all38": [
+    "fanKingHat"
+   ],
+   "c_mal37": [
+    "dragonHead"
+   ],
+   "c_all29": [
+    "snowmanHead"
+   ],
+   "c_all39": [
+    "artistHat"
+   ],
+   "c_all44": [
+    "pvpHelmetR"
+   ],
+   "c_all56": [
+    "frozenCrown"
+   ],
+   "c_all37": [
+    "quizHat"
+   ],
+   "c_all28": [
+    "krathongHat2"
+   ],
+   "c_all46": [
+    "mummyHead"
+   ],
+   "c_all27": [
+    "krathongHat1"
+   ],
+   "c_all55": [
+    "giveMeFive"
+   ],
+   "c_all26": [
+    "pirateBandanaR"
+   ],
+   "c_all24": [
+    "headphone2"
+   ],
+   "c_all25": [
+    "headphone3"
+   ],
+   "c_all23": [
+    "headphone1"
+   ],
+   "c_all43": [
+    "pvpHelmet"
+   ],
+   "c_all21": [
+    "earmuff1"
+   ],
+   "c_all22": [
+    "earmuff2"
+   ],
+   "c_all8": [
+    "partyHatR"
+   ],
+   "c_all9": [
+    "cakeHat"
+   ],
+   "c_all6": [
+    "vHat"
+   ],
+   "c_all7": [
+    "partyHatB"
+   ],
+   "c_all3": [
+    "paperHat"
+   ],
+   "c_all1": [
+    "redPandaHat"
+   ]
+  },
+  "trinket": {
+   "t_mal14": [
+    "heartRing"
+   ],
+   "t_mal11": [
+    "comic"
+   ],
+   "t_mal66": [
+    "poseidonTrinket"
+   ],
+   "t_mal46": [
+    "curseAnkh"
+   ],
+   "t_all51": [
+    "sandTopaz"
+   ],
+   "t_mal15": [
+    "santaBag"
+   ],
+   "t_all66": [
+    "doubleHorn"
+   ],
+   "t_all55": [
+    "fifthSword"
+   ],
+   "t_all56": [
+    "fifthWand"
+   ],
+   "t_all57": [
+    "fifthWing"
+   ],
+   "t_all75": [
+    "championFlag5"
+   ],
+   "t_all59": [
+    "mupoBag"
+   ],
+   "t_all74": [
+    "championFlag4"
+   ],
+   "t_all58": [
+    "carronBag"
+   ],
+   "t_all72": [
+    "championFlag2"
+   ],
+   "t_all73": [
+    "championFlag3"
+   ],
+   "t_all1": [
+    "glasses"
+   ],
+   "t_all71": [
+    "championFlag1"
+   ],
+   "t_wlf60": [
+    "legendTrinket"
+   ],
+   "t_all2": [
+    "sunGlasses"
+   ],
+   "t_all4": [
+    "nerdGlasses"
+   ],
+   "t_all3": [
+    "starGlasses"
+   ],
+   "t_all6": [
+    "bugAntenna"
+   ],
+   "t_all5": [
+    "blackGlasses"
+   ],
+   "t_all8": [
+    "redNose"
+   ],
+   "t_all7": [
+    "partyWhistle"
+   ],
+   "t_mal31": [
+    "chineseTalisman"
+   ],
+   "t_all9": [
+    "lollipop"
+   ],
+   "t_all46": [
+    "groceryBag"
+   ],
+   "t_mal37": [
+    "chineseLantern"
+   ],
+   "t_mal56": [
+    "frozenWing"
+   ]
+  }
+ },
+ "all": {
+  "trinket": {
+   "t_all96": [
+    "shadowseal"
+   ],
+   "t_all92": [
+    "fireseal"
+   ],
+   "t_all91": [
+    "lightseal"
+   ],
+   "t_all93": [
+    "waterseal"
+   ],
+   "t_all94": [
+    "windseal"
+   ],
+   "t_all95": [
+    "earthseal"
+   ],
+   "t_all186": [
+    "aura_bloodmoon"
+   ],
+   "t_all185": [
+    "aura_undeadqueen"
+   ],
+   "t_allhlw6": [
+    "anglewing_crimson"
+   ],
+   "t_allhlw8": [
+    "anglewing_pumpkin"
+   ],
+   "t_allhlw9": [
+    "anglewing_spectral"
+   ],
+   "t_all77": [
+    "ice_wing"
+   ],
+   "t_allhlw3": [
+    "pumpkonheadband"
+   ],
+   "t_allhlw5": [
+    "reapertrinket"
+   ],
+   "t_allhlw7": [
+    "anglewing_ghost"
+   ],
+   "t_all78": [
+    "shade_wing"
+   ],
+   "t_all110": [
+    "anglewing"
+   ],
+   "t_all147": [
+    "witchywing"
+   ],
+   "t_all102": [
+    "daynightwing"
+   ],
+   "t_all101": [
+    "azure_wing"
+   ],
+   "t_all142": [
+    "moonlightrabbit"
+   ],
+   "t_all188": [
+    "whitewing"
+   ],
+   "t_all182": [
+    "battlepass1trinket"
+   ],
+   "t_all183": [
+    "battlepass2trinket"
+   ],
+   "t_all187": [
+    "battlepass4trinket"
+   ],
+   "t_all184": [
+    "battlepass3trinket"
+   ]
+  },
+  "accessory": {
+   "c_allhlw1": [
+    "cactonheadband"
+   ],
+   "c_allhlw2": [
+    "coconheadband"
+   ],
+   "c_allhlw4": [
+    "choppertrinket"
+   ]
+  }
+ }
+}
