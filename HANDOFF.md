@@ -15,10 +15,11 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   (`pipeline\wardrobe_skill_icons.py`) build on either PC.
 ## Video repo (either PC)
 
-- The rebuilt `wardrobe_dist` (2026-11-09, the piece menu) breaks the trailer script: `trailer_features.py` clicks
-  `#vmode` ("inspect", "download") and a tile's `.sk[data-sk="up"]`, both gone. Their replacements: a click on the
-  piece (or a right-click on the tile) opens `#pmenu`; its items are `.pm-item[data-a="view" | "up" | "png" | "glb"]`.
-  Fix it in a video session (that repo's rules).
+- **Retire the wardrobe trailer** (user 2026-11-10: "the trailer video is already published, you may delete everything
+  related to it to save space"), in a video session (that repo's rules): its frames `renders\wardrobe_trailer\` (home
+  PC only, the space; not on the office PC), `pipeline\trailer_*.py` + `test_trailer.py`, `plans\trailer_*.json`,
+  `plans\wardrobe_trailer_*.md`, `captions\wardrobe_trailer\`, `renders\yt_shorts\wardrobe_trailer\`; check `music_*.py`
+  and anything else only the trailer uses. The wardrobe no longer keeps `window.wardrobe` working for it.
 
 ## Next up (either PC; agreed at the office 2026-11-09)
 

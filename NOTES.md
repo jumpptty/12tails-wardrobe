@@ -17,8 +17,9 @@ from here. The split's design and plan: `plans\wardrobe_split_design.md`, `plans
 - Read only, from the sibling `12tails-video` folder: `outfits\`, `tex\faces_tto\`, `props\json\`, `props\tex\`,
   `tto_assets\`, `tot_assets\`; from the Bible repo (`D:\12tails`, office `C:\Users\Jump\Desktop\12tails`): the BB
   rip and the decompiles.
-- `wardrobe_dist\` (untracked) = the published copy (`pipeline\wardrobe_publish.py`). The video repo's trailer films
-  it and its skits read `wardrobe\data` (placements, the office's prop / face fallbacks): renaming either breaks them.
+- `wardrobe_dist\` (untracked) = the published copy (`pipeline\wardrobe_publish.py`); nothing outside reads it since the
+  trailer was retired (2026-11-10). The video repo's skits read `wardrobe\data` (placements, the office's prop / face
+  fallbacks): renaming that breaks them.
 - `tto_config\` (untracked): `wardrobe_placements.py`'s copies of TTO's placement tables.
 - `wardrobe\fx_cues\<cls>.json` (tracked): each class's skill effect / sound cues (`plans\fx_recipe.md`); the built
   effects are in `wardrobe\data\<cls>\fx.json`, `sfx\`, `data\fx\tex\`.
@@ -810,3 +811,28 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   fresh empty folder: 30 uploaded, 7,468 already there, version `56977780-5fe4-4940-a76d-de27b148ecd3`. Live:
   `data-d24944ba10`, the Wolf's `v_cry` / `v_hi` 200, `fx_cues/wolf.json` with the emote cues, Monkey's legendTrinket /
   legendTrinketR / partyWhistle / poseidonTrinket in props_trinkets.json. Either PC can now publish and deploy.
+- **2026-11-10, SFX / VFX toggles** (user: "make toggle SFX and VFX, SFX replacing the current audio icon"; style A of
+  four mocked, "SFX/VFX style A is the best"). Toolbar: text buttons SFX (was the speaker icon, `#sound`) and VFX
+  (`#vfx`), gold when on, grey + struck through when off (`.tb.fxt`), each remembered (`wardrobe.sound`,
+  `wardrobe.vfx`); Thai tooltips / toasts เสียงประกอบ, เอฟเฟกต์. VFX off clears the live effects and spawns none, but
+  an effect's own play-on-awake sounds still play (`fxSounds`; Cross Break with VFX off: voice + crossBreak sound, no
+  effect). The wider bar ran under the Bible logo on phones (at 360 px it covered ย้อนกลับ): at <= 400 px the gold
+  บันทึกภาพ keeps its camera alone (gaps 19 / 24 / 7 px at 430 / 390 / 360).
+- **2026-11-10, TTO guarded against casual copying** (user: "analyze whether it is hard to rip undownloadable assets
+  (TTO stuff) from my public deploys"; then "Go with your recc, I just want to stop casual copying, those who can
+  reverse engineer the page can already get the files they need from the offline game copy"). Found: the TTO lock only
+  hid buttons; every TTO texture was a plain public URL at full size, and `window.wardrobe.debug()` handed out the scene
+  (with GLTFExporter on the page: a .glb in a few console lines). Now: (1) the publish writes `if (navigator.webdriver)
+  window.wardrobe = {`, so only automation (Playwright: the checks) gets the hook; a visitor's browser has none (checked
+  with webdriver forced false: `typeof window.wardrobe` undefined, no errors). (2) `scramble()` in wardrobe_publish.py:
+  "TTOx" + bytes XOR a repeating key, for a released TTO item's own files: outfit `.bin` + colour textures, prop
+  textures (local copies), TTO faces; icons stay plain (tiles show them). The page's `dataBytes()` undoes any file with
+  the mark (SCR_MARK / SCR_KEY = SCRAMBLE_MARK / SCRAMBLE_KEY, a test holds them equal); `loadImage` now goes through it
+  for data pictures (object URLs, `BLOBS` for `<img>` tiles), `loadTex` replaces TextureLoader for prop textures, the
+  two `o_<name>.bin` fetches use it; TTO faces are decoded before their tiles draw (TTO_LOCK only). Tile right-click
+  already opens the piece menu, so the browser's "save image" never shows there. Left plain: prop meshes (inline in
+  props JSON), clips, effects, icons. Build: 7,499 files, +3.9 KB; Halloween outfit / sword / hat render from the
+  scrambled files, 43 / 43 face tiles; dist check and fx check errors []. Tests: scramble round trip + key match, the
+  released-TTO test checks the scrambled files. The trailer is retired (user: "the trailer video is already published,
+  you may delete everything related to it"): CLAUDE.md / NOTES no longer promise it `wardrobe_dist` or the hook; its
+  files in the video repo: HANDOFF.

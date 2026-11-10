@@ -134,6 +134,10 @@ def page_edits(data_dir, ui_dir):
         # sfx and vfx on the public deploy, we have finished Wolf"; until then the pilot was hidden: FX_ON false)
         # TTO's items are preview only online (user 2026-11-09): no skin download / upload, no 3D file
         ("TTO preview only", 'const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");', "const TTO_LOCK = true;", 1),
+        # the page's scripting hook (wardrobe.debug() hands out the whole scene, a few console lines from a .glb with TTO's
+        # pieces) only for automated browsers online: the checks (wardrobe_dist_check.py) run in Playwright, where
+        # navigator.webdriver is true; a visitor's browser never gets it (user 2026-11-10: "stop casual copying")
+        ("scripting hook", "window.wardrobe = {", "if (navigator.webdriver) window.wardrobe = {", 1),
     ]
 
 
@@ -554,6 +558,19 @@ def zero_filled(path):
     return len(head) > 0 and not any(head)
 
 
+# TTO's files online are scrambled (user 2026-11-10: "I just want to stop casual copying"): the mark, then the bytes XOR
+# a repeating key, so a saved file or a direct link opens as nothing. The page's dataBytes() undoes it (SCR_MARK /
+# SCR_KEY in index.html, the same two values; a test holds them equal). Anyone reading the page can undo it too: the
+# user accepts that ("those who can reverse engineer the page can already get the files from the offline game copy")
+SCRAMBLE_MARK, SCRAMBLE_KEY = b"TTOx", b"12tails-wardrobe-tto-preview-only"
+
+
+def scramble(data):
+    """SCRAMBLE_MARK + data XOR SCRAMBLE_KEY repeated (one big-integer XOR: fast on a 1 MB texture)."""
+    key = (SCRAMBLE_KEY * (len(data) // len(SCRAMBLE_KEY) + 1))[:len(data)]
+    return SCRAMBLE_MARK + (int.from_bytes(data, "little") ^ int.from_bytes(key, "little")).to_bytes(len(data), "little")
+
+
 def reborn_rip(bb_rip):
     """The Reborn rip beside the BB rip in the same Bible folder (<bible>\\RippedAssets_Reborn\\ExportedProject\\Assets\\
     Resources for <bible>\\RippedAssets\\ExportedProject\\Assets\\Resources), or None."""
@@ -588,11 +605,12 @@ class Run:
         self.candidates.append({"cls": cls, "kind": kind, "name": name, "reason": reason, "released": rel, **extra})
         return rel
 
-    def local_copy(self, rel):
-        """Copy a released TTO item's file from the local data; False when the data has no such file."""
+    def local_copy(self, rel, scrambled=False):
+        """Copy a released TTO item's file from the local data; False when the data has no such file. scrambled: the
+        item's own mesh or picture, written scramble()d (an icon stays plain: tiles show it as it is)."""
         if not (self.data / rel).is_file():
             return False
-        self.copy(rel)
+        self.copy(rel, scrambled)
         return True
 
     def drop(self, kind, name, reason):
@@ -611,10 +629,13 @@ class Run:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(obj, separators=(",", ":")), encoding="utf-8")
 
-    def copy(self, rel):
+    def copy(self, rel, scrambled=False):
         p = self.stage / rel
         p.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(self.data / rel, p)
+        if scrambled:
+            p.write_bytes(scramble((self.data / rel).read_bytes()))
+        else:
+            shutil.copy2(self.data / rel, p)
 
     def usable(self, bb_file):
         """bb_file, or BB's own copy of it when the rip's file can't be read: the office PC's rip has 52 zero-filled
@@ -685,7 +706,7 @@ class Run:
     def prop_texture(self, tex, local_ok=False):
         """None when props/tex/<tex> is written from BB's Assets/Texture2D (local_ok, a released TTO item: else from the
         local data's props/tex), else why not."""
-        if self._prop_tex.get(tex) and local_ok and self.local_copy(f"props/tex/{tex}"):
+        if self._prop_tex.get(tex) and local_ok and self.local_copy(f"props/tex/{tex}", scrambled=True):
             self._prop_tex[tex] = None
         if tex not in self._prop_tex:
             bb_file = self.bb.find(self.bb.texture2d, tex)
@@ -703,7 +724,7 @@ class Run:
                     dst.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(bb_file, dst)
                     self._prop_tex[tex] = None
-            if self._prop_tex[tex] and local_ok and self.local_copy(f"props/tex/{tex}"):
+            if self._prop_tex[tex] and local_ok and self.local_copy(f"props/tex/{tex}", scrambled=True):
                 self._prop_tex[tex] = None
         return self._prop_tex[tex]
 
@@ -729,11 +750,11 @@ def publish_outfits(run, cls):
         why = "TTO's own outfit (tto flag)" if o.get("tto") else run.bb.compare_outfit(cls, o, run.data / cls / f"o_{o['name']}.bin")
         if why and run.candidate(cls, "outfits", o["name"], why, icon=(icons.get(o["name"]) or {}).get("icon")):
             # released TTO: the local mesh and textures, every colour and edition the data has
-            colours = [c for c in o["colors"] if run.local_copy(f"{cls}/tex/{o['name']}{c}.webp")]
-            editions = {e: [c for c in cs if c in colours and run.local_copy(f"{cls}/tex/{o['name']}{c}{e}.webp")]
+            colours = [c for c in o["colors"] if run.local_copy(f"{cls}/tex/{o['name']}{c}.webp", scrambled=True)]
+            editions = {e: [c for c in cs if c in colours and run.local_copy(f"{cls}/tex/{o['name']}{c}{e}.webp", scrambled=True)]
                         for e, cs in (o.get("editions") or {}).items()}
             editions = {e: cs for e, cs in editions.items() if cs}
-            if not colours or not run.local_copy(f"{cls}/o_{o['name']}.bin"):
+            if not colours or not run.local_copy(f"{cls}/o_{o['name']}.bin", scrambled=True):
                 run.drop("outfits", name, "released TTO outfit, but its mesh or colour textures are not in the data")
                 continue
             out = {k: v for k, v in o.items() if k != "editions"} | {"colors": colours, "tto": True}
@@ -805,7 +826,7 @@ def publish_faces(run, cls, faces):
     for f in faces:
         rel, name = f"{cls}/faces/{f['n']}.webp", f"{cls}/{f['n']}"
         if f.get("tto"):
-            if run.candidate(cls, "faces", f["n"], "TTO's own face", default=f["n"] in legacy, icon=rel) and run.local_copy(rel):
+            if run.candidate(cls, "faces", f["n"], "TTO's own face", default=f["n"] in legacy, icon=rel) and run.local_copy(rel, scrambled=True):
                 kept.append(f)
                 keep_tto.append(f["n"])
             else:

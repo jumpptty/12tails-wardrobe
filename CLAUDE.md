@@ -32,7 +32,7 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 - Read the video folder's extracted files (`outfits\`, `tex\faces_tto\`, `props\json\`, `props\tex\`, `tto_assets\`,
   `tot_assets\`) and the Bible's rips; never write or commit in either. If a wardrobe change needs a fresh extraction
   (a new prop, a new outfit), say so: the extraction scripts belong to the video repo.
-- The video repo reads this one as its sibling: its trailer films `wardrobe_dist`, its skits read `wardrobe\data`
+- The video repo reads this one as its sibling (its trailer, published, was retired 2026-11-10): its skits read `wardrobe\data`
   (`placements.json`, `icons.json`, the office's prop and face fallbacks), its `extract_tto_props.py` reads
   `item_map.json`. Renaming or moving those breaks it: note any such change in NOTES.md and tell the user.
 - A session for video work runs in the video folder, one for wardrobe work here.

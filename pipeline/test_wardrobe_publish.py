@@ -52,13 +52,15 @@ const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
-      const t = texLoader.load(`${DATA}props/tex/${m.tex}`);
+      const t = loadTex(`${DATA}props/tex/${m.tex}`);
 $("shot").onclick = () => {};
 $("copy").onclick = async () => {
   const s = C.state;
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว · วางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
 function err(e) { console.error(e); }
+window.wardrobe = {
+};
 </script>
 </body>
 </html>
@@ -106,6 +108,12 @@ def recolor(w, n, shade=0, name=None):
     dst = w.src / "ui" / (name or f"recolor{n}.webp")
     dst.parent.mkdir(parents=True, exist_ok=True)
     big.save(dst, "WEBP", quality=90)
+
+
+def unscramble(b):
+    """The page's dataBytes() in Python: drop the mark, XOR with the key again."""
+    body, k = b[4:], wp.SCRAMBLE_KEY
+    return bytes(x ^ k[i % len(k)] for i, x in enumerate(body))
 
 
 def mesh_yaml(name, positions, tris):
@@ -760,7 +768,7 @@ class PublishTest(unittest.TestCase):
                 self.dropped.append(name)
             def candidate(self, cls, kind, name, reason, default=False, **extra):    # no released list: the old rule
                 return default
-            def local_copy(self, rel):
+            def local_copy(self, rel, scrambled=False):
                 self.copy(rel)
                 return True
         faces = [{"n": n, "tto": True} for n in (30, 31, 32, 33)]
@@ -800,7 +808,16 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(cands[("outfits", "ttoGown")], True)
         self.assertEqual(cands[("trinkets", "ttoWing")], False)
         self.assertEqual(cands[("faces", "30")], False)
-        self.assertIn("const TTO_LOCK = true;", (w.out / "index.html").read_text(encoding="utf-8"))
+        html = (w.out / "index.html").read_text(encoding="utf-8")
+        self.assertIn("const TTO_LOCK = true;", html)
+        self.assertIn("if (navigator.webdriver) window.wardrobe = {", html)       # no scripting hook for visitors
+        # TTO's own mesh and pictures are scrambled (user 2026-11-10: casual copying), undone to the data's bytes; icons stay
+        for rel in ("cat/o_ttoGown.bin", "cat/tex/ttoGown1.webp", "props/tex/Cat_ttoFlag.png", "cat/faces/31.webp"):
+            got = (d / rel).read_bytes()
+            self.assertEqual(got[:4], wp.SCRAMBLE_MARK, rel)
+            self.assertEqual(unscramble(got), (w.data / rel).read_bytes(), rel)
+        self.assertNotEqual((d / "icons" / "armor" / "cat99.webp").read_bytes()[:4], wp.SCRAMBLE_MARK)
+        self.assertNotEqual((d / "cat" / "faces" / "0.webp").read_bytes()[:4], wp.SCRAMBLE_MARK)    # BB's face: plain
         self.assertEqual(wp.check(w.out), [])
 
     def test_released_list_with_an_unknown_kind_fails_loudly(self):
@@ -1006,6 +1023,15 @@ class PublishTest(unittest.TestCase):
         with self.assertRaises(wp.BBDataError):
             wp.read_mesh_shape(p)
 
+    def test_scramble_key_matches_the_page(self):
+        """The page undoes scramble() with its own copy of the mark and key (index.html SCR_MARK / SCR_KEY)."""
+        page = (Path(__file__).resolve().parents[1] / "wardrobe" / "index.html").read_text(encoding="utf-8")
+        self.assertIn(f'SCR_KEY = new TextEncoder().encode("{wp.SCRAMBLE_KEY.decode()}")', page)
+        self.assertIn(f"const SCR_MARK = [{', '.join(map(str, wp.SCRAMBLE_MARK))}]", page)
+        data = bytes(range(256)) * 5 + bytes(2)
+        self.assertEqual(unscramble(wp.scramble(data)), data)
+        self.assertEqual(unscramble(wp.scramble(b"")), b"")
+
     def test_reborn_clip_keys_read_like_bbs(self):
         """Reborn's clips (a later Unity) open each key with its serializedVersion, time on the next line: the keys read
         the same as BB's `- time:` form."""
@@ -1030,7 +1056,7 @@ class PublishTest(unittest.TestCase):
                 w.publish()
                 html = (w.out / "index.html").read_text(encoding="utf-8")
                 self.assertNotIn("../", html)
-                self.assertIn("texLoader.load(`${DATA}props/tex/${m.tex}`)", html)
+                self.assertIn("loadTex(`${DATA}props/tex/${m.tex}`)", html)
                 self.assertFalse((w.out / "fonts").exists())
                 knife = data_dir(w) / "props" / "tex" / "Cat_knife.png"
                 self.assertEqual(knife.read_bytes(), (w.assets / "Texture2D" / "Cat_knife.png").read_bytes())
@@ -1038,7 +1064,7 @@ class PublishTest(unittest.TestCase):
     def test_page_with_old_prop_path_fails_loudly(self):
         """A page that still loads prop textures from ../props/tex/ (before the 2026-11-09 split) would 404 online."""
         w = self.world()
-        w.write_page(PAGE.replace("texLoader.load(`${DATA}props/tex/${m.tex}`)", "texLoader.load(`../props/tex/${m.tex}`)"))
+        w.write_page(PAGE.replace("loadTex(`${DATA}props/tex/${m.tex}`)", "loadTex(`../props/tex/${m.tex}`)"))
         with self.assertRaises(wp.PublishError) as e:
             w.publish()
         self.assertIn("'../'", str(e.exception))

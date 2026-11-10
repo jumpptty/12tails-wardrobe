@@ -93,7 +93,10 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 .tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 13px 0 10px; }
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
-#sound[aria-pressed=false] .snd-on, #sound[aria-pressed=true] .snd-off { display: none; }
+/* the SFX / VFX toggles (user 2026-11-10: "make toggle SFX and VFX, SFX replacing the current audio icon"): gold when
+   on, struck through when off */
+.tb.fxt { font: 600 12.5px/1 var(--mono); letter-spacing: .04em; padding: 0 8px; }
+.tb.fxt[aria-pressed=false] { color: var(--muted); text-decoration: line-through; }
 .tb[hidden] { display: none; }
 .tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
@@ -420,6 +423,9 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
 }
 /* the narrowest phones (360 px): the logo chip a little smaller so it clears the toolbar and its ชมชิ้นส่วน toggle (task 16) */
 @media (max-width: 370px) { .brand { font-size: 12px; padding: 0 8px 0 7px; } }
+/* the toolbar grew a VFX button (2026-11-10): on a narrow phone the gold บันทึกภาพ keeps its camera alone, so the bar
+   stays clear of the Bible logo (at 360 px it covered ย้อนกลับ) */
+@media (max-width: 400px) { .bar .l-short { display: none; } .bar .tb.primary { padding: 0 10px; } }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -438,7 +444,8 @@ main[data-fxbg=spot]::before { background: radial-gradient(ellipse 34% 52% at 50
       <button type="button" class="tb" id="redo" title="ทำซ้ำ (Ctrl+Y)" aria-label="ทำซ้ำ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb" id="resetCam" title="มุมกล้องเริ่มต้น" aria-label="มุมกล้องเริ่มต้น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="tb" id="sound" title="เสียงท่าทาง" aria-label="เสียงท่าทาง" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path class="snd-on" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="snd-off" d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <button type="button" class="tb fxt" id="sound" title="เสียงประกอบท่าทาง (SFX)" aria-label="เสียงประกอบ SFX" aria-pressed="true">SFX</button>
+      <button type="button" class="tb fxt" id="vfx" title="เอฟเฟกต์ท่าทาง (VFX)" aria-label="เอฟเฟกต์ VFX" aria-pressed="true">VFX</button>
       <span class="tb-sep" aria-hidden="true"></span>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
@@ -562,8 +569,27 @@ function toast(t, ms = 1500) { const el = $("toast"); el.innerHTML = esc(t).repl
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
-const imgCache = {};
-const loadImage = src => imgCache[src] || (imgCache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = src; }));
+// TTO's files are scrambled in the public copy (wardrobe_publish.py scramble(): the mark "TTOx", then the bytes XOR a
+// repeating key), so a saved file or a direct link opens as nothing (user 2026-11-10: "I just want to stop casual
+// copying"; reading this code undoes it, which the user accepts). The data files the page decodes pass here; one without
+// the mark (all of BB's, and every file of the local copy) comes back as it is. SCR_KEY = the publish's SCRAMBLE_KEY
+const SCR_MARK = [84, 84, 79, 120], SCR_KEY = new TextEncoder().encode("12tails-wardrobe-tto-preview-only");
+async function dataBytes(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url} ${r.status}`);
+  const b = new Uint8Array(await r.arrayBuffer());
+  if (b.length < 4 || SCR_MARK.some((m, i) => b[i] !== m)) return b;
+  const o = b.slice(4);
+  for (let i = 0; i < o.length; i++) o[i] ^= SCR_KEY[i % SCR_KEY.length];
+  return o;
+}
+const MIME = { webp: "image/webp", png: "image/png", jpg: "image/jpeg" };
+const imgCache = {}, BLOBS = {};            // BLOBS: a data picture's object URL by its path, for <img> tiles (pic)
+const loadImage = src => imgCache[src] ||= (src.startsWith(DATA)
+  ? dataBytes(src).then(b => (BLOBS[src] = URL.createObjectURL(new Blob([b], { type: MIME[src.split(".").pop().toLowerCase()] || "" }))))
+  : Promise.resolve(src)).then(u => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = u; }));
+// a data texture through loadImage (a scrambled one too); its picture arrives later, as with TextureLoader
+const loadTex = url => { const t = new THREE.Texture(); loadImage(url).then(i => { t.image = i; t.needsUpdate = true; }, e => console.warn(e)); return t; };
 const texLoader = new THREE.TextureLoader();
 
 // ---------- class ----------
@@ -592,6 +618,8 @@ async function loadClass(cls) {
   C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null, seq: null, chains: null };
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
+  // TTO's faces are scrambled online: decoded before their tiles draw (pic takes the object URL)
+  if (TTO_LOCK) await Promise.all(C.faces.filter(f => f.tto).map(f => loadImage(faceSrc(f.n)).catch(() => null)));
   const L = saved[cls] || {};
   // a class with no saved loadout starts in its standard outfit (R70, user 2026-11-08: "back to standard outfit"): colour 1,
   // the class's default face, nothing else worn (the Cat keeps its hood); a saved loadout is used as it is. A saved face the
@@ -656,9 +684,7 @@ async function setOutfit(name, color, edition = C.state.edition) {
   if (!o.colors.includes(color)) color = o.colors[0];
   edition = edOf(o, color, edition);
   status("กำลังใส่ชุด " + humanize(name) + "…");
-  const res = await fetch(`${DATA}${C.cls}/o_${name}.bin`);
-  if (!res.ok) throw new Error(`o_${name}.bin ${res.status}`);
-  const buf = await res.arrayBuffer();
+  const buf = (await dataBytes(`${DATA}${C.cls}/o_${name}.bin`)).buffer;
   const tex = await composeTexture(o, color, C.state.face, edition);
   for (const m of C.meshes) { C.tri.remove(m); m.geometry.dispose(); }
   C.meshes = [];
@@ -739,7 +765,7 @@ function propMaterials(list) {
   return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
     const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(m.color[0], m.color[1], m.color[2]), side: THREE.DoubleSide, alphaTest: 0.5 });
     if (m.tex) {
-      const t = texLoader.load(`${DATA}props/tex/${m.tex}`);
+      const t = loadTex(`${DATA}props/tex/${m.tex}`);
       t.colorSpace = THREE.SRGBColorSpace;
       // Unity's default wrap is Repeat; three.js clamps. Day-Night Wing's UVs run v -1..0, and clamped they
       // smeared the edge row over the wing (user 2026-11-04: "this texture was applied correct in the game")
@@ -1481,9 +1507,9 @@ async function makePiece(slot, item, { pose = "idle", face = null } = {}) {   //
   const K = C, kind = kindOf(slot), own = [], skinned = [];
   let object, view = null, R = null, outfitTex = null, tag = "", mixer = null, propMixer = null;
   if (kind === "outfits") {
-    const o = K.outfits.find(x => x.name === item), res = o && await fetch(`${DATA}${K.cls}/o_${item}.bin`);
-    if (!res?.ok) throw new Error(`o_${item}.bin ${res?.status}`);
-    const buf = await res.arrayBuffer();
+    const o = K.outfits.find(x => x.name === item);
+    if (!o) throw new Error(`o_${item}.bin: no such outfit`);
+    const buf = (await dataBytes(`${DATA}${K.cls}/o_${item}.bin`)).buffer;
     if (o.colors.length) {                 // the texture as worn (composeTexture): colour, edition or skin, and the face
       const color = o.colors.includes(K.state.color) ? K.state.color : o.colors[0];
       outfitTex = await composeTexture(o, color, face ?? K.state.face, K.state.edition); own.push(outfitTex);
@@ -2502,7 +2528,8 @@ function moveIcon(name) {
 // faces: the overlay webp cropped to where this class's faces draw (ui.json faceBox, in the overlay's 256 px)
 const faceView = () => { const b = UI.faceBox?.[C.cls];
   return b ? ` style="object-view-box: inset(${b[1]}px ${256 - b[2]}px ${256 - b[3]}px ${b[0]}px)"` : ""; };
-const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" src="${src.startsWith(DATA) || src.startsWith(UI_DIR) ? src : DATA + src}"${face ? faceView() : ""}>`
+const picURL = src => { const u = src.startsWith(DATA) || src.startsWith(UI_DIR) ? src : DATA + src; return BLOBS[u] || u; };   // a decoded TTO face: its object URL
+const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" src="${picURL(src)}"${face ? faceView() : ""}>`
   : fb;
 // ท่าสกิล in the class guide's ring format (user 2026-11-09: "i want all skills to use circle frame too like our class
 // guide format"; "for Wolf animations that might come from various skills, display all their skill icons"): the Bible's
@@ -3401,13 +3428,24 @@ function fxStart(clip, step = 0) {
   for (const c of FX.cues) if (c.kind !== "fx" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
 }
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
-// the เสียงท่าทาง button: on by default, remembered in this browser; the first click or key press starts the audio
-const sndBtn = $("sound"), syncSound = () => sndBtn.setAttribute("aria-pressed", soundOn);
+// the SFX and VFX buttons: on by default, remembered in this browser; the first click or key press starts the audio.
+// VFX off: no effect is drawn (the live ones go at once), but an effect's own sound still plays with SFX on
+let vfxOn = true;
+try { vfxOn = localStorage.getItem("wardrobe.vfx") !== "0"; } catch (e) {}
+const sndBtn = $("sound"), vfxBtn = $("vfx");
+const syncSound = () => { sndBtn.setAttribute("aria-pressed", soundOn); vfxBtn.setAttribute("aria-pressed", vfxOn); };
 sndBtn.onclick = () => {
-  soundOn = !soundOn; syncSound(); toast(soundOn ? "เปิดเสียงท่าทาง" : "ปิดเสียงท่าทาง");
+  soundOn = !soundOn; syncSound(); toast(soundOn ? "เปิดเสียงประกอบ" : "ปิดเสียงประกอบ");
   try { localStorage.setItem("wardrobe.sound", soundOn ? "1" : "0"); } catch (e) {}
 };
+vfxBtn.onclick = () => {
+  vfxOn = !vfxOn; syncSound(); toast(vfxOn ? "เปิดเอฟเฟกต์" : "ปิดเอฟเฟกต์");
+  if (!vfxOn) fxClear();
+  try { localStorage.setItem("wardrobe.vfx", vfxOn ? "1" : "0"); } catch (e) {}
+};
 syncSound();
+// an effect's sounds without the effect (VFX off): its play-on-awake AudioSources, as the Fx constructor plays them
+const fxSounds = (cls, def) => def.nodes.forEach(n => n.comps.forEach(c => c.type === "AudioSource" && c.playOnAwake && Sound.play(cls, c.clip, c.volume)));
 for (const ev of ["pointerdown", "keydown"]) addEventListener(ev, () => Sound.unlock(), { capture: true });
 function fxTick(dt) {
   if (!C) return;
@@ -3420,6 +3458,7 @@ function fxTick(dt) {
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
+      if (!vfxOn) return fxSounds(cls, d.effects[c.name]);
       const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error);
