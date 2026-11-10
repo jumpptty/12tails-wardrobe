@@ -917,3 +917,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `wardrobe_dist_check.py` errors []. Deployed from a fresh empty folder: version
   `c58df635-d5d5-47a0-be6f-9e3b36481bf2`, live `data-f8b8ebe61a`, the bg / vfx buttons, fxparts alphatimer / sheep /
   tto_sheep and fx_cues/sheep.json 200, the old data folder 404.
+- **2026-11-10, the Penguin's research stopped at 98 % of the weekly limit** (user: "use workflows to do the next
+  class, Penguin"; the usage guard, CLAUDE.md, stopped it). Workflow `penguin-fx-research` (six researchers, then three
+  checkers; same prompts as the Sheep's, with the Sheep / Wolf decisions applied by analogy and only new questions
+  raised): **finished**: own_skills (`plans/fx_penguin/own_skills.md`, not yet verified); **written but its agent never
+  returned**: tto (`plans/fx_penguin/tto.md`, maybe incomplete, not verified); **not started writing**: attacks_emotes,
+  cast_a, cast_b, parts; no checker ran. The workflow's script is in this session's folder only; HANDOFF has the
+  continuation (re-run the four, check tto.md, then the three checkers).

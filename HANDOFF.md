@@ -28,6 +28,20 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   install decrypted 2026-11-10; the 18 Wolf TTO effects come out identical). After a TTO patch: decrypt again into a
   new date (NOTES.md 2026-11-10 "TTO bundles at the office").
 
+## Either PC
+
+- **Continue the Penguin's effects research** (stopped at 98 % of the weekly limit, 2026-11-10; NOTES.md "the
+  Penguin's research stopped"). Done: `plans/fx_penguin/own_skills.md`. Possibly incomplete: `plans/fx_penguin/tto.md`
+  (its agent never returned: read its end; re-run its part if it stops short). Still to write: `attacks_emotes.md`
+  (Normal / Charge Attack, MP Transfer on nAttack1, activateIcon1 on cAttack2, emotes, KO), `cast_a.md` (the Cast
+  channel + cast3 skills manaMissile, manaBurn, fallingComets, manaVortex, meteora, frozenBlast, arcticWind,
+  iceShield), `cast_b.md` (iceBlock, snowMan, tornado, typhoon, absoluteZero, blizzard, snowBall, cosmicRift, Cosmic
+  Friday), `parts.md` (Penguin_tornado, _typhoon, _arcticEmperor, _cosmicFriday, _iceBlock, _nAttack + anything drawn
+  wrongly). Then three checkers (attacks_emotes + own_skills, cast_a + cast_b, tto + parts) re-trace and fix in place.
+  Same method as the Sheep's (`plans/fx_sheep/*.md` and its decisions apply by analogy; ask the user only new
+  questions); then the build workflow as the Sheep's (NOTES.md "the Sheep's effects: built and cued"). Start the usage
+  guard first.
+
 ## Video repo (either PC)
 
 - **Retire the wardrobe trailer** (user 2026-11-10: "the trailer video is already published, you may delete everything
