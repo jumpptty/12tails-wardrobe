@@ -770,3 +770,7 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   checkout: core.autocrlf is true here, and the publish hashes the data's bytes); `test_repo_rules` checks both.
   History grows with every data rebuild: if the repo gets heavy, split the data into its own repo then. The office's
   first pull needs its untracked data moved aside (HANDOFF "Office PC").
+- **2026-11-10, the office's first pull with the data in git**: a plain `git pull` (b98e03e..1bb66aa) went through with
+  the office's old `wardrobe\data` still in place, no Move-Item needed: it was ignored before the pull, and git
+  overwrites ignored files without asking. `git status` clean; 8,029 tracked data files plus the 52 of `bb_rip_fix`
+  (still there, still ignored); `wardrobe_fx_check.py --cls wolf --files-only`: no problems.

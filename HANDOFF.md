@@ -12,17 +12,6 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Office PC
 
-- **Pick up the home PC's work, data included: `wardrobe\data` is in git now** (2026-11-10; the user: "make sure I can
-  pull from work PC and continue working on the wardrobe", then "one repo for now"). The office's own `wardrobe\data`
-  is untracked there, so `git pull` would refuse to overwrite it. Once, in PowerShell:
-  `cd C:\work\12tails-wardrobe`
-  `Move-Item wardrobe\data wardrobe_data_old` (git ignores it there)
-  `git pull`
-  `Move-Item wardrobe_data_old\bb_rip_fix wardrobe\data\bb_rip_fix` (the office's repair of its damaged rip; ignored by
-  git; skip if it isn't there)
-  Check: `git status` clean, run `wardrobe.cmd`, pick the Wolf, play Cross Break with เสียงท่าทาง on. Delete
-  `wardrobe_data_old` once happy. From now on a plain `git pull` brings the data; the Drive tar on the home Desktop
-  (`12tails-wardrobe-transfer`) is no longer needed.
 - The TTO effects (`pipeline\wardrobe_fx_tto.py`) build at home only (it reads the video folder's
   `tto_assets\2026-11-04`); the BB effects (`pipeline\wardrobe_fx.py <cls>`) and the skill icons
   (`pipeline\wardrobe_skill_icons.py`) build on either PC.
