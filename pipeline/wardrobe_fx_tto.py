@@ -4,7 +4,8 @@ read only) with UnityPy, in the same JSON shape as pipeline/wardrobe_fx.py's BB 
 (tto.md 4.1): the catalog address is exactly what the game loads (gameassets/characters/heroes/<cls>/effects/<name>,
 BaseHero::ArcanaLoad, TTO1102:Wolf::Row6Spawn@0x1F0F050), so the default style never gets mixed up with the Ronin arcana
 copy (.../arcana/ronin/effects/<name>, which AssetRipper flattened into X / X_0 at random); and every object reads with a
-full type tree (no byte layouts). The office PC has no TTO bundles: build at home (same limit as wardrobe_data.py).
+full type tree (no byte layouts). The office PC decrypts its own TTO install into <repo>/tto_assets/<date> (ASSETS below),
+so both PCs build.
 
   uv run --no-project --with UnityPy --with pillow --with imageio-ffmpeg python -I pipeline/wardrobe_fx_tto.py wolf
 builds the class's TTO effects: SKILL_FX[cls] (every prefab its TTO skills spawn) plus every "tto/<prefab>" fx cue in
@@ -28,6 +29,7 @@ left-handed space (the page mirrors, tto.md 4.4). Components:
   hands mats[0] to the part)
 """
 import argparse
+import glob
 import importlib.util
 import json
 import math
@@ -41,7 +43,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA = os.path.join(ROOT, "wardrobe", "data")
 VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")          # extracted inputs, read only (CLAUDE.md)
-ASSETS = os.path.join(VIDEO, "tto_assets", "2026-11-04")
+# the video folder's bundles (home), else this repo's own decrypted copy, the newest date (office 2026-11-10: the TTO
+# install's 538 bundles through the Bible's tools/bundle_decrypt.js into <repo>/tto_assets/<date>/dec + catalog.bin,
+# git-ignored; after a TTO patch decrypt again into a new date)
+ASSETS = next((p for p in [os.path.join(VIDEO, "tto_assets", "2026-11-04")]
+               + sorted(glob.glob(os.path.join(ROOT, "tto_assets", "*", "catalog.bin")), reverse=True)
+               if os.path.exists(p)), os.path.join(VIDEO, "tto_assets", "2026-11-04"))
+ASSETS = os.path.dirname(ASSETS) if ASSETS.endswith("catalog.bin") else ASSETS
 BIBLE = next((p for p in (r"D:\12tails", r"C:\Users\Jump\Desktop\12tails") if os.path.isdir(p)), r"D:\12tails")
 AA_CATALOG = os.path.join(BIBLE, "DecompiledSource_TTO_2026-11-02", "tools", "aa_catalog.py")
 

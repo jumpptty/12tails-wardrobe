@@ -40,9 +40,10 @@ at 1.2 s (:23896).
 ## 2. Check every effect is buildable
 
 Look the effect up in `plans/fx_inventory.md` ("Per effect", your class): **ready** = the page builds all its parts and
-`wardrobe_fx.py` extracts it. An effect that "needs" a part (VortexEmitter, Animation, SkinnedMeshRenderer, ...) is left
-out of the cues for now: write `left out: <name> needs <part>` in `why`, so it is added when the part is built. Don't
-build a part inside a skill job. `pipeline/wardrobe_fx_inventory.py` rewrites the inventory (after a part is built, add
+`wardrobe_fx.py` extracts it. An effect that "needs" a part (AlphaTimer, ProjectileControl, a class script, ...) gets
+that part BUILT before the class is done (user 2026-11-10: "when you need parts the page don't have yet, you have to
+make it work, we are top quality!"): a parts stage, one agent per part with its own files (`plans/fx_wolf/build_rules.md`),
+then the cues. A single-skill job that meets one notes it for that stage instead of building it inline. `pipeline/wardrobe_fx_inventory.py` rewrites the inventory (after a part is built, add
 it to its `BUILT` and run it again).
 
 ## 3. Write the cues

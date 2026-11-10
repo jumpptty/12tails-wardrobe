@@ -841,3 +841,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `3d998061-2f7e-4fe2-8c79-393accb8b06e`. Live: `data-086254db3e`, the gated hook, `#vfx`; wolf/o_halloween.bin,
   tex/halloween1.webp, faces/23.webp start with "TTOx", BB's standard1.webp is plain RIFF; the previous data folders
   (data-d24944ba10, data-5b9c3cebb9) 404, so no plain TTO copy is left at an old address.
+- **2026-11-10, TTO bundles at the office** (user: "TTO skill effects build is here in work PC too no? If not you can
+  just rip it like always"). The office has TTO installed (`%LOCALAPPDATA%\TailsTopia\game\TailsTopia\
+  TailsTopiaOnline_Data\StreamingAssets\aa`, patch of 2026-11-09: 538 bundles, 1.7 GB). Decrypted all with the Bible's
+  `DecompiledSource_TTO_2026-11-02\tools\bundle_decrypt.js` (key fingerprint unchanged) into `tto_assets\2026-11-09\dec`
+  + `catalog.bin` in this repo (top-level, so git-ignored by the whitelist; never in the video folder).
+  `wardrobe_fx_tto.py`'s ASSETS: the video folder's 2026-11-04 if present, else the newest `tto_assets\<date>` here.
+  Probe of the Wolf's 18 TTO effects from it: all identical to the home build. After a TTO patch: decrypt into a new date.

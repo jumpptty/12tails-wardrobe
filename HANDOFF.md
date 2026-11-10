@@ -10,9 +10,11 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Office PC
 
-- The TTO effects (`pipeline\wardrobe_fx_tto.py`) build at home only (it reads the video folder's
-  `tto_assets\2026-11-04`); the BB effects (`pipeline\wardrobe_fx.py <cls>`) and the skill icons
-  (`pipeline\wardrobe_skill_icons.py`) build on either PC.
+- Every effect builds on either PC now: TTO's (`pipeline\wardrobe_fx_tto.py`) reads the video folder's
+  `tto_assets\2026-11-04` at home and, at the office, this repo's own git-ignored `tto_assets\2026-11-09` (the TTO
+  install decrypted 2026-11-10; the 18 Wolf TTO effects come out identical). After a TTO patch: decrypt again into a
+  new date (NOTES.md 2026-11-10 "TTO bundles at the office").
+
 ## Video repo (either PC)
 
 - **Retire the wardrobe trailer** (user 2026-11-10: "the trailer video is already published, you may delete everything
