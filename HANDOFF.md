@@ -14,6 +14,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py sheep`, then the same with `pipeline/wardrobe_fx_tto.py
   sheep`, and `pipeline/wardrobe_fx.py wolf --fx deadEffect` (not a full Wolf rebuild: NOTES.md 2026-11-10).
 
+- The usage guard came from the office (CLAUDE.md "Usage guard", `pipeline\usage_watch.py`): nothing to install. Its
+  first run at home may be blocked by the safety check (it reads the saved Claude login); the user allowed it on
+  2026-11-10, so ask them once and run it. Check: `py -3 -I pipeline/usage_watch.py --once` prints the weekly %.
+
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 

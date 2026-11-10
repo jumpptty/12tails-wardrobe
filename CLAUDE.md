@@ -61,6 +61,10 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   Measure the text with its วรรณยุกต์ and สระ (่ ้ ๊ ๋, ิ ี ึ ื ั ็ ์ above, ุ ู below), assume they may be there
   when the text can change, and offset to match; check with a screenshot. Method: NOTES.md "Thai text: centring by eye".
 - When a look is being picked, mock several variants side by side so the user picks visually.
+- Usage guard (user 2026-11-10): beside every workflow (or other long agent run) start `py -3 -I pipeline/usage_watch.py
+  98 60` in the background; when it prints REACHED (the account's weekly usage at 98 %), stop the workflow and resume it
+  after the reset (Workflow resumeFromRunId). `--once` prints the current %. It reads Anthropic's usage endpoint with the
+  saved Claude login; the user allowed that ("Allow it"), so if the safety check blocks the first run, say so and ask.
 - Game behaviour (skill clips, their order and timing): read the Bible first, `12t_reference/<class>-skill-reference.md`
   and the skill cards in `12t_projects/bible/index.html`; the decompiled code only for what they don't cover
   (`pipeline\clip_calls.js`, `clip_flow.js`). A new game-mechanic finding belongs in the Bible's reference too: tell the
