@@ -33,8 +33,14 @@ RIP = os.path.join(BIBLE, r"RippedAssets\ExportedProject\Assets\Resources\gameas
 # Unity 3.5's built-in shaders by their id in "unity default resources": the Particle shader files in alphabetical order
 # from 200 (Add, AddMultiply, AddSmooth, Alpha Blend ...), which the materials bear out (2026-11-09, 1,200 of them):
 # every 200 material saves a _TintColor (Additive has one), 202's mostly don't (Additive (Soft) has none) and its
-# textures are 75% alpha-less on black, 203's carry alpha 97% of the time (Alpha Blended); 7 = Diffuse
-BUILTIN_BLEND = {200: "add", 202: "addsoft", 203: "alpha", 7: "opaque"}
+# textures are 75% alpha-less on black, 203's carry alpha 97% of the time (Alpha Blended); 7 = Diffuse. The same rule one
+# step on (plans/fx_penguin/parts.md "Read this first" 4, 2026-11-10; medium sure, the ids are not in the game files):
+# 205 = Particles/Multiply (its 24 materials in the rip are BlackTrail, ShadowLine1-4, Smoke4_multiply ...: dark on white),
+# so 206 = Particles/Multiply (Double) (15 materials: the Penguin's fallingComet1 and giantComet comet bodies) and 207 =
+# Particles/Alpha Blended Premultiply (13: every class's <cls>_dead, netherBane, fireWall). The page draws them in
+# fxMaterial (wardrobe/index.html: "multiply2", "premul"). 205 is left out until a cued effect uses it (none yet): an
+# unknown id still falls back to "add"
+BUILTIN_BLEND = {200: "add", 202: "addsoft", 203: "alpha", 7: "opaque", 206: "multiply2", 207: "premul"}
 
 # serialized fields of the game's scripts, in declaration order: (name, type); f float, i int, b bool (1 byte, then
 # aligned to 4), v2 / v3 / c (Color) / q, r (a reference: fileID + pathID, 8 bytes in Unity 3.5)
@@ -97,6 +103,38 @@ LAYOUTS.update({
     "Sheep_seal": [("mSealType", "i")],             # Sheep_seal.cs:348 (0 attack, 1 defense, 2 earth, 3 heaven)
     "Sheep_nAttack": [], "Sheep_homingLight": [], "Sheep_cAttack": [], "Sheep_edenSanctuary": [],
 })
+# the Penguin's parts (plans/fx_penguin/parts.md, 2026-11-10; proved by --probe on this PC's BB data, read only,
+# checks/fx_penguin_build/page_pipeline/layouts.txt): every Penguin_tornado / _typhoon (3 each), the arcticEmperor and the
+# iceBlock decode and use up exactly their bytes; the other Penguin scripts keep every field private (0 field bytes)
+LAYOUTS.update({
+    # Penguin_tornado.cs:605, :635, :638 / Penguin_typhoon.cs:515, :557, :560 (28 bytes): mLv = the hit radius (m) and
+    # the steering force 11 - mLv; nPosition / nVelocity = the owner's network copy (0 in the prefab)
+    "Penguin_tornado": [("mLv", "i"), ("nPosition", "v3"), ("nVelocity", "v3")],
+    "Penguin_typhoon": [("mLv", "i"), ("nPosition", "v3"), ("nVelocity", "v3")],
+    # Penguin_arcticEmperor.cs:225-246 (32 bytes): AlphaTimer's fade on _TintColor.a plus a second one on _Emission.a
+    "Penguin_arcticEmperor": [("MinAlpha", "f"), ("MaxAlpha", "f"), ("MinEmission", "f"), ("MaxEmission", "f"),
+                              ("FadeDelay", "f"), ("FadeEaseIn", "f"), ("FadeMiddle", "f"), ("FadeEaseOut", "f")],
+    "Penguin_iceBlock": [("mLife", "i"), ("mLv", "i")],     # Penguin_iceBlock.cs:264, :267 (8 bytes); Init overwrites both
+    "Penguin_cosmicFriday": [], "Penguin_nAttack": [], "Penguin_manaMissile": [], "Penguin_snowMan": [],
+})
+# the Mana Vortex summon (Resources characters/elementals/manavortex/ManaVortex, Penguin.cs:10421; plans/fx_penguin/cast_a.md
+# "Read this first" 2; checks/fx_penguin_build/page_pipeline/vortex.txt): its BoltEmitter (BoltEmitter.cs:499-553, 152
+# bytes: the lightning from the node to TargetObject, drawn by the page's boltEmitter) and ManaVortex (ManaVortex.cs:540-549,
+# 28 bytes: data only; the page's ManaVortex part plays its create / root clips)
+LAYOUTS.update({
+    "BoltEmitter": [("TargetPosition", "v3"), ("TargetObject", "r"), ("TargetCollider", "r"), ("Height", "f"),
+                    ("StartWidth", "f"), ("EndWidth", "f"), ("Width1", "f"), ("Width2", "f"), ("Width3", "f"),
+                    ("Width4", "f"), ("Width5", "f"), ("rndWidth", "f"), ("rndZigg", "f"), ("Color1", "c"), ("Color2", "c"),
+                    ("Color3", "c"), ("Color4", "c"), ("Color5", "c"), ("BoltCount", "i")],
+    "ManaVortex": [("novaFlare", "r"), ("mCreator", "r"), ("mCreatorChar", "r"), ("isSummon", "b")],
+})
+# a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
+# state, nothing an effect draws)
+NOT_DRAWN = {"CharacterControl"}
+# effects the hero's code takes from another folder than heroes/<cls>/effects (tried in this order after it): Nova Flare's
+# blast is the Mana Vortex's field (ManaVortex.cs:540, Resources characters/elementals/manavortex/effects/novaFlare;
+# plans/fx_penguin/own_skills.md "Read this first" 1); the Mana Vortex summon itself (the cue name manaVortex)
+EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effects", "gameassets/characters/elementals/manavortex"]}
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -205,20 +243,28 @@ def material(game, pptr, base, mats, texs):
     colors = {key(k): [v["r"], v["g"], v["b"], v["a"]] for k, v in props["m_Colors"]}
     mats[name] = {"blend": blend, "tex": tex, "scale": scale, "offset": offset,
                   "tint": colors.get("_TintColor"), "color": colors.get("_Color"),
-                  # FX/Phoenix's Emission [_Emission] (rip Assets/Resources/gameassets/shader/Phoenix.shader; fxparts/mesh.js)
+                  # FX/Phoenix's Emission [_Emission] (rip Assets/Resources/gameassets/shader/Phoenix.shader; fxparts/mesh.js),
+                  # Transparent/AdditiveSaturate's pass-2 glow too (AdditiveSaturate.shader:27-43)
                   "emission": colors.get("_Emission")}
+    # DiffuseAmbient's Ambient [_Ambient] (rip shader/diffuseambient.shader:1-19; the Penguin's snowMan), only when saved
+    # (no other material has it: the other materials' data stays as it was)
+    if colors.get("_Ambient") is not None:
+        mats[name]["ambient"] = colors["_Ambient"]
     return name
 
 
 def effect(game, cls, name, mats, texs, sounds):
     key = f"gameassets/characters/heroes/{cls}/effects/{name.lower()}"
+    if key not in game.container:                    # another folder the class's code loads it from (EXTRA_FOLDERS)
+        key = next((k for k in (f"{f}/{name.lower()}" for f in EXTRA_FOLDERS.get(cls, [])) if k in game.container), key)
     root = game.obj(game.container[key], game.files["mainData"])
-    nodes = []
+    nodes, at = [], {}                                # at: (file, GameObject pathID) -> node index (a script's GameObject reference)
 
     def walk(go_obj, parent):
         go = go_obj.read_typetree()
         node = {"name": go["m_Name"], "parent": parent, "comps": []}
         idx = len(nodes); nodes.append(node)
+        at[(go_obj.assets_file.name, go_obj.path_id)] = idx
         tr_children = []
         for comp in go["m_Component"]:                 # Unity 3.5: (classID, reference) pairs
             c = game.obj(comp[1] if isinstance(comp, (list, tuple)) else comp.get("second", comp.get("component")), go_obj.assets_file)
@@ -239,6 +285,11 @@ def effect(game, cls, name, mats, texs, sounds):
                 entry = {"type": sname}
                 if lay is not None:
                     entry.update(decode(raw, lay, header_len(raw)))
+                    if sname == "BoltEmitter":             # its TargetObject: a node of this prefab (BoltTarget), by index
+                        ref = game.obj(entry["TargetObject"], c.assets_file) if entry["TargetObject"][1] else None
+                        refs.append((entry, ref))
+                elif sname in NOT_DRAWN:
+                    pass
                 elif len(raw) > header_len(raw):
                     raise ValueError(f"{name}/{node['name']}: no layout for {sname} ({len(raw) - header_len(raw)} field bytes)")
                 if sname == "EmblemEmitter":           # its picture: a Texture2D reference, exported like a material's
@@ -282,7 +333,10 @@ def effect(game, cls, name, mats, texs, sounds):
             if tro is not None:
                 walk(game.obj(tro.read_typetree()["m_GameObject"], tro.assets_file), idx)
 
+    refs = []
     walk(root, -1)
+    for entry, ref in refs:                           # resolved once every node is known (the target may come later)
+        entry["TargetNode"] = at.get((ref.assets_file.name, ref.path_id), -1) if ref is not None else -1
     return {"nodes": nodes}
 
 
@@ -318,6 +372,8 @@ def cue_names(cls):
     for entry in json.load(open(path, encoding="utf-8")).values():
         for cues in cue_lists(entry):
             for cue in cues:
+                if cue[1] not in names:      # a "skin" cue (the hero's own look, index.html HERO_SKINS): nothing to build
+                    continue
                 for n in str(cue[2]).split("|"):
                     if cue[1] == "fx" and n.startswith("tto/"):     # TTO's effects: pipeline/wardrobe_fx_tto.py builds them
                         continue

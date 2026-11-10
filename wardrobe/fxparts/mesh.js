@@ -5,13 +5,15 @@
 //   StaticMesh           a MeshFilter's mesh drawn with the node's MeshRenderer materials (mirrorBlade_mirror's pane)
 //   SkinnedMeshRenderer  a mesh skinned to the effect's own nodes (bladeFang / bloodFang's fan)
 //   Animation            the Animation component's default clip, played on the effect's nodes (Blade Fang, Crusader,
-//                        Dual Brand 1 / 2 / 4 swing their slash nodes with it); node.userData.fxAnim.play(name, fade)
-//                        switches the clip (Eden Sanctuary's destroy)
+//                        Dual Brand 1 / 2 / 4 swing their slash nodes with it); node.userData.fxAnim.play(name, fade,
+//                        wrap) switches the clip (Eden Sanctuary's destroy; the Penguin's tornado / typhoon / cosmicFriday)
 //   ShatterMesh          ShatterMesh.cs: the StaticMesh breaks into its triangles, which fly apart (Mirror Blade)
 // Wolf: bladefang_underslash / upperslash, bloodfang_underslash / upperslash (Animation + SkinnedMeshRenderer), crusader,
 // lawbringer, dualbrand_slash1 / 2 / 4 (Animation; their trails are trail.js), mirrorblade_mirror (StaticMesh +
 // ShatterMesh). Sheep (2026-11-10): the FX/Phoenix material (Soul of Arms, Divinity Spear / Sword), faded by
-// alphatimer.js.
+// alphatimer.js. Penguin (2026-11-10, plans/fx_penguin/parts.md "Who builds what" row A, Interfaces 1 and 5): the
+// materials Transparent/AdditiveSaturate (two passes: material() returns a list for one name), Transparent/Opaque1,
+// Transparent/Opaque2 and DiffuseAmbient; Animation's play(name, fade, wrap).
 
 export default function register(api) {
   const { THREE, hermite, rnd, clamp01, fxMaterial, texLoader, DATA } = api;
@@ -58,9 +60,117 @@ export default function register(api) {
     if (d.tex) m.map = m.emissiveMap = texture(d);
     return m;
   };
+  // Transparent/AdditiveSaturate (the game's own; rip Assets/Resources/gameassets/shader/AdditiveSaturate.shader:1-45;
+  // the Penguin's arcticEmperor statue, also Wolf_heartRing and ShadowPortal_0, not cued): TWO passes over the same
+  // triangles, both BindChannels vertex / color / texcoord (:11-15, :29-33: the vertex colour is "primary"), ZWrite Off,
+  // Cull Off, Fog black, AlphaTest Greater 0.01, ColorMask RGB (:16-23, :34-41):
+  //   pass 1 (:9-26)  Blend SrcAlpha OneMinusSrcAlpha; constant _TintColor x primary (:24), then texture x previous
+  //                   double (:25): rgb = 2 x tint x vcol x texture, alpha = 2 x tint.a x vcol.a x texture.a
+  //   pass 2 (:27-43) Blend SrcAlpha One; one stage, constant _Emission x previous double (:42), and a pass's first
+  //                   "previous" is primary: rgb = 2 x emission x vcol, alpha = 2 x emission.a x vcol.a, NO texture (the
+  //                   SetTexture binds _MainTex but its combine never reads it): the whole shape glows
+  // Defaults _TintColor (0.5, 0.5, 0.5, 0.5), _Emission (0, 0, 0, 0) (:3-4). The fixed-function combiner saturates at 1
+  // after the doubling, so the colour and opacity uniforms are left unclamped (2 x tint, 2 x emission, 2 x their alphas)
+  // and the clamp is applied in the shader after the texture and vertex colour are in (min(1) in linear space = the
+  // combiner's min(1) in gamma, the curve being monotonic): a bright _Emission (0.75 x 2) times a dim vertex colour stays
+  // as dim as the game's. Pass 1 blends as fxMaterial's "alpha" (normal blending); pass 2 as fxMaterial's "add" (the
+  // premultiplied colour, alpha = its brightest channel, so the transparent canvas keeps the added light over the stage's
+  // CSS colour). The list order is the draw order (withMaterials puts pass 1's group first; three's transparent sort is
+  // stable within one object). userData.fxPass = 0 / 1 (the part that drives _TintColor.a / _Emission.a,
+  // Penguin_arcticEmperor, finds each pass by it).
+  // APPROXIMATED: "double" taken to double the alpha too (a combine without its own alpha part applies the same
+  // operation to alpha, and the page's particle shaders already double it, index.html fxMaterial); three's alphaTest keeps
+  // a = 0.01 that the game's Greater drops (no 8-bit alpha is exactly 0.01); the game's gamma-space blending
+  const saturate = d => {
+    const tint = d.tint || [.5, .5, .5, .5], e = d.emission || [0, 0, 0, 0];
+    const p1 = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      alphaTest: 0.01, opacity: 2 * tint[3] });
+    p1.color.setRGB(2 * tint[0], 2 * tint[1], 2 * tint[2], THREE.SRGBColorSpace);
+    if (d.tex) p1.map = texture(d);
+    p1.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <color_fragment>",
+      "#include <color_fragment>\n\tdiffuseColor = min( diffuseColor, vec4( 1.0 ) );   // AdditiveSaturate pass 1: the combiner's saturate"); };
+    const p2 = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      alphaTest: 0.01, opacity: 2 * e[3], premultipliedAlpha: true, blending: THREE.CustomBlending,
+      blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor });
+    p2.color.setRGB(2 * e[0], 2 * e[1], 2 * e[2], THREE.SRGBColorSpace);
+    p2.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <color_fragment>",
+      "#include <color_fragment>\n\tdiffuseColor = min( diffuseColor, vec4( 1.0 ) );   // AdditiveSaturate pass 2: the combiner's saturate")
+      .replace("#include <dithering_fragment>",
+      "#include <dithering_fragment>\n\tgl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));"); };
+    p1.userData.fxPass = 0; p2.userData.fxPass = 1;
+    return [p1, p2];
+  };
+  // Transparent/Opaque1 and Transparent/Opaque2 (the game's own; rip .../shader/Opaque1.shader:1-32, Opaque2.shader:1-34;
+  // the Penguin's cosmicFriday disc (Opaque1) and iceBlock (Opaque2); also Bison earthSmasher and Cat supportFire_cannon
+  // (Opaque1), not cued yet). Both passes of each: Lighting On, Material { Ambient [_Color] Diffuse [_Color] }, Blend
+  // SrcAlpha OneMinusSrcAlpha, SetTexture combine primary x texture double, primary alpha x texture alpha (Opaque1
+  // :10-18, :22-28; Opaque2 :10-17, :21-30): rgb = 2 x texture x _Color x the lights, alpha = _Color.a x texture.a (the
+  // alpha part has no "double"; a lit primary's alpha is the material's diffuse alpha). No BindChannels: no vertex colour.
+  //   Opaque1 pass 1 (:8-19)  ZWrite Off, AlphaTest GEqual 0.95     pass 2 (:20-29)  ZWrite On, Cull Back (defaults)
+  //   Opaque2 pass 1 (:8-18)  ZWrite On, AlphaTest GEqual 0.95      pass 2 (:19-31)  ZWrite Off, Cull Off, AlphaTest Less 0.95
+  // Pass 1 can pass only where _Color.a x texture.a >= 0.95, so it is built only when the saved _Color.a reaches 0.95;
+  // below that (cosmicFriday 0.46, iceblock 0.75) it never draws a pixel and material() returns pass 2 alone (one
+  // material, as before). With both, the list is pass 1 then pass 2 (userData.fxPass 0 / 1). three's alphaTest discards
+  // a < alphaTest, the game's GEqual exactly; Opaque2's "Less" is a discard of a >= 0.95 after three's alpha test.
+  // Default _Color (1, 1, 1, 1) (:3). As phoenix(): a Lambert, color = 2 x _Color as sRGB, front faces only where the
+  // game culls (the mirror group's flipped winding makes three's front faces Unity's).
+  // APPROXIMATED: the game's own ambient and light colours (the page's hemisphere + sun instead); the game clamps the lit
+  // colour at 1 before the doubling. A part that animates _Color.a across 0.95 would need pass 1 too: none does yet
+  // (alphatimer.js does not drive these shaders)
+  const lit = (d, map, o) => {
+    const c = d.color || [1, 1, 1, 1];
+    const m = new THREE.MeshLambertMaterial({ transparent: true, opacity: c[3], ...o });
+    m.color.setRGB(2 * c[0], 2 * c[1], 2 * c[2], THREE.SRGBColorSpace);
+    if (map) m.map = map;
+    return m;
+  };
+  const opaque1 = d => {
+    const map = d.tex ? texture(d) : null, c = d.color || [1, 1, 1, 1];
+    const p2 = lit(d, map, { depthWrite: true, side: THREE.FrontSide });
+    if (!(c[3] >= 0.95)) return p2;
+    const p1 = lit(d, map, { depthWrite: false, side: THREE.FrontSide, alphaTest: 0.95 });
+    p1.userData.fxPass = 0; p2.userData.fxPass = 1;
+    return [p1, p2];
+  };
+  const opaque2 = d => {
+    const map = d.tex ? texture(d) : null, c = d.color || [1, 1, 1, 1];
+    const p2 = lit(d, map, { depthWrite: false, side: THREE.DoubleSide });
+    p2.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <alphatest_fragment>",
+      "#include <alphatest_fragment>\n\tif ( diffuseColor.a >= 0.95 ) discard;   // Opaque2 pass 2: AlphaTest Less 0.95"); };
+    if (!(c[3] >= 0.95)) return p2;
+    const p1 = lit(d, map, { depthWrite: true, side: THREE.FrontSide, alphaTest: 0.95 });
+    p1.userData.fxPass = 0; p2.userData.fxPass = 1;
+    return [p1, p2];
+  };
+  // DiffuseAmbient (the game's own; rip .../shader/diffuseambient.shader:1-19; the Penguin's snowMan): one opaque pass,
+  // Lighting On, SeparateSpecular On (no Specular colour: black), Material { Ambient [_Ambient] Diffuse [_Color] }
+  // (:9-14), combine primary x texture double (:15): rgb = 2 x texture x (_Ambient x the ambient light + _Color x the
+  // lights); ZWrite on, Cull Back; defaults _Color and _Ambient (1, 1, 1, 1) (:3-4). As a Lambert with color = 2 x _Color
+  // (the lights' part), its ambient part rebuilt from the same irradiance with 2 x _Ambient in place of 2 x _Color (the
+  // uniform fxAmbient; a uniform, not text, so materials with other _Ambient values share one program correctly). The
+  // data's "ambient" (the material's _Ambient) when the extractor saves it, else the shader default white (the rip's
+  // snowman_0.mat: (0.95, 1, 0.995), so 5 % off in red without it).
+  // APPROXIMATED: the game's own lights (the page's hemisphere light stands for its ambient, the sun for its lights); the
+  // game clamps the lit colour at 1 before the doubling
+  const diffuseAmbient = d => {
+    const c = d.color || [1, 1, 1, 1], a = d.ambient || [1, 1, 1, 1];
+    const m = new THREE.MeshLambertMaterial({ side: THREE.FrontSide });
+    m.color.setRGB(2 * c[0], 2 * c[1], 2 * c[2], THREE.SRGBColorSpace);
+    if (d.tex) m.map = texture(d);
+    const amb = new THREE.Color().setRGB(2 * a[0], 2 * a[1], 2 * a[2], THREE.SRGBColorSpace);
+    m.onBeforeCompile = sh => {
+      sh.uniforms.fxAmbient = { value: amb };
+      sh.fragmentShader = "uniform vec3 fxAmbient;\n" + sh.fragmentShader.replace("#include <lights_fragment_end>",
+        "#include <lights_fragment_end>\n#ifdef USE_MAP\n\treflectedLight.indirectDiffuse = irradiance * BRDF_Lambert( fxAmbient * sampledDiffuseColor.rgb );\n" +
+        "#else\n\treflectedLight.indirectDiffuse = irradiance * BRDF_Lambert( fxAmbient );\n#endif");
+    };
+    return m;
+  };
   // a renderer's material: the game's particle shaders through the page's fxMaterial; Diffuse (opaque) as a lit
-  // Lambert, _Color x texture (both sides drawn); DistortGlass and Phoenix as above; any other shader of the game's falls
-  // back to fxMaterial (alpha blended) with a warning. userData.fxBlend = the data's blend (alphatimer.js reads it)
+  // Lambert, _Color x texture (both sides drawn); DistortGlass, Phoenix, AdditiveSaturate, Opaque1 / Opaque2 and
+  // DiffuseAmbient as above; any other shader of the game's falls back to fxMaterial (alpha blended) with a warning.
+  // A multi-pass shader gives a LIST (its passes in draw order) for one material name; withMaterials draws every pass
+  // over that material's submesh. userData.fxBlend = the data's blend on each (alphatimer.js reads it)
   const material = (fx, data, name) => {
     const d = name && data.materials?.[name];
     if (!d) return null;
@@ -69,6 +179,10 @@ export default function register(api) {
     let m;
     if (d.blend === "shader:FX/DistortGlass") m = glass(d);
     else if (d.blend === "shader:FX/Phoenix") m = phoenix(d);
+    else if (d.blend === "shader:Transparent/AdditiveSaturate") m = saturate(d);
+    else if (d.blend === "shader:Transparent/Opaque1") m = opaque1(d);
+    else if (d.blend === "shader:Transparent/Opaque2") m = opaque2(d);
+    else if (d.blend === "shader:DiffuseAmbient") m = diffuseAmbient(d);
     else if (d.blend === "opaque") {
       m = new THREE.MeshLambertMaterial({ side: THREE.DoubleSide });
       if (d.color) m.color.setRGB(d.color[0], d.color[1], d.color[2], THREE.SRGBColorSpace);
@@ -78,17 +192,22 @@ export default function register(api) {
       if (String(d.blend).startsWith("shader:") && !api.shaders?.[d.blend]) console.warn("effect mesh: shader drawn as a particle material", d.blend, name);
       m = fxMaterial(fx.cls, name, d);
     }
-    m.userData.fxBlend = d.blend;
+    for (const p of [].concat(m)) p.userData.fxBlend = d.blend;
     return (mats[k] = m);
   };
   // Unity draws submesh i with material i; materials past the last submesh draw the last submesh again; submeshes
-  // past the last material are not drawn. Always a material list with one group each (three draws only the groups)
+  // past the last material are not drawn. Always a material list with one group each (three draws only the groups); a
+  // material that is a list of passes (material() above) gives one group per pass over the same range, in pass order
   const withMaterials = (g, c, list) => {
-    const ms = list.filter(Boolean);
+    const ms = list.flatMap(m => (m ? [].concat(m) : []));
     if (!ms.length) return null;
     const sub = c.sub?.length ? c.sub : [[0, c.idx.length]];
     g.clearGroups();
-    list.forEach((m, i) => { if (m) { const s = sub[Math.min(i, sub.length - 1)]; g.addGroup(s[0], s[1], ms.indexOf(m)); } });
+    list.forEach((m, i) => {
+      if (!m) return;
+      const s = sub[Math.min(i, sub.length - 1)];
+      for (const p of [].concat(m)) g.addGroup(s[0], s[1], ms.indexOf(p));
+    });
     return ms;
   };
   // the mesh's geometry; no vertex colours in the data = white (fxMaterial multiplies by them)
@@ -142,21 +261,31 @@ export default function register(api) {
   // 1 Once play once and the nodes keep the last pose (parts.md: the legacy end-of-clip hold, medium sure; it matters only
   // for crusader's last 0.6 s), 2 Loop, 4 PingPong, 8 ClampForever holds. No clip in any class has float curves or
   // events (wardrobe_fx_mesh.py). The effect's root (node 0) is never posed: the cue places it (no clip animates it).
-  // Another part switches the clip with node.userData.fxAnim.play(name, fade) (2026-11-10, Eden Sanctuary's
+  // Another part switches the clip with node.userData.fxAnim.play(name, fade, wrap) (2026-11-10, Eden Sanctuary's
   // CrossFade("destroy", 0.2), Sheep_edenSanctuary.cs:409), as Unity's legacy Animation does it:
   //   play(name)        Animation.Play: a cut to the clip from its start; a clip already playing is not rewound
   //   play(name, fade)  Animation.CrossFade: the same, its weight rising 0 -> 1 over fade seconds
+  //   play(name, fade, wrap)  then animation.wrapMode = wrap (2026-11-10, the Penguin: Penguin_tornado.cs:768-771
+  //                     Play("create") + wrapMode = Once, :744-749 Play("root") + Loop, :925-931 Play("destroy") + Once;
+  //                     Penguin_typhoon.cs:902-907, :733-738; Penguin_cosmicFriday.cs:391-394, :330-335, :566-569). The
+  //                     tornado's / typhoon's clips carry wrap 0 under a Loop component, so without it "create" would
+  //                     loop. Unity's setter writes the mode into every AnimationState of the component, so it holds for
+  //                     the clip just started and for every later play() too, whatever the clip's own wrap (no wrap
+  //                     given = left as it is; 0 = Default clears it: back to the clip's, else the component's). It is
+  //                     set after the "still playing" test, as the scripts set it after Play. Values: 1 Once, 2 Loop,
+  //                     4 PingPong, 8 ClampForever (as the clips' own)
   // The pose is set at once (Unity samples the animation after Update, in the same frame). Returns false for a clip the
   // component lacks. APPROXIMATED in the cross-fade: the outgoing side is the pose at the moment of the call, held (a
   // clip that is still playing would run on in Unity while it fades out), and rotations blend by slerp; Eden's two clips
   // meet at the same pose (plans/fx_sheep/parts.md), so there the result is the game's. No part calls it for an
-  // Animation that does not play by itself, so those stay unbuilt
+  // Animation that does not play by itself, so those stay unbuilt. Medium sure: that the wrapMode setter reaches every
+  // state (and so later clips); every Penguin script sets it again right after each Play, so there it cannot matter
   api.part("Animation", (fx, node, c) => {
     if (!c.play || !c.clips?.[c.clip]) return null;
-    let cur, wrap, len, tracks, t = 0, fade = 0, from = null;
+    let cur, wrap, len, tracks, t = 0, fade = 0, from = null, forced = 0;   // forced: animation.wrapMode set by a part
     const use = name => {
       const clip = c.clips[name];
-      cur = name; wrap = clip.wrap || c.wrap || 1; len = clip.len;
+      cur = name; wrap = forced || clip.wrap || c.wrap || 1; len = clip.len;
       tracks = Object.entries(clip.tracks).map(([i, tr]) => ({ o: fx.nodes[+i], tr })).filter(x => x.o && x.o !== fx.nodes[0]);
     };
     const local = t => {
@@ -182,12 +311,19 @@ export default function register(api) {
     };
     use(c.clip);                                 // fxTick updates a new Fx before its first frame is drawn
     const em = { node, update(dt) { t += dt; pose(); },
-      play(name, fadeLen = 0) {
+      play(name, fadeLen = 0, wrapMode) {
         if (!c.clips[name]) return false;
-        if (name === cur && (wrap === 2 || wrap === 4 || wrap === 8 || t < len)) return true;   // still playing
+        const setWrap = () => {                  // animation.wrapMode = wrapMode, after the Play (see above)
+          if (wrapMode == null) return;
+          forced = wrapMode || 0;
+          const clip = c.clips[cur];
+          wrap = forced || clip.wrap || c.wrap || 1;
+        };
+        if (name === cur && (wrap === 2 || wrap === 4 || wrap === 8 || t < len)) { setWrap(); return true; }   // still playing
         use(name);
         from = fadeLen > 0 ? new Map(tracks.map(({ o }) => [o, { p: o.position.clone(), q: o.quaternion.clone(), s: o.scale.clone() }])) : null;
         t = 0; fade = fadeLen;
+        setWrap();
         pose();
         return true;
       } };
@@ -234,7 +370,14 @@ export default function register(api) {
       g.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
       g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
       g.setAttribute("color", new THREE.Float32BufferAttribute(col, 4));
-      if (Array.isArray(m.material)) m.material = m.material[0];   // one submesh from here on
+      // one submesh from here on (mesh.triangles = ..., :269; the renderer's materials are left alone, ShatterMesh.cs never
+      // touches them): by Unity's rule every material past the last submesh draws it again, so each of the renderer's
+      // materials, and each pass of a multi-pass one (arcticEmperor's AdditiveSaturate), draws the whole clone, in order.
+      // One material (the Wolf's mirror pane) stays a single material, as before
+      if (Array.isArray(m.material)) {
+        if (m.material.length === 1) m.material = m.material[0];
+        else m.material.forEach((_, i) => g.addGroup(0, n, i));
+      }
       m.geometry.dispose(); m.geometry = g;
     };
     return { node, update(dt) {

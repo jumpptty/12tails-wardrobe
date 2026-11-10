@@ -17,13 +17,17 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Either PC
 
-- **Build the Penguin's effects** (research done at the office 2026-11-10, NOTES.md "the Penguin's research
-  finished"): first show the user the 17 new questions in `plans/fx_penguin/*.md` (each report's questions, with the
-  recommended defaults; the checkers' "unresolved" lists flag two convention choices: aim at the floor point or the
-  target's centre, and target-facing rotations) and write `plans/fx_penguin/decisions.md` from the answers. Then the
-  build workflow: copy `pipeline\workflows\sheep-fx-build.js`, swap the Sheep for the Penguin (builders from
-  `plans/fx_penguin/parts.md` "who builds what", the TTO side from tto.md), home paths (`D:\12tails-wardrobe`,
-  `D:\12tails`). Start the usage guard first. Afterwards: the user's hand checks, then deploy when they ask.
+- **Every skill gets a tile, Wolf and Sheep first, then the Penguin** (user 2026-11-10: "Yes to both, but redo Wolf and
+  Sheep first"; NOTES.md "skills without an animation, and the pooled tiles"): (1) one tile per skill instead of the
+  pools (the Cast tile's random pick among the skills sharing cast3, cast4, blink): each tile plays the shared clip with
+  that skill's cues, its own Bible icon; (2) the skills the game plays with no body animation (Penguin: Mana Arc,
+  Dispell, Frost Spike; the Wolf's and Sheep's to be found: their RPCs that call no clip) get effect-only tiles on the
+  idle stance, researched and cued like the rest. Then the Penguin's unfinished QA (its workflow stopped in QA).
+- **The Penguin's effects: QA, the user's hand checks, then deploy** (built and cued at home 2026-11-10, NOTES.md "the
+  Penguin's effects: built and cued"; the workflow's QA step over Penguin, Sheep and Wolf was cut off). The built data
+  (`wardrobe/data/penguin/fx.json`, `sfx/`, `data/fx/tex/tto_*`) travels in git with the commit. Optional: rebuild the
+  Wolf and Sheep data with `wardrobe_fx.py` so their KO deadEffect gets the new premul blend (207); until then it stays
+  additive (look at it on the white stage). Deploy only when the user asks.
 
 ## Video repo (either PC)
 

@@ -9,7 +9,9 @@ spawns, a page error, a console error or a failed request.
 --files-only: only the file checks (no browser; 2026-11-09, the user tests the page by hand): every effect, voice
 (v_<name>.mp3) and sound (<name>.mp3) the cues name, every cue's shape, and that each cue key is a clip of the class.
 A key "@<sequence>:<clip>" (2026-11-10, the Sheep: index.html cueOf) is that clip's cues when the sequence plays it: the
-sequence must be one of the class's in index.html's SEQ and play the clip, and its tile is played."""
+sequence must be one of the class's in index.html's SEQ and play the clip, and its tile is played. A "skin" cue (2026-11-10,
+the Penguin's Cosmic Rift / Cosmic Friday: the hero's own look, index.html HERO_SKINS) names one of the page's skins; in
+the page it must take hold (FX.spawned "skin:<name>") like an effect."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
@@ -42,6 +44,16 @@ def seqs():
 
 
 SEQS = seqs()
+
+
+def hero_skins():
+    """index.html's HERO_SKINS: the names a "skin" cue may give."""
+    html = (ROOT / "wardrobe" / "index.html").read_text(encoding="utf-8")
+    block = re.search(r"\nconst HERO_SKINS = \{(.*?)\n\};", html, re.S)
+    return set(re.findall(r'^  "([^"]+)":', block.group(1), re.M)) if block else set()
+
+
+SKINS = hero_skins()
 
 
 def split_key(key):
@@ -77,7 +89,10 @@ def names(cls, kind):
     return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")})
 
 
-OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone"}   # index.html cueOf
+# index.html cueOf (2026-11-10, the Penguin: spread; i, n and ignite, passed on to the TTO parts, plans/fx_penguin/tto.md;
+# hideHero for penguin.js's snowman; notWorn [slot, item], fxStart: the Staff of Time's missing landings)
+OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn"}
+KINDS = ("fx", "voice", "sound", "skin")
 
 
 def file_errors(cls):
@@ -99,10 +114,13 @@ def file_errors(cls):
             errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
         for cues in cue_lists(e):
             for c in cues:
-                ok = (isinstance(c, list) and 3 <= len(c) <= 5 and isinstance(c[0], (int, float)) and c[1] in ("fx", "voice", "sound")
+                ok = (isinstance(c, list) and 3 <= len(c) <= 5 and isinstance(c[0], (int, float)) and c[1] in KINDS
                       and isinstance(c[2], str) and (len(c) < 4 or isinstance(c[3], (int, float)) or (isinstance(c[3], dict) and set(c[3]) <= OPTS)))
                 if not ok:
                     errs.append(f"{cls}: {key}: bad cue {c}")
+                elif c[1] == "skin":
+                    errs += [f"{cls}: {key}: skin {n} is not one of index.html's HERO_SKINS {sorted(SKINS)}"
+                             for n in c[2].split("|") if n not in SKINS]
     return errs
 
 
@@ -129,6 +147,11 @@ TILES = """clips => { const { chains, C } = wardrobe.debug(), ch = chains();
     return s ? [s.id, "skill"] : [c, /^walk$/i.test(c) ? "base" : C.clipsData[c]?.group || "skill"]; }); }"""
 
 
+def safe(n):
+    """An effect's name as a file name part ("skin:FX/CosmicRift" -> "skin_FX_CosmicRift")."""
+    return re.sub(r"[^\w.-]", "_", n)
+
+
 async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
     await page.evaluate("() => { const { FX } = wardrobe.debug(); FX.spawned = {}; FX.missing = {}; }")
     if await page.locator('#picker').is_hidden():                      # reopen the move picker
@@ -148,7 +171,7 @@ async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
             first.setdefault(n, now)
         for n, at in first.items():
             if n not in shot and now >= at + SHOT_AFTER:
-                shot.add(n); p = f"{var}_{cls}_{key}_{n}.png"; shots.setdefault((cls, key), []).append(n)
+                shot.add(n); p = f"{var}_{cls}_{key}_{safe(n)}.png"; shots.setdefault((cls, key), []).append(n)
                 await page.screenshot(path=str(OUT / p))
         total = sum(int(x.rsplit(":", 1)[1][:-1]) for x in live if ":" in x)
         if total > peak:                                               # the frame with the most effect geometry
@@ -193,8 +216,9 @@ async def main():
                     # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)
                     sq = tile[1:] if tile.startswith("@") and tile[1:] in SEQS.get(cls, {}) else None
                     entries = [entry_for(cls, sq, c) for c in SEQS[cls][sq]] if sq else [CUES[cls].get(tile, {})]
-                    expect = sorted({cue[2] for e in entries for cue in e.get("cues", [])
-                                     if cue[1] == "fx" and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
+                    # (a skin cue's look: "skin:<name>", as the page tallies it)
+                    expect = sorted({("skin:" if cue[1] == "skin" else "") + cue[2] for e in entries for cue in e.get("cues", [])
+                                     if cue[1] in ("fx", "skin") and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
                     # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
                     cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
                     errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)
@@ -202,7 +226,7 @@ async def main():
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")
         print("sound:", snd)
         await b.close()
-    rows = "".join(f"<tr><th>{cls} {key} {n}</th>" + "".join(f'<td><img src="{v}_{cls}_{key}_{n}.png"></td>' for v in VARIANTS) + "</tr>"
+    rows = "".join(f"<tr><th>{cls} {key} {n}</th>" + "".join(f'<td><img src="{v}_{cls}_{key}_{safe(n)}.png"></td>' for v in VARIANTS) + "</tr>"
                    for (cls, key), ns in shots.items() for n in [*dict.fromkeys(ns), "peak"])
     (OUT / "compare.html").write_text("<!doctype html><meta charset=utf-8><title>Effect backdrops</title><style>body{font:14px sans-serif;"
                                       "margin:16px}img{width:100%}td{vertical-align:top}</style><table><tr><th></th>"

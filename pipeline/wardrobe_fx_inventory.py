@@ -28,7 +28,13 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # 2026-11-10, the Sheep (plans/fx_sheep/parts.md): fxparts/alphatimer.js; fxparts/sheep.js (the three movers read
          # ProjectileControl's velocity, Eden Sanctuary's clip switch and end); Sheep_seal draws nothing (data only)
          "AlphaTimer", "ProjectileControl", "Sheep_seal", "Sheep_nAttack", "Sheep_homingLight", "Sheep_cAttack",
-         "Sheep_edenSanctuary"}
+         "Sheep_edenSanctuary",
+         # 2026-11-10, the Penguin (plans/fx_penguin/parts.md "Who builds what"): fxparts/penguin.js (its eight scripts;
+         # Penguin_snowMan hides the hero, decisions.md 17), mesh.js's AdditiveSaturate / Opaque1 / Opaque2 / DiffuseAmbient
+         # materials (shaders, not parts: this table doesn't see them); index.html's BoltEmitter and the ManaVortex
+         # summon's script (cast_a.md "Read this first" 2; the summon is not under an Effects folder, so it isn't listed)
+         "Penguin_tornado", "Penguin_typhoon", "Penguin_arcticEmperor", "Penguin_cosmicFriday", "Penguin_iceBlock",
+         "Penguin_nAttack", "Penguin_manaMissile", "Penguin_snowMan", "BoltEmitter", "ManaVortex"}
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it
 # for hits, which the wardrobe has no targets for)

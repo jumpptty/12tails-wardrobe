@@ -711,3 +711,217 @@ lines, 2 above the bodies; that is fine):**
 AddPenguinRow6Fx dispatch addresses (`callers.py`, `jumps.py`) were not re-run; the rig-derived beak / foot offsets
 (`bones.py`) and the sign of `side` in the poofs' x were not re-derived; the 0.6 of the no-Giant `Until()` (capstone
 0x1E2D59A) was not re-read (it only matters for n = 1 / 2).
+
+## Built 2026-11-10 (home PC, the `tto` builder of the Penguin build)
+
+The parts of section 6 (P1-P6, P8; not P7, decision 8) are built and the Penguin's TTO effects are in
+`wardrobe/data/penguin/fx.json` (`uv run --no-project --with UnityPy --with pillow --with imageio-ffmpeg python -I
+pipeline/wardrobe_fx_tto.py penguin`: "28 TTO effects, 14 materials, 14 textures, 4 sounds (2 TTO's own:
+emperorPenguin_flock, emperorPenguin_whistle)"; 12 new `wardrobe/data/fx/tex/tto_*.webp`, the shared `tto_Line_*` ones
+rewritten byte for byte the same). Decisions applied: 6 (five stars), 7 (the full 22 m run, the Goal at 22.45 m,
+1.636 s), 8 (Frost Field in place: no hero mover), 14 (5 penguins), 15 (no FocusRedden). Probes in
+`checks/fx_penguin_build/tto/` (git-ignored): `probe.json` / `probe3.json` (the 28 prefabs, before / after the exporter
+changes), `cel_dxbc.py` -> `dxbc_cel.txt` + `cel_parsed.json` (the cel shader), `cel_mat.py`, `trail.py`, `cues.py` ->
+`cues.json` (the block below, parsed and checked against fx.json), `parts_check.mjs` -> `parts_check.txt` (a node run
+of the parts on the built data, three 0.160.0 as the page: 52 checks pass).
+
+### What was built, by part
+
+| # | Part | Where | Notes |
+|---|---|---|---|
+| P1 | `Penguin.StarLines` | `wardrobe/fxparts/tto_penguin.js` (new), on `constellation_line` (CODE_MOVERS) | Draws the line's two LineRenderers itself: tto_sheep.js's LineRenderer part leaves disabled ones (`m_Enabled` false, as these are) unbuilt. From the cue's spot to `to`, f = clamp01(age / 0.12), shown once f > 0, x 2.2 wide at `ignite` (else kill - 0.6). |
+| P2 | Shuriken TrailModule | `wardrobe/fxparts/shuriken.js` | Particle trails (mode 0) and ribbons (mode 1), the renderer's `m_Materials[1]` (Unity's trailMaterial). |
+| P3 | SkinnedMeshRenderer export + `FlexibleCelShader/Cel No Outline` | `pipeline/wardrobe_fx_tto.py`; the shader in `tto_penguin.js` (api.shader) | The BB build's shape (mesh + `w` / `j` / `bind`, `bones` node indices, `root`, `mats`), so mesh.js skins it unchanged. SmallIcePenguin_tri: 1145 vertices, 900 triangles, 7 bones (staff, Root, Spine, Head, Tail, Leg_R, Leg_L). |
+| P4 | `Penguin.EmperorShot`, `Penguin.FlockRise` | `tto_penguin.js`, on `emperorPenguin_ball` / `emperorPenguin_penguin` (CODE_MOVERS) | The ball's drop, roll, spin and Destroy at the Goal; the penguins' rise, whirl after the ball and Destroy at the Goal (Scatter). |
+| P5 | cue `scale` `[x, y, z]` | index.html (not mine) | Still needed by the five lineFire cues (shared change). |
+| P6 | Unity's built-in Quad | `wardrobe_fx_tto.py` BUILTIN_MESH (inline `mesh`, `m_Mesh` = `{"mesh": "Quad", "builtin": 10210}`); `shuriken.js` QUAD as a fallback | The external file of the reference is `Library/unity default resources` (checked by the exporter), path id 10210. |
+| P8 | TTO's own sounds | `wardrobe_fx_tto.py` SKILL_SOUNDS + `tto_clips()` | `gameassets/characters/heroes/penguin/sounds/emperorPenguin_whistle` / `_flock` through the catalog -> `wardrobe/data/penguin/sfx/<name>.mp3` (0.65 s / 1.05 s as mp3). Also any `"sound"` cue the rip's `sounds/` lacks. |
+
+`groundhug.js`, `arcribbon.js`, `groundfollower.js`: no change needed. The Penguin's 44 GroundHugEmitters are shapes 0
+(Disc) and 1 (Band), none with motes; one (`constellation_mark`'s Floor) has `resample` 0.12, which groundhug.js already
+reads (the live centre; the page's foe stands still). No ArcRibbon or GroundFollower in any Penguin prefab.
+
+### Probed on this PC (TTO's 2026-11-04 bundles, `D:\12tails-video\tto_assets\2026-11-04`)
+- All 28 prefabs are there, with the same nodes, components and EffectControl values as section 5 (office, 2026-11-09
+  bundles): e.g. constellation_line 6 + 0.2, frostField_field 8 + 0.6, frostField_trail 0.75 + 0.6 followPosition. No
+  followState anywhere.
+- **TrailModule** (4 systems, all `mode` 0, `ratio` 1, `minVertexDistance` 0.2, `worldSpace` false in World systems,
+  `inheritParticleColor` true, trail material `tto_Line_DoubleEdge1` (addsoft)):
+  - constellation_star Meteor1 (local (-3, 12, 2.5)): one particle, life 0.6 s, 21.03 m/s, no shape (along the node's
+    +z); trail life 0.35 x 0.6 = 0.21 s (about 4.4 m), width 0.5 x (1 -> 0), colour white -> (1, 0.85, 0.45) at 0.3 ->
+    (0.72, 0.45, 1), alpha 1 -> 0.6 -> 0; `dieWithParticles` false (the streak runs out after the meteor lands).
+  - constellation_giant Giant1 ((-6, 22, 5); 38.91 m/s, size 3.2, width 1.6 x (1 -> 0)) and Escort1 ((-4, 20, 7);
+    34.78 m/s, life 0.62, width 0.4 x (1 -> 0), colour white -> (0.93, 0.85, 1) -> (0.72, 0.45, 1)).
+  - constellation_giantImpact Five: 5 particles in a circle (r 0.1, turned 90 deg about x), 9 m/s, life 0.6, trail
+    life 0.25 x 0.6 = 0.15 s, width 0.5 x the particle's size (`sizeAffectsWidth`), `dieWithParticles` true.
+  - stopAction 0 on all four.
+- **Mesh particles on the Quad**: emperorPenguin_launch Ring1-3 and emperorPenguin_goal Net / Net2, `m_RenderMode` 4,
+  `m_RenderAlignment` 2 (local), rotation3D, no texture sheet; material `tto_penguinRow6_rune`.
+- **The cel material** `tto_SmallIcePenguin`: `_MainTex` IcePenguin1, no `_NormalTex` and no `_EmmisTex` (their
+  defaults `bump` and `black`, from the shader's property info), `_RampLevels` 2, `_LightScalar` 1, `_HighIntensity`
+  1.5, `_LowIntensity` 1, white `_Color` / `_HighColor` / `_LowColor`, `_FresnelBrightness` 0, `_RimAlpha` 0,
+  `_SceneLighting` 1, no shader keywords.
+- **The cel shader** (`FlexibleCelShader/Cel No Outline`, 88 programs; Queue Geometry, Opaque; passes FORWARD Blend One
+  Zero, FORWARD_DELTA One One, a shadow caster). Its FORWARD fragment program (DIRECTIONAL LIGHTPROBE_SH,
+  `dxbc_cel.txt` program 33), with the $Globals layout from the parsed form: band = round(sat(N.L x _LightScalar) x
+  levels) / levels, levels = max(round(_RampLevels) - 1, 1); scene = 1 + _SceneLighting (1 - _TTOCelSceneLightCut)
+  (min((_LightColor0 band + SH) / (0.65 band + 0.42), 1.8) - 1) per channel (**TTO's own light normalisation**: the
+  0.65 / 0.42 / 1.8 constants and `_TTOCelSceneLightCut` are not in the asset store shader); colour = _MainTex x _Color
+  x lerp(_LowColor x _LowIntensity, _HighColor x _HighIntensity, band) x 0.5 x scene, + fresnel and rim terms (0 here),
+  then blended to _EmmisTex by its brightest channel (black here). So the penguins are the texture x 0.75 lit, x 0.5
+  unlit, opaque.
+
+### Corrections and new facts (code cites are `pseudo/Penguin.c`)
+1. **`side` in EmperorShot is the hero's right.** `side = normalize(Cross(up, dir))` (`:417-426`), so the flock's
+   ring offset is (up sin th + right cos th) x 0.65; the poofs' x signs in 2.3 hold (the Verification's unresolved
+   "sign of side"). The node run lands penguin 0 at (0.295, 0.929, 20.70) and penguin 3 at (0.102, -0.292, 17.76) on
+   the Goal frame at 120 fps (2.3: (0.282, 0.936, 20.77), (0.116, -0.29, 17.83): the last frame before d >= 22).
+2. **The ball's spin** is `Transform.Rotate(side, deltaTime x 900)` in Space.Self (`:563-578`); the ball is spawned
+   with identity (`EmperorSpawn` with `Quaternion.identity`, `:8923-8929`), so its own side axis stays the world's.
+3. **The ball's height while rolling** is the ground under it + 0.45: a 5 m ray down from ballPos + 2 up (`:466-479`),
+   so it jumps from ballAt's 0.2 m to 0.45 m on the shot's first frame (0.85 s). `to`'s y is not read.
+4. **The ball between 0.8 and 0.85 s**: state 4's drop loop runs only while now < start + 0.8 (`:9013-9055`), so the
+   game holds the last drop frame (less than one frame above ballAt); the page holds it at ballAt (APPROX).
+5. **FlockRise** (`:1076-1100`): s = 4 (now - t0) while now < t0 + 0.25, h = (1 - (1 - s)^2) x 0.7 + 0.15 sin(s pi)
+   (0.7 = DAT_182f3ff88, 0.15 = DAT_183004e94); after it, from + 0.7 axis exactly (`:1129-1160`). The flock turns only
+   on frames it moves (`|step|^2 > DAT_182f3ff60`, `:664`; the epsilon's value not read: 1e-8 on the page).
+6. **StarLines draws each line's LineRenderers through `lines[i]`, every LineRenderer under the line** (`:22622-22703`),
+   and x 2.2 is applied to each of them at the ignite (`:22812-22834`). The line's start point is `fixedAt[i] + up`,
+   refreshed each frame until the star falls (`:22580-22621`).
+7. **cueOf drops `ignite`, `i` and `n`** (index.html `cueOf`): the parts work without them (`ignite` = kill - 0.6:
+   ClearStarFx always comes 0.6 s after the ignite, `:22936`, `:22966`; `i` from the spot's angle a = atan2(x, d) of
+   the FlockSpot, i = round((a + 75) / 150 x (n - 1)); `n` = 5); passing them through is a shared change (below), so a
+   +3 flock (n = 8) can be cued later.
+8. **The lines are cued at their draw start** (0.4 + 0.12 i, as 2.1 variant B): the part draws them out over 0.12 s
+   from the cue. The game spawns all five at 0.4 hidden, so the look is the same.
+9. **The gamma convention**: the cel shader's arithmetic is taken on gamma values (as every TTO shader here,
+   tto_sheep.js): the colour factor is made linear before it multiplies the texture. If TTO renders in linear space
+   the penguins would be brighter (x 0.75 linear instead of x 0.52); to check by eye.
+
+### The cue entries (ready to paste into `wardrobe/fx_cues/penguin.json`)
+Sections 2.1 (variant B), 2.2 and 2.3 as written, parsed and checked by `cues.py` (every `tto/` effect is in fx.json;
+the two TTO sounds are in sfx/); only the `why`s gain their parts. The five lineFire cues' `scale` `[1, 1, 3.527]`
+need P5 (index.html now multiplies the root's scale by an array). The `kind "sound"`
+cues `emperorPenguin_whistle` / `emperorPenguin_flock` play TTO's own clips (written by this build); `wardrobe_fx.py
+penguin` will report them as missing from the rip (harmless: it never deletes sfx files).
+
+```json
+{
+  "constellation": {
+    "why": "TTO1102:Penguin.<RPC_constellation>d__340::MoveNext@0x1DE7560 (Penguin.c:6783-7032) + <StarLines>d__341::MoveNext@0x1E2C220 (:22423-23060) (plans/fx_penguin/tto.md 2.1, variant B: the target 10 m ahead and 4 foes, a pentagon R 3 m about 13 m ahead, checks/fx_penguin_research/tto/calc.py): 0: Row6Begin, Row6Sound fallingStar_ring (:6856), constellation_cast owned (:6871); Until 0.4: a constellation_mark 1 m over each star spot (StarAt + up, :6902-6924; it follows its foe until the fall, :22580-22621), Row6Sound castEffect (:6943), 5 lines (StarLineCount@0x1DB1320: n >= 3 = a closed ring), line i from mark i to mark i+1 drawn over 0.12 s from 0.4 + 0.12 i (:22659-22703; cued at its draw start, the game's are hidden until then), widthMultiplier x 2.2 at the ignite (:22833-22834, capstone 0x1E2CE9A); Until 1: Row6End (:7022); star i (sky order, InSkyOrder@0x1DA7F90: ascending atan2(dx, dz), target last) falls at 1.1 + 0.3 i (:22715-22736) and lands 0.6 s later: its mark destroyed, constellation_impact at the spot (StarImpact@0x1DB1000, :22759-22770); ignite at lastImpact + 0.05 = 1.1 + 0.6 + 0.3 x 4 + 0.05 = 2.95 (:22537, :22790): constellation_lineFire at each segment's midpoint, LookRotation(segment), localScale (1, 1, 3.527) (:22884-22904), constellation_ignite at the middle (StarGround of the spots' mean, :22809) + Row6Sound manaArc (:22921-22923), constellation_giant at the middle + Row6Sound fallingComet (:22953-22954); 2.95 + 0.6 = 3.55: ClearStarFx (the lines go: kill), constellation_giantImpact at the middle + Row6Sound novarFlare (:22966-22981); left out: the hits and the manaFracture look on hit foes (AddPenguinRow6Fx@0x24ADC20: on an enemy) Parts (2026-11-10): the lines' StarLines mover (wardrobe/fxparts/tto_penguin.js Penguin.StarLines: `to` = the next mark, `ignite` = the widening, else kill - 0.6), the meteors' TrailModule (shuriken.js), lineFire's `scale` [1, 1, length] (index.html, P5).",
+    "cues": [
+    [0, "sound", "fallingStar_ring"],
+    [0, "fx", "tto/constellation_cast"],
+    [0.4, "fx", "tto/constellation_mark", {"x": -2.853, "y": 1, "d": 12.073, "kill": 1.3}],
+    [0.4, "fx", "tto/constellation_mark", {"x": -1.763, "y": 1, "d": 15.427, "kill": 1.6}],
+    [0.4, "fx", "tto/constellation_mark", {"x": 1.763, "y": 1, "d": 15.427, "kill": 1.9}],
+    [0.4, "fx", "tto/constellation_mark", {"x": 2.853, "y": 1, "d": 12.073, "kill": 2.2}],
+    [0.4, "fx", "tto/constellation_mark", {"y": 1, "d": 10, "kill": 2.5}],
+    [0.4, "sound", "castEffect"],
+    [0.4, "fx", "tto/constellation_line", {"x": -2.853, "y": 1, "d": 12.073, "to": [-1.763, 1, 15.427], "ignite": 2.55, "kill": 3.15}],
+    [0.52, "fx", "tto/constellation_line", {"x": -1.763, "y": 1, "d": 15.427, "to": [1.763, 1, 15.427], "ignite": 2.43, "kill": 3.03}],
+    [0.64, "fx", "tto/constellation_line", {"x": 1.763, "y": 1, "d": 15.427, "to": [2.853, 1, 12.073], "ignite": 2.31, "kill": 2.91}],
+    [0.76, "fx", "tto/constellation_line", {"x": 2.853, "y": 1, "d": 12.073, "to": [0, 1, 10], "ignite": 2.19, "kill": 2.79}],
+    [0.88, "fx", "tto/constellation_line", {"y": 1, "d": 10, "to": [-2.853, 1, 12.073], "ignite": 2.07, "kill": 2.67}],
+    [1.1, "fx", "tto/constellation_star", {"x": -2.853, "d": 12.073}],
+    [1.4, "fx", "tto/constellation_star", {"x": -1.763, "d": 15.427}],
+    [1.7, "fx", "tto/constellation_impact", {"x": -2.853, "d": 12.073}],
+    [1.7, "fx", "tto/constellation_star", {"x": 1.763, "d": 15.427}],
+    [2.0, "fx", "tto/constellation_impact", {"x": -1.763, "d": 15.427}],
+    [2.0, "fx", "tto/constellation_star", {"x": 2.853, "d": 12.073}],
+    [2.3, "fx", "tto/constellation_impact", {"x": 1.763, "d": 15.427}],
+    [2.3, "fx", "tto/constellation_star", {"d": 10}],
+    [2.6, "fx", "tto/constellation_impact", {"x": 2.853, "d": 12.073}],
+    [2.9, "fx", "tto/constellation_impact", {"d": 10}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": -2.308, "y": 1, "d": 13.75, "rot": [0, 18, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"y": 1, "d": 15.427, "rot": [0, 90, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": 2.308, "y": 1, "d": 13.75, "rot": [0, 162, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": 1.427, "y": 1, "d": 11.036, "rot": [0, -126, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": -1.427, "y": 1, "d": 11.036, "rot": [0, -54, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_ignite", {"d": 13}],
+    [2.95, "sound", "manaArc"],
+    [2.95, "fx", "tto/constellation_giant", {"d": 13}],
+    [2.95, "sound", "fallingComet"],
+    [3.55, "fx", "tto/constellation_giantImpact", {"d": 13}],
+    [3.55, "sound", "novarFlare"]
+    ]
+  },
+  "frostFieldLeap": {
+    "why": "TTO1102:Penguin.<RPC_frostFieldLeap>d__349::MoveNext@0x1DEF770 (Penguin.c:11314-11556; plans/fx_penguin/tto.md 2.2): 0: Row6Begin (:11384), Row6Sound blink (sounds/, :11395); Until 0.2: frostField_leap at the takeoff spot, hero rotation (:11423), frostField_trail owned at the hero (:11438; EffectControl 0.75 + 0.6, followPosition), the 0.6 s leap (:11441-11485: lerp to the landing + up x 10u(1-u), 2.5 m peak; FieldLanding@0x1DA4590: 1.5 m short of the target, 8.5 m for the target 10 m ahead) - the page's hero doesn't travel, so the landing is at 0 (Feral Strike's convention, plans/fx_wolf/misc.md item 4); 0.8: frostField_land at the landing, hero rotation (:11523), Row6Sound iceBreak (:11525), FrostFieldLoop@0x1DC38F0 (:1268-1450): frostField_field at the centre, identity (:1324; EffectControl 8 + 0.6 ends it before the code's Destroy 9, :1335), Row6Sound blizzard (:1337); ticks 1 s apart from the landing (:1345-1393), one Frost Mark each on the target 1.5 m past the landing (within 9 m, :1376; AddFrostMarks@0x1DA2E60 :1432): the 5th, at 0.8 + 4 = 4.8 s, sets off FrostBurst (:38311) = BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), cued at the target 1.5 m ahead (the target point, moved with the landing to the hero); Until 1.1: Row6End (:11545); the cues after 1.1 s run on in the idle tail; no voice, no Multi Cast roll; left out: the frostMarkFx / frostBiteFx / frozenGround / 20 % freeze looks on the foe (status looks on its body, Sheep decision 4); the Penguin's own frostField buff has no look (AddPenguinRow6Fx@0x24ADC20 serves frostMark, frostBite, manaFracture only) Parts: none new (decision 8: in place).",
+    "cues": [
+    [0, "sound", "blink"],
+    [0.2, "fx", "tto/frostField_leap"],
+    [0.2, "fx", "tto/frostField_trail"],
+    [0.8, "fx", "tto/frostField_land"],
+    [0.8, "sound", "iceBreak"],
+    [0.8, "fx", "tto/frostField_field"],
+    [0.8, "sound", "blizzard"],
+    [4.8, "fx", "tto/frostField_burst", {"d": 1.5}],
+    [4.8, "sound", "frozenBlast"]
+    ]
+  },
+  "emperorPenguin": {
+    "why": "TTO1102:Penguin.<RPC_emperorPenguin>d__356::MoveNext@0x1DEA490 (Penguin.c:8457-9102; plans/fx_penguin/tto.md 2.3; 5 penguins, no Focus, the ball's full 22 m: checks/fx_penguin_research/tto/calc.py): 0: Row6Begin (:8628), Until(start + 0) (:8645), then emperorPenguin_whistle at Row6Beak@0x1DAF620 = Head + 0.16 fwd - 0.03 up (0.17 ahead, 0.04 right, 0.64 up on the page's rig) with the hero's rotation, emperorPenguin_summon at the hero, Row6Sound emperorPenguin_whistle (TTO's own sounds/ clip, :8656-8695); Until 0.3: emperorPenguin_crack 1.75 m ahead (:8720-8743; its own sounds/iceBlock 0.8) + Row6Sound iceBlock (:8744), per penguin i of 5 emperorPenguin_emerge at FlockSpot@0x1DA4BF0 (angle (150 i/4 - 75) deg, r 1.25, capstone 0x1DA4D4F-0x1DA4DDD) and emperorPenguin_penguin 0.7 m down the 45 deg tilt axis from it, turned LookRotation(dir) x Euler(45, 0, 0) (:8766-8829), rising along it for 0.25 s (FlockRise@0x1DC31F0, :986-1167); Until 0.55: emperorPenguin_ball 0.45 ahead, 1.0 up, dropped to 0.2 m by 0.8 (:8892-9055); 0.8: emperorPenguin_kick at Row6Foot@0x1DB0160 = Foot2_R (0.10 ahead, 0.19 right, 0.17 up), emperorPenguin_launch at the ball (0.45 ahead, 0.2 up), Row6Sound cAttack (:8963-9008); Until 0.85: Row6Sound emperorPenguin_flock (TTO's own), EmperorShot@0x1DC1520 (:103-969): the ball rolls 28 m/s to 22 m at ground + 0.45, spinning 900 deg/s, an emperorPenguin_frost on the ground every 1.6 m from 1.2 m (float32: 13, the last 20.85 m ahead, :428-552), the flock whirls round the lane (0.65 m, 540 deg/s, 0.06 + 0.035 i behind, :588-682); Until 1.6: Row6End (:9090); 0.85 + 22/28 = 1.636: GoalFx@0x1DA74E0 emperorPenguin_goal at the ball 22.45 m ahead, 0.45 up + Row6Sound absoluteZero (:852), Destroy(ball) (kill 1.086), Scatter@0x1DB09F0 emperorPenguin_poof at each penguin, then Destroy (kill 1.336) (:842-844); no voice, no Multi Cast roll; the ball passes the 10 m target at 0.85 + (10 - 0.95)/28 = 1.173 s (lane test :790-791): AddFrostMarks(foe, 5) (:811) = an instant Frost Burst (:38311), BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), at the target point 10 m ahead; the cues after 1.6 s run on in the idle tail; left out: the frostMarkFx / frostBiteFx looks on the foe (status looks on its body, Sheep decision 4; the hits draw nothing); constellation_impact 1.2 m ahead only with Constellation's +3 penguins (:8846-8862) Parts (2026-11-10): Penguin.EmperorShot (the ball's drop and roll, `to` = the Goal) and Penguin.FlockRise (the rise and whirl; `i` the index, else read from the spot; `n` 5) in wardrobe/fxparts/tto_penguin.js, the flock's skinned SmallIcePenguin_tri (mesh.js) with FlexibleCelShader/Cel No Outline (tto_penguin.js), the launch / goal rings on Unity's built-in Quad (shuriken.js), TTO's own sounds emperorPenguin_whistle / emperorPenguin_flock (sfx/, wardrobe_fx_tto.py SKILL_SOUNDS).",
+    "cues": [
+    [0, "fx", "tto/emperorPenguin_whistle", {"d": 0.17, "x": 0.04, "y": 0.64}],
+    [0, "fx", "tto/emperorPenguin_summon"],
+    [0, "sound", "emperorPenguin_whistle"],
+    [0.3, "fx", "tto/emperorPenguin_crack", {"d": 1.75}],
+    [0.3, "sound", "iceBlock"],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": -1.207, "d": 0.324}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": -0.761, "d": 0.992}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"d": 1.25}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": 0.761, "d": 0.992}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": 1.207, "d": 0.324}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": -1.207, "y": -0.495, "d": -0.171, "rot": [45, 0, 0], "i": 0, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": -0.761, "y": -0.495, "d": 0.497, "rot": [45, 0, 0], "i": 1, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"y": -0.495, "d": 0.755, "rot": [45, 0, 0], "i": 2, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": 0.761, "y": -0.495, "d": 0.497, "rot": [45, 0, 0], "i": 3, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": 1.207, "y": -0.495, "d": -0.171, "rot": [45, 0, 0], "i": 4, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.55, "fx", "tto/emperorPenguin_ball", {"d": 0.45, "y": 1.0, "to": [0, 0.45, 22.45], "kill": 1.086}],
+    [0.8, "fx", "tto/emperorPenguin_kick", {"d": 0.1, "x": 0.19, "y": 0.17}],
+    [0.8, "fx", "tto/emperorPenguin_launch", {"d": 0.45, "y": 0.2}],
+    [0.8, "sound", "cAttack"],
+    [0.85, "sound", "emperorPenguin_flock"],
+    [0.893, "fx", "tto/emperorPenguin_frost", {"d": 1.65}],
+    [0.95, "fx", "tto/emperorPenguin_frost", {"d": 3.25}],
+    [1.007, "fx", "tto/emperorPenguin_frost", {"d": 4.85}],
+    [1.064, "fx", "tto/emperorPenguin_frost", {"d": 6.45}],
+    [1.121, "fx", "tto/emperorPenguin_frost", {"d": 8.05}],
+    [1.173, "fx", "tto/frostField_burst", {"d": 10}],
+    [1.173, "sound", "frozenBlast"],
+    [1.179, "fx", "tto/emperorPenguin_frost", {"d": 9.65}],
+    [1.236, "fx", "tto/emperorPenguin_frost", {"d": 11.25}],
+    [1.293, "fx", "tto/emperorPenguin_frost", {"d": 12.85}],
+    [1.35, "fx", "tto/emperorPenguin_frost", {"d": 14.45}],
+    [1.407, "fx", "tto/emperorPenguin_frost", {"d": 16.05}],
+    [1.464, "fx", "tto/emperorPenguin_frost", {"d": 17.65}],
+    [1.521, "fx", "tto/emperorPenguin_frost", {"d": 19.25}],
+    [1.579, "fx", "tto/emperorPenguin_frost", {"d": 20.85}],
+    [1.636, "fx", "tto/emperorPenguin_goal", {"d": 22.45, "y": 0.45}],
+    [1.636, "sound", "absoluteZero"],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.282, "y": 0.936, "d": 20.77}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": -0.47, "y": 0.799, "d": 19.79}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": -0.572, "y": 0.042, "d": 18.81}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.116, "y": -0.29, "d": 17.83}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.644, "y": 0.263, "d": 16.85}]
+    ]
+  }
+}
+```
+
+### Shared changes asked (files I do not own; all three already in index.html when this was written: FX_PART_FILES
+has "tto_penguin", cueOf keeps every option (`...o`), the root's `scale` takes an array)
+- `wardrobe/index.html` `FX_PART_FILES`: add `"tto_penguin"` after `"tto_sheep"` (it reads `api.curves`, which
+  shuriken.js sets).
+- `wardrobe/index.html` `cueOf`: pass `ignite: o.ignite, i: o.i, n: o.n` through (optional, see 7).
+- `wardrobe/index.html` (P5): `scale` as `[x, y, z]` at the root (`o.scale.fromArray(n.scale || [1, 1, 1])` then
+  multiply by the vector, or by the number as now).
+
+### Left for a browser check (QA)
+- The cel penguins' look (the light band at N.L 0.5 under the page's sun; brightness: item 9), their facing as they
+  whirl (belly-down, LookRotation(motion) x Euler(80, 0, 0)), the staff collapsed (its bone scale 0).
+- The meteor streaks' width and colour; the launch rings and the goal nets (mesh particles on the Quad, local
+  alignment).
+- Emperor's March runs past its clip (the Goal at 1.636 s, the clip 1.6 s): with the loop toggle on the Goal never
+  shows (2.3 "Read this first" 9).

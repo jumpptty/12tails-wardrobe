@@ -62,7 +62,8 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   when the text can change, and offset to match; check with a screenshot. Method: NOTES.md "Thai text: centring by eye".
 - When a look is being picked, mock several variants side by side so the user picks visually.
 - Usage guard (user 2026-11-10): beside every workflow (or other long agent run) start `py -3 -I pipeline/usage_watch.py
-  98 60` in the background; when it prints REACHED (the account's weekly usage at 98 %): stop the workflow, then commit
+  98 300` in the background (checks more often than every 5 min get rate-limited; a `BLIND` line = 30 min without a
+  successful check: say so); when it prints REACHED (the account's weekly usage at 98 %): stop the workflow, then commit
   and push everything (finished and half-written reports, code, data; NOTES.md says which agents finished and which
   file is partial) with a HANDOFF.md item to continue on either PC (user: "push everything to github for continuing at
   home too"). A workflow resumes (resumeFromRunId) only in the session that ran it: elsewhere, re-run just the unfinished

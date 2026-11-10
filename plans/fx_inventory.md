@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioSource, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, ImageEmitter, LineEmitter, ParticleAnimator, ParticleRenderer, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, VortexEmitter) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioSource, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, ImageEmitter, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, VortexEmitter) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -11,17 +11,17 @@ like a Sheep's heal): counted apart, never this class's skills.
 
 | class | own effects | ready | not ready | parts missing (own effects needing it) | others' loaded |
 |---|---|---|---|---|---|
-| bat | 26 | 20 | 6 | BoltEmitter 2, Bat_echoes 1, Bat_guardianOfTheNight 1, Light 1, Bat_mirageOrb 1, AudioControl 1 | 29 |
+| bat | 26 | 21 | 5 | Bat_echoes 1, Bat_guardianOfTheNight 1, Light 1, Bat_mirageOrb 1, AudioControl 1 | 29 |
 | bison | 46 | 42 | 4 | UVScroll 2, Bison_earthRupture 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | cat | 67 | 60 | 7 | WorldParticleCollider 2, StatusControl 1, UVScroll 1, Cat_grandCasinoArcade 1, Cat_supportFire 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
-| chameleon | 57 | 46 | 11 | BoltEmitter 6, Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2, WorldParticleCollider 1 | 28 |
-| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, AudioControl 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, Mole_warCapital 1, CharacterControl 1, Mole_warMissile 1 | 28 |
-| monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, Monkey_lavu 1, rotationControl 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, ParticleSystemRenderer 1, AudioControl 1 | 28 |
-| panda | 71 | 68 | 3 | BoltEmitter 2, AudioControl 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
-| penguin | 48 | 38 | 10 | Penguin_tornado 3, Penguin_typhoon 3, Penguin_arcticEmperor 1, Penguin_cosmicFriday 1, Penguin_iceBlock 1, Penguin_nAttack 1 | 28 |
+| chameleon | 57 | 52 | 5 | Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2, WorldParticleCollider 1 | 28 |
+| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, AudioControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, CharacterControl 1, Mole_warCapital 1, Mole_warMissile 1 | 28 |
+| monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, rotationControl 1, Monkey_lavu 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, AudioControl 1, ParticleSystemRenderer 1 | 28 |
+| panda | 71 | 69 | 2 | AudioControl 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| penguin | 48 | 48 | 0 |  | 28 |
 | rabbit | 84 | 64 | 20 | Rabbit_potion 13, WorldParticleCollider 2, Rabbit_acidicField 1, ParticleSystem 1, ParticleSystemRenderer 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
-| whale | 51 | 43 | 8 | whale_kingdomKnight 2, UVScroll 1, AudioControl 1, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1, BoltEmitter 1 | 28 |
+| whale | 51 | 44 | 7 | whale_kingdomKnight 2, UVScroll 1, AudioControl 1, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
 | wolf | 69 | 67 | 2 | Light 2 | 28 |
 
 ## Per missing part
@@ -32,15 +32,12 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | part | effects | blocks alone | classes |
 |---|---|---|---|
 | Rabbit_potion | 13 | 13 | rabbit |
-| BoltEmitter | 11 | 9 | bat, chameleon, panda, whale |
 | WorldParticleCollider | 5 | 5 | cat, chameleon, rabbit |
 | Monkey_fireBall | 4 | 4 | monkey |
 | Mole_mine | 4 | 4 | mole |
 | UVScroll | 4 | 3 | bison, cat, whale |
-| Penguin_typhoon | 3 | 3 | penguin |
-| Penguin_tornado | 3 | 3 | penguin |
+| Light | 3 | 3 | bat, wolf |
 | AudioControl | 5 | 2 | bat, mole, monkey, panda, whale |
-| Light | 3 | 2 | bat, wolf |
 | whale_kingdomKnight | 2 | 2 | whale |
 | Mole_timeNuke | 2 | 2 | mole |
 | Mole_stunMine | 2 | 2 | mole |
@@ -53,10 +50,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Rabbit_sniperCamera | 1 | 1 | rabbit |
 | Rabbit_healingField | 1 | 1 | rabbit |
 | Rabbit_acidicField | 1 | 1 | rabbit |
-| Penguin_nAttack | 1 | 1 | penguin |
-| Penguin_iceBlock | 1 | 1 | penguin |
-| Penguin_cosmicFriday | 1 | 1 | penguin |
-| Penguin_arcticEmperor | 1 | 1 | penguin |
 | Monkey_runicSand | 1 | 1 | monkey |
 | Monkey_runicFlame | 1 | 1 | monkey |
 | Monkey_earthPulse | 1 | 1 | monkey |
@@ -88,56 +81,49 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 599 | 599 / 699 |
-| 1 | Rabbit_potion | 13 | 612 / 699 |
-| 2 | BoltEmitter | 9 | 621 / 699 |
-| 3 | WorldParticleCollider | 5 | 626 / 699 |
-| 4 | Monkey_fireBall | 4 | 630 / 699 |
-| 5 | Mole_mine | 4 | 634 / 699 |
-| 6 | UVScroll | 3 | 637 / 699 |
-| 7 | AudioControl | 3 | 640 / 699 |
-| 8 | Penguin_typhoon | 3 | 643 / 699 |
-| 9 | Penguin_tornado | 3 | 646 / 699 |
-| 10 | Light | 3 | 649 / 699 |
-| 11 | whale_kingdomKnight | 2 | 651 / 699 |
-| 12 | Mole_timeNuke | 2 | 653 / 699 |
-| 13 | Mole_stunMine | 2 | 655 / 699 |
-| 14 | Chameleon_nAttack | 2 | 657 / 699 |
-| 15 | rotationControl | 1 | 658 / 699 |
-| 16 | Whale_javelin | 1 | 659 / 699 |
-| 17 | Whale_homingShield | 1 | 660 / 699 |
-| 18 | Whale_flyingShield | 1 | 661 / 699 |
-| 19 | StatusControl | 1 | 662 / 699 |
-| 20 | Rabbit_stickyGum | 1 | 663 / 699 |
-| 21 | Rabbit_sniperCamera | 1 | 664 / 699 |
-| 22 | Rabbit_healingField | 1 | 665 / 699 |
-| 23 | Rabbit_acidicField | 1 | 666 / 699 |
-| 24 | Penguin_nAttack | 1 | 667 / 699 |
-| 25 | Penguin_iceBlock | 1 | 668 / 699 |
-| 26 | Penguin_cosmicFriday | 1 | 669 / 699 |
-| 27 | Penguin_arcticEmperor | 1 | 670 / 699 |
-| 28 | Monkey_runicSand | 1 | 671 / 699 |
-| 29 | Monkey_runicFlame | 1 | 672 / 699 |
-| 30 | Monkey_lavu | 1 | 673 / 699 |
-| 31 | Monkey_earthPulse | 1 | 674 / 699 |
-| 32 | Mole_warMissile | 1 | 675 / 699 |
-| 33 | Mole_stunGrenade | 1 | 676 / 699 |
-| 34 | Mole_napalm | 1 | 677 / 699 |
-| 35 | Mole_mortarShot | 1 | 678 / 699 |
-| 36 | Mole_grenadeCluster | 1 | 679 / 699 |
-| 37 | Mole_flameCarnival | 1 | 680 / 699 |
-| 38 | Mole_cartBomb | 1 | 681 / 699 |
-| 39 | Mole_bazooka | 1 | 682 / 699 |
-| 40 | Cat_supportFire | 1 | 683 / 699 |
-| 41 | Cat_grandCasinoArcade | 1 | 684 / 699 |
-| 42 | Bison_earthRupture | 1 | 685 / 699 |
-| 43 | Bat_mirageOrb | 1 | 686 / 699 |
-| 44 | Bat_guardianOfTheNight | 1 | 687 / 699 |
-| 45 | Bat_echoes | 1 | 688 / 699 |
-| 46 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 47 | ParticleSystem | 10 | 698 / 699 |
-| 48 | Mole_warCapital | 0 | 698 / 699 |
-| 49 | CharacterControl | 1 | 699 / 699 |
+| 0 | (built today) | 618 | 618 / 699 |
+| 1 | Rabbit_potion | 13 | 631 / 699 |
+| 2 | WorldParticleCollider | 5 | 636 / 699 |
+| 3 | Monkey_fireBall | 4 | 640 / 699 |
+| 4 | Mole_mine | 4 | 644 / 699 |
+| 5 | UVScroll | 3 | 647 / 699 |
+| 6 | AudioControl | 3 | 650 / 699 |
+| 7 | Light | 3 | 653 / 699 |
+| 8 | whale_kingdomKnight | 2 | 655 / 699 |
+| 9 | Mole_timeNuke | 2 | 657 / 699 |
+| 10 | Mole_stunMine | 2 | 659 / 699 |
+| 11 | Chameleon_nAttack | 2 | 661 / 699 |
+| 12 | rotationControl | 1 | 662 / 699 |
+| 13 | Whale_javelin | 1 | 663 / 699 |
+| 14 | Whale_homingShield | 1 | 664 / 699 |
+| 15 | Whale_flyingShield | 1 | 665 / 699 |
+| 16 | StatusControl | 1 | 666 / 699 |
+| 17 | Rabbit_stickyGum | 1 | 667 / 699 |
+| 18 | Rabbit_sniperCamera | 1 | 668 / 699 |
+| 19 | Rabbit_healingField | 1 | 669 / 699 |
+| 20 | Rabbit_acidicField | 1 | 670 / 699 |
+| 21 | Monkey_runicSand | 1 | 671 / 699 |
+| 22 | Monkey_runicFlame | 1 | 672 / 699 |
+| 23 | Monkey_lavu | 1 | 673 / 699 |
+| 24 | Monkey_earthPulse | 1 | 674 / 699 |
+| 25 | Mole_warMissile | 1 | 675 / 699 |
+| 26 | Mole_stunGrenade | 1 | 676 / 699 |
+| 27 | Mole_napalm | 1 | 677 / 699 |
+| 28 | Mole_mortarShot | 1 | 678 / 699 |
+| 29 | Mole_grenadeCluster | 1 | 679 / 699 |
+| 30 | Mole_flameCarnival | 1 | 680 / 699 |
+| 31 | Mole_cartBomb | 1 | 681 / 699 |
+| 32 | Mole_bazooka | 1 | 682 / 699 |
+| 33 | Cat_supportFire | 1 | 683 / 699 |
+| 34 | Cat_grandCasinoArcade | 1 | 684 / 699 |
+| 35 | Bison_earthRupture | 1 | 685 / 699 |
+| 36 | Bat_mirageOrb | 1 | 686 / 699 |
+| 37 | Bat_guardianOfTheNight | 1 | 687 / 699 |
+| 38 | Bat_echoes | 1 | 688 / 699 |
+| 39 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 40 | ParticleSystem | 10 | 698 / 699 |
+| 41 | Mole_warCapital | 0 | 698 / 699 |
+| 42 | CharacterControl | 1 | 699 / 699 |
 
 ## Per effect
 
@@ -156,10 +142,10 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `echoes_ring` (Bat.cs:27967): ready
 - `guardian` (Bat.cs:30549): needs Bat_guardianOfTheNight
 - `massCast` (Bat.cs:11140): ready
-- `mindControl_ring` (Bat.cs:13738): needs BoltEmitter, Light
+- `mindControl_ring` (Bat.cs:13738): needs Light
 - `mirageOrb` (Bat.cs:12669): needs Bat_mirageOrb
 - `nefariousWhip_hit` (Bat.cs:44025): needs AudioControl
-- `nightmare_ring` (Bat.cs:11996): needs BoltEmitter
+- `nightmare_ring` (Bat.cs:11996): ready
 - `paranoia_hit` (Bat.cs:14599): ready
 - `phantasmBlast_hit` (Bat.cs:36059): ready
 - `shadowGaze_hit` (Bat.cs:11582): ready
@@ -292,16 +278,16 @@ Each step: the part that makes the most own effects ready, given the ones above 
 ### chameleon
 
 - `allBugSlayer_fire` (Chameleon.cs:33006): ready
-- `allBugSlayer_hit` (Chameleon.cs:9785): needs BoltEmitter
+- `allBugSlayer_hit` (Chameleon.cs:9785): ready
 - `allElementalSlayer_fire` (Chameleon.cs:33088): ready
-- `allElementalSlayer_hit` (Chameleon.cs:9859): needs BoltEmitter
+- `allElementalSlayer_hit` (Chameleon.cs:9859): ready
 - `allMachineSlayer_fire` (Chameleon.cs:33133): ready
-- `allMachineSlayer_hit` (Chameleon.cs:9900): needs BoltEmitter
-- `allSlain_hit` (Chameleon.cs:9953): needs BoltEmitter
+- `allMachineSlayer_hit` (Chameleon.cs:9900): ready
+- `allSlain_hit` (Chameleon.cs:9953): ready
 - `allSlain_ring` (Chameleon.cs:34604): ready
 - `allSlayer_ring` (Chameleon.cs:32297): ready
 - `allTailSlayer_fire` (Chameleon.cs:33047): ready
-- `allTailSlayer_hit` (Chameleon.cs:9822): needs BoltEmitter
+- `allTailSlayer_hit` (Chameleon.cs:9822): ready
 - `blend` (Chameleon.cs:16325): ready
 - `bloodBurn` (Chameleon.cs:29807): ready
 - `bugSlayer_eye` (Chameleon.cs:9615): ready
@@ -341,7 +327,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `tent_destroy` (Chameleon.cs:36181): ready
 - `tent_heal` (Chameleon.cs:36294): ready
 - `tent_ring` (Chameleon.cs:36079): ready
-- `thunderDragon_ring1` (Chameleon.cs:38276): needs BoltEmitter
+- `thunderDragon_ring1` (Chameleon.cs:38276): ready
 - `thunderDragon_ring2` (Chameleon.cs:37992): needs ParticleSystem, ParticleSystemRenderer
 - `tormentRain_fire` (Chameleon.cs:25996): needs WorldParticleCollider
 - `tormentRain_ring` (Chameleon.cs:25411): ready
@@ -526,7 +512,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `qiStrike` (Panda.cs:23833): ready
 - `qiStrike_hit` (Panda.cs:8519): ready
 - `qiStrike_ring` (Panda.cs:23247): ready
-- `raijinKen_hit` (Panda.cs:42515): needs BoltEmitter, ParticleSystem, ParticleSystemRenderer
+- `raijinKen_hit` (Panda.cs:42515): needs ParticleSystem, ParticleSystemRenderer
 - `raijinKen_ring1` (Panda.cs:42181): ready
 - `raijinKen_ring2` (Panda.cs:41928): ready
 - `rainStorm` (Panda.cs:38305): ready
@@ -539,7 +525,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `rushingFalcon` (Panda.cs:22711): ready
 - `rushingFalcon_hit` (Panda.cs:8462): ready
 - `safeGuard_hit` (Panda.cs:9737): ready
-- `spTransfer` (Panda.cs:36062): needs BoltEmitter
+- `spTransfer` (Panda.cs:36062): ready
 - `stasisBlow` (Panda.cs:34212): ready
 - `stasisBlow_endDust` (Panda.cs:34464): ready
 - `stasisBlow_ring` (Panda.cs:34727): ready
@@ -561,14 +547,14 @@ Each step: the part that makes the most own effects ready, given the ones above 
 ### penguin
 
 - `absoluteZero` (Penguin.cs:33844): ready
-- `arcticEmperor` (Penguin.cs:35042): needs Penguin_arcticEmperor
+- `arcticEmperor` (Penguin.cs:35042): ready
 - `arcticWind` (Penguin.cs:30766): ready
 - `astralShift_ring` (Penguin.cs:12805): ready
 - `blink` (Penguin.cs:22817): ready
 - `blink_ring` (Penguin.cs:23034): ready
 - `blizzard` (Penguin.cs:34430): ready
 - `cAttack_ring` (Penguin.cs:18593): ready
-- `cosmicFriday` (Penguin.cs:39256): needs Penguin_cosmicFriday
+- `cosmicFriday` (Penguin.cs:39256): ready
 - `cosmicFriday_ring` (Penguin.cs:39219): ready
 - `cosmicRift_ring` (Penguin.cs:38736): ready
 - `deadlyFrost` (Penguin.cs:30739): ready
@@ -582,7 +568,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `frozenBreak` (Penguin.cs:29631): ready
 - `giantComet` (Penguin.cs:37615): ready
 - `giantStar` (Penguin.cs:37328): ready
-- `iceBlock` (Penguin.cs:10716): needs Penguin_iceBlock
+- `iceBlock` (Penguin.cs:10716): ready
 - `manaArc` (Penguin.cs:21821): ready
 - `manaBurn` (Penguin.cs:24795): ready
 - `manaField_ring` (Penguin.cs:18558): ready
@@ -599,15 +585,15 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `penguinOfArc` (Penguin.cs:21786): ready
 - `snowBall_cast` (Penguin.cs:38253): ready
 - `snowMan_ring` (Penguin.cs:32319): ready
-- `spreadShot_fire` (Penguin.cs:11486): needs Penguin_nAttack
-- `tornado1` (Penguin.cs:10897): needs Penguin_tornado
-- `tornado2` (Penguin.cs:10936): needs Penguin_tornado
-- `tornado3` (Penguin.cs:10975): needs Penguin_tornado
+- `spreadShot_fire` (Penguin.cs:11486): ready
+- `tornado1` (Penguin.cs:10897): ready
+- `tornado2` (Penguin.cs:10936): ready
+- `tornado3` (Penguin.cs:10975): ready
 - `tornado_hit` (Penguin.cs:10802): ready
 - `tornado_ring` (Penguin.cs:10857): ready
-- `typhoon1` (Penguin.cs:11170): needs Penguin_typhoon
-- `typhoon2` (Penguin.cs:11209): needs Penguin_typhoon
-- `typhoon3` (Penguin.cs:11248): needs Penguin_typhoon
+- `typhoon1` (Penguin.cs:11170): ready
+- `typhoon2` (Penguin.cs:11209): ready
+- `typhoon3` (Penguin.cs:11248): ready
 
 ### rabbit
 
@@ -779,7 +765,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `kingdomKnight2` (Whale.cs:28468): needs whale_kingdomKnight
 - `kingdomKnight_ring1` (Whale.cs:28755): ready
 - `malStorm` (Whale.cs:32480): ready
-- `malStorm_bolt` (Whale.cs:10188): needs BoltEmitter
+- `malStorm_bolt` (Whale.cs:10188): ready
 - `megalodon` (Whale.cs:34790): ready
 - `megalodon_ring` (Whale.cs:34744): ready
 - `nAttack_hit` (Whale.cs:8303): ready

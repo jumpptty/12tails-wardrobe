@@ -1024,8 +1024,16 @@ const SEQ = {
   panda: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*@3",
     "Raijin Ken: cAttack1 cAttack2* raijinKen1 raijinKen2", "Fuujin Ken: fujinKen1 fujinKen2*@8 fujinKen3", "Qi Strike: qiStrike1@4 qiStrike2~",
     "Tempest Dance: tempestDance*@5 tempestDanceEnd"],
-  penguin: ["Normal Attack: nAttack1 nAttack2~ nAttack3~", "Charge Attack: cAttack1 cAttack2*~@3", "Cast: cast1 cast2*@0 cast3",
-    "Cosmic Friday: cast1@0.7 cast2*@0 cast3 cosmicFriday*@6"],
+  // the Penguin (plans/fx_penguin, 2026-11-10): Normal Attack's stage 2 at 0.5 s and stage 3 at 1.0 s after stage 1
+  // (RPC_nAttack2's Yield(2, actionTime - Time.time + 0.5) Penguin.cs:17877, RPC_nAttack3's + 1 :18332, actionTime never
+  // reset :17857-17860; plans/fx_penguin/attacks_emotes.md "Normal Attack stage times"; the first step keeps the page's
+  // fade, as the Sheep's); cAttack1 gives way to the looped cAttack2 after 0.7 s (Yield(2, 0.7) :19002, then
+  // PlayAnimation(cAttack2, 0.2) :18520-18525); MP Transfer cuts in on nAttack1 (PlayAnimation(nAttack1, 0) :23633), its
+  // own tile as the Sheep's Lullaby (its cues "@MPTransfer:nAttack1"); Cosmic Friday's cast3 lasts 0.4 s before the
+  // looped cosmicFriday clip (Yield(2, 0.4) :39691, PlayAnimation(cosmicFriday, 0) :39203-39208; plans/fx_penguin/cast_b.md
+  // "Read this first" 1). The mission's activateIcon1 (cAttack2 looped) has no tile (decisions.md 19)
+  penguin: ["Normal Attack: nAttack1@0.5 nAttack2~@0.5 nAttack3~", "Charge Attack: cAttack1@0.7 cAttack2*~@3", "Cast: cast1 cast2*@0 cast3",
+    "Cosmic Friday: cast1@0.7 cast2*@0 cast3@0.4 cosmicFriday*@6", "MP Transfer: nAttack1!"],
   rabbit: ["Charge Attack: cAttack1 cAttack2* cAttack3", "Mix: mix1 mix2*@0 mix3~", "Sticky Gum: mix1 mix2*@0 mix4~", "Bounce: bounce1 bounce2",
     "Mall: mall1* mall2*"],
   // the Sheep (plans/fx_sheep, decisions.md 12, 16, 17): Normal Attack's stage 2 at 0.7 s and stage 3 at 0.7 + 0.8 = 1.5 s
@@ -1756,6 +1764,8 @@ addEventListener("pointermove", e => { pointer = { x: e.clientX, y: e.clientY };
 addEventListener("keydown", e => { if (/^(Tab|Arrow\w+)$/.test(e.key)) lastInput = "key"; }, true);
 document.documentElement.addEventListener("mouseleave", () => { pointer = null; });
 const ray = new THREE.Raycaster(), alphaCache = new WeakMap();
+const LOOK_LAYER = 30;                      // a piece under a skill's skin (lookSync): not drawn, still under the ray
+ray.layers.enable(LOOK_LAYER);
 function alphaAt(map, uv) {              // a texture's alpha where a ray hit it (Repeat wrap); 255 when it can't be read
   const img = map?.image, fr = x => x - Math.floor(x);
   if (!img || !uv) return 255;
@@ -2550,7 +2560,16 @@ const pic = (src, face = false, fb = "") => src ? `<img loading="lazy" alt="" sr
 const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.265, 0.47]], 3: [[0.27, 0.03, 0.46], [0.03, 0.51, 0.46], [0.51, 0.51, 0.46]],
   4: [[0.02, 0.02, 0.47], [0.51, 0.02, 0.47], [0.02, 0.51, 0.47], [0.51, 0.51, 0.47]],
   5: [[0.15, 0.08, 0.36], [0.49, 0.08, 0.36], [0.00, 0.52, 0.34], [0.33, 0.52, 0.34], [0.66, 0.52, 0.34]] };
+// a sequence that is one skill played on another skill's clip (2026-11-10, the Penguin's MP Transfer on nAttack1,
+// Penguin.cs:23633): its own skill's icon (the Bible's upscale when it has one, else the class's top-rank icon), not the
+// icons of the skills its clip belongs to (Normal Attack's)
+const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer" } };
 function moveSkillIcons(name) {
+  const own = SEQ_SKILL[C?.cls]?.[name];
+  if (own) {
+    const hd = HDI[C.cls]?.[own]?.icon, sk = (UI.skills?.[C.cls] || []).filter(s => s.replace(/\d+$/, "") === own.toLowerCase()).sort(numSort);
+    return hd ? [hd] : sk.length ? [`icons/skills/${C.cls}/${sk[sk.length - 1]}.webp`] : [];
+  }
   const ch = chainOf(name), clips = ch ? ch.steps.map(s => s.clip) : [name];
   const hd = Object.values(HDI[C?.cls] || {}).filter(v => v.clips.some(c => clips.includes(c))).map(v => v.icon);
   return (hd.length ? hd : [moveIcon(name)].filter(Boolean)).slice(0, 5);
@@ -3031,13 +3050,17 @@ const Sound = {                          // Web Audio: started by the first pick
   },
   // returns a handle: stop() ends it, or keeps it from starting while the file still loads; loop = an AudioSource's Loop
   // (it plays until its effect ends, Fx.dispose: Unity stops a looping source only with its GameObject)
+  // setVolume(v): the game's script changing its AudioSource's volume as it plays (2026-11-10, plans/fx_penguin/parts.md
+  // Interfaces 2: the tornado / typhoon loops start at m_Volume 0 and Penguin_tornado.cs:428 / Penguin_typhoon.cs:330
+  // raise it each FixedUpdate); before the file has loaded it sets the volume the sound starts at
   play(cls, n, vol = 1, loop = false) {
-    const h = { src: null, off: false, stop() { this.off = true; try { this.src?.stop(); } catch (e) {} } };
+    const h = { src: null, gain: null, vol, off: false, stop() { this.off = true; try { this.src?.stop(); } catch (e) {} },
+      setVolume(v) { this.vol = v; if (this.gain) this.gain.gain.value = v; } };
     if (!soundOn || !this.ctx) return h;
     this.get(cls, n).then(b => {
       if (h.off) return;
       const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
-      s.buffer = b; s.loop = loop; g.gain.value = vol; s.connect(g).connect(this.ctx.destination); s.start(); h.src = s;
+      s.buffer = b; s.loop = loop; g.gain.value = h.vol; s.connect(g).connect(this.ctx.destination); s.start(); h.src = s; h.gain = g;
     }).catch(() => {});
     return h;
   },
@@ -3061,14 +3084,21 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // build finds it in fx.emitters), or fx.addSize = m for the root node's emitter; either is read at each spawn; setSize(min,
 // max) replaces the emitter's own sizes (the hero's code rewriting them). A part named "fx:<effect>" is the hero's code
 // acting on that effect: built once on its root when it is made (comp null). api.shader(blend, make) gives a data blend
-// ("shader:<name>") its own material, made by make(d, name, cls) in fxMaterial (fxparts/tto_sheep.js)
+// ("shader:<name>") its own material, made by make(d, name, cls) in fxMaterial (fxparts/tto_sheep.js).
+// 2026-11-10, the Penguin (plans/fx_penguin/parts.md "Interfaces"): an emitter's dispose?() runs when its effect goes
+// (Fx.dispose: a cue's kill, its life's end, a new pick, a class change), for what a part changed outside its node;
+// Sound.play's handle takes setVolume(v) (a part reaches its node's looping AudioSource as fx.loops.find(l => l.node ===
+// node)?.h); api.heroHide(key, on) hides every mesh of the hero (outfit, props, a skin cue's look) while any key holds
+// (Snow Man: CharacterControl.cs:38690-38700 turns the character's renderers off while its snowman stands; key = the
+// part's own fx or emitter; call it with on false in dispose too, so a new pick never leaves her hidden); api.worn(slot) =
+// the item worn there ("R" = the main weapon: "specialScepter" is the Staff of Time, w_pgn59, decisions.md 18), or null
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
-  "alphatimer", "sheep", "tto_sheep"];
+  "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
-    fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C };
+    fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
@@ -3096,6 +3126,58 @@ function fxMaterial(cls, name, d) {
   const k = cls + "/" + name;
   if (FX.mats[k]) return FX.mats[k];
   if (FXSHADERS[d.blend]) return (FX.mats[k] = FXSHADERS[d.blend](d, name, cls));   // a part module's own shader (fxparts/tto_sheep.js: TTO/Sheep/*, Standard, Particles/Standard Unlit)
+  const withMap = m => {
+    if (d.tex) {
+      const t = texLoader.load(`${DATA}fx/tex/${d.tex}.webp`);
+      t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.fromArray(d.scale); t.offset.fromArray(d.offset);
+      m.map = t;
+    }
+    return (FX.mats[k] = m);
+  };
+  // Unity 3.5's Particles/Multiply (Double) (built-in 206, wardrobe_fx.py BUILTIN_BLEND, medium sure; the Penguin's comet
+  // bodies fallingComet1 / giantComet; plans/fx_penguin/parts.md "Each part" 9): colour = lerp(0.5, texture x vertex
+  // colour, their alpha) (combine texture * primary, then previous lerp(previous) constant 0.5), Blend DstColor SrcColor =
+  // 2 x colour x what is drawn (0.5 leaves it as it is, darker darkens, brighter brightens), ZWrite Off, Cull Off, no
+  // _TintColor. Over the hero or another effect the page blends exactly that, on the gamma values as the game does (the
+  // lerp is made on three's sRGB output). Over empty canvas (transparent over the stage's CSS colour) a multiply has nothing
+  // to multiply, so the alpha carries the darkening, as mesh.js's FX/DistortGlass does: alpha += 1 - 2 x the colour's
+  // luminance where it darkens, and the browser's compositing gives stage x 2 x luminance. APPROXIMATED: there the dark
+  // half is grey, not coloured, and the bright half (a brightening of the backdrop) is lost
+  if (d.blend === "multiply2") {
+    const m = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.SrcColorFactor,
+      blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor });
+    m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <dithering_fragment>",
+      "#include <dithering_fragment>\n\tgl_FragColor.rgb = mix(vec3(0.5), gl_FragColor.rgb, clamp(gl_FragColor.a, 0.0, 1.0));"
+      + "\n\tgl_FragColor.a = max(0.0, 1.0 - 2.0 * dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722)));"); };
+    m.userData.fxBlend = d.blend;
+    return withMap(m);
+  }
+  // Unity 3.5's Particles/Alpha Blended Premultiply (built-in 207, medium sure: every class's <cls>_dead, the KO tile's
+  // deadEffect, also netherBane, fireWall): colour = vertex colour x texture x vertex alpha, and the alpha the same (its
+  // frag: i.color * tex2D(_MainTex, uv) * i.color.a), Blend One OneMinusSrcAlpha: the colour adds and the backdrop
+  // darkens by the alpha, so over the white stage the mark shows (drawn additive before 2026-11-10, it was white on white).
+  // ZWrite Off, Cull Off, no _TintColor; the material's opacity (a part's fade) scales the vertex alpha. The canvas is
+  // premultiplied, so its compositing over the stage is the game's blend, as long as no colour channel is above the
+  // alpha: the textures are not premultiplied (penguin_dead: rgb (0, 175, 214) at alpha 0.5), so colour x vertex alpha
+  // runs above texture alpha x vertex alpha^2 (the ghost: (0, 84, 101) over alpha 29 of 255), and the browser clamps such
+  // a pixel's colour down to its alpha: the KO ghost came out a dim dark-teal smudge on the dark stage (2026-11-10 QA,
+  // read back from the canvas). So, as fxMaterial's additive blends below, the alpha written is at least the brightest
+  // channel. APPROXIMATED: over the stage the colour adds and the stage dims by that alpha (the game: by the true one),
+  // so on the dark stage it is within a few % of the game's, on the white one it shows a little more than the game's
+  // pale ghost; over drawn pixels (the hero, other effects) the colour behind dims by it too
+  if (d.blend === "premul") {
+    const m = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
+      blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor });
+    m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <dithering_fragment>",
+      "#include <dithering_fragment>\n#ifdef USE_COLOR_ALPHA\n\tfloat fxPmA = vColor.a * opacity;\n#else\n\tfloat fxPmA = opacity;\n#endif"
+      + "\n\tgl_FragColor *= fxPmA;"
+      + "\n\tgl_FragColor.a = max(gl_FragColor.a, max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b)));"); };
+    m.userData.fxBlend = d.blend;
+    return withMap(m);
+  }
   // Unity 3.5's particle shaders: Additive (200) and Alpha Blended (203) = 2 x _TintColor x vertex colour x texture (the
   // default tint 0.5 makes the factor 1); Additive (Soft) (202) = vertex colour x texture, rgb x alpha, Blend One
   // OneMinusSrcColor (a screen: bright parts add less over bright ground). The canvas is transparent over the page's stage
@@ -3111,21 +3193,39 @@ function fxMaterial(cls, name, d) {
       "#include <dithering_fragment>\n\tgl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));"); };
   }
   m.color.setRGB(Math.min(1, 2 * tint[0]), Math.min(1, 2 * tint[1]), Math.min(1, 2 * tint[2]), THREE.SRGBColorSpace);
-  if (d.tex) {
-    const t = texLoader.load(`${DATA}fx/tex/${d.tex}.webp`);
-    t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.fromArray(d.scale); t.offset.fromArray(d.offset);
-    m.map = t;
-  }
-  return (FX.mats[k] = m);
+  return withMap(m);
 }
-function fxMesh(parent, mat) { const m = new THREE.Mesh(new THREE.BufferGeometry(), mat); m.frustumCulled = false; parent.add(m); return m; }
-function setMesh(m, pos, col, uv, idx) {
-  const g = m.geometry;
-  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 4));
-  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
-  g.setIndex(idx);
+// (a mesh with no material is never drawn: three's renderer throws on a null material, and one throw in a frame stops the
+// page's render loop for good; 2026-11-10 QA, the Penguin's deadlyFrost)
+function fxMesh(parent, mat) { const m = new THREE.Mesh(new THREE.BufferGeometry(), mat); m.frustumCulled = false; if (!mat) m.visible = false; parent.add(m); return m; }
+// An effect mesh's per-frame geometry (every emitter calls this each frame). The buffers are kept and written in place:
+// one set per mesh, grown (x2) only when a frame needs more, the old GL buffers freed then (geometry.dispose). Each
+// attribute's count is the frame's vertex count and only that part is uploaded; the index's count is what gets drawn.
+// (2026-11-10, user: "fix TTO skills lag": it made new BufferAttributes every frame, so three created ~190-320 WebGL
+// buffers a frame for a TTO skill and never deleted the replaced ones: wardrobe_fx_perf.py, NOTES.md that day.)
+// nrm: normals too (Shuriken's mesh particles); the arrays may be plain arrays or typed arrays.
+function setMesh(m, pos, col, uv, idx, nrm) {
+  const g = m.geometry, nv = pos.length / 3, ni = idx.length;
+  let B = g.userData.fxBuf;
+  if (!B || nv > B.v || ni > B.i || (nrm && !B.n)) {
+    const v = Math.max(nv, 2 * (B?.v || 0), 64), i = Math.max(ni, 2 * (B?.i || 0), 96), wantN = !!(nrm || B?.n);
+    if (B) g.dispose();                                     // frees the outgrown GL buffers; three uploads the new ones
+    const mk = (name, size) => {
+      const a = new THREE.BufferAttribute(new Float32Array(v * size), size).setUsage(THREE.DynamicDrawUsage);
+      g.setAttribute(name, a); return a;
+    };
+    B = g.userData.fxBuf = { v, i, p: mk("position", 3), c: mk("color", 4), u: mk("uv", 2), n: wantN ? mk("normal", 3) : null,
+      x: new THREE.BufferAttribute(new Uint32Array(i), 1).setUsage(THREE.DynamicDrawUsage) };
+    g.setIndex(B.x);
+  }
+  const put = (a, src, n) => {
+    a.count = n;
+    if (!n) return;
+    a.array.set(src.length > n * a.itemSize ? src.subarray?.(0, n * a.itemSize) ?? src.slice(0, n * a.itemSize) : src);
+    a.clearUpdateRanges(); a.addUpdateRange(0, n * a.itemSize); a.needsUpdate = true;
+  };
+  put(B.p, pos, nv); put(B.c, col, nv); put(B.u, uv, nv); put(B.x, idx, ni);
+  if (B.n) put(B.n, nrm || [], nrm ? nv : 0);
 }
 // Unity-space vector helpers (the effect's numbers stay in Unity's coordinates)
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
@@ -3137,7 +3237,7 @@ class Fx {
   constructor(cls, name, d, at = {}) {        // at: a cue's placement (d ahead, x right, y up, rot [x, y, z] degrees), Unity's space
     const def = d.effects[name];
     this.at = at;                              // the cue, for parts that need its placement options (to)
-    this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false; this.loops = [];
+    this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false; this.loops = []; this.subs = [];
     this.group = new THREE.Group(); this.group.visible = vfxOn;
     C.root.getWorldPosition(this.group.position); C.root.getWorldQuaternion(this.group.quaternion);
     this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
@@ -3146,7 +3246,10 @@ class Fx {
       const o = this.nodes[i];
       o.name = n.name;
       if (n.parent < 0) {                      // Instantiate(prefab, hero position + offset, hero rotation x Euler(rot))
-        o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]).multiplyScalar(at.scale || 1);
+        // a cue's scale: a number, or [x, y, z] (2026-11-10, plans/fx_penguin/tto.md P5: constellation_lineFire's
+        // localScale (1, 1, segment length), Penguin.c:22904)
+        o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]);
+        if (Array.isArray(at.scale)) o.scale.multiply(vA(at.scale)); else o.scale.multiplyScalar(at.scale || 1);
         // Unity's Quaternion.Euler turns z, then x, then y: three's intrinsic "YXZ"; inside the mirror Unity's numbers apply as they are
         if (at.rot) o.quaternion.setFromEuler(new THREE.Euler(...at.rot.map(v => v * Math.PI / 180), "YXZ"));
         this.mirror.add(o);
@@ -3157,9 +3260,11 @@ class Fx {
       if (em) this.emitters.push(legacyParticles(this, o, em, n.comps.find(c => c.type === "ParticleAnimator"), n.comps.find(c => c.type === "ParticleRenderer"), mat));
       for (const c of n.comps) {
         if (c.type === "EffectControl" && n.parent < 0) this.ec = c;
+        else if (c.type === "EffectControl") this.subs.push({ node: o, ec: c, stopped: false });   // a child's own (update)
         else if (c.type === "RingEmitter" && mat) this.emitters.push(ringEmitter(this, o, c, mat));
         else if (c.type === "ImageEmitter" && mat) this.emitters.push(imageEmitter(this, o, c, mat));
         else if (c.type === "LineEmitter" && mat) this.emitters.push(lineEmitter(this, o, c, mat));
+        else if (c.type === "BoltEmitter" && mat) this.emitters.push(boltEmitter(this, o, c, mat));
         else if (c.type === "AudioSource" && c.playOnAwake) {
           const h = Sound.play(cls, c.clip, c.volume, c.loop);
           if (c.loop) this.loops.push({ node: o, h });      // lullaby_ring, edenSanctuary, divinityAxe, cAttack_charge ...
@@ -3203,6 +3308,21 @@ class Fx {
       // emitting (EffectControl.cs:421-512); RingEmitters run on
       if (this.age >= ec.life && !this.stopped) { this.stopped = true; for (const e of this.emitters) e.stop?.(); }
     }
+    // a child node's own EffectControl (2026-11-10 QA): EffectControl.Update runs on any GameObject it sits on, so the
+    // child is destroyed with everything under it at its own life + afterLife (EffectControl.cs:179-183, its clock
+    // starting at the spawn, as the root's), and its emitters stop at its life (the after-life, :421-512). The Penguin's
+    // giantComet_tri (the comet body, 0.6 s of the effect's 4 s: it lay on the ground as a dark multiply blob to the end)
+    // and meteora's rock (2 s of 3); the Sheep's divinitySpear (1 s of 2, faded out by its AlphaTimer at 0.7 s already).
+    // A child outliving the root goes with it, as in the game. Not done: a child's own velocity (the Wolf's
+    // dualBrand_slash3 VortexEmitter, (0, 12, 0)) and followState (none on a child that ends before its root)
+    for (const s of this.subs) {
+      if (!this.attached(s.node)) continue;
+      if (this.age >= s.ec.life + (s.ec.afterLife || 0)) { s.node.parent?.remove(s.node); continue; }
+      if (this.age >= s.ec.life && !s.stopped) {
+        s.stopped = true;
+        for (const e of this.emitters) for (let o = e.node; o && o !== this.mirror; o = o.parent) if (o === s.node) { e.stop?.(); break; }
+      }
+    }
     if (this.bone) {                             // a cue's bone: parented to it, localPosition 0, localRotation identity
       const b = C?.byName?.[this.bone];
       // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
@@ -3215,7 +3335,8 @@ class Fx {
     const cam = { right: this.uDir(V(1, 0, 0).applyQuaternion(camera.quaternion)), up: this.uDir(V(0, 1, 0).applyQuaternion(camera.quaternion)),
                   fwd: this.uDir(V(0, 0, -1).applyQuaternion(camera.quaternion)) };
     for (const e of this.emitters) {
-      if (!this.attached(e.node)) continue;
+      // its node destroyed: a world-space legacy emitter's particles (their mesh hangs on the mirror, not the node) go too
+      if (!this.attached(e.node)) { if (e.worldMesh) e.worldMesh.visible = false; continue; }
       if (e.update(dt, cam) === "destroy") {           // Destroy(gameObject): the node and everything under it
         if (e.node === this.root) return this.dispose();
         e.node.parent?.remove(e.node);
@@ -3224,9 +3345,14 @@ class Fx {
     for (const s of this.loops) if (!this.attached(s.node)) s.h.stop();   // its node destroyed: its looping sound with it
     if (!this.ec && !this.emitters.some(e => this.attached(e.node))) this.dispose();
   }
+  // once: a cue's kill, its life's end, a new pick (fxClear), a class change; each emitter's own dispose?() too (2026-11-10,
+  // plans/fx_penguin/parts.md Interfaces 3: what a part changed outside its node, the snowman's hidden hero, its own
+  // material copies)
   dispose() {
+    if (!this.alive) return;
     for (const s of this.loops) s.h.stop();
     this.alive = false; scene.remove(this.group);
+    for (const e of this.emitters) try { e.dispose?.(); } catch (x) { console.warn("effect part dispose", this.name, x); }
     this.group.traverse(o => o.geometry?.dispose());
   }
 }
@@ -3366,6 +3492,60 @@ function lineEmitter(fx, node, e, mat) {
   } };
 }
 
+// BoltEmitter.cs (2026-11-10, the Mana Vortex summon's lightning; plans/fx_penguin/cast_a.md "Read this first" 2): each
+// frame (LateUpdate :147-480) a new zigzag strip from the node to its TargetObject (TargetNode: a node of the same
+// effect, its BoltTarget; else TargetPosition): num = floor(distance / Height) + 1 vertex pairs (Math.divf, Math.cs:32-34),
+// and nothing new (the last strip stays) at a distance <= 0.01 or >= 50; along it the half-width lerps StartWidth ->
+// EndWidth (+ Random.Range(0, rndWidth)), the zigzag walks Random.Range(-rndZigg, rndZigg) a step, clamped to the Width1 ...
+// Width5 envelope, and the colour lerps Color1 ... Color5, both by quarters of the length; the sideways axis is
+// InverseTransformDirection(Cross(the local direction, the camera's forward)), the game's own mix of spaces. The loops are
+// the game's as written (a bolt i > 0 starts at j = i (num + 1), so its first vertex pair stays at the node, zero).
+// Space's pause (dt 0) keeps the strip as it is
+function boltEmitter(fx, node, e, mat) {
+  const m = fxMesh(node, mat), tgt = e.TargetNode >= 0 ? fx.nodes[e.TargetNode] : null;
+  const W = [e.Width1, e.Width2, e.Width3, e.Width4, e.Width5], K = [e.Color1, e.Color2, e.Color3, e.Color4, e.Color5];
+  let drawn = false;
+  return { node, update(dt, cam) {
+    if (!dt && drawn) return;
+    const p0 = V().setFromMatrixPosition(fx.uMatrix(node)), tp = tgt ? V().setFromMatrixPosition(fx.uMatrix(tgt)) : vA(e.TargetPosition);
+    const dir = tp.sub(p0), mag = dir.length();
+    if (mag <= 0.01 || mag >= 50) return;
+    const qi = fx.uQuat(node).invert(), v = nz(dir).applyQuaternion(qi), a = V().crossVectors(v, cam.fwd).applyQuaternion(qi);
+    const num = Math.floor(mag / e.Height) + 1, B = e.BoltCount, n = num * B * 2;
+    const pos = new Float32Array(n * 3), col = new Float32Array(n * 4), uv = new Float32Array(n * 2), idx = [];
+    for (let i = 0; i < B; i++) {
+      let zig = 0;
+      for (let j = i * (num + 1); j < (i + 1) * num; j++) {
+        const s = j - i * num, u = s / num, q = Math.min(3, Math.floor(4 * u)), f = clamp01(4 * (u - q * .25));
+        const w = e.StartWidth + (e.EndWidth - e.StartWidth) * u + rnd(0, e.rndWidth), env = W[q] + (W[q + 1] - W[q]) * f;
+        zig = Math.min(env, Math.max(-env, zig + rnd(-e.rndZigg, e.rndZigg)));
+        const c = linRGBA(K[q].map((x, k) => x + (K[q + 1][k] - x) * f));
+        for (const [k, side] of [[0, -(w - zig)], [1, w + zig]]) {
+          const P = v.clone().multiplyScalar(s * e.Height).addScaledVector(a, side), o = 2 * j + k;
+          pos.set([P.x, P.y, P.z], 3 * o); uv.set([u, k], 2 * o); col.set(c, 4 * o);
+        }
+      }
+      for (let j = i * num; j < (i + 1) * (num - 1); j++) idx.push(2 * j, 2 * j + 1, 2 * j + 2, 2 * j + 2, 2 * j + 1, 2 * j + 3);
+    }
+    setMesh(m, pos, col, uv, idx); drawn = true;
+  } };
+}
+// ManaVortex.cs, the Mana Vortex summon (2026-11-10; the cue name manaVortex, wardrobe_fx.py EXTRA_FOLDERS): its Init
+// plays "create" once (Rewind, Play, wrapMode Once, :1048-1054) at localScale 0.4 + 0.2 x rank (:1045: 1.0 at the top rank
+// 3, the prefab's own, so a cue's scale is left as it is), then 1 s later (Yield(2, 1) :1073) "root" looped (:973-978).
+// Its 60 s life and the "destroy" clip at its end (:760-766) are the cue's (kill 10: decisions.md 13). The rest of the
+// script (its bolts' hits, the MP it stores) draws nothing
+FXPARTS.ManaVortex = (fx, node) => {
+  let t = 0, phase = 0;
+  return { node, update(dt) {
+    const an = node.userData.fxAnim;            // mesh.js's Animation, built after this script on the same node
+    t += dt;
+    if (!an) return;
+    if (phase === 0) { an.play("create", 0, 1); phase = 1; }
+    if (phase === 1 && t >= 1) { an.play("root", 0, 2); phase = 2; }
+  } };
+};
+
 // Unity 3.5's legacy particles (EllipsoidParticleEmitter + ParticleAnimator + ParticleRenderer; spec 2026-11-09 from the
 // 3.5 manual and scripting pages and Unity's legacy-to-Shuriken converter): spawned inside the ellipsoid (semi-axes, shell
 // from m_MinEmitterRange), velocity = world + local (emitter's rotation) + random per axis; lifetime min..maxEnergy;
@@ -3373,8 +3553,11 @@ function lineEmitter(fx, node, e, mat) {
 // a second; a one-shot bursts min..maxEmission and again once they have all died, unless it autodestructs (gone when all
 // are dead). Quads: 0 / 2 billboard, 3 stretched along the motion (lengthScale x size + velocityScale x speed, negative
 // = forward), 4 flat on the ground, 5 upright facing the camera
+// A ParticleRenderer with no material (2026-11-10 QA: the Penguin's deadlyFrost, Arctic Wind, its particleEmitter's
+// m_Materials [0] is empty in the prefab) draws nothing; its particles still run (an autodestruct still waits for them).
+// It was a mesh with a null material, and three's renderer threw on it every frame, which stopped the page's render loop
 function legacyParticles(fx, node, em, an, rd, mat) {
-  const world = !!em["Simulate in Worldspace?"], m = fxMesh(world ? fx.mirror : node, mat);
+  const world = !!em["Simulate in Worldspace?"], m = mat ? fxMesh(world ? fx.mirror : node, mat) : null;
   const parts = []; let emit = !!em.m_Emit, emitted = false, acc = 0, sizeAdd = 0, minS = em.minSize, maxS = em.maxSize;   // sizeAdd: addSize(), this spawn only; minS / maxS: setSize()
   const key = x => { const v = x.rgba >>> 0; return linRGBA([(v & 255) / 255, ((v >>> 8) & 255) / 255, ((v >>> 16) & 255) / 255, (v >>> 24) / 255]); };
   const keys = an?.["Does Animate Color?"] ? [0, 1, 2, 3, 4].map(i => key(an[`colorAnimation[${i}]`])) : null;
@@ -3394,7 +3577,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
                  spin: THREE.MathUtils.degToRad(em.angularVelocity + rnd(-em.rndAngularVelocity, em.rndAngularVelocity)) });
     emitted = true;
   };
-  return { node, stop() { emit = false; }, setEmit(on) { emit = on; }, addSize(a) { sizeAdd += a; }, setSize(a, b) { minS = a; maxS = b; },   // setEmit: fxparts/control.js's EmitterControl; setSize: the hero's code rewriting particleEmitter.minSize / maxSize (fxparts/sheep.js, the charge ball)
+  return { node, worldMesh: world ? m : null, stop() { emit = false; }, setEmit(on) { emit = on; }, addSize(a) { sizeAdd += a; }, setSize(a, b) { minS = a; maxS = b; },   // worldMesh: Fx.update hides it once the node is destroyed; setEmit: fxparts/control.js's EmitterControl; setSize: the hero's code rewriting particleEmitter.minSize / maxSize (fxparts/sheep.js, the charge ball)
     update(dt, cam) {
     for (let i = parts.length - 1; i >= 0; i--) if ((parts[i].age += dt) >= parts[i].energy) parts.splice(i, 1);
     if (an?.autodestruct && emitted && !parts.length) return "destroy";
@@ -3440,7 +3623,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
       col.push(...c, ...c, ...c, ...c);
       idx.push(b, b + 1, b + 2, b + 2, b + 1, b + 3);
     });
-    setMesh(m, pos, col, uv, idx);
+    if (m) setMesh(m, pos, col, uv, idx);
   } };
 }
 
@@ -3464,11 +3647,122 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 // for that clip when the sequence plays it (2026-11-10 decision 13: Holy Light and Lullaby both open with holyLight1,
 // with other voices), tried first; the sequence id is its SEQ name without spaces ("@Lullaby:holyLight1",
 // "@EdenSanctuary:cast3", "@SoulofArms:soulOfArms"; the name as written, "@Eden Sanctuary:cast3", is taken too)
+// 2026-11-10, the Penguin (plans/fx_penguin): scale may be [x, y, z] (the root's localScale times it per axis);
+//         spread ([lo, hi] whole metres): x and d each moved by a whole number lo ... hi drawn when the clip starts, and
+//         the effect turned to face along the ground from the hero to its spot unless the cue gives rot (Falling Comets'
+//         Giant Star: target + (Random.Range(-10, 10), 0, Random.Range(-10, 10)) Penguin.cs:26288, the int Range's top
+//         left out, so [-10, 9]; Instantiate(giantComet, spot, LookRotation(vFlat(spot - hero))) :26305, :37625);
+//         every other option is passed on as it is, for the parts (fx.at: tto.md's i, n, ignite; penguin.js's hideHero);
+//         notWorn [slot, item]: left out of the play while that item is worn there (fxStart; the Staff of Time);
+//   kind  "skin" (the hero's own look for kill seconds, else until the next pick: HERO_SKINS; Cosmic Rift / Cosmic
+//         Friday's FX/CosmicRift, decisions.md 16)
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
-  return { at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
+  const q = { ...o, at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
     rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
+  if (Array.isArray(o.spread)) {
+    q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
+    if (!o.rot && (q.x || q.d)) q.rot = [0, Math.atan2(q.x, q.d) * 180 / Math.PI, 0];   // LookRotation(flat): yaw = atan2(x, z)
+  }
+  return q;
 };
+// ---------- the hero's look while a skill changes it (2026-11-10, the Penguin: decisions.md 16, 17) ----------
+// Each frame while anything holds, every mesh under the hero (outfit, props, the hover's glow) is taken off the camera's
+// layers when hidden (a mesh on no layer is neither drawn nor hit by a ray; its visible flag, which the piece viewer and
+// the prop nodes use, and its box for the camera's fit stay as they are), and put back when nothing holds. heroHide(key,
+// on): the parts' hook (api.heroHide). A skin cue: the original meshes off the layers, a copy of each drawn instead (same
+// geometry and skeleton, a child of it, so it moves and goes with it; never hit by the ray). VFX off: neither applies
+// (an original under a skin goes on LOOK_LAYER alone: no camera draws it, the piece menu's ray still finds it, pieceAt)
+const LOOK = { hides: new Set(), skin: null, off: new Map() }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;
+function heroHide(key, on) { if (on) LOOK.hides.add(key); else LOOK.hides.delete(key); lookSync(); }
+function lookSync() {
+  const live = LOOK.skin?.alive ? LOOK.skin : null, hide = vfxOn && LOOK.hides.size > 0, sk = vfxOn ? live : null, off = new Map(), add = [];
+  if (C && (LOOK.hides.size || live)) C.root.traverse(o => {
+    if (!o.isMesh) return;
+    if (o.userData.lookCopy) { if (hide || !sk) off.set(o, 0); return; }   // a skin's copy: not while hidden or VFX off
+    if (o.userData.hoverOverlay) { if (hide) off.set(o, 0); return; }
+    if (hide) off.set(o, 0);
+    else if (sk) { off.set(o, LOOK_LAYER_MASK); add.push(o); }             // under a skin: its copy drawn, itself still clicked
+  });
+  if (add.length) sk.sync(add);
+  for (const [o] of LOOK.off) if (!off.has(o)) o.layers.mask = o.userData.lookMask ?? 1;
+  for (const [o, m] of off) { if (!LOOK.off.has(o)) o.userData.lookMask = o.layers.mask; o.layers.mask = m; }
+  LOOK.off = off;
+}
+// the hero's looks a "skin" cue can give, by name: (original material, mesh) -> the materials drawn in its place
+// FX/CosmicRift (Cosmic Rift / Cosmic Friday's status: every Diffuse renderer of the character gets new Material(Shader.Find(
+// "FX/CosmicRift")) with its own mainTexture, every other renderer is switched off, CharacterControl.cs:38946-39006 (cosmicRift)
+// and :39047-39114 (cosmicFriday); back to Diffuse and shown at the status's end, :17605-17683). The shader, compiled in BB's
+// resources.assets (the rip's .shader is a stub; read by checks/fx_penguin_build/page_pipeline/shader_probe.py): Queue
+// Transparent; pass 1 Cull Front, Blend One OneMinusSrcAlpha, ColorMask RGB, its vertex program pushing each vertex out
+// along its view-space normal in clip space, xy += (n.x x P[0][0], n.y x P[1][1]) x clip z x 0.008, coloured
+// (0.5, 0.2, 0.5, 1): an opaque purple shell behind the body, wider by the same on-screen amount near and far; pass 2 Cull
+// Off, Blend SrcAlpha OneMinusSrcAlpha, Fog off, SetTexture combine texture, constant alpha 0.35: the texture unlit at 35 %
+// over it (ZWrite on, one pass, as Unity's). APPROXIMATED: every mesh of the page's hero is taken as Diffuse (BB's armours
+// are, 94 of the Penguin's 108 materials; the page doesn't keep a prop's shader, so a prop the game would switch off is
+// re-skinned instead); the view normal is normalised (a skinned mesh's normals are unit in Unity); the outfit's cut-outs
+// keep the page's alpha test (0.5)
+const HERO_SKINS = {
+  "FX/CosmicRift": () => {
+    const shell = new THREE.MeshBasicMaterial({ side: THREE.BackSide });
+    shell.color.setRGB(0.5, 0.2, 0.5, THREE.SRGBColorSpace);
+    shell.onBeforeCompile = sh => { sh.vertexShader = sh.vertexShader.replace("#include <project_vertex>", `#include <project_vertex>
+	{
+	#ifdef USE_SKINNING
+		vec3 crN = objectNormal;
+	#else
+		vec3 crN = normal;
+	#endif
+		vec3 crV = normalMatrix * crN;
+		float crL = length( crV );
+		crV = crL > 0.0 ? crV / crL : crV;
+		gl_Position.xy += vec2( crV.x * projectionMatrix[ 0 ][ 0 ], crV.y * projectionMatrix[ 1 ][ 1 ] ) * gl_Position.z * 0.008;
+	}`); };
+    shell.customProgramCacheKey = () => "cosmicRift-shell";
+    return { shell, ghost(m) {
+      const g = new THREE.MeshBasicMaterial({ map: m?.map || null, transparent: true, side: THREE.DoubleSide, depthWrite: true, alphaTest: m?.alphaTest || 0 });
+      g.forceSinglePass = true;
+      g.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <alphatest_fragment>", "#include <alphatest_fragment>\n\tdiffuseColor.a = 0.35 * opacity;"); };
+      g.customProgramCacheKey = () => "cosmicRift-ghost";
+      return g;
+    } };
+  },
+};
+// a "skin" cue's look, kept with the effects (FX.live: a new pick or a class change ends it, its kill too; Fx's shape for
+// the checks: name, emitters, attached, group, loops); a newer skin replaces it (the game's status refreshed)
+class HeroSkin {
+  constructor(name, make) {
+    this.name = "skin:" + name; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
+    this.look = make(); this.ghosts = new Map(); this.copies = new Map();     // original material -> its pass 2; mesh -> its two copies
+    if (LOOK.skin?.alive) LOOK.skin.dispose();
+    LOOK.skin = this; lookSync();
+  }
+  attached() { return false; }
+  sync(meshes) {                               // a copy for every original mesh shown now (an outfit or a prop put on meanwhile too)
+    const ghost = m => { if (!this.ghosts.has(m)) this.ghosts.set(m, this.look.ghost(m)); const g = this.ghosts.get(m); if (g.map !== (m?.map || null)) { g.map = m?.map || null; g.needsUpdate = true; } return g; };
+    for (const o of meshes) {
+      if (this.copies.has(o)) { const [, gm] = this.copies.get(o); gm.material = Array.isArray(o.material) ? o.material.map(ghost) : ghost(o.material); continue; }
+      const xs = [this.look.shell, Array.isArray(o.material) ? o.material.map(ghost) : ghost(o.material)].map(mat => {
+        const x = o.isSkinnedMesh ? new THREE.SkinnedMesh(o.geometry, mat) : new THREE.Mesh(o.geometry, mat);
+        if (o.isSkinnedMesh) { x.bindMode = o.bindMode; x.bind(o.skeleton, o.bindMatrix); }
+        Object.assign(x.userData, { lookCopy: true, hoverOverlay: true }); x.raycast = () => {}; x.frustumCulled = false;
+        o.add(x); return x;
+      });
+      this.copies.set(o, xs);
+    }
+  }
+  update(dt) { this.age += dt; if (this.killAt != null && this.age >= this.killAt) this.dispose(); }
+  dispose() {
+    if (!this.alive) return;
+    this.alive = false;
+    for (const xs of this.copies.values()) for (const x of xs) x.removeFromParent();
+    for (const g of this.ghosts.values()) g.dispose();
+    this.look.shell.dispose(); this.copies.clear(); this.ghosts.clear();
+    if (LOOK.skin === this) LOOK.skin = null;
+    lookSync();
+  }
+}
 const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
 function fxStart(clip, step = 0) {
   FX.t = 0;
@@ -3488,10 +3782,15 @@ function fxStart(clip, step = 0) {
     const no = c.roll[0] === "!", r = (FX.rolls[no ? c.roll.slice(1) : c.roll] ??= Math.random() < c.p);
     return no ? !r : r;
   };
-  FX.cues = cues.map(cueOf).filter(rolled);
-  for (const c of FX.cues) if (c.kind !== "fx" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+  // notWorn [slot, item]: the cue plays only while that item is not worn there (2026-11-10, decisions.md 18: with the Staff
+  // of Time, w_pgn59 = "specialScepter", in the main hand the Normal Attack ball is a 0.01 m/s mine that never meets the
+  // ground, Penguin_nAttack.cs:115-145, :196-202, so its landing hits at the 10 m point don't come)
+  const worn = c => !(Array.isArray(c.notWorn) && C?.state?.[c.notWorn[0]] === c.notWorn[1]);
+  FX.cues = cues.map(cueOf).filter(c => worn(c) && rolled(c));
+  for (const c of FX.cues) if (c.kind !== "fx" && c.kind !== "skin" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
 }
-function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; }
+// (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
+function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; LOOK.hides.clear(); lookSync(); }
 // the SFX and VFX buttons: on by default, remembered in this browser; the first click or key press starts the audio.
 // VFX off: no effect is drawn (the live ones are hidden at once), but each still runs unseen, so its own sounds play
 // with SFX on for as long as the effect lives (a looping one too, 2026-11-10); SFX off also stops the loops playing
@@ -3519,7 +3818,13 @@ function fxDue(t, inclusive) {
   for (const c of FX.cues) {
     if (c.done || (inclusive ? c.at > t : c.at >= t)) continue;
     c.done = true;
-    if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
+    if (c.kind === "skin") {                    // the hero's own look (HERO_SKINS), not an effect file
+      const make = HERO_SKINS[c.name];
+      if (!make) { FX.missing["skin:" + c.name] = 1; continue; }
+      const f = new HeroSkin(c.name, make); f.killAt = c.kill; FX.live.push(f);
+      FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
+    }
+    else if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
@@ -3535,6 +3840,7 @@ function fxTick(dt) {
   fxDue(FX.t, true);
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
+  if (LOOK.hides.size || LOOK.skin || LOOK.off.size) lookSync();   // the hero hidden / re-skinned: pieces put on meanwhile too
   // back in the idle stance after a skill: once its last cue has fired and its last effect gone, the move is over
   if (C.seq?.tail && FX.cues.length && FX.cues.every(c => c.done) && !FX.live.length) FX.cues = [];
   // the whole move, no flicker between loops; not with VFX off (2026-11-10 QA: hidden effects now live their full time,

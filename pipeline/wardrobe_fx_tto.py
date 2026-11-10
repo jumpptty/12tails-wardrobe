@@ -40,6 +40,11 @@ left-handed space (the page mirrors, tto.md 4.4). Components:
 - CODE_MOVERS: a prefab the game's code moves every frame gets that code as a component of its own at the head of the
   root's comps ({"type": "Sheep.BreathFly"}: the coroutine, not a script in the prefab; tto_sheep.js runs it)
 - sounds: BB's rip WAV of the clip's name, else TTO's own AudioClip from the bundle (FMOD through UnityPy)
+- (2026-11-10, the Penguin: plans/fx_penguin/tto.md section 6) a SkinnedMeshRenderer in the BB build's shape
+  (wardrobe_fx_mesh.py: mesh + w / j / bind, bones = node indices, root, mats; mesh.js skins it); Unity's built-in Quad
+  (BUILTIN_MESH) inline as a mesh particle's "mesh" where the renderer names it in "unity default resources"; the hero's
+  own sounds/ clips the skills play that BB's rip lacks (SKILL_SOUNDS, plus any such "sound" cue) from TTO's bundle ->
+  wardrobe/data/<cls>/sfx/<name>.mp3
 """
 import argparse
 import glob
@@ -95,6 +100,32 @@ SKILL_FX = {
         "grandCodex_page_psalm", "grandCodex_page_seal", "grandCodex_page_verdict",
         "grandCodex_psalm", "grandCodex_seal", "grandCodex_verdict", "grandCodex_spear", "scriptureBind",
     ],
+    # plans/fx_penguin/tto.md section 5: all 28 Penguin TTO-only prefabs (no arcana style: the catalog has no
+    # heroes/penguin/arcana/); the three status looks on foes (frostMarkFx, frostBiteFx, manaFractureFx) are built too
+    "penguin": [
+        # Constellation: TTO1102:Penguin.<RPC_constellation>d__340::MoveNext@0x1DE7560 (Penguin.c:6783-7032),
+        # <StarLines>d__341::MoveNext@0x1E2C220 (:22423-23060), Penguin::StarImpact@0x1DB1000 (:37493)
+        "constellation_cast", "constellation_mark", "constellation_line", "constellation_star", "constellation_impact",
+        "constellation_lineFire", "constellation_ignite", "constellation_giant", "constellation_giantImpact",
+        # Frost Field: <RPC_frostFieldLeap>d__349::MoveNext@0x1DEF770 (:11314-11556), <FrostFieldLoop>d__350@0x1DC38F0
+        # (:1268-1450), Penguin::BurstFx@0x1DA3310 (:38592-38640)
+        "frostField_leap", "frostField_trail", "frostField_land", "frostField_field", "frostField_burst",
+        # Emperor's March: <RPC_emperorPenguin>d__356::MoveNext@0x1DEA490 (:8457-9102), <FlockRise>d__357@0x1DC31F0
+        # (:986-1167), <EmperorShot>d__358@0x1DC1520 (:103-969), GoalFx@0x1DA74E0, Scatter@0x1DB09F0
+        "emperorPenguin_whistle", "emperorPenguin_summon", "emperorPenguin_crack", "emperorPenguin_emerge",
+        "emperorPenguin_penguin", "emperorPenguin_ball", "emperorPenguin_kick", "emperorPenguin_launch",
+        "emperorPenguin_frost", "emperorPenguin_goal", "emperorPenguin_poof",
+        # the status looks on foes: CharacterControl::AddPenguinRow6Fx@0x24ADC20 (CharacterControl.c:25195)
+        "frostMarkFx", "frostBiteFx", "manaFractureFx",
+    ],
+}
+# the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
+# GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
+# (plans/fx_penguin/tto.md "Read this first" 4, part P8) -> wardrobe/data/<cls>/sfx/<name>.mp3, the "sound" cue's file.
+# Every other "sound" cue of fx_cues/<cls>.json that the rip lacks is looked up in TTO's catalog too
+SKILL_SOUNDS = {
+    # RPC_emperorPenguin: Row6Sound("emperorPenguin_whistle") (:8695), Row6Sound("emperorPenguin_flock") (:9063)
+    "penguin": ["emperorPenguin_whistle", "emperorPenguin_flock"],
 }
 # Unity's built-in legacy particle shaders by name, to wardrobe_fx.BUILTIN_BLEND's words (the page's fxMaterial knows
 # these); any other shader -> "shader:<name>"
@@ -115,6 +146,26 @@ CODE_MOVERS = {
     # TTO1102:Sheep.<CodexOpen>d__265::MoveNext@0x1E73940: the book's drop and bob (CodexBob@0x1E55980), its FlipPivot
     # page turns (CodexFlipAngle@0x1E55A00) before each of the ten reads, Destroy(book, 0.1) after the last
     "grandCodex_book": "Sheep.CodexOpen",
+    # TTO1102:Penguin.<StarLines>d__341::MoveNext@0x1E2C220 (Penguin.c:22423-23060): each line's two LineRenderers run
+    # from its star's mark to the next one's, drawn out over 0.12 s (:22659-22703), widthMultiplier x 2.2 at the ignite
+    # (:22833-22834); ClearStarFx destroys it (wardrobe/fxparts/tto_penguin.js)
+    "constellation_line": "Penguin.StarLines",
+    # <RPC_emperorPenguin>d__356 state 3-4 (Penguin.c:8892-9055: the ball dropped onto ballAt) + <EmperorShot>d__358
+    # ::MoveNext@0x1DC1520 (:103-969: rolled 28 m/s to the reach at ground + 0.45, spun 900 deg/s, Destroy at the Goal)
+    "emperorPenguin_ball": "Penguin.EmperorShot",
+    # <FlockRise>d__357::MoveNext@0x1DC31F0 (:986-1167: up the tilt axis over 0.25 s) + EmperorShot's flock (:588-700:
+    # whirled after the ball round the lane, Scatter's Destroy at the Goal)
+    "emperorPenguin_penguin": "Penguin.FlockRise",
+}
+# Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
+# mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,
+# plans/fx_penguin/tto.md part P6), in the BB build's mesh shape (wardrobe_fx_mesh.mesh_dict). The Quad (path id 10210):
+# 1 x 1 in the XY plane about its centre, facing -z (its normal), uv (0, 0) at (-0.5, -0.5), triangles 0 3 1 / 3 0 2
+# (clockwise seen from -z: Unity's front face)
+BUILTIN_MESH = {
+    10210: {"name": "Quad", "verts": 4, "pos": [-0.5, -0.5, 0, 0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0],
+            "nrm": [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1], "uv": [0, 0, 1, 0, 0, 1, 1, 1], "col": None,
+            "idx": [0, 3, 1, 3, 0, 2], "sub": [[0, 6]]},
 }
 MB_HEADER = {"m_GameObject", "m_Enabled", "m_Script", "m_Name", "m_EditorHideFlags", "m_EditorClassIdentifier"}
 
@@ -203,12 +254,61 @@ class Tto:
         f = self.sf.get(os.path.basename(af.externals[p["m_FileID"] - 1].path).lower())
         return f.objects.get(p["m_PathID"]) if f is not None else None
 
+    def builtin_mesh(self, af, p):
+        """Unity's own mesh a PPtr names in its built-in resources (BUILTIN_MESH), else None."""
+        if not p or not p.get("m_FileID") or p.get("m_PathID") not in BUILTIN_MESH:
+            return None
+        ext = af.externals[p["m_FileID"] - 1].path.replace("\\", "/").lower()
+        return BUILTIN_MESH[p["m_PathID"]] if ext.endswith("unity default resources") else None
+
     def script(self, o, t):
         key = (o.assets_file.name, t["m_Script"]["m_FileID"], t["m_Script"]["m_PathID"])
         if key not in self.scripts:
             so = self.deref(o.assets_file, t["m_Script"])
             self.scripts[key] = so.read_typetree()["m_ClassName"] if so is not None else "?"
         return self.scripts[key]
+
+
+def tto_clips(cls, names, assets=ASSETS):
+    """TTO's own AudioClips at gameassets/characters/heroes/<cls>/sounds/<name> (the address Penguin::Row6Sound@0x1DB04B0
+    loads, Penguin.c:41262), found through the catalog as the effects are: {name: AudioClip object}; a name the catalog
+    lacks is left out."""
+    if not names:
+        return {}
+    cat = load_path("aa_catalog", AA_CATALOG).Catalog(os.path.join(assets, "catalog.bin"))
+    base = f"gameassets/characters/heroes/{cls}/sounds/"
+    want = {base + n.lower(): n for n in names}
+    iid, deps = {}, set()
+    for addr, loc in cat.entries():
+        if addr in want:
+            iid[loc["id"]] = want[addr]
+            deps.update(loc["bundles"])
+    if not iid:
+        return {}
+    env = UnityPy.load(*[os.path.join(assets, "dec", b) for b in sorted(deps)])
+    out = {}
+    for o in env.objects:
+        if o.type.name == "AssetBundle":
+            for k, v in o.read_typetree()["m_Container"]:
+                if k in iid:
+                    c = o.assets_file.objects.get(v["asset"]["m_PathID"])
+                    if c is not None and c.type.name == "AudioClip":
+                        out[iid[k]] = c
+    return out
+
+
+def cue_sounds(cls):
+    """The "sound" cue names of wardrobe/fx_cues/<cls>.json ("a|b" = both)."""
+    path = os.path.join(ROOT, "wardrobe", "fx_cues", cls + ".json")
+    if not os.path.exists(path):
+        return []
+    out = []
+    for entry in json.load(open(path, encoding="utf-8")).values():
+        for cues in bb().cue_lists(entry):
+            for cue in cues:
+                if cue[1] == "sound":
+                    out += [n for n in str(cue[2]).split("|") if n not in out]
+    return out
 
 
 class Build:
@@ -401,10 +501,38 @@ def effect(tto, b, name):
                     entry["enabled"] = False
                 node["comps"].append(entry)
                 continue
+            if ty == "SkinnedMeshRenderer":
+                # (2026-11-10, part P3: emperorPenguin_penguin's SmallIcePenguin_tri) the BB build's shape
+                # (wardrobe_fx_mesh.py: mesh + w / j / bind, bones = node indices, root, mats), which
+                # wardrobe/fxparts/mesh.js skins to the effect's own nodes; m_Enabled kept
+                mo = tto.deref(co.assets_file, t["m_Mesh"]) if (t.get("m_Mesh") or {}).get("m_PathID") else None
+                if mo is None:
+                    print(f"warning: {name}/{node['name']}: a SkinnedMeshRenderer with no mesh", file=sys.stderr)
+                    continue
+                md = mesh().mesh_dict(mo.read(), skinned=True)
+                bones = []
+                for bp in t["m_Bones"]:
+                    r = ref(co, bp)
+                    bones.append(r["node"] if isinstance(r, dict) and "node" in r else None)
+                rb = ref(co, t["m_RootBone"]) if t.get("m_RootBone") else None
+                mats = [ref(co, m) for m in t["m_Materials"]]
+                if len(md["bind"]) != 16 * len(bones) or len(md["w"]) != 4 * md["verts"] or len(md["j"]) != 4 * md["verts"]:
+                    raise ValueError(f"{name}/{node['name']}: skin of {md['verts']} vertices, {len(bones)} bones, "
+                                     f"{len(md['bind']) // 16} bind poses, {len(md['w'])} weights")
+                node["comps"].append({"type": ty, **md, "bones": bones,
+                                      "root": rb["node"] if isinstance(rb, dict) and "node" in rb else None, "mats": mats,
+                                      "m_Enabled": bool(t.get("m_Enabled", 1))})
+                if mats and "mats" not in node:
+                    node["mats"] = list(mats)
+                continue
             entry = {"type": ty, **{k: safe(co, v) for k, v in t.items() if k not in DROP}}
             if ty in ("MeshFilter", "ParticleSystemRenderer"):
                 mo = tto.deref(co.assets_file, t["m_Mesh"]) if (t.get("m_Mesh") or {}).get("m_PathID") else None
                 md = mesh().mesh_dict(mo.read()) if mo is not None else None
+                if mo is None and (t.get("m_Mesh") or {}).get("m_PathID"):
+                    md = tto.builtin_mesh(co.assets_file, t["m_Mesh"])    # Unity's own (the Quad, BUILTIN_MESH)
+                    if md is not None:
+                        entry["m_Mesh"] = {"mesh": md["name"], "builtin": t["m_Mesh"]["m_PathID"]}
                 if md and md["verts"]:
                     if ty == "ParticleSystemRenderer":
                         entry["mesh"] = md
@@ -468,8 +596,18 @@ def main():
     tto = Tto(a.cls, names, a.assets)
     b = Build(tto)
     effects = {"tto/" + n: effect(tto, b, n) for n in names}
+    # the hero's own TTO-only sounds (SKILL_SOUNDS, and any "sound" cue BB's rip lacks): TTO's clips, as an effect's
+    # own TTO clip below (part P8)
+    hero = [n for n in dict.fromkeys(SKILL_SOUNDS.get(a.cls, []) + cue_sounds(a.cls)) if not bb().rip_wav(a.cls, n, "sounds")]
+    found = tto_clips(a.cls, hero, a.assets)
+    for n, o in found.items():
+        b.sounds.setdefault(n, o)
+    lost = [n for n in hero if n not in found]
+    if lost:
+        print(f"warning: sounds in neither BB's rip nor TTO's {a.cls}/sounds/: {lost}", file=sys.stderr)
     if a.probe:
-        print(json.dumps({"effects": effects, "materials": b.mats, "textures": sorted(b.texs), "sounds": sorted(b.sounds)}, indent=1))
+        print(json.dumps({"effects": effects, "materials": b.mats, "textures": sorted(b.texs), "sounds": sorted(b.sounds),
+                          "hero_sounds": {n: o.read().m_Name for n, o in found.items()}}, indent=1))
         return
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)
     for n, o in b.texs.items():
@@ -481,7 +619,8 @@ def main():
     sdir = os.path.join(DATA, a.cls, "sfx"); os.makedirs(sdir, exist_ok=True)
     missing, own = [], []
     for n in sorted(b.sounds):
-        src = bb().rip_wav(a.cls, n)
+        # a hero sound (found above) only from the rip's sounds/ (a voice may share its name); an effect's own anywhere
+        src = bb().rip_wav(a.cls, n, "sounds") if n in found else bb().rip_wav(a.cls, n)
         if not src:                            # a TTO-only clip: its own samples (UnityPy decodes them with FMOD)
             try:
                 wav = next(iter(b.sounds[n].read().samples.values()))

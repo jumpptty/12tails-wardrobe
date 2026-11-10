@@ -1,1 +1,523 @@
-{}
+{
+  "nAttack1": {
+    "why": "Penguin.cs RPC_nAttack1 (:17012-17430): clip at 0 (cut, :17385); 0.1 s (Yield(2, 0.1) :17421) voice nAttack1 (PlayOneShot :17425); 0.3 s (Yield(3, 0.2) :17419) the shot, mGameType >= 5 (:17230): fire point 0.75 m up 0.5 m ahead (TransformDirection(0, 0.75, 0.5) :17238), aim tDir - (0, 0.75, 0.5) (:17243), at the 10 m target point on the ground (decision 3, as the Sheep's; a real enemy is aimed at its collider.bounds.center, GameGui.cs:1626, the no-target click 0.25 lower, GameGui.cs:1659, :9306; the ball's 0.35 m trigger radius is not counted): pitch atan(0.75 / 9.5) = 4.514 deg; Spread Shot #401 on (passives rule), Random.Range(0, 100) <= lckAdjust(20) = 21 % (:17254, CharacterControl.cs:20667): RPC_spreadShot_fire's 3 pellets at firePos + 0.3 i right, lhs x Euler(0, 15 i, 0) (:11496-11520; Unity Euler (4.36, +-15.045, +-1.171), checks/fx_penguin_research/attacks_emotes/geom.txt) instead of RPC_nAttack_fire's one ball (:9672, :17281); Penguin_nAttack flies them 14 m/s (Penguin_nAttack.cs:103) and ends them on the ground (:211-229); each plays its own Sounds/nAttack (ball 1.0, pellets 0.5); standby 0.5 s (Yield(4, 0.2) :17410, :17315) unless stage 2 is pressed (stage 2 starts at 0.5 s: its entry carries this shot's landing at 0.3 + 0.6807 - 0.5 = 0.4807 s, nAttack3's the side pellets' at 0.3 + 0.7047 - 1.0 = 0.0047 s); with the Staff of Time worn (decision 18: w_pgn59, the wardrobe's specialScepter in the main hand) the ball and the pellets are 0.01 m/s mines for 12 s that skip the floor (Penguin_nAttack.cs:115-145, :196-202; fxparts/penguin.js Penguin_nAttack): their landings are left out then (notWorn)",
+    "cues": [
+    [0.1, "voice", "nAttack1"],
+    [0.3, "fx", "nAttack_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.21, "roll": "!spread1"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": -0.3, "y": 0.75, "rot": [4.36, -15.045, -1.171], "p": 0.21, "roll": "spread1"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.21, "roll": "spread1"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": 0.3, "y": 0.75, "rot": [4.36, 15.045, 1.171], "p": 0.21, "roll": "spread1"}]
+    ]
+  },
+  "nAttack2": {
+    "why": "Penguin.cs RPC_nAttack2 (:17463-17891; its clip 0.5 s after stage 1: Yield(2, actionTime - now + 0.5) :17877, the press window 0.3-0.5 s, doNormalAttack :9349-9365): clip (0.2 s fade, :17605); 0.2 s (Yield(3, 0.2) :17879) voice nAttack2 (PlayOneShot :17870); 0.3 s (Yield(4, 0.1) :17885) the shot as in nAttack1 (:17728-17784), Spread Shot 21 % (lckAdjust(20) :17744); standby 0.5 s (Yield(5, 0.2) :17875, :17805) unless stage 3 is pressed; at 0.4807 s stage 1's ball (or its middle pellet) meets the ground at the 10 m point (0.3 + 9.5296 m / 14 m/s - 0.5): Penguin_nAttack calls RPC_nAttack_hit at the contact point before any Player / Enemy test (Penguin_nAttack.cs:211-261), nAttack_hit there with the hero's rotation (:9711; plays its own Sounds/nAttack_hit); with the Staff of Time worn (decision 18: w_pgn59, the wardrobe's specialScepter in the main hand) the ball and the pellets are 0.01 m/s mines for 12 s that skip the floor (Penguin_nAttack.cs:115-145, :196-202; fxparts/penguin.js Penguin_nAttack): their landings are left out then (notWorn)",
+    "cues": [
+    [0.2, "voice", "nAttack2"],
+    [0.3, "fx", "nAttack_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.21, "roll": "!spread2"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": -0.3, "y": 0.75, "rot": [4.36, -15.045, -1.171], "p": 0.21, "roll": "spread2"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.21, "roll": "spread2"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": 0.3, "y": 0.75, "rot": [4.36, 15.045, 1.171], "p": 0.21, "roll": "spread2"}],
+    [0.4807, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialScepter"]}]
+    ]
+  },
+  "nAttack3": {
+    "why": "Penguin.cs RPC_nAttack3 (:17925-18353; its clip 1.0 s after stage 1: Yield(2, actionTime - now + 1) :18332, the press from 0.8 s, doNormalAttack :9413-9421): clip (0.2 s fade, :18067); 0.1 s (Yield(3, 0.1) :18347) voice nAttack3 (PlayOneShot :18340); 0.3 s (Yield(4, 0.2) :18349) the shot as in nAttack1 (:18190-18246), Spread Shot 41 % (Random.Range(0, 100) <= lckAdjust(40) = 40, :18206); standby 0.5 s (Yield(5, 0.2) :18351, :18267); the landings at the 10 m line (Penguin_nAttack.cs:211-261, nAttack_hit with the hero's rotation :9711, its own Sounds/nAttack_hit; checks/fx_penguin_research/attacks_emotes/geom.txt): stage 1's side pellets 0.3 + 0.7047 - 1.0 = 0.0047 s (x +-2.853), stage 2's ball 0.8 + 0.6807 - 1.0 = 0.4807 s and its sides 0.5047 s, this stage's ball 0.9807 s and its sides 1.0047 s; with the Staff of Time worn (decision 18: w_pgn59, the wardrobe's specialScepter in the main hand) the ball and the pellets are 0.01 m/s mines for 12 s that skip the floor (Penguin_nAttack.cs:115-145, :196-202; fxparts/penguin.js Penguin_nAttack): their landings are left out then (notWorn)",
+    "cues": [
+    [0.0047, "fx", "nAttack_hit", {"d": 10, "x": -2.853, "p": 0.21, "roll": "spread1", "notWorn": ["R", "specialScepter"]}],
+    [0.0047, "fx", "nAttack_hit", {"d": 10, "x": 2.853, "p": 0.21, "roll": "spread1", "notWorn": ["R", "specialScepter"]}],
+    [0.1, "voice", "nAttack3"],
+    [0.3, "fx", "nAttack_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.41, "roll": "!spread3"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": -0.3, "y": 0.75, "rot": [4.36, -15.045, -1.171], "p": 0.41, "roll": "spread3"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "y": 0.75, "rot": [4.514, 0, 0], "p": 0.41, "roll": "spread3"}],
+    [0.3, "fx", "spreadShot_fire", {"d": 0.5, "x": 0.3, "y": 0.75, "rot": [4.36, 15.045, 1.171], "p": 0.41, "roll": "spread3"}],
+    [0.4807, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialScepter"]}],
+    [0.5047, "fx", "nAttack_hit", {"d": 10, "x": -2.853, "p": 0.21, "roll": "spread2", "notWorn": ["R", "specialScepter"]}],
+    [0.5047, "fx", "nAttack_hit", {"d": 10, "x": 2.853, "p": 0.21, "roll": "spread2", "notWorn": ["R", "specialScepter"]}],
+    [0.9807, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialScepter"]}],
+    [1.0047, "fx", "nAttack_hit", {"d": 10, "x": -2.853, "p": 0.41, "roll": "spread3", "notWorn": ["R", "specialScepter"]}],
+    [1.0047, "fx", "nAttack_hit", {"d": 10, "x": 2.853, "p": 0.41, "roll": "spread3", "notWorn": ["R", "specialScepter"]}]
+    ]
+  },
+  "cAttack1": {
+    "why": "Penguin.cs RPC_cAttack1 (:18388-19005): clip at 0 (cut, :18666) and the voice at 0, Mana Field #411 on (passives rule): manaField1 / manaField2 (Random.Range(0, 2), :18720-18793, PlayOneShot :18996 / :18988; without it cAttack1 / cAttack2, :18795-18862); at 0.7 s (Yield(2, 0.7) :19002) it changes to the looped cAttack2 (:18520-18525), whose cue holds the ring",
+    "cues": [
+    [0, "voice", "manaField1|manaField2"]
+    ]
+  },
+  "cAttack2": {
+    "why": "Penguin.cs RPC_cAttack1 case 2 (the change to cAttack2, looped, 0.7 s in: :18520-18525): Mana Field #411 on (passives rule): manaField_ring at the hero's position and rotation (:18546-18575; without it cAttack_ring, :18587-18610), mission / arena only (mGameType > 4, :18540); it plays its own looping Sounds/cAttack; followState (EffectControl.cs:194-232): it ends at the release, when RPC_cAttack0 sets myCommand cAttack0 (:19199; root crossfade 0.35 s, :19208-19211): cut 2.95, the page's step ends at 3 s; the MP ticks every 1 s (:18879-18967) draw nothing",
+    "cues": [
+    [0, "fx", "manaField_ring", {"cut": 2.95}]
+    ]
+  },
+  "@MPTransfer:nAttack1": {
+    "why": "Penguin.cs RPC_mpTransfer (:23291-23852), its own one-step sequence because Normal Attack uses nAttack1 (cut, :23633): at 0 mpTransfer_ring at the hero's position and rotation (:23651-23663; followState, ends at the standby 0.5 s: Yield(2, 0.3) :23844 + Yield(3, 0.2) :23846, :23536) and voice mpTransfer1 / mpTransfer2 (Random.Range(0, 2), :23713-23842; multiCast only on a repeat within 3 s, :23706, :23787); at 0.3 s mpTransfer on the ally (:23500), here the hero (decision 1: ally skills as self-casts; plays its own Sounds/mpTransfer)",
+    "cues": [
+    [0, "voice", "mpTransfer1|mpTransfer2"],
+    [0, "fx", "mpTransfer_ring", {"cut": 0.5}],
+    [0.3, "fx", "mpTransfer"]
+    ]
+  },
+  "cast1": {
+    "why": "Penguin.cs RPC_cast1 (:19251-20930), the cast channel the dispatcher starts for every cast-time skill (17 BB skills, :20158-20869, Cosmic Friday among them in its own tile): at 0: clip cast1 (0.2 fade, :19884) and voice cast (Voices/cast, one file, :19939-19951; voices/cast.wav, not sounds/cast.wav); Yield 0.2 (:20902): castRing at the hero, hero position and rotation (:19419; the prefab field castRing = Resources penguin/effects/castRing; EffectControl life 60 + afterLife 0.5, followState; plays its own looping Sounds/cast); Yield 0.5 (:20907): cast2 looped and the ring's root clip at 0.7 s (:19446-19461), then the cast bar (:19466-19475; the page: none) and the skill's RPC_<skill>_cast, which sets myCommand: the ring's followState cut at the step edge 0.7 s (EffectControl.cs:122-247), cued 0.65 because the page restarts FX.t at each step (as the Sheep's 0.55)",
+    "cues": [
+    [0, "voice", "cast"],
+    [0.2, "fx", "castRing", {"cut": 0.65}]
+    ]
+  },
+  "cast3": {
+    "why": "The cast3 clip after the RPC_cast1 channel: 16 Penguin skills, one per play, even chance, picked anew on every play (plans/fx_sheep/decisions.md 14: FX.pick cleared on step 0): Mana Missile (:21341), Mana Burn (:24250), Falling Comets (:26394), Mana Vortex (:27250), Meteora (:28055), Frozen Blast (:28995), Arctic Wind (:30118), Ice Shield (:31241), Ice Block (:31779), Snow Man (:32445), Tornado (:32904), Typhoon (:33466; with Typhoon #344 one key press gives Typhoon with an enemy locked, Tornado without, RPC_cast1 :20597-20648: two pool members, decisions.md 11), Absolute Zero (:34019), Blizzard (:34675), Snow Ball (:38403), Cosmic Rift (:38888); Cosmic Friday plays cast3 after the channel too, in its own tile (:39555); Double Spell #431 (12 %, RPC_cast1 :20100-20144) on Mana Missile, Mana Burn, Falling Comets, Frozen Blast, Arctic Wind, Ice Block (isDoubleSpell :19546-19707): roll doubleSpell, the rerun's voice and effects on the same roll, the clip not restarted (decisions.md 9), no purple tint (10)",
+    "skills": {
+      "manaMissile": {
+        "why": "Penguin.cs RPC_manaMissile_cast (:21108-21534, enemy target: the 10 m target point): Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast :9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1); at 0: clip cast3 cut (Rewind + PlayAnimation(cast3, 0), :21338-21341), voice manaMissile1 / manaMissile2 (Random.Range(0, 2), :21389-21448, PlayOneShot :21501 / :21527; Voices/multiCast instead within 3 s of the last, :21382-21386, :21463); Yield 0.4 (:21514): castEffect at TransformDirection(0, 1, 1), hero rotation (:21137; the prefab field castEffect, plays its own Sounds/castEffect) and RPC_manaMissile_fire from 1 m up 1 m ahead at the target (:21169-21179): rank 4 + More Missile #402 = 7 missiles (:10087-10099), yaw -72 + 24 i, each LookRotation(fireDir) x Euler(-0.2|yaw|, yaw, 0) (:10105-10220; fireDir aims at the target's collider.bounds.center (:21174), 0.6 m up at the 10 m point (decisions.md 3: a Penguin-sized body, CharacterController centre y 0.6, Penguin.prefab:683-688), 2.54 deg down from the fire point; checks/fx_penguin_build/penguin/missile_sim.py gives each rot), Sounds/manaMissile_fire (the field manaMissile_Fx, :10258); Penguin_manaMissile flies 12 m/s and turns 0.15 rad per 0.1 s toward to (Penguin_manaMissile.cs ctor, FixedUpdate; life 3 s, :10235) (fxparts/penguin.js Penguin_manaMissile: stepped at 50 Hz, the turn every 6 steps, Penguin_manaMissile.cs:119-134) and dies on the target's body or the floor (:193-211), manaMissile_hit at mCollider.ClosestPointOnBounds(the missile's centre) (Penguin_manaMissile.cs:223) with the hero's rotation (RPC_manaMissile_hit :10281-10286): the middle three reach the target 0.72 s after the fire (the hit on its bounds' front, 9.7 m, 0.62 m up), yaw +-48 pass it and dive onto the floor at 1.42 s (x -+1.64, 15.77 m: they cross the centre line) and yaw +-72 at 1.98 s (x -+0.81, 19.09 m), as the game's 0.15 rad turn does; Yield 0.1 (:21530): the multiCast check at 0.5 s (:21235-21248): the repeat RPC_manaMissile_multiCast starts the coroutine again (:10018-10021: clip, voice multiCast, the volley at 0.9) and this one ends with no standby; else Yield 0.3 (:21506): standby 0.8 s (:21288)",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "manaMissile1|manaMissile2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "sound", "manaMissile_fire"],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-13.6, -71.4, -2.49], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-7.89, -47.71, -1.91], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-2.47, -23.93, -1.04], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [2.54, 0, 0], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-2.47, 23.93, 1.04], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-7.89, 47.71, 1.91], "to": [0, 0.6, 10]}],
+        [0.4, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-13.6, 71.4, 2.49], "to": [0, 0.6, 10]}],
+        [0.5, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "castEffect", {"d": 1, "y": 1, "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "sound", "manaMissile_fire", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-13.6, -71.4, -2.49], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-7.89, -47.71, -1.91], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-2.47, -23.93, -1.04], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [2.54, 0, 0], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-2.47, 23.93, 1.04], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-7.89, 47.71, 1.91], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": [-13.6, 71.4, 2.49], "to": [0, 0.6, 10], "p": 0.12, "roll": "doubleSpell"}],
+        [1.12, "fx", "manaMissile_hit", {"d": 9.7, "y": 0.62}],
+        [1.12, "fx", "manaMissile_hit", {"d": 9.7, "x": -0.05, "y": 0.63}],
+        [1.12, "fx", "manaMissile_hit", {"d": 9.7, "x": 0.05, "y": 0.63}],
+        [1.62, "fx", "manaMissile_hit", {"d": 9.7, "y": 0.62, "p": 0.12, "roll": "doubleSpell"}],
+        [1.62, "fx", "manaMissile_hit", {"d": 9.7, "x": -0.05, "y": 0.63, "p": 0.12, "roll": "doubleSpell"}],
+        [1.62, "fx", "manaMissile_hit", {"d": 9.7, "x": 0.05, "y": 0.63, "p": 0.12, "roll": "doubleSpell"}],
+        [1.82, "fx", "manaMissile_hit", {"d": 15.77, "x": -1.64}],
+        [1.82, "fx", "manaMissile_hit", {"d": 15.77, "x": 1.64}],
+        [2.32, "fx", "manaMissile_hit", {"d": 15.77, "x": -1.64, "p": 0.12, "roll": "doubleSpell"}],
+        [2.32, "fx", "manaMissile_hit", {"d": 15.77, "x": 1.64, "p": 0.12, "roll": "doubleSpell"}],
+        [2.38, "fx", "manaMissile_hit", {"d": 19.09, "x": -0.81}],
+        [2.38, "fx", "manaMissile_hit", {"d": 19.09, "x": 0.81}],
+        [2.88, "fx", "manaMissile_hit", {"d": 19.09, "x": -0.81, "p": 0.12, "roll": "doubleSpell"}],
+        [2.88, "fx", "manaMissile_hit", {"d": 19.09, "x": 0.81, "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "manaBurn": {
+        "why": "Penguin.cs RPC_manaBurn_cast (:24017-24520, enemy target: the 10 m target point): Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast :9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1); at 0: clip cast3 cut (:24247-24250), Mana Surge #432 on: voice manaSurge1 / manaSurge2 (:24298-24361; else manaBurn1 / manaBurn2 :24367-24426; Voices/multiCast within 3 s, :24291-24295, :24441); Yield 0.4 (:24500): castEffect at TransformDirection(0, 1, 1) (:24049) and RPC_manaBurn_fire at the target (:24081): with #432 manaSurge at the target's position (tChar.createEffect, :24746-24770; else manaBurn :24789-24807; plays its own Sounds/manaBurn), at the target point, drawn with the target's rotation, the target facing the hero: rot [0, 180, 0] (decisions.md 4); the manaBurn status 0.3 s later (:24705) draws nothing (CharacterControl.cs:38572-38590); Yield 0.1 (:24512): the multiCast check at 0.5 s (:24137-24157): the repeat (:10340-10343) restarts it; else Yield 0.3 (:24509): standby 0.8 s (:24197)",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "manaSurge1|manaSurge2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "manaSurge", {"d": 10, "rot": [0, 180, 0]}],
+        [0.5, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "castEffect", {"d": 1, "y": 1, "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "manaSurge", {"d": 10, "p": 0.12, "roll": "doubleSpell", "rot": [0, 180, 0]}]
+        ]
+      },
+      "fallingComets": {
+        "why": "Penguin.cs RPC_fallingComets_cast (:26065-26615, enemy target: the 10 m target point): Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast :9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1); at 0: clip cast3 cut (:26391-26394), voice fallingComet1 / fallingComet2 (:26477-26524; Voices/multiCast within 12 s, :26470-26474, :26551); Yield 0.4 (:26602): castEffect at TransformDirection(0, 1, 1) (:26097), then 2 + 3 x 2 = 8 comets (:26134), one every 0.15 s (Yield :26589) at 0.4, 0.55 ... 1.45 s: Giant Star #442 on: RPC_giantComets_fire (:26282-26310) puts giantComet at the target's position + (Random.Range(-10, 10), 0, Random.Range(-10, 10)), whole metres -10 to +9 on each axis, on the floor (getSpawnPos), LookRotation(flat hero-to-spot) (:37609-37625; it falls from 16 m up, 6 m off along its own facing; plays its own Sounds/fallingComet); hits 0.6 s later draw nothing (:37531-37596); after the 8th Yield 0.15: the multiCast check at 1.6 s (:26164-26182): the repeat (:10375-10378) restarts it, else standby 1.6 s (:26221); the player's motion blur (:26430-26435) is a camera effect",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "fallingComet1|fallingComet2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [0.55, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [0.7, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [0.85, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [1.0, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [1.15, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [1.3, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [1.45, "fx", "giantComet", {"d": 10, "spread": [-10, 9]}],
+        [1.6, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [2.0, "fx", "castEffect", {"d": 1, "y": 1, "p": 0.12, "roll": "doubleSpell"}],
+        [2.0, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.15, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.3, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.45, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.6, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.75, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [2.9, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}],
+        [3.05, "fx", "giantComet", {"d": 10, "spread": [-10, 9], "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "manaVortex": {
+        "why": "Penguin.cs RPC_manaVortex_cast (:27088-27383, no target): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19596-19612); at 0: clip cast3 cut (:27247-27250), voice manaVortex1 / manaVortex2 (:27291-27372); Yield 0.4 (:27370): castEffect at TransformDirection(0, 1, 1) (:27120); the spot: getSpawnVector(hero + 2 up, 5 forward - 2 up) (:27133): its 4 m ray ends 0.51 m above flat ground, so getSpawnPos(hero + 5 forward) = 5 m ahead on the floor (Math.cs:1210-1230), getExpandPos keeps a free spot (:27144); RPC_manaVortex_create goes out only as an ActionEvent (:27162-27170; no local call: the server's echo spawns it, a network delay later): RPC_manaVortex_create (:10396-10520) Instantiates the summon Resources Elementals/ManaVortex/ManaVortex (:10421) at the spot, identity (:10431), scale 0.4 + 0.2 x 3 = 1.0, its create clip then root looped after 1 s (ManaVortex.cs:1045-1073, :973), life chaAdjust(60) = 60 s (:10513), cut at 10 s (kill 10, decisions.md 13); the summon is built as the effect manaVortex (wardrobe_fx.py EXTRA_FOLDERS: characters/elementals/manavortex/ManaVortex, its CharacterControl kept by name only; index.html FXPARTS.ManaVortex: create, then root looped 1 s later, ManaVortex.cs:1045-1073, :973-978; boltEmitter, BoltEmitter.cs:147-553; its own looping Sounds/manaVortex); Yield 0.3 (:27376): standby 0.7 s (:27197)",
+        "cues": [
+        [0, "voice", "manaVortex1|manaVortex2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "manaVortex", {"d": 5, "kill": 10}]
+        ]
+      },
+      "meteora": {
+        "why": "Penguin.cs RPC_meteora_cast (:27917-28189, enemy target: the 10 m target point; the channel stores the target's position at the bar's start, :20008-20046; with no target it would be 20 m ahead, :20040): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19613-19629); at 0: clip cast3 cut (:28052-28055), voice meteora1 / meteora2 (:28096-28181); Yield 0.4 (:28172): castEffect at TransformDirection(0, 1, 1) (:27949) and RPC_meteora_fire at the point (:27962): meteora_ring there, identity (:28515-28533; plays its own Sounds/meteora); Yield 1.0 (:28574): meteora at 1.4 s, identity, scale 1.25 at rank 2 (:28342-28373); Yield 1.2 (:28567): meteora_hit at 2.6 s (:28406-28424), with the camera shake and white ramp (:28391-28401, camera effects); Yield 0.4 (:28572): the damage at 3.0 s draws nothing (:28442-28502); case 3 of the cast: Yield 0.4 (:28177): standby 0.8 s (:28002); drawn in the hero's facing (identity, APPROXIMATED)",
+        "cues": [
+        [0, "voice", "meteora1|meteora2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "meteora_ring", {"d": 10}],
+        [1.4, "fx", "meteora", {"d": 10, "scale": 1.25}],
+        [2.6, "fx", "meteora_hit", {"d": 10}]
+        ]
+      },
+      "frozenBlast": {
+        "why": "Penguin.cs RPC_frozenBlast_cast (:28754-29258, enemy target: the 10 m target point): Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast :9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1); at 0: clip cast3 cut (:28992-28995), Frozen Break #403 on: voice frozenBreak1 / frozenBreak2 (:29043-29106; else frozenBlast1 / frozenBlast2 :29112-29171; Voices/multiCast within 12 s, :29036-29040, :29186); Yield 0.4 (:29245): castEffect at TransformDirection(0, 1, 1) (:28786) and RPC_frozenBlast_fire at the target's position (:28826): with #403 frozenBreak, identity, scale 4 x 0.4 + 0.2 = 1.8 (:29621-29650; else frozenBlast :29671-29696; plays its own Sounds/frozenBlast); the hit 1 s later (:29716, :29431-29608): ice on the enemies hit and Sounds/iceBreak only on an already iced one (:29553-29582), on enemies; Yield 0.1 (:29221): the multiCast check at 0.5 s (:28882-28902): the repeat (:10613-10616) restarts it; else Yield 0.3 (:29253): standby 0.8 s (:28942)",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "frozenBreak1|frozenBreak2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "frozenBreak", {"d": 10, "scale": 1.8}],
+        [0.5, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "castEffect", {"d": 1, "y": 1, "p": 0.12, "roll": "doubleSpell"}],
+        [0.9, "fx", "frozenBreak", {"d": 10, "scale": 1.8, "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "arcticWind": {
+        "why": "Penguin.cs RPC_arcticWind_cast (:29912-30385, no target: a cone ahead): Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast :9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1); at 0: clip cast3 cut (:30115-30118), Deadly Frost #413 on: voice deadlyFrost1 / deadlyFrost2 (:30166-30229; else arcticWind1 / arcticWind2 :30235-30294; Voices/multiCast within 12 s, :30159-30163, :30309); Yield 0.4 (:30357): castEffect at TransformDirection(0, 1, 1) (:29944) and RPC_arcticWind_fire at the hero (:29957): with #413 deadlyFrost at TransformDirection(0, 1, 1.2), hero rotation (:30727-30751; else arcticWind :30760-30778; plays its own Sounds/arcticWind); its 8 pulses 0.2 s apart (:30831, :30846) hit enemies only (ice / Arctic Frost #314's frost, Deadly Frost's iceBreak, :30549-30708); Yield 0.2 (:30349): the multiCast check at 0.6 s (:30005-30025): the repeat (:10634-10637) restarts it; else Yield 0.2 (:30363): standby 0.8 s (:30065)",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "deadlyFrost1|deadlyFrost2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "deadlyFrost", {"d": 1.2, "y": 1}],
+        [0.6, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [1.0, "fx", "castEffect", {"d": 1, "y": 1, "p": 0.12, "roll": "doubleSpell"}],
+        [1.0, "fx", "deadlyFrost", {"d": 1.2, "y": 1, "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "iceShield": {
+        "why": "Penguin.cs RPC_iceShield_cast (:31038-31382, ally target: shown as a self-cast, decision 1 by analogy: eSkillTarget.ally, PenguinSkill.cs:1737-1742, and the ally check takes the caster, GameGui.cs:37900-37904): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19674-19690); at 0: clip cast3 cut (:31238-31241), voice iceShield1 / iceShield2 (:31282-31371); Yield 0.4 (:31377): castEffect at TransformDirection(0, 1, 1) (:31070) and the iceShield status on the target for chaAdjust(30) = 30 s (:31124-31146), whose apply puts Effects/iceShield at the receiver's collider centre (the Penguin's CharacterController centre y 0.6), parented, scale Clamp(radius 0.3 + 0.4, 0.5, 2) = 0.7 (CharacterControl.cs:38619-38627; mChar is the CharacterController, CharacterControl.cs:29789, m_Radius 0.3, Penguin.prefab:684; plays its own Sounds/iceShield; no EffectControl: it goes when the status ends, CharacterControl.cs:17417-17430: cut at 10 s (kill 10, decisions.md 13)); Yield 0.4 (:31360): standby 0.8 s (:31173)",
+        "cues": [
+        [0, "voice", "iceShield1|iceShield2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "iceShield", {"y": 0.6, "scale": 0.7, "kill": 10}]
+        ]
+      },
+      "iceBlock": {
+        "why": "Penguin.cs RPC_iceBlock_cast (:31432-32090; RPC_cast1 starts it when the bar ends, :20516-20522; isDoubleSpell :19707): Double Spell #431 on (passives on; one roll per play: roll doubleSpell): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % as the bar completes (:20108-20126; luck ignored), a proc draws multiCast at the hero (createEffect :20132-20138; plays its own Sounds/trippleCast) and adds multiCast Lv 1 (:20144), which tints the hero (0.48, 0.29, 0.78) (CharacterControl.cs:38470-38477) until Ice Block spends it at 0.4 s (:31594-31611; the tint is left out, as Blink's: plans/fx_penguin/own_skills.md question 3); clip cast3 cut (PlayAnimation(cast3, 0) :31779) and voice iceBlock1 / iceBlock2 (Random.Range(0, 2) :31830-31874, PlayOneShot :32036-32039) at 0; Yield 0.4 (:32034): castEffect (the Penguin prefab's castEffect field = Resources penguin/effects/castEffect) 1 m ahead 1 m up (TransformDirection(0, 1, 1) :31589; plays its own Sounds/castEffect); mBlockCount = sLv + sLv x multiCastLv = 2, 4 on a proc (:31618); each block raycast down to the ground 1.5 m ahead (:31958, :31985, :31668), RPC_iceBlock_fire: iceBlock, LookRotation(hero forward) (:10716-10744; fxparts/penguin.js Penguin_iceBlock), life chaAdjust(6) + 6 = 12 s (:10744, Penguin_iceBlock.cs:51; destroyed with no fade :116-120; CHA ignored): the centre at 0.4, then Yield 0.1 (:32017) and per i = 1..mBlockCount the right block +1.5 i m, Yield 0.05 (:32023), the left one -1.5 i m, Yield 0.05 (:32032): 0.5 / 0.55, 0.6 / 0.65, on a proc also 0.7 / 0.75, 0.8 / 0.85; standby when i = mBlockCount + 1 (:31899-31918): 0.7 s (0.9 on a proc); each block plays its own Sounds/iceBlock; the blocks' ice slow on enemies (Penguin_iceBlock.cs:169) draws nothing",
+        "cues": [
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "voice", "iceBlock1|iceBlock2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "iceBlock", {"d": 1.5, "kill": 12}],
+        [0.5, "fx", "iceBlock", {"d": 1.5, "x": 1.5, "kill": 12}],
+        [0.55, "fx", "iceBlock", {"d": 1.5, "x": -1.5, "kill": 12}],
+        [0.6, "fx", "iceBlock", {"d": 1.5, "x": 3.0, "kill": 12}],
+        [0.65, "fx", "iceBlock", {"d": 1.5, "x": -3.0, "kill": 12}],
+        [0.7, "fx", "iceBlock", {"d": 1.5, "x": 4.5, "kill": 12, "p": 0.12, "roll": "doubleSpell"}],
+        [0.75, "fx", "iceBlock", {"d": 1.5, "x": -4.5, "kill": 12, "p": 0.12, "roll": "doubleSpell"}],
+        [0.8, "fx", "iceBlock", {"d": 1.5, "x": 6.0, "kill": 12, "p": 0.12, "roll": "doubleSpell"}],
+        [0.85, "fx", "iceBlock", {"d": 1.5, "x": -6.0, "kill": 12, "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "snowMan": {
+        "why": "Penguin.cs RPC_snowMan_cast (:32095-32630, enemy target; the target point 10 m ahead): clip cast3 cut (:32445) and voice snowman1 / snowman2 at 0 (Random.Range(0, 2) :32486; BB loads Voices/snowMan1 / snowMan2 :32496, :32527, the rip's files are voices/snowman1 / snowman2, the spelling TTO loads, pseudo/Penguin.c:21195-21196; PlayOneShot :32563, :32576); Yield 0.4 (:32574): castEffect 1 m ahead 1 m up (:32252; plays Sounds/castEffect); snowMan_ring on the target at its feet, the target's rotation (tChar.createEffect :32313-32331; plays its own Sounds/snowMan); the snowMan status, Lv 2, getDebuff(2 + 4 x 2 = 10 s, CHA vs CHA; CHA ignored) (:32345-32350): the target's renderers hidden and Effects/snowMan at its feet (CharacterControl.cs:38650-38711); Penguin_snowMan turns it to the target's rotation, keeps scale 1 for a target 1 m tall or less (Penguin_snowMan.cs:45-63), follows it and destroys itself when the status ends (:110-129; it has no fields and draws nothing); the target taken as a Penguin-sized enemy facing the hero (rot 180); Yield 0.4 (:32585): standby 0.8 s (:32377); decisions.md 17: the hero hidden while the snowman stands, 0.4 to 10.4 s (fxparts/penguin.js Penguin_snowMan, the page's heroHide; in the game the snowmanned target's renderers go, CharacterControl.cs:38678-38692)",
+        "cues": [
+        [0, "voice", "snowman1|snowman2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "snowMan_ring", {"d": 10, "rot": [0, 180, 0]}],
+        [0.4, "fx", "snowMan", {"d": 10, "rot": [0, 180, 0], "kill": 10}]
+        ]
+      },
+      "tornado": {
+        "why": "Penguin.cs RPC_tornado_cast (:32631-33182; with Typhoon #344 learned it is cast only with no enemy locked: RPC_cast1 :20597-20648, getTyphoonLv :11123-11126): clip cast3 cut (:32904) and voice tornado1 / tornado2 (Random.Range(0, 2) :32955-32999, PlayOneShot :33126, :33129) at 0; Yield 0.4 (:33122): castEffect 1 m ahead 1 m up (:32788; plays Sounds/castEffect); the spot getSpawnPos(position + (1 + sLv) x forward) = 4 m ahead at sLv 3 (:32804); RPC_tornado_fire (:32821): tornado_ring there, identity (:10851-10869; EffectControl life 3, plays its own Sounds/cyclone_create) and tornado3 (sLv 3, :10963-10987; fxparts/penguin.js Penguin_tornado: Init velocity 5 x hero forward, drag 2, Penguin_tornado.cs:98-103, unsteered it slides about 2.4 m, to 6.4 m ahead, checks/fx_penguin_research/cast_b/storm_sim.py; its own looping Sounds/cyclone), Ice Twister #443 on (:11029); channel chaAdjust(6) = 6 s (:32839): the hero holds the attack state, turning to the storm every frame (:33093-33120), and at 0.4 + 6 = 6.4 s RPC_tornado_destroy (:33046-33052): standby (:11079) and the storm's onDestroy: destroy clip, Yield 0.4, Destroy (:11106; Penguin_tornado.cs:928-940, :898): cut 6.4, gone at 6.8 (kill 6.4 after its spawn); left out: tornado_hit and Ice Twister's frost on enemies the storm meets (Penguin_tornado.cs:266-361), on an enemy with no target-point analogue (no enemy is locked, or the cast would be Typhoon); a pool member of its own (decisions.md 11)",
+        "cues": [
+        [0, "voice", "tornado1|tornado2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "tornado_ring", {"d": 4}],
+        [0.4, "fx", "tornado3", {"d": 4, "cut": 6.4, "kill": 6.4}]
+        ]
+      },
+      "typhoon": {
+        "why": "Penguin.cs RPC_typhoon_cast (:33183-33644; Tornado cast with an enemy locked and Typhoon #344 learned, passives on: RPC_cast1 :20597-20626): clip cast3 cut (:33466) and voice typhoon1 / typhoon2 (Random.Range(0, 2) :33507-33548, PlayOneShot :33598, :33601) at 0; Yield 0.4 (:33587): castEffect 1 m ahead 1 m up (:33340; plays Sounds/castEffect); getSpawnPos(position + (1 + sLv) x forward) = 4 m ahead at sLv 3 (:33353), RPC_typhoon_fire (:33358): typhoon3 there, identity (:11236-11260; fxparts/penguin.js Penguin_typhoon; its own looping Sounds/cyclone, fading in to 0.6, Penguin_typhoon.cs:330, :472), Init(owner, damage, HP talAdjust(300), life chaAdjust(6) = 6, the target, Ice Twister #443) (:11299-11311): launched rotateH(5 x owner forward, (tID - 1) x 120 deg) with drag 2 (Penguin_typhoon.cs:848-853; tID is the target's actor number: 0, 120 or 240 deg at random on each play, decisions.md 12), pushed with force 11 - 3 = 8 at the target, the 10 m point: to (:356-372); its life is set at Init (:772), so at 0.4 + 6 = 6.4 s Update starts onDestroy (:81, :270-287): destroy clip, Yield 0.4, Destroy (:1111-1126; Penguin.cs:11360-11378): the part ends it there by itself (no cut: the hero went to standby at 0.8 s and the typhoon does not watch her), gone at 6.8 (kill 6.4 after its spawn); its HP pool talAdjust(300), drained by the damage it deals (:205, :93), is not modelled (APPROXIMATED: it depends on the enemy's DEF; on a 0-DEF target it would end after 11 hits); Yield 0.4 (:33596): standby 0.8 s (:33398); left out: every 0.35 s (:110-118) tornado_hit at each struck enemy's collider centre (:168-183, Penguin.cs:10789-10812) and Ice Twister's 9 % frost on it (:210-238, CharacterControl.cs:38733-38757): on the struck enemy, as the Sheep's divinityAxe_hit",
+        "cues": [
+        [0, "voice", "typhoon1|typhoon2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "typhoon3", {"d": 4, "to": [0, 0, 10], "kill": 6.4}]
+        ]
+      },
+      "absoluteZero": {
+        "why": "Penguin.cs RPC_absoluteZero_cast (:33645-34221, enemy target; the target point 10 m ahead): clip cast3 cut (:34019) and voice absoluteZero1 / absoluteZero2 (Random.Range(0, 2) :34060-34115) at 0; Yield 0.4 (:34164): castEffect 1 m ahead 1 m up (:33802; plays Sounds/castEffect); absoluteZero at the target's feet, Quaternion.identity (:33838-33856; drawn in the hero's facing, APPROXIMATED; AlphaTimer + ShatterMesh, FX/Phoenix; plays its own Sounds/absoluteZero); Yield 0.4 (:34168): standby 0.8 s (:33951); left out: the ice status's blue tint of the target's body (Lv 4, getDebuff(12), :33903; CharacterControl.cs:38600-38610), on an enemy with no target-point analogue (no body there); the player's camera colour ramp iceRamp (:33919-33924), a camera effect as the Wolf's were",
+        "cues": [
+        [0, "voice", "absoluteZero1|absoluteZero2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "absoluteZero", {"d": 10}]
+        ]
+      },
+      "blizzard": {
+        "why": "Penguin.cs RPC_blizzard_cast (:34222-34893, enemy target; the target point 10 m ahead): clip cast3 with a 0.2 s fade (PlayAnimation(cast3, 0.2) :34675; the Cast tile's step is a cut) and voice blizzard1 / blizzard2 (Random.Range(0, 2) :34716-34771) at 0; Yield 0.4 (:34820): castEffect 1 m ahead 1 m up (:34380; plays Sounds/castEffect); blizzard on the target at its feet, the hero's rotation (tChar.createEffect :34424-34442; EffectControl life 6 + afterLife 1, followPosition, its own looping Sounds/blizzard); six 1 s ticks (i < 6 :34527, Yield 1 :34815, i++ :34467) at 0.4 ... 5.4 s hit every enemy within 12 m but the target (:34566-34605); at i = 6, 0.4 + 6 x 1 = 6.4 s: standby (:34499), the blizzard left to end on its own 6 s life (it is destroyed only when the channel is cut short, :34625-34631); left out: the hits (no visual of their own), on enemies near the target with no target-point analogue; the player's camera motion blur (:34385-34396), a camera effect as the Wolf's were",
+        "cues": [
+        [0, "voice", "blizzard1|blizzard2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "blizzard", {"d": 10}]
+        ]
+      },
+      "snowBall": {
+        "why": "Penguin.cs RPC_snowBall_cast (:38064-38589, an enemy target that must be a snowman: 'Can only cast on snowman' :38307; the target point 10 m ahead): the snowman a Snow Man left there stands at 0 (as the Sheep's seal fields show the seals they need) and goes when the snowBall status removes snowMan at 0.4 s (CharacterControl.cs:38847; Penguin_snowMan.cs:110-129); clip cast3 cut (:38403) and voice snowBall1 / snowBall2 (Random.Range(0, 2) :38444-38485, PlayOneShot :38523, :38541) at 0; Yield 0.4 (:38535): castEffect 1 m ahead 1 m up (:38210; plays Sounds/castEffect); snowBall_cast on the target at its feet, its rotation (tChar.createEffect :38247-38265; no sound); the snowBall status with the snowman's level and time left (:38287-38298; getStatusTime = the time left, CharacterControl.cs:19278): the snowman's 10 s less the 1.5 s from its status (Snow Man's 0.4 s) to this one (Snow Man's standby 0.8 s + Snow Ball's cast1 0.7 s + 0.4 s) = 8.5, cut to 8 by the int; snowBall at the target's feet, identity, parented, scale height + 0.2 = 1.2 for a Penguin-sized target (CharacterControl.cs:38886-38916; StaticMesh); the status ends at 0.4 + 8 = 8.4 s: snowBallFx destroyed and snowBall_break at the target's feet, identity (CharacterControl.cs:17558-17580); Yield 0.4 (:38547): standby 0.8 s (:38335); left out: the shield's burst when damage breaks it, needs an attacker; the leftover snowman leaves the hero shown (hideHero false: decisions.md 17 is Snow Man's own snowman, else she would blink out for 0.4 s)",
+        "cues": [
+        [0, "fx", "snowMan", {"d": 10, "rot": [0, 180, 0], "kill": 0.4, "hideHero": false}],
+        [0, "voice", "snowBall1|snowBall2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "snowBall_cast", {"d": 10, "rot": [0, 180, 0]}],
+        [0.4, "fx", "snowBall", {"d": 10, "scale": 1.2, "kill": 8}],
+        [8.4, "fx", "snowBall_break", {"d": 10}]
+        ]
+      },
+      "cosmicRift": {
+        "why": "Penguin.cs RPC_cosmicRift_cast (:38590-39061, a self-buff): clip cast3 cut (:38888) and voice cosmicRift1 / cosmicRift2 (Random.Range(0, 2) :38929-38970, PlayOneShot :39016, :39024) at 0; Yield 0.4 (:39022): castEffect 1 m ahead 1 m up (:38725; plays Sounds/castEffect) and cosmicRift_ring at the hero (createEffect :38730-38748; followState: cut at the 0.8 s standby; plays its own Sounds/cosmicRift_ring); Yield 0.2 (:39031): at 0.6 s RPC_AddStatus(cosmicRift, 5, chaAdjust(12) = 12 s; CHA ignored) (:38793): every Diffuse renderer of the hero gets FX/CosmicRift with its own texture, every other renderer hidden (CharacterControl.cs:38952-39006; the skin cue FX/CosmicRift, decisions.md 16, index.html HERO_SKINS: kill 12, to 12.6 s), and cosmicRift at the hero, identity (:39011-39020; followState: cut at 0.8; plays its own Sounds/cosmicRift); Yield 0.2 (:39014): standby 0.8 s (:38820); the status ends at 0.6 + 12 = 12.6 s: the hero's renderers back to Diffuse (colour 0.86) and shown (CharacterControl.cs:17605-17671) and cosmicRift again at the hero (:17676-17683)",
+        "cues": [
+        [0, "voice", "cosmicRift1|cosmicRift2"],
+        [0.4, "fx", "castEffect", {"d": 1, "y": 1}],
+        [0.4, "fx", "cosmicRift_ring", {"cut": 0.8}],
+        [0.6, "fx", "cosmicRift", {"cut": 0.8}],
+        [0.6, "skin", "FX/CosmicRift", {"kill": 12}],
+        [12.6, "fx", "cosmicRift"]
+        ]
+      }
+    }
+  },
+  "@CosmicFriday:cast3": {
+    "why": "Penguin.cs RPC_cosmicFriday_cast (:39062-39700; RPC_cast1 starts it when the bar ends, :20859-20869): clip cast3 cut (PlayAnimation(cast3, 0) :39555) and voice cosmicFriday1 / cosmicFriday2 (Random.Range(0, 2) :39596-39637, PlayOneShot :39673, :39680) at 0; Yield 0.4 (:39691): the cosmicFriday clip cuts in (:39203), its entry has the rest",
+    "cues": [
+    [0, "voice", "cosmicFriday1|cosmicFriday2"]
+    ]
+  },
+  "cosmicFriday": {
+    "why": "Penguin.cs RPC_cosmicFriday_cast case 2, 0.4 s into cast3 (Yield 0.4 :39691), times from this clip: PlayAnimation(cosmicFriday, 0) looped (:39203-39208); castEffect 1 m ahead 1 m up (:39198; plays Sounds/castEffect); cosmicFriday_ring at the hero (createEffect :39213-39231; followState, ends on its life 1 + 1 s first; plays its own Sounds/cosmicFriday_ring); cosmicFriday at the hero, InitCosmicFriday (:39250-39279; fxparts/penguin.js Penguin_cosmicFriday: create clip, Yield 0.5, root looped, following the hero, Penguin_cosmicFriday.cs:60, :330-406; its own looping Sounds/cosmicFriday); the channel (Yield WaitForFixedUpdate :39678) runs until the player moves or MP < 25 (:39341-39381), the tile's 6 s: three ticks at 0, 2, 4 s (mUpdateTime + 2 :39387-39395; MP 20 with Revised Magic #414 :39400) each put cosmicFriday (5, 3 s) on everyone of her layer within 3 m, herself included (FindAreaTarget(her position, 3, 3, 1 << her layer) :39405-39449, no self-exclusion), whose look is Cosmic Rift's FX/CosmicRift skin (CharacterControl.cs:39047-39114; the skin cue FX/CosmicRift, decisions.md 16: kill 7), refreshed until 4 + 3 = 7 s; at 6 s the channel ends: DestroyCosmicFriday (:39464-39470: destroy clip, Yield 0.5, Destroy, Penguin_cosmicFriday.cs:529-580; cut 6, gone at 6.5) and standby (:39494); left out: the cosmicFriday status on allies (no allies)",
+    "cues": [
+    [0, "fx", "castEffect", {"d": 1, "y": 1}],
+    [0, "fx", "cosmicFriday_ring"],
+    [0, "skin", "FX/CosmicRift", {"kill": 7}],
+    [0, "fx", "cosmicFriday", {"cut": 6, "kill": 6.5}]
+    ]
+  },
+  "blink": {
+    "why": "Penguin.cs: Blink (RPC_blink :22507-23236) and Parallel Shift (RPC_parallelShift :36150-37069) both play the blink clip, cut in (PlayAnimation(\"blink\", 0) :23016, :36836); one skill per play",
+    "skills": {
+      "blink": {
+        "why": "Penguin.cs RPC_blink at max rank (sLv 2): clip (cut, :23016), blink_ring Instantiated at the hero (:23046; EffectControl life 1 + afterLife 1, plays its own Sounds/blink) and voice blink1 / blink2 (Random.Range(0, 2), :23089-23144) at 0; Double Spell #431 on (passives on): Random.Range(0, 100) < lckAdjust(12) = 12 % (:23163-23175) draws multiCast at the hero (createEffect :23187; plays its own Sounds/trippleCast) and gives multiCast Lv 1 for 3 s (:23193); Yield 0.1 (:23233): moveSpeed 3 (:22665); Yield 0.2 (:23229): at 0.3 s the warp, Move(3 x 2 + 2 = 8 m forward) (:22759), and blink Instantiated where she lands (:22829; 0 m: the wardrobe hero doesn't travel, as Feral Assault's); Yield 0.1 (:23227): at 0.4 s, with the rolled multiCast, the status is spent and RPC_blink_multiCast reruns the skill (:22884-22904, :10312-10315): its blink_ring and voice at 0.4, its blink at 0.4 + 0.3 = 0.7, on the same roll (the clip's restart at 0.4, :23013-23016, isn't played on the page; the rerun's own roll isn't chained, as TTO1102 <RPC_blink>d__180::MoveNext@0x1dc72c0 skips it, pseudo/Penguin.c:3931); else Yield 0.2 (:23219): standby at 0.6 s (:22943); decisions.md 9 (the rerun on the same roll, once, the clip not restarted)",
+        "cues": [
+        [0, "fx", "blink_ring"],
+        [0, "voice", "blink1|blink2"],
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.3, "fx", "blink"],
+        [0.4, "fx", "blink_ring", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.4, "voice", "blink1|blink2", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.7, "fx", "blink", {"p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "parallelShift": {
+        "why": "Penguin.cs RPC_parallelShift: clip blink (cut, :36836), parallelShift_ring Instantiated at the cast position, hero rotation (:36866; EffectControl life 1 + afterLife 1, plays its own Sounds/parallelShift) and voice parallelShift1 / parallelShift2 (Random.Range(0, 2), :36916-37045; Voices/multiCast only when recast within 12 s, :36909-36913, never on a fresh cast: its cooldown is agiAdjust(30), :36824) at 0; Yield 0.1 (:37052): moveSpeed 3 (:36297); Yield 0.2 (:37026): at 0.3 s every player of her side within 6 m, she included (FindAreaTarget :36344), moved 10 m along her facing (Move :36523), and parallelShift Instantiated where she lands (:36654; 0 m: the wardrobe hero doesn't travel); left out: blink on each other player warped with her (:36435, :36610; the code skips the caster, :36411, so the self-cast shows none); Yield 0.1 (:37028), Yield 0.2 (:37056): standby at 0.6 s (:36763); no Double Spell roll (only Double / Triple Cast's multiCast repeats it, :36704-36724)",
+        "cues": [
+        [0, "fx", "parallelShift_ring"],
+        [0, "voice", "parallelShift1|parallelShift2"],
+        [0.3, "fx", "parallelShift"]
+        ]
+      }
+    }
+  },
+  "cast4": {
+    "why": "Penguin.cs: Falling Stars (RPC_fallingStars :24878-25679) and Nova Flare (RPC_novaFlare :27421-27787) both play cast4, cut in (PlayAnimation(\"cast4\", 0) :25342, :27619); one skill per play",
+    "skills": {
+      "fallingStars": {
+        "why": "Penguin.cs RPC_fallingStars at max rank (sLv 2), Giant Star #442 on (passives on): clip (cut, :25342), voice fallingStar1 / fallingStar2 (Random.Range(0, 2), :25394-25449; Voices/multiCast only within 12 s of the last cast, :25383-25389) at 0; Double Spell #431: Random.Range(0, 100) < lckAdjust(12) = 12 % (:25500-25512) draws multiCast at the hero (createEffect :25524; plays its own Sounds/trippleCast) and gives multiCast Lv 1 for 3 s (:25530); fallingStar_ring at the hero (createEffect :25573; life 2, followPosition; plays its own Sounds/fallingStar_ring) at 0; Yield 0.4 (:25607): every enemy within 16 m (:25066-25071), up to 10, gets RPC_giantStars_fire at its feet (:25134), which Instantiates giantStar there at once, identity (:37338; plays its own Sounds/fallingStar_hit), the hit 0.6 s later (:37355, :37293): the enemy at the 10 m target point (Sheep decision 2); Yield 0.2 (:25605): at 0.6 s, with the rolled multiCast, RPC_fallingStars_multiCast reruns the skill (:25228-25246, :10354-10357) on the same roll: voice multiCast (the 12 s timer was set at 0, :25389, :25469-25481), its ring at 0.6, its star at 0.6 + 0.4 = 1.0 (the clip's restart at 0.6, :25339-25342, isn't played on the page; its own roll isn't chained, as TTO1102 <RPC_fallingStars>d__187::MoveNext@0x1ded300 skips it, pseudo/Penguin.c:10634); else standby at 0.6 s (:25285); left out: the camera motion blur at 0.4 s (:25047), as Feral Assault's; decisions.md 9 (the rerun on the same roll, once, the clip not restarted)",
+        "cues": [
+        [0, "voice", "fallingStar1|fallingStar2"],
+        [0, "fx", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0, "fx", "fallingStar_ring"],
+        [0.4, "fx", "giantStar", {"d": 10}],
+        [0.6, "voice", "multiCast", {"p": 0.12, "roll": "doubleSpell"}],
+        [0.6, "fx", "fallingStar_ring", {"p": 0.12, "roll": "doubleSpell"}],
+        [1.0, "fx", "giantStar", {"d": 10, "p": 0.12, "roll": "doubleSpell"}]
+        ]
+      },
+      "novaFlare": {
+        "why": "Penguin.cs RPC_novaFlare, with the Penguin's Mana Vortex in place (:27591; without one nothing plays, :27740): the vortex told to blow (SendMessage :27595), clip (cut, :27619) and voice novaFlare1 / novaFlare2 (Random.Range(0, 2), :27660-27756) at 0; the vortex's RPC_novaFlare Instantiates its novaFlare field (ManaVortex.cs:540; Resources characters/elementals/manavortex/effects/novaFlare; life 4, plays its own Sounds/novarFlare) at the vortex, identity, at once (ManaVortex.cs:773), its hits 1 s later (:804, :673-712): the vortex 5 m ahead, where Mana Vortex places it (getSpawnVector(pos + 2 up, 5 forward - 2 up), Penguin.cs:27133); Yield 0.4 (:27750): standby at 0.4 s (:27556); left out: the vortex itself (a summon, ManaVortex.prefab) and its destroy animation (ManaVortex.cs:763); no refund flash (manaPool_hit comes only from ManaVortex.RPC_dead, :1318-1330, which a vortex marked dead at :745 never runs, :399); decisions.md 5 (the blast 5 m ahead, no vortex model); built from characters/elementals/manavortex/effects (wardrobe_fx.py EXTRA_FOLDERS)",
+        "cues": [
+        [0, "voice", "novaFlare1|novaFlare2"],
+        [0, "fx", "novaFlare", {"d": 5}]
+        ]
+      }
+    }
+  },
+  "arcticEmperor": {
+    "why": "Penguin.cs RPC_arcticEmperor at max rank (sLv 2): clip (cut, :35159) and voice arcticEmperor1 / arcticEmperor2 (Random.Range(0, 2), :35200-35291) at 0; Yield 0.3 (:35281): the castle, arcticEmperor Instantiated at the hero (:35054; EffectControl life 9 + afterLife 2, Penguin_arcticEmperor's fade 0.3 in / 7.7 / 1.0 out; plays its own Sounds/arcticEmperor) and arcticEmperor_hit started (:35076: frost every 1 s, the burst at 0.3 + 8 = 8.3 s, :35431-35646); Yield 0.7 (:35277): standby at 1.0 s (:35103); left out: the frost look on each enemy (CharacterControl.cs:38733-38763), on an enemy within 8 m (:35466), and the 10 m target point is outside that; the statue's fade: fxparts/penguin.js Penguin_arcticEmperor on the two-pass Transparent/AdditiveSaturate material (fxparts/mesh.js)",
+    "cues": [
+    [0, "voice", "arcticEmperor1|arcticEmperor2"],
+    [0.3, "fx", "arcticEmperor"]
+    ]
+  },
+  "focusIntellect": {
+    "why": "Penguin.cs RPC_focusIntellect: clip (cut, :35951), focusIntellect_ring at the hero (createEffect :35981; life 1 + afterLife 1, followPosition, plays its own Sounds/focusIntellect_ring) and voice focusIntellect1 / focusIntellect2 (Random.Range(0, 2), :36024-36114) at 0; Yield 0.8 (:36118): the focusIntellect status, Lv 5, chaAdjust(6) = 6 s (:35867; INT > 100, :35852, high INT as the cast-bar rule), whose add draws Effects/focusIntellect on the hero at once, identity, parented (CharacterControl.cs:38790-38825; life 30, plays its own Sounds/focusIntellect), destroyed when the status ends (CharacterControl.cs:17490-17500): kill 6; Yield 0.2 (:36104): standby at 1.0 s (:35895)",
+    "cues": [
+    [0, "fx", "focusIntellect_ring"],
+    [0, "voice", "focusIntellect1|focusIntellect2"],
+    [0.8, "fx", "focusIntellect", {"kill": 6}]
+    ]
+  },
+  "constellation": {
+    "why": "TTO1102:Penguin.<RPC_constellation>d__340::MoveNext@0x1DE7560 (Penguin.c:6783-7032) + <StarLines>d__341::MoveNext@0x1E2C220 (:22423-23060) (plans/fx_penguin/tto.md 2.1, variant B: the target 10 m ahead and 4 foes, a pentagon R 3 m about 13 m ahead, checks/fx_penguin_research/tto/calc.py): 0: Row6Begin, Row6Sound fallingStar_ring (:6856), constellation_cast owned (:6871); Until 0.4: a constellation_mark 1 m over each star spot (StarAt + up, :6902-6924; it follows its foe until the fall, :22580-22621), Row6Sound castEffect (:6943), 5 lines (StarLineCount@0x1DB1320: n >= 3 = a closed ring), line i from mark i to mark i+1 drawn over 0.12 s from 0.4 + 0.12 i (:22659-22703; cued at its draw start, the game's are hidden until then), widthMultiplier x 2.2 at the ignite (:22833-22834, capstone 0x1E2CE9A); Until 1: Row6End (:7022); star i (sky order, InSkyOrder@0x1DA7F90: ascending atan2(dx, dz), target last) falls at 1.1 + 0.3 i (:22715-22736) and lands 0.6 s later: its mark destroyed, constellation_impact at the spot (StarImpact@0x1DB1000, :22759-22770); ignite at lastImpact + 0.05 = 1.1 + 0.6 + 0.3 x 4 + 0.05 = 2.95 (:22537, :22790): constellation_lineFire at each segment's midpoint, LookRotation(segment), localScale (1, 1, 3.527) (:22884-22904), constellation_ignite at the middle (StarGround of the spots' mean, :22809) + Row6Sound manaArc (:22921-22923), constellation_giant at the middle + Row6Sound fallingComet (:22953-22954); 2.95 + 0.6 = 3.55: ClearStarFx (the lines go: kill), constellation_giantImpact at the middle + Row6Sound novarFlare (:22966-22981); left out: the hits and the manaFracture look on hit foes (AddPenguinRow6Fx@0x24ADC20: on an enemy) Parts (2026-11-10): the lines' StarLines mover (wardrobe/fxparts/tto_penguin.js Penguin.StarLines: `to` = the next mark, `ignite` = the widening, else kill - 0.6), the meteors' TrailModule (shuriken.js), lineFire's `scale` [1, 1, length] (index.html, P5).",
+    "cues": [
+    [0, "sound", "fallingStar_ring"],
+    [0, "fx", "tto/constellation_cast"],
+    [0.4, "fx", "tto/constellation_mark", {"x": -2.853, "y": 1, "d": 12.073, "kill": 1.3}],
+    [0.4, "fx", "tto/constellation_mark", {"x": -1.763, "y": 1, "d": 15.427, "kill": 1.6}],
+    [0.4, "fx", "tto/constellation_mark", {"x": 1.763, "y": 1, "d": 15.427, "kill": 1.9}],
+    [0.4, "fx", "tto/constellation_mark", {"x": 2.853, "y": 1, "d": 12.073, "kill": 2.2}],
+    [0.4, "fx", "tto/constellation_mark", {"y": 1, "d": 10, "kill": 2.5}],
+    [0.4, "sound", "castEffect"],
+    [0.4, "fx", "tto/constellation_line", {"x": -2.853, "y": 1, "d": 12.073, "to": [-1.763, 1, 15.427], "ignite": 2.55, "kill": 3.15}],
+    [0.52, "fx", "tto/constellation_line", {"x": -1.763, "y": 1, "d": 15.427, "to": [1.763, 1, 15.427], "ignite": 2.43, "kill": 3.03}],
+    [0.64, "fx", "tto/constellation_line", {"x": 1.763, "y": 1, "d": 15.427, "to": [2.853, 1, 12.073], "ignite": 2.31, "kill": 2.91}],
+    [0.76, "fx", "tto/constellation_line", {"x": 2.853, "y": 1, "d": 12.073, "to": [0, 1, 10], "ignite": 2.19, "kill": 2.79}],
+    [0.88, "fx", "tto/constellation_line", {"y": 1, "d": 10, "to": [-2.853, 1, 12.073], "ignite": 2.07, "kill": 2.67}],
+    [1.1, "fx", "tto/constellation_star", {"x": -2.853, "d": 12.073}],
+    [1.4, "fx", "tto/constellation_star", {"x": -1.763, "d": 15.427}],
+    [1.7, "fx", "tto/constellation_impact", {"x": -2.853, "d": 12.073}],
+    [1.7, "fx", "tto/constellation_star", {"x": 1.763, "d": 15.427}],
+    [2.0, "fx", "tto/constellation_impact", {"x": -1.763, "d": 15.427}],
+    [2.0, "fx", "tto/constellation_star", {"x": 2.853, "d": 12.073}],
+    [2.3, "fx", "tto/constellation_impact", {"x": 1.763, "d": 15.427}],
+    [2.3, "fx", "tto/constellation_star", {"d": 10}],
+    [2.6, "fx", "tto/constellation_impact", {"x": 2.853, "d": 12.073}],
+    [2.9, "fx", "tto/constellation_impact", {"d": 10}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": -2.308, "y": 1, "d": 13.75, "rot": [0, 18, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"y": 1, "d": 15.427, "rot": [0, 90, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": 2.308, "y": 1, "d": 13.75, "rot": [0, 162, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": 1.427, "y": 1, "d": 11.036, "rot": [0, -126, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_lineFire", {"x": -1.427, "y": 1, "d": 11.036, "rot": [0, -54, 0], "scale": [1, 1, 3.527]}],
+    [2.95, "fx", "tto/constellation_ignite", {"d": 13}],
+    [2.95, "sound", "manaArc"],
+    [2.95, "fx", "tto/constellation_giant", {"d": 13}],
+    [2.95, "sound", "fallingComet"],
+    [3.55, "fx", "tto/constellation_giantImpact", {"d": 13}],
+    [3.55, "sound", "novarFlare"]
+    ]
+  },
+  "frostFieldLeap": {
+    "why": "TTO1102:Penguin.<RPC_frostFieldLeap>d__349::MoveNext@0x1DEF770 (Penguin.c:11314-11556; plans/fx_penguin/tto.md 2.2): 0: Row6Begin (:11384), Row6Sound blink (sounds/, :11395); Until 0.2: frostField_leap at the takeoff spot, hero rotation (:11423), frostField_trail owned at the hero (:11438; EffectControl 0.75 + 0.6, followPosition), the 0.6 s leap (:11441-11485: lerp to the landing + up x 10u(1-u), 2.5 m peak; FieldLanding@0x1DA4590: 1.5 m short of the target, 8.5 m for the target 10 m ahead) - the page's hero doesn't travel, so the landing is at 0 (Feral Strike's convention, plans/fx_wolf/misc.md item 4); 0.8: frostField_land at the landing, hero rotation (:11523), Row6Sound iceBreak (:11525), FrostFieldLoop@0x1DC38F0 (:1268-1450): frostField_field at the centre, identity (:1324; EffectControl 8 + 0.6 ends it before the code's Destroy 9, :1335), Row6Sound blizzard (:1337); ticks 1 s apart from the landing (:1345-1393), one Frost Mark each on the target 1.5 m past the landing (within 9 m, :1376; AddFrostMarks@0x1DA2E60 :1432): the 5th, at 0.8 + 4 = 4.8 s, sets off FrostBurst (:38311) = BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), cued at the target 1.5 m ahead (the target point, moved with the landing to the hero); Until 1.1: Row6End (:11545); the cues after 1.1 s run on in the idle tail; no voice, no Multi Cast roll; left out: the frostMarkFx / frostBiteFx / frozenGround / 20 % freeze looks on the foe (status looks on its body, Sheep decision 4); the Penguin's own frostField buff has no look (AddPenguinRow6Fx@0x24ADC20 serves frostMark, frostBite, manaFracture only) Parts: none new (decision 8: in place).",
+    "cues": [
+    [0, "sound", "blink"],
+    [0.2, "fx", "tto/frostField_leap"],
+    [0.2, "fx", "tto/frostField_trail"],
+    [0.8, "fx", "tto/frostField_land"],
+    [0.8, "sound", "iceBreak"],
+    [0.8, "fx", "tto/frostField_field"],
+    [0.8, "sound", "blizzard"],
+    [4.8, "fx", "tto/frostField_burst", {"d": 1.5}],
+    [4.8, "sound", "frozenBlast"]
+    ]
+  },
+  "emperorPenguin": {
+    "why": "TTO1102:Penguin.<RPC_emperorPenguin>d__356::MoveNext@0x1DEA490 (Penguin.c:8457-9102; plans/fx_penguin/tto.md 2.3; 5 penguins, no Focus, the ball's full 22 m: checks/fx_penguin_research/tto/calc.py): 0: Row6Begin (:8628), Until(start + 0) (:8645), then emperorPenguin_whistle at Row6Beak@0x1DAF620 = Head + 0.16 fwd - 0.03 up (0.17 ahead, 0.04 right, 0.64 up on the page's rig) with the hero's rotation, emperorPenguin_summon at the hero, Row6Sound emperorPenguin_whistle (TTO's own sounds/ clip, :8656-8695); Until 0.3: emperorPenguin_crack 1.75 m ahead (:8720-8743; its own sounds/iceBlock 0.8) + Row6Sound iceBlock (:8744), per penguin i of 5 emperorPenguin_emerge at FlockSpot@0x1DA4BF0 (angle (150 i/4 - 75) deg, r 1.25, capstone 0x1DA4D4F-0x1DA4DDD) and emperorPenguin_penguin 0.7 m down the 45 deg tilt axis from it, turned LookRotation(dir) x Euler(45, 0, 0) (:8766-8829), rising along it for 0.25 s (FlockRise@0x1DC31F0, :986-1167); Until 0.55: emperorPenguin_ball 0.45 ahead, 1.0 up, dropped to 0.2 m by 0.8 (:8892-9055); 0.8: emperorPenguin_kick at Row6Foot@0x1DB0160 = Foot2_R (0.10 ahead, 0.19 right, 0.17 up), emperorPenguin_launch at the ball (0.45 ahead, 0.2 up), Row6Sound cAttack (:8963-9008); Until 0.85: Row6Sound emperorPenguin_flock (TTO's own), EmperorShot@0x1DC1520 (:103-969): the ball rolls 28 m/s to 22 m at ground + 0.45, spinning 900 deg/s, an emperorPenguin_frost on the ground every 1.6 m from 1.2 m (float32: 13, the last 20.85 m ahead, :428-552), the flock whirls round the lane (0.65 m, 540 deg/s, 0.06 + 0.035 i behind, :588-682); Until 1.6: Row6End (:9090); 0.85 + 22/28 = 1.636: GoalFx@0x1DA74E0 emperorPenguin_goal at the ball 22.45 m ahead, 0.45 up + Row6Sound absoluteZero (:852), Destroy(ball) (kill 1.086), Scatter@0x1DB09F0 emperorPenguin_poof at each penguin, then Destroy (kill 1.336) (:842-844); no voice, no Multi Cast roll; the ball passes the 10 m target at 0.85 + (10 - 0.95)/28 = 1.173 s (lane test :790-791): AddFrostMarks(foe, 5) (:811) = an instant Frost Burst (:38311), BurstFx@0x1DA3310 (:38592-38640): frostField_burst at the foe's feet, identity, + Row6Sound frozenBlast (sounds/), at the target point 10 m ahead; the cues after 1.6 s run on in the idle tail; left out: the frostMarkFx / frostBiteFx looks on the foe (status looks on its body, Sheep decision 4; the hits draw nothing); constellation_impact 1.2 m ahead only with Constellation's +3 penguins (:8846-8862) Parts (2026-11-10): Penguin.EmperorShot (the ball's drop and roll, `to` = the Goal) and Penguin.FlockRise (the rise and whirl; `i` the index, else read from the spot; `n` 5) in wardrobe/fxparts/tto_penguin.js, the flock's skinned SmallIcePenguin_tri (mesh.js) with FlexibleCelShader/Cel No Outline (tto_penguin.js), the launch / goal rings on Unity's built-in Quad (shuriken.js), TTO's own sounds emperorPenguin_whistle / emperorPenguin_flock (sfx/, wardrobe_fx_tto.py SKILL_SOUNDS).",
+    "cues": [
+    [0, "fx", "tto/emperorPenguin_whistle", {"d": 0.17, "x": 0.04, "y": 0.64}],
+    [0, "fx", "tto/emperorPenguin_summon"],
+    [0, "sound", "emperorPenguin_whistle"],
+    [0.3, "fx", "tto/emperorPenguin_crack", {"d": 1.75}],
+    [0.3, "sound", "iceBlock"],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": -1.207, "d": 0.324}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": -0.761, "d": 0.992}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"d": 1.25}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": 0.761, "d": 0.992}],
+    [0.3, "fx", "tto/emperorPenguin_emerge", {"x": 1.207, "d": 0.324}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": -1.207, "y": -0.495, "d": -0.171, "rot": [45, 0, 0], "i": 0, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": -0.761, "y": -0.495, "d": 0.497, "rot": [45, 0, 0], "i": 1, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"y": -0.495, "d": 0.755, "rot": [45, 0, 0], "i": 2, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": 0.761, "y": -0.495, "d": 0.497, "rot": [45, 0, 0], "i": 3, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.3, "fx", "tto/emperorPenguin_penguin", {"x": 1.207, "y": -0.495, "d": -0.171, "rot": [45, 0, 0], "i": 4, "to": [0, 0.45, 22.45], "kill": 1.336}],
+    [0.55, "fx", "tto/emperorPenguin_ball", {"d": 0.45, "y": 1.0, "to": [0, 0.45, 22.45], "kill": 1.086}],
+    [0.8, "fx", "tto/emperorPenguin_kick", {"d": 0.1, "x": 0.19, "y": 0.17}],
+    [0.8, "fx", "tto/emperorPenguin_launch", {"d": 0.45, "y": 0.2}],
+    [0.8, "sound", "cAttack"],
+    [0.85, "sound", "emperorPenguin_flock"],
+    [0.893, "fx", "tto/emperorPenguin_frost", {"d": 1.65}],
+    [0.95, "fx", "tto/emperorPenguin_frost", {"d": 3.25}],
+    [1.007, "fx", "tto/emperorPenguin_frost", {"d": 4.85}],
+    [1.064, "fx", "tto/emperorPenguin_frost", {"d": 6.45}],
+    [1.121, "fx", "tto/emperorPenguin_frost", {"d": 8.05}],
+    [1.173, "fx", "tto/frostField_burst", {"d": 10}],
+    [1.173, "sound", "frozenBlast"],
+    [1.179, "fx", "tto/emperorPenguin_frost", {"d": 9.65}],
+    [1.236, "fx", "tto/emperorPenguin_frost", {"d": 11.25}],
+    [1.293, "fx", "tto/emperorPenguin_frost", {"d": 12.85}],
+    [1.35, "fx", "tto/emperorPenguin_frost", {"d": 14.45}],
+    [1.407, "fx", "tto/emperorPenguin_frost", {"d": 16.05}],
+    [1.464, "fx", "tto/emperorPenguin_frost", {"d": 17.65}],
+    [1.521, "fx", "tto/emperorPenguin_frost", {"d": 19.25}],
+    [1.579, "fx", "tto/emperorPenguin_frost", {"d": 20.85}],
+    [1.636, "fx", "tto/emperorPenguin_goal", {"d": 22.45, "y": 0.45}],
+    [1.636, "sound", "absoluteZero"],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.282, "y": 0.936, "d": 20.77}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": -0.47, "y": 0.799, "d": 19.79}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": -0.572, "y": 0.042, "d": 18.81}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.116, "y": -0.29, "d": 17.83}],
+    [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.644, "y": 0.263, "d": 16.85}]
+    ]
+  },
+  "wave": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:41672) and emo_wave (:41680) both play the wave clip (:42122): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_ty (:41690) and emo_bow (:41697) both play the bow clip (:42108): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_laugh (:41704-41710)",
+    "cues": [
+    [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_sleep (:41736-41742): voices/sleep (the Penguin has no sounds/sleep)",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cheer (:41748-41754)",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_beg (:41760-41766)",
+    "cues": [
+    [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cry (:41772-41778)",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_chat (:41793) plays the talk clip (:42086) with chat1-5 at random (Random.Range(1, 6), :41598); emo_talk (:41786) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_battle (:42056-42062): voice battle; the battle stance in a fight plays the clip silent: the tile takes the emote's voice",
+    "cues": [
+    [0, "voice", "battle"]
+    ]
+  },
+  "ko": {
+    "why": "Penguin.cs RPC_ko (:47293): clip (animation.Play :47507) and voice ko1 or ko2 at 0 (Random.Range(0, 2) :47542, :47552-47635), getUp after 3 s (:47624, :47409), no effect; RPC_dead (:47671) plays the same clip (:47868) with dead1 or dead2 at 0 (:47903-47958) and always puts deadEffect at the hero's position and rotation (:47970-47977; EffectControl life 3): one of the two at random, even chance (the Sheep's decision 11, as wolf.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+    [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+    [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+    [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

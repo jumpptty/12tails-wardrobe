@@ -19,6 +19,14 @@
 // (the Sparks of gleamingBreath_exhale, grandCodex_cast, lucentBarrier_reflect), mesh particles (m_RenderMode 4: the
 // shards and prism shells, the renderer's "mesh" from wardrobe_fx_tto.py). The curve readers are shared on
 // api.curves (tto_sheep.js's Line / Trail renderers use them).
+// 2026-11-10 (the Penguin's TTO effects, plans/fx_penguin/tto.md section 6 parts P2 and P6): the TrailModule (particle
+// ribbons: the meteors of constellation_star's Meteor1, constellation_giant's Giant1 / Escort1 and
+// constellation_giantImpact's Five), drawn with the renderer's second material (Unity's trailMaterial, m_Materials[1]);
+// Unity's built-in Quad as a mesh particle's mesh (emperorPenguin_launch's Ring1-3, emperorPenguin_goal's Net / Net2:
+// the renderer's m_Mesh is a reference into "unity default resources", path id 10210, which no bundle holds;
+// wardrobe_fx_tto.py BUILTIN_MESH writes it inline, and QUAD below stands in for data built before that). No Wolf or
+// Sheep system enables a TrailModule or names a built-in mesh (their fx.json, checked 2026-11-10), so what they draw
+// is unchanged.
 export default function register(api) {
   const { THREE } = api;
   const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
@@ -41,6 +49,11 @@ export default function register(api) {
   const lin = c => [toLin(c[0]), toLin(c[1]), toLin(c[2]), c[3]];
   const randUnit = () => { const z = 2 * Math.random() - 1, a = 2 * Math.PI * Math.random(), r = Math.sqrt(1 - z * z); return V(r * Math.cos(a), r * Math.sin(a), z); };
   const finite = x => typeof x === "number" && Number.isFinite(x) && Math.abs(x) < 1e30;
+  // Unity's built-in Quad ("unity default resources" path id 10210; wardrobe_fx_tto.py BUILTIN_MESH, the same numbers):
+  // 1 x 1 in the XY plane about its centre, normal -z, triangles 0 3 1 / 3 0 2
+  const QUAD = { name: "Quad", verts: 4, pos: [-0.5, -0.5, 0, 0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0],
+    nrm: [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1], uv: [0, 0, 1, 0, 0, 1, 1, 1], col: null, idx: [0, 3, 1, 3, 0, 2], sub: [[0, 6]] };
+  const builtinMesh = r => (r && typeof r === "object" && (r.builtin === 10210 || r.pathID === 10210) ? QUAD : null);
 
   // ---- AnimationCurve: Unity's Hermite between keys; an infinite tangent = stepped (holds the left key); weighted
   // tangents (weightedMode 1 in / 2 out / 3 both) = Unity's cubic Bezier with the key weights; clamped outside the keys
@@ -253,10 +266,28 @@ export default function register(api) {
     // radiusScale x half the particle's size = its radius (APPROX: its start size, not the size over its life)
     if ((m = mod("CollisionModule")) && num(m.type) === 1) P.coll = { dampen: mmCurve(m.m_Dampen, 0), bounce: mmCurve(m.m_Bounce, 1),
       loss: mmCurve(m.m_EnergyLossOnCollision, 0), minKill: num(m.minKillSpeed), maxKill: num(m.maxKillSpeed, 1e4), radius: num(m.radiusScale, 1) };
-    // not drawn (no Wolf or Sheep prefab enables them): NoiseModule, ExternalForces, Collision with planes (type 0),
-    // Trigger, SubModule (sub-emitters), Lights, TrailModule (ribbons), CustomData; the UV module's sprite mode
+    // TrailModule (Unity's Manual "Trails module"; fields as serialized): mode 0 Particles = each particle leaves a
+    // trail (a share `ratio` of them, picked at birth), 1 Ribbon = a strip through the living particles by age
+    // (ribbonCount strips); lifetime = how long each trail point lives, a multiplier of its particle's lifetime
+    // (sizeAffectsLifetime: x its size too); a point is added once the particle has moved minVertexDistance from the
+    // last; worldSpace: the points stay where they were made even in a Local system (a World system's are world anyway);
+    // dieWithParticles: the trail goes with its particle, else it stays and its points run out; widthOverTrail and
+    // colorOverTrail along the trail (0 = the particle's end, 1 = the oldest point), colorOverLifetime over the
+    // particle's life, inheritParticleColor (x the particle's colour), sizeAffectsWidth (x its size); textureMode 0
+    // Stretch (u 0..1 along the trail), 1 Tile (u = metres x textureScale.x), 2 DistributePerSegment, 3 RepeatPerSegment.
+    // Drawn facing the camera (Unity's trail alignment View), with the renderer's trail material (m_Materials[1]).
+    // APPROX: the curves along the trail run by its share of the length (as tto_sheep.js's LineRenderer); lifetime is
+    // read at the particle's birth; a Ribbon's width and colour keys are its particles' (nearest); generateLightingData,
+    // shadowBias, splitSubEmitterRibbons and attachRibbonsToTransform are not read (no lights or sub-emitters here)
+    if ((m = mod("TrailModule"))) P.trail = { mode: num(m.mode), ratio: num(m.ratio, 1), life: mmCurve(m.lifetime, 1),
+      minD: Math.max(0, num(m.minVertexDistance, 0.2)), world: on(m.worldSpace), die: on(m.dieWithParticles),
+      sizeW: on(m.sizeAffectsWidth), sizeL: on(m.sizeAffectsLifetime), inherit: m.inheritParticleColor == null ? true : on(m.inheritParticleColor),
+      colLife: mmGrad(m.colorOverLifetime), width: mmCurve(m.widthOverTrail, 1), colTrail: mmGrad(m.colorOverTrail),
+      ribbons: Math.max(1, num(m.ribbonCount, 1)), tex: num(m.textureMode), texScale: vec(m.textureScale, [1, 1, 1]) };
+    // not drawn (no Wolf, Sheep or Penguin prefab enables them): NoiseModule, ExternalForces, Collision with planes
+    // (type 0), Trigger, SubModule (sub-emitters), Lights, CustomData; the UV module's sprite mode
     P.skipped = ["NoiseModule", "ExternalForcesModule", "CollisionModule", "TriggerModule", "SubModule", "LightsModule", "TrailModule"]
-      .filter(n => mod(n) && !(n === "CollisionModule" && P.coll));
+      .filter(n => mod(n) && !(n === "CollisionModule" && P.coll) && !(n === "TrailModule" && P.trail));
     if (P.skipped.length) console.warn("Shuriken: not drawn", P.skipped.join(", "));
     CACHE.set(ps, P);
     return P;
@@ -271,14 +302,23 @@ export default function register(api) {
       if (nm && data.materials?.[nm]) mat = api.fxMaterial(fx.cls, nm, data.materials[nm]);
     }
     const RM = num(rd.m_RenderMode), drawn = mat && RM !== 5 && rd.m_Enabled !== 0 && rd.m_Enabled !== false;
-    const pMesh = RM === 4 && rd.mesh?.verts ? rd.mesh : null;   // mesh particles: the renderer's m_Mesh (wardrobe_fx_tto.py)
+    // mesh particles: the renderer's m_Mesh (wardrobe_fx_tto.py), or Unity's built-in Quad it names
+    const pMesh = RM === 4 ? (rd.mesh?.verts ? rd.mesh : builtinMesh(rd.m_Mesh)) : null;
     const mesh = drawn ? api.fxMesh(node, mat) : null;
     if (mesh) { mesh.matrixAutoUpdate = false; mesh.renderOrder = num(rd.m_SortingOrder); }
+    // the trails' own mesh: the renderer's trail material (drawn with render mode None too: trails only)
+    let tmesh = null;
+    if (P.trail && rd.m_Enabled !== 0 && rd.m_Enabled !== false) {
+      const tn = (rd.m_Materials || [])[1], td = typeof tn === "string" ? data.materials?.[tn] : null;
+      if (td) { tmesh = api.fxMesh(node, api.fxMaterial(fx.cls, tn, td)); tmesh.matrixAutoUpdate = false; tmesh.renderOrder = num(rd.m_SortingOrder); }
+      else console.warn("Shuriken: a TrailModule with no trail material (m_Materials[1])", fx.name, node.name);
+    }
     const lenScale = num(rd.m_LengthScale, 2), velScale = num(rd.m_VelocityScale), align = num(rd.m_RenderAlignment);
     const sortMode = num(rd.m_SortMode), minSize = num(rd.m_MinParticleSize), maxSize = num(rd.m_MaxParticleSize, 0.5);
     const pivot = vec(rd.m_Pivot);
 
     const parts = [];
+    let ghosts = [];                         // the trails of dead particles (dieWithParticles off): { pts, life, k, w }
     let time = 0, delay = -1, emitting = P.playOnAwake, played = P.playOnAwake, ended = false, ready = false;
     let acc = 0, accD = 0;
     const pending = [];
@@ -339,6 +379,10 @@ export default function register(api) {
       const R = Array.from({ length: 16 }, Math.random);       // the particle's own randoms, one per curve
       const q = { p, v, vt: v.clone(), age: 0, life, size, rot, flip, c0, R, sf: P.uv ? P.uv.start(nt, R[10]) : 0,
                   row: P.uv ? Math.floor(R[12] * P.uv.ty) : 0 };
+      if (P.trail && P.trail.mode === 0 && Math.random() < P.trail.ratio) {   // its trail starts where it is born
+        q.tr = [{ p: trailPt(p), a: preAge, fresh: true }];
+        q.trLife = P.trail.life(nt, Math.random()) * life * (P.trail.sizeL ? size.x : 1);
+      }
       if (preAge > 0 && !step(q, preAge)) return;              // emitted inside the frame: run the rest of it
       parts.push(q);
     }
@@ -457,7 +501,32 @@ export default function register(api) {
       return q.age < q.life && sp >= C.minKill && sp <= C.maxKill;
     }
     function stepAll(dt) {                                     // dead ones swap-removed, as Unity's particle buffer
-      for (let i = parts.length - 1; i >= 0; i--) if (!step(parts[i], dt)) { parts[i] = parts[parts.length - 1]; parts.pop(); }
+      for (let i = parts.length - 1; i >= 0; i--) if (!step(parts[i], dt)) {
+        const q = parts[i];                                    // its trail stays (dieWithParticles off) and runs out
+        if (q.tr?.length && !P.trail.die) ghosts.push({ pts: q.tr, life: q.trLife, k: q.tk || [1, 1, 1, 1], w: q.tw ?? 1 });
+        parts[i] = parts[parts.length - 1]; parts.pop();
+      }
+    }
+    // ---- trail points: in the effect's Unity world (worldSpace, or a World system), else in the system's space (they
+    // move with it); each ages by the frame, goes at its lifetime, and a new one is added at the particle once it is
+    // minVertexDistance from the newest
+    const trailFixed = () => P.world || P.trail.world;
+    function trailPt(p) { return trailFixed() ? toWorld(p) : p.clone(); }
+    const trailW = k => (trailFixed() ? k.p : toWorld(k.p));
+    function trailStep(dt) {
+      const md2 = P.trail.minD * P.trail.minD;
+      const age = (pts, life) => {
+        for (const k of pts) { if (k.fresh) k.fresh = false; else k.a += dt; }
+        while (pts.length && pts[0].a >= life) pts.shift();
+      };
+      for (const q of parts) {
+        if (!q.tr) continue;
+        age(q.tr, q.trLife);
+        const h = trailPt(q.p), last = q.tr[q.tr.length - 1];
+        if (!last || last.p.distanceToSquared(h) >= md2) q.tr.push({ p: h, a: 0 });
+      }
+      for (const g of ghosts) age(g.pts, g.life);
+      ghosts = ghosts.filter(g => g.pts.length > 1);
     }
 
     const ps0 = {
@@ -493,6 +562,7 @@ export default function register(api) {
         }
         stepAll(dt);
         if (emitting) advance(dt);
+        if (P.trail) trailStep(dt);
         // the system has stopped (no emission and no particles): its stopAction (1 disable, 2 destroy, 3 callback)
         if (!ended && played && !emitting && !parts.length && delay <= 0) {
           ended = true;
@@ -500,6 +570,7 @@ export default function register(api) {
           if (P.stopAction === 1) node.visible = false;
         }
         if (mesh) (pMesh ? renderMesh : render)(cam);
+        if (tmesh) renderTrails(cam);
       },
     };
     node.userData.particleSystem = ps0;
@@ -640,8 +711,79 @@ export default function register(api) {
         }
         for (const k of mi) idx.push(b + k);
       }
-      api.setMesh(mesh, pos, col, uvs, idx);
-      mesh.geometry.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
+      api.setMesh(mesh, pos, col, uvs, idx, nrm);                 // (normals in the same kept buffers, 2026-11-10)
+    }
+
+    // ---- the TrailModule's strips (P.trail above): a particle's runs from where it is now through its points, newest
+    // to oldest; a ribbon through the living particles, youngest to oldest. Each point's side = the trail's direction x
+    // the line to the camera (Unity's View alignment), width and colour by its share s of the strip's length
+    const pColour = (q, u, sp) => {                            // the particle's colour now (as render() draws it)
+      let c = q.c0;
+      if (P.colOL) { const k = P.colOL(u, q.R[9]); c = [c[0] * k[0], c[1] * k[1], c[2] * k[2], c[3] * k[3]]; }
+      if (P.colBS) { const k = P.colBS.g(speedT(sp, P.colBS.range), q.R[9]); c = [c[0] * k[0], c[1] * k[1], c[2] * k[2], c[3] * k[3]]; }
+      return c;
+    };
+    const pSize = (q, u, sp) => {                              // its x size now, in metres
+      let sx = q.size.x;
+      if (P.sizeOL) sx *= P.sizeOL.x(u, q.R[7]);
+      if (P.sizeBS) sx *= P.sizeBS.x(speedT(sp, P.sizeBS.range), q.R[7]);
+      return sx * sizeK;
+    };
+    const mul4 = (a, b) => [a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]];
+    function renderTrails(cam) {
+      const det = M.determinant();
+      if (!Number.isFinite(det) || Math.abs(det) < 1e-12) { tmesh.visible = false; return; }
+      tmesh.visible = node.visible !== false;
+      Minv.copy(M).invert(); tmesh.matrix.copy(Minv); tmesh.matrixWorldNeedsUpdate = true;   // the strips are in the effect's Unity world
+      const T0 = P.trail, pos = [], col = [], uvs = [], idx = [];
+      const strip = (L, wAt, cAt) => {                         // L: points in the effect's Unity world, head first
+        const n = L.length;
+        if (n < 2) return;
+        const acc = [0];
+        for (let i = 1; i < n; i++) acc.push(acc[i - 1] + L[i].distanceTo(L[i - 1]));
+        const len = acc[n - 1];
+        if (!(len > 1e-6)) return;
+        let side = cam.right.clone();
+        const b0 = pos.length / 3;
+        for (let i = 0; i < n; i++) {
+          const s = acc[i] / len, tan = L[Math.min(n - 1, i + 1)].clone().sub(L[Math.max(0, i - 1)]);
+          const sd = V().crossVectors(tan, camPos.clone().sub(L[i]));
+          if (sd.lengthSq() > 1e-12) side = sd.normalize();    // seen end-on: keep the last good side
+          const w = wAt(s) / 2, k = cAt(s);
+          const u = T0.tex === 1 ? acc[i] * T0.texScale[0] : T0.tex === 2 ? i / (n - 1) : T0.tex === 3 ? i * T0.texScale[0] : s;
+          const a = L[i].clone().addScaledVector(side, -w), b = L[i].clone().addScaledVector(side, w);
+          pos.push(a.x, a.y, a.z, b.x, b.y, b.z); col.push(...k, ...k); uvs.push(u, 0, u, 1);
+          if (i) { const q = b0 + 2 * i - 2; idx.push(q, q + 1, q + 2, q + 2, q + 1, q + 3); }
+        }
+      };
+      if (T0.mode === 1) {                                     // Ribbon: the living particles, youngest first
+        const order = parts.slice().sort((a, b) => a.age - b.age);
+        for (let r = 0; r < T0.ribbons; r++) {
+          const ks = order.filter((_, i) => i % T0.ribbons === r).map(q => {
+            const u = q.age / q.life, sp = q.vt.length();
+            return { W: toWorld(q.p), k: mul4(T0.inherit ? pColour(q, u, sp) : [1, 1, 1, 1], T0.colLife(u, q.R[3])), w: T0.sizeW ? pSize(q, u, sp) : 1 };
+          });
+          if (ks.length < 2) continue;
+          const at = s => ks[Math.min(ks.length - 1, Math.round(s * (ks.length - 1)))];
+          strip(ks.map(x => x.W), s => T0.width(s, 0.5) * at(s).w, s => mul4(T0.colTrail(s, 0.5), at(s).k));
+        }
+      } else {
+        for (const q of parts) {
+          if (!q.tr) continue;
+          const u = q.age / q.life, sp = q.vt.length();
+          q.tk = mul4(T0.inherit ? pColour(q, u, sp) : [1, 1, 1, 1], T0.colLife(u, q.R[3]));
+          q.tw = T0.sizeW ? pSize(q, u, sp) : 1;
+          const L = [toWorld(q.p)];
+          for (let i = q.tr.length - 1; i >= 0; i--) { const w = trailW(q.tr[i]); if (w.distanceToSquared(L[L.length - 1]) > 1e-12) L.push(w); }
+          strip(L, s => T0.width(s, q.R[2]) * q.tw, s => mul4(T0.colTrail(s, q.R[4]), q.tk));
+        }
+        for (const g of ghosts) {                              // a dead particle's trail: from its newest point
+          const L = [];
+          for (let i = g.pts.length - 1; i >= 0; i--) { const w = trailW(g.pts[i]); if (!L.length || w.distanceToSquared(L[L.length - 1]) > 1e-12) L.push(w); }
+          strip(L, s => T0.width(s, 0.5) * g.w, s => mul4(T0.colTrail(s, 0.5), g.k));
+        }
+      }
+      api.setMesh(tmesh, pos, col, uvs, idx);
     }
     return ps0;
   }

@@ -946,3 +946,83 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   penguin (`fxparts/penguin.js`), page_pipeline, tto (`fxparts/tto_penguin.js`, shuriken.js's Trail module, the TTO
   skinned mesh + cel shader), then one editor (`fx_cues/penguin.json`, the data build), then QA over Penguin, Sheep and
   Wolf. Usage guard on (`usage_watch.py 98 60`).
+- **2026-11-10 (evening, home), the Penguin's effects: built and cued** (workflow `penguin-fx-build`: four builders, then
+  one editor; user: "go with your recc"). Builders: **shaders** (`fxparts/mesh.js`: Transparent/AdditiveSaturate as two
+  passes, Opaque1 / Opaque2 lit at their real alpha, DiffuseAmbient with its `ambient`, `fxAnim.play(name, fade, wrap)`;
+  node probe `checks/fx_penguin_build/shaders/probe.mjs`, its 1.27 MB `three160.js` copy stays in the ignored checks/);
+  **penguin** (`fxparts/penguin.js`: Penguin_tornado / _typhoon / _arcticEmperor / _cosmicFriday / _iceBlock / _nAttack
+  (+ the Staff of Time mine) / _manaMissile (aimed 0.6 m up) / _snowMan); **page_pipeline** (`wardrobe_fx.py` Penguin
+  LAYOUTS, built-ins 206 = multiply2 and 207 = premul (every class's `<cls>_dead`: the Wolf's and Sheep's KO stay additive
+  until their data is rebuilt), EXTRA_FOLDERS for novaFlare and the Mana Vortex summon, BoltEmitter / ManaVortex; page:
+  SEQ Normal Attack 0.5 / 0.5, Charge Attack cAttack1@0.7, Cosmic Friday cast3@0.4, the MP Transfer tile, the "skin" cue
+  kind + HERO_SKINS FX/CosmicRift, api.heroHide / api.worn, Sound handle setVolume, Fx.dispose -> e.dispose?.(), cue
+  scale [x, y, z], spread, every option passed to fx.at); **tto** (`fxparts/tto_penguin.js` StarLines / EmperorShot /
+  FlockRise + the cel shader, shuriken.js's TrailModule, TTO SkinnedMeshRenderer export, Unity's built-in Quad, TTO's own
+  sounds). Editor: the snowman now hides the hero through `api.heroHide` (one hiding mechanism, by layers; was its own
+  visible = false walk) and a cue's `hideHero: false` leaves her shown (Snow Ball's leftover snowman: decision 17 is
+  Snow Man's own, she would blink out for 0.4 s); new cue option `notWorn: [slot, item]` (index.html fxStart: the Normal
+  Attack's ground hits left out while the Staff of Time is in the main hand, decision 18); the check's OPTS += n,
+  hideHero, notWorn. `wardrobe/fx_cues/penguin.json`: 27 keys, the Cast tile's cast3 pool of 16 (Tornado and Typhoon two
+  members), assembled from the reports' paste-ready blocks by `checks/fx_penguin_build/editor/cues_build.py` (ignored
+  folder, re-runnable) with the decisions applied: missiles at the target 0.6 m up (new rots; the middle three hit it at
+  1.12 s, yaw +-48 / +-72 pass it to the floor at 15.8 / 19.1 m), manaSurge rot [0, 180, 0], Typhoon's random swerve and no
+  cut, Cosmic Rift / Friday skin cues (kill 12 / 7), Ice Shield / Mana Vortex kill 10, Nova Flare 5 m, five Constellation
+  stars, Emperor's March's full run, Frost Field in place, no activateIcon1 entry. Data: `wardrobe_fx.py penguin` (46
+  effects, 61 materials, 58 textures, 110 sounds; "missing" only TTO's own emperorPenguin_flock / _whistle, written by the
+  TTO build), then `wardrobe_fx_tto.py penguin` (28 TTO effects): 74 effects, every cued effect and sound present; the
+  Wolf's and Sheep's data untouched. Playwright: uv now resolves a version wanting chromium_headless_shell-1254, installed
+  with `uv run --no-project --with playwright playwright install chromium`. Checks: files-only no problems; dark check
+  exit 0, errors []; unit tests 52 OK. Probes (`wardrobe_fx_probe.py`, `checks/fx_penguin_build/editor/probe*`): Mana
+  Missile, Tornado (glide ahead), Typhoon (homing on 10 m), Snow Man (snowman at 10 m, hero hidden), Snow Ball (hero
+  shown), Cosmic Friday's skin, the Arctic Emperor statue, Falling Stars / Nova Flare all draw as intended. The dark
+  check's cast4 samples were empty once (a pool tile has no expected effect, so it settles early; the first sample after a
+  click lands about 1.7 s in under swiftshader); `checks/fx_penguin_build/editor/repro.py` replays its click order and
+  both members spawn. Open: decision 17 differs from the game (BB hides the snowmanned target, never the caster;
+  penguin.js HIDE_ONLY_ON_HERO switches to the game's rule); not yet looked at by the user; the QA pass is next.
+
+- **2026-11-10 (evening, home), the Penguin's effects: QA pass** (workflow `penguin-fx-build`'s last step; in progress,
+  this entry is updated as it goes). New tool `pipeline/wardrobe_fx_shots.py`: the probe's views, boxes and forced pools,
+  but on a virtual clock (the page's one THREE.Clock replaced by a fixed 1/30 s step), so every shot is at exactly the clip
+  time asked however slowly swiftshader draws (the probe's real-time samples landed up to 10 s late on the Arctic
+  Emperor); forced rolls (`ko!dead`, `cast3!doubleSpell`, several joined by `+`), `BG=white` for the white stage, the hero's
+  drawn / hidden meshes per sample, and a stalled render loop reported with the page error's stack. Found and fixed:
+  (1) **Arctic Wind froze the whole page**: deadlyFrost's legacy particleEmitter has no material (`mats [null]`), the page
+  built a mesh with a null material and three's renderer threw every frame, which stops `setAnimationLoop` for good (1 Cast
+  play in 16; the dark check plays one random pool member, so it never met it): `legacyParticles` builds no mesh without a
+  material, and `fxMesh` hides any null-material mesh; (2) **the KO ghost (premul, built-in 207) drew as a dim dark-teal
+  smudge on the dark stage**: the canvas read back (0, 84, 101) over alpha 29, colour above alpha, which the browser's
+  premultiplied compositing clamps to the alpha; the premul shader now writes alpha >= its brightest channel (the 'add'
+  convention): dark stage (23, 105, 128) vs the game's (33, 111, 139).
+- **2026-11-10 (19:40, home), the usage guard was blind** (user: "is the work flowing?"): the workflow was (the four
+  builders and the editor done, QA running), but every one of the guard's 42 checks since 18:08 got HTTP 429 from the
+  usage endpoint (`Retry-After: 0`; `--once` worked just before). `usage_watch.py` now checks every 5 min by default,
+  doubles the wait after a failure (up to 15 min), prints each success with the time, and prints `BLIND` after 30 min
+  without one; CLAUDE.md's command is `98 300`. Restarted.
+- **2026-11-10 (night, home), the TTO skills' lag fixed: effect meshes kept their GPU buffers** (user: "please fix TTO
+  skills lag ... something might be unoptimized? common issues ... redrawing everything again every frame"). Cause:
+  `setMesh` (index.html, called every frame by every emitter: shuriken.js's systems, the legacy particles, groundhug,
+  trail, vortex, the TTO line renderers) made new BufferAttributes each frame, so three created a new WebGL buffer per
+  attribute per mesh per frame (189-322 a frame on a TTO skill) and never deleted the replaced ones (only the last set,
+  at the effect's dispose): a GPU memory leak that made every play in the same page slower. Now each mesh keeps one set
+  of DynamicDraw buffers written in place (counts = the frame's, only that range uploaded), grown x2 when a frame needs
+  more (the old buffers freed by geometry.dispose); Shuriken's mesh particles pass their normals through it (they added
+  a new normal buffer each frame too). New tool `pipeline/wardrobe_fx_perf.py` (virtual clock or `--real`, `--gpu` =
+  this PC's RTX 4070 SUPER through ANGLE D3D11, `--baseline` = the page served with the old setMesh, `--profile`).
+  Real time on the GPU, the repeat play, before -> after: Wolf Blade Surge 54 fps with 26 stalls over 50 ms (worst
+  614 ms) -> 2,128 fps, none; Wind Bound Domain 46 fps / 41 stalls -> 773 fps / 0; Resonance Claw 176 / 27 -> 1,570 / 0;
+  Sheep Grand Codex 186 / 5 -> 509 / 0; Penguin Emperor's March 385 / 13 -> 597 / 0; Constellation 222 -> 396; Frost
+  Field 49 / 30 -> 132 / 2. GL buffers created in a 5 s play: 30,000-112,000 -> 84-1,300. What is left heaviest: the
+  mesh particles (Frost Field's rings, Emperor's March's goal spikes: 3,000-8,000 vertices a system rebuilt in JS each
+  frame, renderMesh); GPU instancing would cut that, but every TTO shader would need the instancing chunks.
+  Sequence tiles are `@<Name>` in the perf tool (`@GleamingBreath`).
+- **2026-11-10 (night, home), skills without an animation, and the pooled tiles** (user: "there's much less skills than
+  I thought, like where is the simple mana arc? ... so you didn't do the vfx too?"). Two causes. (1) Tiles follow clips,
+  and most skills share one: the Penguin's Cast tile (cast3) is a pool of 16 skills picked at random per play, cast4
+  holds Falling Stars / Nova Flare, blink Blink / Parallel Shift; their effects were built, hidden behind three tiles.
+  (2) The research listed skills by their clips (clip_calls.js), so skills whose RPC plays no clip were never looked at:
+  Penguin Mana Arc (`$RPC_manaArc$26093`, Penguin.cs:21578: no animation call, `manaArc` / `penguinOfArc` effect at the
+  hero + 0.5 m up, a self AoE), Dispell, Frost Spike (Ice Shield's). Found by listing every `RPC_*` in Penguin.cs against
+  the cues and the reports (the others missing are shared item / pet / mount / coin RPCs). The user: one tile per skill,
+  effect-only tiles on the idle stance, "but redo Wolf and Sheep first" (HANDOFF "Either PC").
+- **2026-11-10, the Penguin's build committed as is** (QA cut off; checks after the lag fix: fx check dark penguin /
+  sheep / wolf exit 0, errors []; unit tests 52 OK).
