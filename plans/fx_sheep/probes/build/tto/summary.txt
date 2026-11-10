@@ -1,0 +1,658 @@
+== tto/gleamingBreath_cast
+  [0] gleamingBreath_cast p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.7 after=0.5 fP=True fS=True vel=[0.0, 0.0, 0.0])
+  [1] Consecration p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [2] Prayer p=0 pos=[0.0, 1.15, -0.12] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [3] Gather p=0 pos=[0.05, 1.2, 0.22] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=0 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [4] Hand p=0 pos=[0.05, 1.2, 0.22] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [5] Halo p=0 pos=[0.0, 1.75, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_halo']) | ImageEmitter
+  [6] Motes p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [7] Sound_castEffect p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=castEffect vol=0.7 poa=True loop=False)
+== tto/gleamingBreath_exhale
+  [0] gleamingBreath_exhale p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.9 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Mist p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.35 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [3] Wind p=0 pos=[0.0, 0.0, 0.5] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_halo']) | ImageEmitter
+  [4] Sparks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[0.6, 0.6, 0.6] PS(dur=1.0 loop=False sim=1 mods=Initial,Shape,Emission,Size,Color,Force,Collision) | PSR(mode=1 align=0 mesh=None mats=['tto_Point'])
+  [5] Sound_holyLight_start p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=holyLight_start vol=0.6 poa=True loop=False)
+== tto/gleamingBreath_wisp
+  [0] gleamingBreath_wisp p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Orb p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Core p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [3] Trail p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction}
+  [4] TrailCore p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction}
+  [5] WispHalo p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [6] Orbit p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=5.0 loop=True sim=0 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [7] Sparkle p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=5.0 loop=True sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [8] Feathers p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Rotation,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_feather'])
+== tto/gleamingBreath_land
+  [0] gleamingBreath_land p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=2.8 after=0.6 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] ResurrectionSeal p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [2] ResurrectionEcho p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [3] Pillar p=0 pos=[0.0, 4.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_ray']) | ImageEmitter
+  [4] PillarCore p=0 pos=[0.0, 4.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_ray']) | ImageEmitter
+  [5] SoulIgnition p=0 pos=[0.0, 1.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [6] Aureole p=0 pos=[0.0, 1.25, -0.25] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [7] Crown p=0 pos=[0.0, 3.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_halo']) | ImageEmitter
+  [8] SeraphLeft p=0 pos=[-0.22, 1.35, -0.18] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [9] Underwing p=8 pos=[-0.95, 0.3, 0.04] rot=[0.0, 0.0, 0.0, 1.0] sc=[-1.0, 1.0, 1.0] 
+  [10] Silhouette p=9 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_wing']) | ImageEmitter
+  [11] Feather0 p=8 pos=[-0.7, 0.85, 0.0] rot=[0.0, 0.0, -0.406737, 0.913545] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [12] Feather1 p=8 pos=[-0.87, 0.71, -0.025] rot=[0.0, 0.0, -0.317305, 0.948324] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [13] Feather2 p=8 pos=[-1.04, 0.57, -0.05] rot=[0.0, 0.0, -0.224951, 0.97437] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [14] Feather3 p=8 pos=[-1.21, 0.43, -0.075] rot=[0.0, 0.0, -0.130526, 0.991445] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [15] Feather4 p=8 pos=[-1.38, 0.29, -0.1] rot=[0.0, 0.0, -0.034899, 0.999391] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [16] Feather5 p=8 pos=[-1.55, 0.15, -0.125] rot=[0.0, 0.0, 0.061049, 0.998135] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [17] SeraphRight p=0 pos=[0.22, 1.35, -0.18] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [18] Underwing p=17 pos=[0.95, 0.3, 0.04] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [19] Silhouette p=18 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_wing']) | ImageEmitter
+  [20] Feather0 p=17 pos=[0.7, 0.85, 0.0] rot=[0.0, 0.0, 0.406737, 0.913545] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [21] Feather1 p=17 pos=[0.87, 0.71, -0.025] rot=[0.0, 0.0, 0.317305, 0.948324] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [22] Feather2 p=17 pos=[1.04, 0.57, -0.05] rot=[0.0, 0.0, 0.224951, 0.97437] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [23] Feather3 p=17 pos=[1.21, 0.43, -0.075] rot=[0.0, 0.0, 0.130526, 0.991445] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [24] Feather4 p=17 pos=[1.38, 0.29, -0.1] rot=[0.0, 0.0, 0.034899, 0.999391] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [25] Feather5 p=17 pos=[1.55, 0.15, -0.125] rot=[0.0, 0.0, -0.061049, 0.998135] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_luminousFeather']) | ImageEmitter
+  [26] Ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter
+  [27] Feathers p=0 pos=[0.0, 1.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_feather'])
+  [28] Sound_heal p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=heal vol=0.9 poa=True loop=False)
+  [29] Sound_holyArmor_ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=holyArmor_ring vol=0.6 poa=True loop=False)
+== tto/gleamingBreath
+  [0] gleamingBreath p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Halo p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=2 align=0 mesh=None mats=['tto_sheepRow6_halo'])
+  [2] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [3] Motes p=0 pos=[0.0, -1.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [4] Feathers p=0 pos=[0.0, -0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Rotation,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_feather'])
+== tto/lucentBarrier_cast
+  [0] lucentBarrier_cast p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.4 fP=True fS=True vel=[0.0, 0.0, 0.0])
+  [1] Cast p=0 pos=[0.0, 1.0, 0.7] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=castEffect vol=1.0 poa=True loop=False)
+  [2] ImageEmitter1 p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Ring2']) | ImageEmitter
+  [3] LineEmitter1 p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MR(['tto_Ray3']) | MF(None) | LineEmitter
+  [4] Shards p=0 pos=[0.08, 1.12, 0.5] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_shard'} mats=['tto_sheepRow6_solid'])
+  [5] Motes p=0 pos=[0.08, 1.12, 0.5] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=0 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] SigilHolder p=0 pos=[0.0, 1.15, 0.5] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [7] Prism p=6 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_hexSigil']) | ImageEmitter
+  [8] PrismBack p=6 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_prism']) | ImageEmitter
+  [9] Push p=0 pos=[0.08, 1.1, 0.55] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [10] Sound_revert p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=revert vol=0.6 poa=True loop=False)
+== tto/lucentBarrier_beam
+  [0] lucentBarrier_beam p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] LineRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction} | RabbitTracer{life, travel, width, head}
+  [1] Head p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [2] Glint p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+== tto/lucentBarrier_land
+  [0] lucentBarrier_land p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Inrush p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_shard'} mats=['tto_sheepRow6_solid'])
+  [2] Shell p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_prismShell'} mats=['tto_sheepRow6_veil'])
+  [3] Scan p=0 pos=[0.0, -0.9, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [4] PrismLock p=0 pos=[0.0, 0.0, 0.0] rot=[0.173648, 0.0, 0.0, 0.984808] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [5] PrismDust p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [7] Sound_iceShield p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=iceShield vol=0.7 poa=True loop=False)
+== tto/lucentBarrier
+  [0] lucentBarrier p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Shell p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_prismShell'} mats=['tto_sheepRow6_veil'])
+  [2] Shimmer p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=2.8 loop=True sim=0 mods=Initial,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_prismShell'} mats=['tto_sheepRow6_veil'])
+  [3] Orbit p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Shape,Emission,Rotation,Velocity) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_shard'} mats=['tto_sheepRow6_solid'])
+  [4] Seal p=0 pos=[0.0, -0.88, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=2 align=0 mesh=None mats=['tto_sheepRow6_celestial'])
+== tto/lucentBarrier_reflect
+  [0] lucentBarrier_reflect p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.7 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Shards p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_shard'} mats=['tto_sheepRow6_solid'])
+  [3] Sparks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[0.55, 0.55, 0.55] PS(dur=1.0 loop=False sim=1 mods=Initial,Shape,Emission,Size,Color,Force,Collision) | PSR(mode=1 align=0 mesh=None mats=['tto_Point'])
+  [4] Sound_shieldReflect p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=shieldReflect vol=0.55 poa=True loop=False)
+== tto/lucentBarrier_reflectBeam
+  [0] lucentBarrier_reflectBeam p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] LineRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction} | RabbitTracer{life, travel, width, head}
+== tto/lucentBarrier_panel
+  [0] lucentBarrier_panel p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.6 after=0.2 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Hex p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_hexSigil']) | ImageEmitter
+  [2] Facets p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_prism']) | ImageEmitter
+  [3] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [4] RefractionEcho p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+== tto/grandCodex_cast
+  [0] grandCodex_cast p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.5 fP=True fS=True vel=[0.0, 0.0, 0.0])
+  [1] Seal p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_codexCircle']) | GroundHugEmitter
+  [2] Invocation p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [3] Glyphs p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.8 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+  [4] Book p=0 pos=[-0.05, 1.05, 0.26] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [5] Up p=0 pos=[0.0, 3.5, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_ray']) | ImageEmitter
+  [6] Cast p=0 pos=[0.0, 1.6, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [7] Sparks p=0 pos=[0.0, 1.6, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[0.8, 0.8, 0.8] PS(dur=1.0 loop=False sim=1 mods=Initial,Shape,Emission,Size,Color,Force,Collision) | PSR(mode=1 align=0 mesh=None mats=['tto_Point'])
+  [8] Sound_worldEncarta p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=worldEncarta vol=0.7 poa=True loop=False)
+== tto/grandCodex_field
+  [0] grandCodex_field p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=20.6 after=0.6 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Circle p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_codexCircle']) | GroundHugEmitter
+  [2] Boundary p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [3] InnerSanctum p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [4] CounterScript p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_scriptRing']) | GroundHugEmitter
+  [5] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | GroundHugEmitter
+  [6] Open p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter
+  [7] Motes p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=20.0 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [8] Sound_edenSanctuary_ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=edenSanctuary_ring vol=0.7 poa=True loop=False)
+== tto/grandCodex_book
+  [0] grandCodex_book p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.15, 1.15, 1.15] MF({'asset': 'Mesh', 'name': 'Codex'}) | MR(['tto_sheepRow6_codex_leather', 'tto_sheepRow6_codex_antiqueGold', 'tto_sheepRow6_codex_turquoise', 'tto_sheepRow6_codex_manuscript', 'tto_sheepRow6_codex_pageShadow', 'tto_sheepRow6_codex_ivory', 'tto_sheepRow6_codex_silk'])
+  [1] FlipPivot p=0 pos=[-0.0, 0.09, 0.0] rot=[0.0, -0.0, -0.0, 1.0] sc=[1.0, 1.0, 1.0] MF({'asset': 'Mesh', 'name': 'FlipPivot'}) | MR(['tto_sheepRow6_codex_manuscript'])
+  [2] Glow p=0 pos=[0.0, -0.15, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [3] Astrolabe p=0 pos=[0.0, -0.22, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=2 align=0 mesh=None mats=['tto_sheepRow6_celestial'])
+  [4] OrbitA p=0 pos=[0.0, -0.18, 0.0] rot=[0.527428, -0.102522, 0.160927, 0.827896] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [5] OrbitB p=0 pos=[0.0, -0.18, 0.0] rot=[0.827896, 0.160927, -0.102522, 0.527428] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [6] Glyphs p=0 pos=[0.0, 0.35, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,UV,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+  [7] Cone p=0 pos=[0.0, -2.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_ray']) | ImageEmitter
+== tto/grandCodex_close
+  [0] grandCodex_close p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] LastWord p=0 pos=[0.0, 0.0, 0.0] rot=[0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [3] Glyphs p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+  [4] Dust p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Sound_bookBash_hit p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=bookBash_hit vol=0.8 poa=True loop=False)
+== tto/grandCodex_page_psalm
+  [0] grandCodex_page_psalm p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.2 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Core p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [3] PageResonance p=0 pos=[0.0, 0.2, 0.0] rot=[0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [4] Glyphs p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+== tto/grandCodex_page_seal
+  [0] grandCodex_page_seal p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.2 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Core p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [3] PageResonance p=0 pos=[0.0, 0.2, 0.0] rot=[0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [4] Glyphs p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+== tto/grandCodex_page_verdict
+  [0] grandCodex_page_verdict p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.2 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Core p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [3] PageResonance p=0 pos=[0.0, 0.2, 0.0] rot=[0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [4] Glyphs p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+== tto/grandCodex_psalm
+  [0] grandCodex_psalm p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.8 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Wave p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter
+  [2] PsalmEcho p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [3] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_codexCircle']) | GroundHugEmitter
+  [4] Rise p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Sound_heal p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=heal vol=0.8 poa=True loop=False)
+== tto/grandCodex_seal
+  [0] grandCodex_seal p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.6 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Script p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_scriptRing']) | GroundHugEmitter
+  [2] Closing p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter
+  [3] Chains p=0 pos=[0.0, 0.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,UV) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+  [4] SealEcho p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | GroundHugEmitter
+  [5] Sound_seal p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=seal vol=0.8 poa=True loop=False)
+  [6] Sound_lightBind p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=lightBind vol=0.5 poa=True loop=False)
+== tto/grandCodex_verdict
+  [0] grandCodex_verdict p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.1 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [2] Judgement p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_sheepRow6_celestial']) | ImageEmitter
+  [3] VerdictSplinters p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': 'Mesh', 'name': 'sheepRow6_shard'} mats=['tto_sheepRow6_solid'])
+  [4] Afterglow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | ImageEmitter
+  [5] Sound_divinitySpear_ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=divinitySpear_ring vol=0.8 poa=True loop=False)
+== tto/grandCodex_spear
+  [0] grandCodex_spear p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.0 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Shaft p=0 pos=[0.0, 0.0, -0.5] rot=[0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | ImageEmitter
+  [2] ShaftX p=0 pos=[0.0, 0.0, -0.5] rot=[0.5, 0.5, -0.5, 0.5] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | ImageEmitter
+  [3] Tip p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter
+  [4] Trail p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction}
+  [5] Sound_divinitySpear p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=divinitySpear vol=0.6 poa=True loop=False)
+== tto/scriptureBind
+  [0] scriptureBind p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Ring p=0 pos=[0.0, 0.08, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=2 align=0 mesh=None mats=['tto_sheepRow6_scriptRing'])
+  [2] Glyphs p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,UV,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_sheepRow6_glyphs'])
+materials {
+"tto_sheepRow6_celestial": {
+"blend": "shader:TTO/Sheep/Celestial Ring",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_Line_SimpleBall": {
+"blend": "addsoft",
+"tex": "tto_Line_SimpleBall",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+},
+"tto_sheepRow6_halo": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_halo",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_Point": {
+"blend": "shader:Particles/Standard Unlit",
+"tex": "tto_Point1",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+6.34792,
+6.34792,
+6.34792,
+1.0
+]
+},
+"tto_Line_DoubleEdge1": {
+"blend": "addsoft",
+"tex": "tto_Line_DoubleEdge1",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+},
+"tto_sheepRow6_feather": {
+"blend": "alpha",
+"tex": "tto_sheepRow6_feather",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_sheepRow6_ray": {
+"blend": "shader:TTO/Sheep/Celestial Ray",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_sheepRow6_wing": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_wing",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_sheepRow6_luminousFeather": {
+"blend": "add",
+"tex": "tto_sheepRow6_feather",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_Line_vertMultilines4": {
+"blend": "addsoft",
+"tex": "tto_Line_vertMultilines4",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_Ring2": {
+"blend": "addsoft",
+"tex": "tto_Ring2",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_Ray3": {
+"blend": "addsoft",
+"tex": "tto_Ray3",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+},
+"tto_sheepRow6_solid": {
+"blend": "add",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_sheepRow6_hexSigil": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_hexSigil",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_sheepRow6_prism": {
+"blend": "add",
+"tex": "tto_sheepRow6_prism",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_sheepRow6_veil": {
+"blend": "shader:TTO/Sheep/Prism Veil",
+"tex": "tto_sheepRow6_prism",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_sheepRow6_codexCircle": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_codexCircle",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_sheepRow6_glyphs": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_glyphs",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_sheepRow6_scriptRing": {
+"blend": "addsoft",
+"tex": "tto_sheepRow6_scriptRing",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_sheepRow6_codex_leather": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.045,
+0.12,
+0.2,
+1.0
+]
+},
+"tto_sheepRow6_codex_antiqueGold": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.95,
+0.66,
+0.26,
+1.0
+]
+},
+"tto_sheepRow6_codex_turquoise": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.045,
+0.66,
+0.62,
+1.0
+]
+},
+"tto_sheepRow6_codex_manuscript": {
+"blend": "shader:Standard",
+"tex": "tto_sheepRow6_codexIlluminated",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.78,
+0.78,
+0.78,
+1.0
+]
+},
+"tto_sheepRow6_codex_pageShadow": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.72,
+0.61,
+0.43,
+1.0
+]
+},
+"tto_sheepRow6_codex_ivory": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.9,
+0.8,
+0.58,
+1.0
+]
+},
+"tto_sheepRow6_codex_silk": {
+"blend": "shader:Standard",
+"tex": null,
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.5,
+0.035,
+0.11,
+1.0
+]
+}
+}
+textures ['tto_Line_DoubleEdge1', 'tto_Line_SimpleBall', 'tto_Line_vertMultilines4', 'tto_Point1', 'tto_Ray3', 'tto_Ring2', 'tto_sheepRow6_codexCircle', 'tto_sheepRow6_codexIlluminated', 'tto_sheepRow6_feather', 'tto_sheepRow6_glyphs', 'tto_sheepRow6_halo', 'tto_sheepRow6_hexSigil', 'tto_sheepRow6_prism', 'tto_sheepRow6_scriptRing', 'tto_sheepRow6_wing']
+sounds ['bookBash_hit', 'castEffect', 'divinitySpear', 'divinitySpear_ring', 'edenSanctuary_ring', 'heal', 'holyArmor_ring', 'holyLight_start', 'iceShield', 'lightBind', 'revert', 'seal', 'shieldReflect', 'worldEncarta']

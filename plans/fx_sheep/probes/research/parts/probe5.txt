@@ -1,0 +1,10 @@
+divinityAxe divinityAxe plays divinityAxe loop True vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\divinityAxe.wav
+divinitySpear divinitySpear plays divinitySpear loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\divinitySpear.wav
+divinitySword divinitySword plays divinitySword loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\divinitySword.wav
+edenSanctuary edenSanctuary plays edenSanctuary loop True vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\edenSanctuary.wav
+lullaby_ring lullaby_ring plays lullaby loop True vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\lullaby.wav
+soulOfArms soulOfArms plays soulOfArms loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\soulOfArms.wav
+sealOfAttack sealOfAttack plays seal loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\seal.wav
+sealOfDefense sealOfDefense plays seal loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\seal.wav
+sealOfEarth sealOfEarth plays seal loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\seal.wav
+sealOfHeaven sealOfHeaven plays seal loop False vol 1.0  | sounds/ | found by rip_wav: D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes\sheep\sounds\seal.wav

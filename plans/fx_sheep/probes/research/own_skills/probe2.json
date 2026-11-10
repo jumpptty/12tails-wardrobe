@@ -1,0 +1,444 @@
+{
+ "returnCast": {
+  "nodes": [
+   {
+    "name": "returnCast",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 1.0,
+      "afterLife": 0.0,
+      "followPosition": true,
+      "followState": false,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     50.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 1,
+      "EmissionTime": 0.0,
+      "Life": 1.0,
+      "Delay": 0.0,
+      "startHeight": 1.0,
+      "endHeight": 1.0,
+      "startWidth": 0.5,
+      "endWidth": 0.5,
+      "rndScale": 0.0,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.2,
+       0.0
+      ],
+      "ImageEmitterMode": 0,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.69804
+      ],
+      "Color4": [
+       1.0,
+       0.76923,
+       0.95351,
+       0.29804
+      ],
+      "Color5": [
+       1.0,
+       0.48462,
+       0.48462,
+       0.03922
+      ],
+      "Rotation": 0.0,
+      "rndRotation": 0.0,
+      "startAngle": 1.54,
+      "spreadAngle": 0.0,
+      "repeatForever": false,
+      "mMeshFilter": [
+       0,
+       71913
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.6,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "retuunCast"
+    ]
+   },
+   {
+    "name": "LineEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "LineEmitter",
+      "Life": 0.3,
+      "Delay": 0.0,
+      "Emission": 24.0,
+      "EmissionTime": 0.0,
+      "startRadius": 0.5,
+      "endRadius": -1.5,
+      "rndRadius": 0.5,
+      "startHeight": 0.8,
+      "endHeight": 0.4,
+      "rndHeight": 0.5,
+      "startWidth": 0.1,
+      "endWidth": 0.0,
+      "rndWidth": 0.1,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.03922
+      ],
+      "Color2": [
+       1.0,
+       0.97996,
+       0.64179,
+       0.29804
+      ],
+      "Color3": [
+       1.0,
+       0.9641,
+       0.35821,
+       0.45098
+      ],
+      "Color4": [
+       1.0,
+       0.46269,
+       0.83467,
+       0.29804
+      ],
+      "Color5": [
+       0.76224,
+       0.0,
+       1.0,
+       0.03922
+      ],
+      "lineEmitterMode": 0,
+      "symetry": false,
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "repeatForever": false
+     }
+    ],
+    "pos": [
+     0.0,
+     0.5,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Ray4"
+    ]
+   },
+   {
+    "name": "RingEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "RingEmitter",
+      "Life": 0.25,
+      "Delay": 0.0,
+      "Emission": 1.0,
+      "EmissionPeriod": 0.1,
+      "startRadius": 1.2,
+      "endRadius": 0.2,
+      "rndRadius": 0.0,
+      "startHeight": 0.0,
+      "endHeight": 0.2,
+      "rndHeight": 0.0,
+      "startWidth": 0.2,
+      "endWidth": 0.4,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.03922
+      ],
+      "Color2": [
+       1.0,
+       0.9499,
+       0.64179,
+       0.29804
+      ],
+      "Color3": [
+       1.0,
+       0.78082,
+       0.37313,
+       0.45098
+      ],
+      "Color4": [
+       0.96541,
+       0.73077,
+       1.0,
+       0.29804
+      ],
+      "Color5": [
+       0.63846,
+       0.67227,
+       1.0,
+       0.03922
+      ],
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "uvRotation": 1.0,
+      "ringTri": 32,
+      "uvTile": 3.0,
+      "repeatForever": false,
+      "qualitySetting": 0
+     }
+    ],
+    "pos": [
+     0.0,
+     0.05,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Line_fadeBottom"
+    ]
+   }
+  ]
+ }
+}
+{
+ "freeCast": {
+  "nodes": [
+   {
+    "name": "freeCast",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 1.0,
+      "afterLife": 0.0,
+      "followPosition": false,
+      "followState": false,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     50.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 1,
+      "EmissionTime": 0.0,
+      "Life": 1.0,
+      "Delay": 0.0,
+      "startHeight": 1.0,
+      "endHeight": 1.0,
+      "startWidth": 0.5,
+      "endWidth": 0.5,
+      "rndScale": 0.0,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.2,
+       0.0
+      ],
+      "ImageEmitterMode": 0,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.69804
+      ],
+      "Color4": [
+       1.0,
+       0.76923,
+       0.95351,
+       0.29804
+      ],
+      "Color5": [
+       1.0,
+       0.48462,
+       0.48462,
+       0.03922
+      ],
+      "Rotation": 0.0,
+      "rndRotation": 0.0,
+      "startAngle": 1.54,
+      "spreadAngle": 0.0,
+      "repeatForever": false,
+      "mMeshFilter": [
+       0,
+       70263
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.6,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "freeCast"
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,133 @@
+bat dreamburst_hit /dreamBurst_hit/dreamBurst_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.1, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.1, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bat dreamburst_hit /dreamBurst_hit/dreamBurst_tri   renderer [('MeshRenderer', [('dreamBurst', 'add')])] others on node: []
+bat echoes /echoes ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 4.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+bat shatteringdream_hit /shatteringDream_hit/orb AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.3, 'FadeEaseOut': 0.5, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bat shatteringdream_hit /shatteringDream_hit/orb   renderer [('MeshRenderer', [('shatteringDream_orb', 'add')])] others on node: ['ShatterMesh']
+bison aspect_slam /aspect_slam/aspectSlam AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.1, 'FadeEaseOut': 0.1, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison aspect_slam /aspect_slam/aspectSlam   renderer [('MeshRenderer', [('aspectOfTheHorde', 'add')])] others on node: ['UVScroll']
+bison aspect_trample /aspect_trample/aspectTrample/aspectTrample_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 5.0, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison aspect_trample /aspect_trample/aspectTrample/aspectTrample_tri   renderer [('SkinnedMeshRenderer', [('aspectOfTheHorde', 'add')])] others on node: ['UVScroll']
+bison aspect_trample /aspect_trample/aspectTrample/aspectTrample_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 5.0, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison aspect_trample /aspect_trample/aspectTrample/aspectTrample_tri   renderer [('SkinnedMeshRenderer', [('aspectOfTheHorde', 'add')])] others on node: ['UVScroll']
+bison earthrupture /earthRupture ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+bison earthsmasher /earthSmasher/earthSmasher AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.8, 'FadeEaseOut': 0.2, 'eraseShadow': True, 'repeat': False, 'endDestroy': False}
+bison earthsmasher /earthSmasher/earthSmasher   renderer [('SkinnedMeshRenderer', [('earthsmasher', 'shader:Transparent/Opaque1')])] others on node: ['Animation']
+bison instantrush_ring /instantRush_ring/trample_dust/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison instantrush_ring /instantRush_ring/trample_dust/root   renderer [('SkinnedMeshRenderer', [('trampleDust', 'add')])] others on node: []
+bison massstun /massStun/earthSmasher AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.5, 'FadeEaseOut': 0.3, 'eraseShadow': True, 'repeat': False, 'endDestroy': False}
+bison massstun /massStun/earthSmasher   renderer [('SkinnedMeshRenderer', [('earthsmasher', 'shader:Transparent/Opaque1')])] others on node: ['Animation']
+bison slam_dust /slam_dust/trample_dust/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison slam_dust /slam_dust/trample_dust/root   renderer [('SkinnedMeshRenderer', [('trampleDust', 'add')])] others on node: []
+bison trample1 /trample1/trample/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.3, 'FadeEaseIn': 0.2, 'FadeMiddle': 1.5, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison trample1 /trample1/trample/root   renderer [('SkinnedMeshRenderer', [('trample_horn', 'add')])] others on node: []
+bison trample2 /trample2/trample/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.3, 'FadeEaseIn': 0.2, 'FadeMiddle': 2.5, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison trample2 /trample2/trample/root   renderer [('SkinnedMeshRenderer', [('trample_horn', 'add')])] others on node: []
+bison trample_dust /trample_dust/trample_dust/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+bison trample_dust /trample_dust/trample_dust/root   renderer [('SkinnedMeshRenderer', [('trampleDust', 'add')])] others on node: []
+cat deltastrike /deltaStrike/deltaStrike_shatter AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.2, 'FadeDelay': 1.0, 'FadeEaseIn': 0.6, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.4, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+cat deltastrike /deltaStrike/deltaStrike_shatter   renderer [('MeshRenderer', [('deltastrike_shatter', 'add')])] others on node: ['ShatterMesh']
+cat deltastrike_cat /deltaStrike_cat/model AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.2, 'FadeEaseIn': 0.3, 'FadeMiddle': 1.4, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+cat deltastrike_cat /deltaStrike_cat/model   renderer [('MeshRenderer', [('deltastrike_cat', 'add')])] others on node: []
+cat supportfire_cannon /supportFire_cannon/PirateCannon_tri/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.8, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 99.0, 'FadeEaseOut': 1.0, 'eraseShadow': True, 'repeat': False, 'endDestroy': False}
+cat supportfire_cannon /supportFire_cannon/PirateCannon_tri/root   renderer [('SkinnedMeshRenderer', [('supportFire_cannon', 'shader:Transparent/Opaque1')])] others on node: []
+chameleon cleararrow /clearArrow ProjectileControl {'life': 2.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 30.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+chameleon nattack /nAttack ProjectileControl {'life': 2.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 30.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole bazooka_fire /bazooka_fire ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole bazooka_hit /bazooka_hit/Mole_bazooka_hit AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.3, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+mole bazooka_hit /bazooka_hit/Mole_bazooka_hit   renderer [('MeshRenderer', [('bombardHit', 'add')])] others on node: []
+mole bombardment_hit /bombardment_hit/bombardHit/bombardHit_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+mole bombardment_hit /bombardment_hit/bombardHit/bombardHit_tri   renderer [('MeshRenderer', [('bombardHit', 'add')])] others on node: []
+mole grenadecluster_fire /grenadeCluster_fire ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole mortarshot_fire /mortarShot_fire ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole napalm /napalm ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole stungrenade /stunGrenade ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+mole warmissile /warMissile ProjectileControl {'life': 12.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey blazingarrow /blazingArrow/blazingArrow/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 2.5, 'FadeEaseOut': 1.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey blazingarrow /blazingArrow/blazingArrow/root   renderer [('SkinnedMeshRenderer', [('blazingArrow', 'add')]), ('TrailRenderer', [('FireRing6', 'addsoft')])] others on node: []
+monkey earthpulse /earthPulse ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball1] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.3, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.6, 'FadeEaseOut': 0.8, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball1]   renderer [('MeshRenderer', [('earthbeam_hit', 'add')])] others on node: []
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball2] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.3, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.8, 'FadeEaseOut': 0.6, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball2]   renderer [('MeshRenderer', [('earthbeam_hit', 'add')])] others on node: []
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball3] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 1.3, 'FadeEaseOut': 0.5, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey earthpulse_hit /earthPulse_hit/earthBeam_hit [ball3]   renderer [('MeshRenderer', [('earthbeam_hit', 'add')])] others on node: []
+monkey earthrune_hit /earthRune_hit/magicRune AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.6, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey earthrune_hit /earthRune_hit/magicRune   renderer [('MeshRenderer', [('earthRune', 'add')])] others on node: []
+monkey fireball1 /fireBall1 ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey fireball2 /fireBall2 ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey fireball3 /fireBall3 ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey fireball4 /fireBall4 ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+monkey firerune_hit /fireRune_hit/magicRune AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.6, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey firerune_hit /fireRune_hit/magicRune   renderer [('MeshRenderer', [('fireRune', 'add')])] others on node: []
+monkey stonehammer /stoneHammer/stoneHammer/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.5, 'FadeEaseIn': 0.5, 'FadeMiddle': 1.0, 'FadeEaseOut': 0.4, 'eraseShadow': True, 'repeat': False, 'endDestroy': False}
+monkey stonehammer /stoneHammer/stoneHammer/root   renderer [('SkinnedMeshRenderer', [('stonehammer', 'builtin34')])] others on node: []
+monkey worldignition /worldIgnition/worldIgnition/worldIgnition_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 0.3, 'FadeEaseOut': 0.4, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+monkey worldignition /worldIgnition/worldIgnition/worldIgnition_tri   renderer [('MeshRenderer', [('worldignition', 'add')])] others on node: []
+panda aurablast /auraBlast/auraBlast_tri [Layer1] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda aurablast /auraBlast/auraBlast_tri [Layer1]   renderer [('MeshRenderer', [('auraBlast', 'add')])] others on node: []
+panda aurablast /auraBlast/auraBlast_tri [Layer2] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda aurablast /auraBlast/auraBlast_tri [Layer2]   renderer [('MeshRenderer', [('auraBlast', 'add')])] others on node: []
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame9] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.3, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame9]   renderer [('MeshRenderer', [('climblingCliff', 'add')])] others on node: []
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame24] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.8, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame24]   renderer [('MeshRenderer', [('climblingCliff', 'add')])] others on node: []
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame27] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.9, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame27]   renderer [('MeshRenderer', [('climblingCliff', 'add')])] others on node: []
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame30] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 1.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda climbingcliff_ring /climbingCliff_ring/climblingCliff_tri [frame30]   renderer [('MeshRenderer', [('climblingCliff', 'add')])] others on node: []
+panda crushingmonolith /crushingMonolith/panda/crushingMonolith_panda_1/Root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 2.8, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda crushingmonolith /crushingMonolith/panda/crushingMonolith_panda_1/Root   renderer [('SkinnedMeshRenderer', [('crushingMonolith_panda', 'add')])] others on node: []
+panda fuujinken_ring2 /fuujinKen_ring2/fujinKen_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.1, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 7.5, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda fuujinken_ring2 /fuujinKen_ring2/fujinKen_tri   renderer [('SkinnedMeshRenderer', [('fujinKen', 'alpha')])] others on node: []
+panda mysticsage_hit /mysticSage_hit/mysticSage_hit/mysticSage_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.7, 'FadeMiddle': 0.3, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda mysticsage_hit /mysticSage_hit/mysticSage_hit/mysticSage_tri   renderer [('MeshRenderer', [('mysticSage', 'add')])] others on node: []
+panda pummel_ogre /pummel_ogre/pummel_ogre AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.6, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.4, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda pummel_ogre /pummel_ogre/pummel_ogre   renderer [('MeshRenderer', [('pummel_ogre', 'add')])] others on node: []
+panda pummel_ogrearm1 /pummel_ogreArm1/pummel_ogreArm1 AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.1, 'FadeEaseOut': 0.1, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda pummel_ogrearm1 /pummel_ogreArm1/pummel_ogreArm1   renderer [('MeshRenderer', [('pummel_ogreArm', 'add')])] others on node: []
+panda pummel_ogrearm2 /pummel_ogreArm2/pummel_ogreArm2 AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.1, 'FadeEaseOut': 0.1, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda pummel_ogrearm2 /pummel_ogreArm2/pummel_ogreArm2   renderer [('MeshRenderer', [('pummel_ogre', 'add')])] others on node: []
+panda qiburst /qiBurst/qiBurst/qiBurst_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.0, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda qiburst /qiBurst/qiBurst/qiBurst_tri   renderer [('MeshRenderer', [('qiBurst', 'add')])] others on node: []
+panda raijinken_hit /raijinKen_hit/raijinKen_panda_1 AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.9, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': True}
+panda raijinken_hit /raijinKen_hit/raijinKen_panda_1   renderer [('MeshRenderer', [('raijinKen_panda', 'opaque')])] others on node: []
+panda timeandtidemonkey /timeAndTideMonkey/shadowClone AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 1.0, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda timeandtidemonkey /timeAndTideMonkey/shadowClone   renderer [('SkinnedMeshRenderer', [('timeAndTide', 'add')])] others on node: []
+panda towerrush_ogre /towerRush_ogre/towerRush_ogre AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.2, 'FadeDelay': 0.0, 'FadeEaseIn': 0.05, 'FadeMiddle': 0.15, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+panda towerrush_ogre /towerRush_ogre/towerRush_ogre   renderer [('MeshRenderer', [('towerRush_ogre', 'add')])] others on node: []
+penguin absolutezero /absoluteZero/absoluteZero AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.05, 'FadeMiddle': 0.35, 'FadeEaseOut': 0.4, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+penguin absolutezero /absoluteZero/absoluteZero   renderer [('MeshRenderer', [('absoluteZero', 'shader:FX/Phoenix')])] others on node: ['ShatterMesh']
+penguin frostspike_ring /frostSpike_ring/frost AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.3, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+penguin frostspike_ring /frostSpike_ring/frost   renderer [('MeshRenderer', [('frostSpike', 'add')])] others on node: []
+penguin spreadshot_fire /spreadShot_fire ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+rabbit gorgonshot_fire /gorgonShot_fire/Rabbit_gorgonShot/Rabbit_gorgonShot_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.3, 'FadeDelay': 0.0, 'FadeEaseIn': 0.1, 'FadeMiddle': 0.1, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+rabbit gorgonshot_fire /gorgonShot_fire/Rabbit_gorgonShot/Rabbit_gorgonShot_tri   renderer [('MeshRenderer', [('rabbit_gorgonShot', 'add')])] others on node: []
+rabbit millionaire_peppon /millionaire_peppon/millionaire_peppon_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.3, 'FadeMiddle': 1.4, 'FadeEaseOut': 0.3, 'eraseShadow': True, 'repeat': False, 'endDestroy': False}
+rabbit millionaire_peppon /millionaire_peppon/millionaire_peppon_tri   renderer [('MeshRenderer', [('millionaire_peppon', 'builtin30')])] others on node: []
+rabbit statscan /statScan/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.6, 'FadeMiddle': 0.2, 'FadeEaseOut': 0.4, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+rabbit statscan /statScan/root   renderer [('SkinnedMeshRenderer', [('Rabbit_statScan', 'alpha')])] others on node: []
+sheep cattack /cAttack ProjectileControl {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 8.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+sheep divinityaxe /divinityAxe/Sheep_divinityAxe/axe AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.2, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 2.0, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep divinityaxe /divinityAxe/Sheep_divinityAxe/axe   renderer [('SkinnedMeshRenderer', [('divinityAxe', 'add')])] others on node: []
+sheep divinityspear /divinitySpear/divinitySpear/root AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.5, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep divinityspear /divinitySpear/divinitySpear/root   renderer [('SkinnedMeshRenderer', [('divinitySpear', 'shader:FX/Phoenix')])] others on node: []
+sheep divinitysword /divinitySword/Sheep_divinitySword AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.3, 'FadeEaseIn': 0.4, 'FadeMiddle': 0.6, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep divinitysword /divinitySword/Sheep_divinitySword   renderer [('SkinnedMeshRenderer', [('divinitysword', 'shader:FX/Phoenix')])] others on node: ['Animation']
+sheep edensanctuary /edenSanctuary/edenSanctuary_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 11.0, 'FadeEaseOut': 1.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep edensanctuary /edenSanctuary/edenSanctuary_tri   renderer [('MeshRenderer', [('edenSanctuary', 'add')])] others on node: []
+sheep hominglight /homingLight ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+sheep lullaby_ring /lullaby_ring/lullaby_sheep_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 99.0, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep lullaby_ring /lullaby_ring/lullaby_sheep_tri   renderer [('SkinnedMeshRenderer', [('lullaby_sheep', 'add')])] others on node: []
+sheep nattack /nAttack ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [axe] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [axe]   renderer [('MeshRenderer', [('soulofArms', 'shader:FX/Phoenix')])] others on node: []
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [spear] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [spear]   renderer [('MeshRenderer', [('soulofArms', 'shader:FX/Phoenix')])] others on node: []
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [sword] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [sword]   renderer [('MeshRenderer', [('soulofArms', 'shader:FX/Phoenix')])] others on node: []
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [trident] AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+sheep soulofarms /soulOfArms/Sheep_soulOfArms/root/Sheep_soulOfArms_tri [trident]   renderer [('MeshRenderer', [('soulofArms', 'shader:FX/Phoenix')])] others on node: []
+whale bowlingwhale /bowlingWhale/bowlingWhale_tri AlphaTimer {'MinAlpha': 0.0, 'MaxAlpha': 0.75, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 6.0, 'FadeEaseOut': 0.5, 'eraseShadow': False, 'repeat': False, 'endDestroy': False}
+whale bowlingwhale /bowlingWhale/bowlingWhale_tri   renderer [('MeshRenderer', [('bowlingWhale', 'builtin30')])] others on node: ['UVScroll']
+whale javelin /javelin ProjectileControl {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 0.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False}
+{'AlphaTimer ok': 56, 'ProjectileControl ok': 20}

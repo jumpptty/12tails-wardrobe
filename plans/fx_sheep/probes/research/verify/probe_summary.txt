@@ -1,0 +1,69 @@
+== cAttack_charge
+  [cAttack_charge p=-1 pos=[247.03647, 54.71289, 151.80878] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleRenderer; ParticleAnimator; EC(life=60.0, afterLife=0.7, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=cAttack_ring, volume=1.0, playOnAwake=True, loop=True)
+  [Sheep_cAttack_Particle2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+== cAttack_ring
+  [cAttack_ring p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=180.0, afterLife=1.0, followState=True, followPosition=True, effectRotationMode=0)
+  [RingEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=1.0 Delay=0.0 repeatForever=True EmissionTime=0.0
+== deadEffect
+  [deadEffect p=-1 pos=[0.0, 51.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=3.0, afterLife=0.0, followState=False, followPosition=False, effectRotationMode=0)
+  [ImageEmitter p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=1.2 Delay=0.5 repeatForever=False EmissionTime=0.0
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.4 Delay=0.5 repeatForever=False
+== castRing
+  [castRing p=-1 pos=[248.37521, 55.93643, 148.10846] rot=[0.5, -0.5, -0.5, -0.5] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=create, clips={'create': 0.4667, 'root': 2.0, 'destroy': 0.5333}); EC(life=60.0, afterLife=1.0, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=cast, volume=1.0, playOnAwake=True, loop=True)
+  [Sheep_castRing p=0 pos=[-0.0, 0.0, 0.0] rot=[-0.0, -0.0, 0.707107, 0.707107] sc=[0.1, 0.1, 0.1]] StaticMesh
+  [Vortex1 p=0 pos=[0.0, 0.0, 0.2] rot=[0.707107, -0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.7 Delay=0.0 repeatForever=False
+== holylight_ring
+  [holylight_ring p=-1 pos=[0.0, 50.0, -64.0] rot=[0.5, -0.5, -0.5, -0.5] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=create, clips={'create': 0.4667, 'root': 2.0, 'destroy': 0.4667}); SkinnedMeshRenderer; EC(life=300.0, afterLife=0.5, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=holyLight, volume=1.0, playOnAwake=True, loop=True)
+  [ParticleEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.5, -0.5, -0.5, 0.5] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.05] rot=[0.5, -0.5, -0.5, 0.5] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.8 Delay=0.0 repeatForever=True
+  [root p=0 pos=[-0.0, 0.0, -0.03] rot=[0.707107, 0.0, -0.707107, 0.0] sc=[1.0, 0.1, 0.1]] 
+  [light1 p=3 pos=[-0.555, 0.0, 0.0] rot=[-0.0, 0.0, -0.0, 1.0] sc=[1.0, 1.0, 1.0]] 
+  [ring0 p=3 pos=[-0.18, 0.0, 0.0] rot=[0.707107, 0.0, -0.707107, 0.0] sc=[1.0, 1.0, 1.0]] 
+  [ring1 p=3 pos=[-2.58, -0.3501, -0.35352] rot=[-0.0, -0.707107, -0.0, 0.707107] sc=[1.0, 1.0, 1.0]] 
+  [ring2 p=3 pos=[-4.53, 0.3693, 0.30855] rot=[0.707107, 0.0, -0.707107, 0.0] sc=[1.0, 1.0, 1.0]] 
+  [ring3 p=3 pos=[-5.955, 0.0, 0.0] rot=[0.5, -0.5, -0.5, 0.5] sc=[1.0, 1.0, 1.0]] 
+  [ring4 p=3 pos=[-12.08, 0.0, 0.3108] rot=[-0.0, -0.707107, -0.0, 0.707107] sc=[1.0, 1.0, 1.0]] 
+== returnCast
+  [returnCast p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=0.0, followState=False, followPosition=True, effectRotationMode=0)
+  [ImageEmitter p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=1.0 Delay=0.0 repeatForever=False EmissionTime=0.0
+  [LineEmitter p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.3 Delay=0.0 repeatForever=False EmissionTime=0.0
+  [RingEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.25 Delay=0.0 repeatForever=False
+== purifyingTear_ring
+  [purifyingTear_ring p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=2.0, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=purifyingTear, volume=1.0, playOnAwake=True, loop=False)
+  [ImageEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.6 Delay=0.0 repeatForever=False EmissionTime=0.0
+  [Particle System p=0 pos=[0.0, 2.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [Particle System p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer; EmitterControl Life=2.0 Delay=0.3
+  [RingEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=1.0 Delay=0.3 repeatForever=False
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.5 Delay=0.3 repeatForever=False
+== soulOfArms_ring
+  [soulOfArms_ring p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=10.0, afterLife=0.5, followState=True, followPosition=True, effectRotationMode=0)
+  [ImageEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=1.0 Delay=0.0 repeatForever=True EmissionTime=0.0
+  [ImageEmitter1 p=0 pos=[0.0, 1.0, 0.7] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=0.3 repeatForever=False EmissionTime=0.0
+  [ImageEmitter2 p=0 pos=[0.6, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=1.7 repeatForever=False EmissionTime=0.0
+  [ImageEmitter3 p=0 pos=[0.0, 1.35, 0.8] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=3.2 repeatForever=False EmissionTime=0.0
+  [ImageEmitter4 p=0 pos=[0.8, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=5.0 repeatForever=False EmissionTime=0.0
+  [ImageEmitter5 p=0 pos=[-0.3, 1.5, -0.4] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=6.2 repeatForever=False EmissionTime=0.0
+  [ImageEmitter6 p=0 pos=[0.0, 1.2, 0.7] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=8.7 repeatForever=False EmissionTime=0.0
+  [LineEmitter1 p=0 pos=[0.0, 1.0, 0.7] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.4 Delay=0.3 repeatForever=False EmissionTime=0.0
+  [LineEmitter5 p=0 pos=[0.0, 1.2, 0.7] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.4 Delay=8.7 repeatForever=False EmissionTime=0.0
+  [Particle System p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [RingEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=1.0 Delay=0.0 repeatForever=False
+== bookBash_ring1
+  [bookBash_ring1 p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=root, clips={'root': 0.3}); EC(life=0.5, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=bookBash, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.3 Delay=0.2 repeatForever=False
+  [TrailEmitter p=0 pos=[0.00082, 1.97699, -0.38961] rot=[0.0, -0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] TrailRenderer
+== bookBash_ring2
+  [bookBash_ring2 p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=Base Stack, clips={'Base Stack': 0.3}); EC(life=0.5, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=bookBash, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.3 Delay=0.2 repeatForever=False
+  [TrailEmitter p=0 pos=[0.67798, 0.65904, -0.19073] rot=[0.0, -0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] TrailRenderer
+== bookBash_ring3
+  [bookBash_ring3 p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=Base Stack, clips={'Base Stack': 0.3}); EC(life=0.5, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=bookBash, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.3 Delay=0.2 repeatForever=False
+  [TrailEmitter p=0 pos=[-0.40209, 1.67066, -0.51412] rot=[0.0, -0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] TrailRenderer
+== lullaby_ring
+   ValueError: lullaby_ring/lullaby_sheep_tri: no layout for AlphaTimer (36 field bytes)
+== soulOfArms
+   ValueError: soulOfArms/Sheep_soulOfArms_tri [axe]: no layout for AlphaTimer (36 field bytes)
+== soulOfArms_trail
+  [soulOfArms_trail p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=10.0, afterLife=0.5, followState=True, followPosition=False, effectRotationMode=0)
+  [TrailEmitter p=0 pos=[-0.1, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] TrailRenderer

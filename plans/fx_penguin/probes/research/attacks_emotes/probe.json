@@ -1,0 +1,1914 @@
+{
+ "nAttack_fire": {
+  "nodes": [
+   {
+    "name": "nAttack_fire",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "ProjectileControl",
+      "life": 0.0,
+      "dmg": 0.0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OwnerID": 0,
+      "isInitialized": false,
+      "isDestroyed": false
+     },
+     {
+      "type": "Penguin_nAttack"
+     },
+     {
+      "type": "AudioSource",
+      "clip": "nAttack",
+      "volume": 1.0,
+      "playOnAwake": true,
+      "loop": false
+     }
+    ],
+    "pos": [
+     247.11064,
+     54.93487,
+     148.6404
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "Penguin_nAttack_ice",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "EllipsoidParticleEmitter",
+      "m_Emit": true,
+      "minSize": 0.4000000059604645,
+      "maxSize": 0.6000000238418579,
+      "minEnergy": 0.4000000059604645,
+      "maxEnergy": 0.5,
+      "minEmission": 12.0,
+      "maxEmission": 36.0,
+      "worldVelocity": {
+       "x": 0.0,
+       "y": 0.20000000298023224,
+       "z": 0.0
+      },
+      "localVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "rndVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "emitterVelocityScale": 0.05000000074505806,
+      "tangentVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "angularVelocity": 0.0,
+      "rndAngularVelocity": 0.0,
+      "rndRotation": false,
+      "Simulate in Worldspace?": true,
+      "m_OneShot": false,
+      "m_Ellipsoid": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "m_MinEmitterRange": 0.0
+     },
+     {
+      "type": "ParticleAnimator",
+      "Does Animate Color?": true,
+      "colorAnimation[0]": {
+       "rgba": 181075735
+      },
+      "colorAnimation[1]": {
+       "rgba": 3050635106
+      },
+      "colorAnimation[2]": {
+       "rgba": 4294951262
+      },
+      "colorAnimation[3]": {
+       "rgba": 3053402939
+      },
+      "colorAnimation[4]": {
+       "rgba": 184484096
+      },
+      "worldRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "localRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "sizeGrow": -0.800000011920929,
+      "rndForce": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "force": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "damping": 1.0,
+      "stopSimulation": false,
+      "autodestruct": false
+     },
+     {
+      "type": "ParticleRenderer",
+      "m_CameraVelocityScale": 0.0,
+      "m_StretchParticles": 0,
+      "m_LengthScale": 2.0,
+      "m_VelocityScale": 0.0,
+      "m_MaxParticleSize": 1.0,
+      "UV Animation": {
+       "x Tile": 1,
+       "y Tile": 1,
+       "cycles": 1.0
+      }
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "nAttack_fire"
+    ]
+   },
+   {
+    "name": "Penguin_nAttack_snowFlake",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "EllipsoidParticleEmitter",
+      "m_Emit": true,
+      "minSize": 0.10000000149011612,
+      "maxSize": 0.10000000149011612,
+      "minEnergy": 0.800000011920929,
+      "maxEnergy": 1.0,
+      "minEmission": 15.0,
+      "maxEmission": 15.0,
+      "worldVelocity": {
+       "x": 0.0,
+       "y": 0.20000000298023224,
+       "z": 0.0
+      },
+      "localVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "rndVelocity": {
+       "x": 1.0,
+       "y": 1.0,
+       "z": 1.0
+      },
+      "emitterVelocityScale": 0.05000000074505806,
+      "tangentVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "angularVelocity": 0.0,
+      "rndAngularVelocity": 0.0,
+      "rndRotation": false,
+      "Simulate in Worldspace?": true,
+      "m_OneShot": false,
+      "m_Ellipsoid": {
+       "x": 0.20000000298023224,
+       "y": 0.20000000298023224,
+       "z": 0.20000000298023224
+      },
+      "m_MinEmitterRange": 0.0
+     },
+     {
+      "type": "ParticleAnimator",
+      "Does Animate Color?": true,
+      "colorAnimation[0]": {
+       "rgba": 184495946
+      },
+      "colorAnimation[1]": {
+       "rgba": 3036676095
+      },
+      "colorAnimation[2]": {
+       "rgba": 4294948676
+      },
+      "colorAnimation[3]": {
+       "rgba": 3053444835
+      },
+      "colorAnimation[4]": {
+       "rgba": 181796827
+      },
+      "worldRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "localRotationAxis": {
+       "x": 1.0,
+       "y": 1.0,
+       "z": 1.0
+      },
+      "sizeGrow": -0.5,
+      "rndForce": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "force": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "damping": 0.30000001192092896,
+      "stopSimulation": false,
+      "autodestruct": false
+     },
+     {
+      "type": "ParticleRenderer",
+      "m_CameraVelocityScale": 0.0,
+      "m_StretchParticles": 0,
+      "m_LengthScale": 2.0,
+      "m_VelocityScale": 0.0,
+      "m_MaxParticleSize": 0.25,
+      "UV Animation": {
+       "x Tile": 1,
+       "y Tile": 1,
+       "cycles": 1.0
+      }
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "snowFlake"
+    ]
+   }
+  ]
+ }
+}
+{
+ "spreadShot_fire": {
+  "nodes": [
+   {
+    "name": "spreadShot_fire",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "ProjectileControl",
+      "life": 0.0,
+      "dmg": 0.0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OwnerID": 0,
+      "isInitialized": false,
+      "isDestroyed": false
+     },
+     {
+      "type": "Penguin_nAttack"
+     },
+     {
+      "type": "AudioSource",
+      "clip": "nAttack",
+      "volume": 0.5,
+      "playOnAwake": true,
+      "loop": false
+     }
+    ],
+    "pos": [
+     247.11064,
+     54.93487,
+     148.6404
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "Penguin_nAttack_ice",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "EllipsoidParticleEmitter",
+      "m_Emit": true,
+      "minSize": 0.4000000059604645,
+      "maxSize": 0.6000000238418579,
+      "minEnergy": 0.4000000059604645,
+      "maxEnergy": 0.5,
+      "minEmission": 12.0,
+      "maxEmission": 36.0,
+      "worldVelocity": {
+       "x": 0.0,
+       "y": 0.20000000298023224,
+       "z": 0.0
+      },
+      "localVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "rndVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "emitterVelocityScale": 0.05000000074505806,
+      "tangentVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "angularVelocity": 0.0,
+      "rndAngularVelocity": 0.0,
+      "rndRotation": false,
+      "Simulate in Worldspace?": true,
+      "m_OneShot": false,
+      "m_Ellipsoid": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "m_MinEmitterRange": 0.0
+     },
+     {
+      "type": "ParticleAnimator",
+      "Does Animate Color?": true,
+      "colorAnimation[0]": {
+       "rgba": 181075735
+      },
+      "colorAnimation[1]": {
+       "rgba": 3050635106
+      },
+      "colorAnimation[2]": {
+       "rgba": 4294951262
+      },
+      "colorAnimation[3]": {
+       "rgba": 3053402939
+      },
+      "colorAnimation[4]": {
+       "rgba": 184484096
+      },
+      "worldRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "localRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "sizeGrow": -0.800000011920929,
+      "rndForce": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "force": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "damping": 1.0,
+      "stopSimulation": false,
+      "autodestruct": false
+     },
+     {
+      "type": "ParticleRenderer",
+      "m_CameraVelocityScale": 0.0,
+      "m_StretchParticles": 0,
+      "m_LengthScale": 2.0,
+      "m_VelocityScale": 0.0,
+      "m_MaxParticleSize": 1.0,
+      "UV Animation": {
+       "x Tile": 1,
+       "y Tile": 1,
+       "cycles": 1.0
+      }
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "nAttack_fire"
+    ]
+   },
+   {
+    "name": "Penguin_nAttack_snowFlake",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "EllipsoidParticleEmitter",
+      "m_Emit": true,
+      "minSize": 0.10000000149011612,
+      "maxSize": 0.10000000149011612,
+      "minEnergy": 0.800000011920929,
+      "maxEnergy": 1.0,
+      "minEmission": 15.0,
+      "maxEmission": 15.0,
+      "worldVelocity": {
+       "x": 0.0,
+       "y": 0.20000000298023224,
+       "z": 0.0
+      },
+      "localVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "rndVelocity": {
+       "x": 1.0,
+       "y": 1.0,
+       "z": 1.0
+      },
+      "emitterVelocityScale": 0.05000000074505806,
+      "tangentVelocity": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "angularVelocity": 0.0,
+      "rndAngularVelocity": 0.0,
+      "rndRotation": false,
+      "Simulate in Worldspace?": true,
+      "m_OneShot": false,
+      "m_Ellipsoid": {
+       "x": 0.20000000298023224,
+       "y": 0.20000000298023224,
+       "z": 0.20000000298023224
+      },
+      "m_MinEmitterRange": 0.0
+     },
+     {
+      "type": "ParticleAnimator",
+      "Does Animate Color?": true,
+      "colorAnimation[0]": {
+       "rgba": 184495946
+      },
+      "colorAnimation[1]": {
+       "rgba": 3036676095
+      },
+      "colorAnimation[2]": {
+       "rgba": 4294948676
+      },
+      "colorAnimation[3]": {
+       "rgba": 3053444835
+      },
+      "colorAnimation[4]": {
+       "rgba": 181796827
+      },
+      "worldRotationAxis": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "localRotationAxis": {
+       "x": 1.0,
+       "y": 1.0,
+       "z": 1.0
+      },
+      "sizeGrow": -0.5,
+      "rndForce": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "force": {
+       "x": 0.0,
+       "y": 0.0,
+       "z": 0.0
+      },
+      "damping": 0.30000001192092896,
+      "stopSimulation": false,
+      "autodestruct": false
+     },
+     {
+      "type": "ParticleRenderer",
+      "m_CameraVelocityScale": 0.0,
+      "m_StretchParticles": 0,
+      "m_LengthScale": 2.0,
+      "m_VelocityScale": 0.0,
+      "m_MaxParticleSize": 0.25,
+      "UV Animation": {
+       "x Tile": 1,
+       "y Tile": 1,
+       "cycles": 1.0
+      }
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "snowFlake"
+    ]
+   }
+  ]
+ }
+}
+{
+ "nAttack_hit": {
+  "nodes": [
+   {
+    "name": "nAttack_hit",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 2.0,
+      "afterLife": 0.0,
+      "followPosition": false,
+      "followState": false,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "type": "AudioSource",
+      "clip": "nAttack_hit",
+      "volume": 1.0,
+      "playOnAwake": true,
+      "loop": false
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "imageEmiter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 2,
+      "EmissionTime": 0.1,
+      "Life": 1.0,
+      "Delay": 0.0,
+      "startHeight": 1.2,
+      "endHeight": 1.5,
+      "startWidth": 1.2,
+      "endWidth": 1.5,
+      "rndScale": 0.5,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.1,
+       0.0
+      ],
+      "ImageEmitterMode": 0,
+      "useWorldSpace": false,
+      "Color1": [
+       0.84307,
+       1.0,
+       0.96442,
+       0.2
+      ],
+      "Color2": [
+       0.5,
+       1.0,
+       0.88665,
+       0.49
+      ],
+      "Color3": [
+       0.38321,
+       0.57414,
+       1.0,
+       0.65
+      ],
+      "Color4": [
+       0.44891,
+       0.59543,
+       1.0,
+       0.3
+      ],
+      "Color5": [
+       0.27372,
+       0.84746,
+       1.0,
+       0.0
+      ],
+      "Rotation": 0.0,
+      "rndRotation": 3.14,
+      "startAngle": 0.0,
+      "spreadAngle": 0.0,
+      "repeatForever": false,
+      "mMeshFilter": [
+       0,
+       0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "nAttack_hit"
+    ]
+   }
+  ]
+ }
+}
+{
+ "cAttack_ring": {
+  "nodes": [
+   {
+    "name": "cAttack_ring",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 300.0,
+      "afterLife": 0.3,
+      "followPosition": true,
+      "followState": true,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "type": "AudioSource",
+      "clip": "cAttack",
+      "volume": 1.0,
+      "playOnAwake": true,
+      "loop": true
+     }
+    ],
+    "pos": [
+     0.0,
+     50.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "LineEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "LineEmitter",
+      "Life": 0.5,
+      "Delay": 0.0,
+      "Emission": 64.0,
+      "EmissionTime": 0.5,
+      "startRadius": 1.5,
+      "endRadius": 0.5,
+      "rndRadius": 0.3,
+      "startHeight": 0.6,
+      "endHeight": 0.3,
+      "rndHeight": 0.3,
+      "startWidth": 0.05,
+      "endWidth": 0.05,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       0.63077,
+       0.8725,
+       1.0,
+       0.11765
+      ],
+      "Color3": [
+       0.57692,
+       0.7078,
+       1.0,
+       0.23529
+      ],
+      "Color4": [
+       0.46923,
+       0.61051,
+       1.0,
+       0.35294
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "lineEmitterMode": 0,
+      "symetry": false,
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "repeatForever": true
+     }
+    ],
+    "pos": [
+     0.0,
+     0.5,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Ray0"
+    ]
+   },
+   {
+    "name": "RingEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "RingEmitter",
+      "Life": 0.5,
+      "Delay": 0.0,
+      "Emission": 3.0,
+      "EmissionPeriod": 0.15,
+      "startRadius": 0.8,
+      "endRadius": -0.2,
+      "rndRadius": 0.0,
+      "startHeight": 0.4,
+      "endHeight": 0.0,
+      "rndHeight": 0.0,
+      "startWidth": 0.4,
+      "endWidth": 0.6,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.03922
+      ],
+      "Color2": [
+       0.74615,
+       1.0,
+       0.96713,
+       0.17647
+      ],
+      "Color3": [
+       0.53846,
+       1.0,
+       0.80077,
+       0.35294
+      ],
+      "Color4": [
+       0.36923,
+       0.97277,
+       1.0,
+       0.47059
+      ],
+      "Color5": [
+       0.18036,
+       0.77062,
+       0.97692,
+       0.03922
+      ],
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "uvRotation": 1.0,
+      "ringTri": 18,
+      "uvTile": 4.0,
+      "repeatForever": true,
+      "qualitySetting": 0
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Line_vertMultilines4"
+    ]
+   }
+  ]
+ }
+}
+{
+ "manaField_ring": {
+  "nodes": [
+   {
+    "name": "manaField_ring",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 300.0,
+      "afterLife": 0.3,
+      "followPosition": true,
+      "followState": true,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "type": "AudioSource",
+      "clip": "cAttack",
+      "volume": 1.0,
+      "playOnAwake": true,
+      "loop": true
+     }
+    ],
+    "pos": [
+     0.0,
+     50.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 1,
+      "EmissionTime": 0.0,
+      "Life": 2.0,
+      "Delay": 0.0,
+      "startHeight": 3.0,
+      "endHeight": 3.0,
+      "startWidth": 3.0,
+      "endWidth": 3.0,
+      "rndScale": 0.0,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ImageEmitterMode": 1,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       0.3
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.45
+      ],
+      "Color4": [
+       1.0,
+       1.0,
+       1.0,
+       0.3
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Rotation": 3.14,
+      "rndRotation": 0.0,
+      "startAngle": 0.0,
+      "spreadAngle": 0.0,
+      "repeatForever": true,
+      "mMeshFilter": [
+       0,
+       0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.05,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "manaField"
+    ]
+   },
+   {
+    "name": "LineEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "LineEmitter",
+      "Life": 0.5,
+      "Delay": 0.0,
+      "Emission": 64.0,
+      "EmissionTime": 0.5,
+      "startRadius": 1.5,
+      "endRadius": 0.5,
+      "rndRadius": 0.3,
+      "startHeight": 0.6,
+      "endHeight": 0.3,
+      "rndHeight": 0.3,
+      "startWidth": 0.05,
+      "endWidth": 0.05,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       0.63077,
+       0.8725,
+       1.0,
+       0.11765
+      ],
+      "Color3": [
+       0.57692,
+       0.7078,
+       1.0,
+       0.23529
+      ],
+      "Color4": [
+       0.46923,
+       0.61051,
+       1.0,
+       0.35294
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "lineEmitterMode": 0,
+      "symetry": false,
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "repeatForever": true
+     }
+    ],
+    "pos": [
+     0.0,
+     0.5,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Ray0"
+    ]
+   },
+   {
+    "name": "RingEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "RingEmitter",
+      "Life": 0.5,
+      "Delay": 0.0,
+      "Emission": 3.0,
+      "EmissionPeriod": 0.15,
+      "startRadius": 0.8,
+      "endRadius": -0.2,
+      "rndRadius": 0.0,
+      "startHeight": 0.4,
+      "endHeight": 0.0,
+      "rndHeight": 0.0,
+      "startWidth": 0.4,
+      "endWidth": 0.6,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.03922
+      ],
+      "Color2": [
+       0.74615,
+       1.0,
+       0.96713,
+       0.17647
+      ],
+      "Color3": [
+       0.53846,
+       1.0,
+       0.80077,
+       0.35294
+      ],
+      "Color4": [
+       0.36923,
+       0.97277,
+       1.0,
+       0.47059
+      ],
+      "Color5": [
+       0.18036,
+       0.77062,
+       0.97692,
+       0.03922
+      ],
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "uvRotation": 1.0,
+      "ringTri": 18,
+      "uvTile": 4.0,
+      "repeatForever": true,
+      "qualitySetting": 0
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Line_vertMultilines4"
+    ]
+   }
+  ]
+ }
+}
+{
+ "deadEffect": {
+  "nodes": [
+   {
+    "name": "deadEffect",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 3.0,
+      "afterLife": 0.0,
+      "followPosition": false,
+      "followState": false,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     51.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 1,
+      "EmissionTime": 0.0,
+      "Life": 1.2,
+      "Delay": 0.5,
+      "startHeight": 0.4,
+      "endHeight": 0.4,
+      "startWidth": 0.4,
+      "endWidth": 0.5,
+      "rndScale": 0.0,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       1.0,
+       0.0
+      ],
+      "ImageEmitterMode": 0,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.0
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       0.47059
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.47059
+      ],
+      "Color4": [
+       1.0,
+       1.0,
+       1.0,
+       0.35294
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Rotation": 0.0,
+      "rndRotation": 0.0,
+      "startAngle": 1.5,
+      "spreadAngle": 0.0,
+      "repeatForever": false,
+      "mMeshFilter": [
+       0,
+       359
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.8,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "penguin_dead"
+    ]
+   },
+   {
+    "name": "RingEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "RingEmitter",
+      "Life": 0.4,
+      "Delay": 0.5,
+      "Emission": 1.0,
+      "EmissionPeriod": 0.0,
+      "startRadius": 0.0,
+      "endRadius": 0.6,
+      "rndRadius": 0.0,
+      "startHeight": 0.3,
+      "endHeight": 0.1,
+      "rndHeight": 0.0,
+      "startWidth": 0.1,
+      "endWidth": 0.3,
+      "rndWidth": 0.0,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       0.6
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.85
+      ],
+      "Color4": [
+       1.0,
+       1.0,
+       1.0,
+       0.6
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "uvRotation": 1.0,
+      "ringTri": 24,
+      "uvTile": 3.0,
+      "repeatForever": false,
+      "qualitySetting": 0
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Dust3_h"
+    ]
+   }
+  ]
+ }
+}
+{
+ "mpTransfer": {
+  "nodes": [
+   {
+    "name": "mpTransfer",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 1.0,
+      "afterLife": 1.0,
+      "followPosition": true,
+      "followState": false,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     {
+      "type": "AudioSource",
+      "clip": "mpTransfer",
+      "volume": 1.0,
+      "playOnAwake": true,
+      "loop": false
+     }
+    ],
+    "pos": [
+     0.0,
+     51.27339,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "EmblemEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "EmblemEmitter",
+      "Life": 0.5,
+      "Delay": 0.0,
+      "image": [
+       22,
+       57
+      ],
+      "startHeight": 4.0,
+      "endHeight": 1.0,
+      "startWidth": 4.0,
+      "endWidth": 1.0,
+      "rndScale": 0.0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "alpha1": 0.0,
+      "alpha2": 1.0,
+      "alpha3": 0.75,
+      "alpha4": 0.5,
+      "alpha5": 0.0,
+      "imageTex": "manaBurn",
+      "imageSize": [
+       64,
+       64
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 2,
+      "EmissionTime": 0.2,
+      "Life": 0.3,
+      "Delay": 0.2,
+      "startHeight": 0.0,
+      "endHeight": 2.0,
+      "startWidth": 0.0,
+      "endWidth": 2.0,
+      "rndScale": 0.0,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ImageEmitterMode": 0,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       0.3
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.45
+      ],
+      "Color4": [
+       1.0,
+       1.0,
+       1.0,
+       0.3
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Rotation": 0.0,
+      "rndRotation": 0.0,
+      "startAngle": 0.0,
+      "spreadAngle": 0.0,
+      "repeatForever": false,
+      "mMeshFilter": [
+       0,
+       0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Ring2"
+    ]
+   },
+   {
+    "name": "LineEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "LineEmitter",
+      "Life": 0.4,
+      "Delay": 0.0,
+      "Emission": 24.0,
+      "EmissionTime": 0.0,
+      "startRadius": 1.0,
+      "endRadius": -0.5,
+      "rndRadius": 0.5,
+      "startHeight": 1.2,
+      "endHeight": 0.4,
+      "rndHeight": 0.5,
+      "startWidth": 0.1,
+      "endWidth": 0.2,
+      "rndWidth": 0.1,
+      "localVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "rndVelocity": [
+       1.0,
+       1.0,
+       1.0
+      ],
+      "Color1": [
+       0.0,
+       1.0,
+       1.0,
+       0.03922
+      ],
+      "Color2": [
+       0.0,
+       0.78417,
+       1.0,
+       0.29804
+      ],
+      "Color3": [
+       0.0,
+       0.69784,
+       1.0,
+       0.45098
+      ],
+      "Color4": [
+       0.0,
+       1.0,
+       0.48201,
+       0.29804
+      ],
+      "Color5": [
+       0.0,
+       1.0,
+       0.13669,
+       0.03922
+      ],
+      "lineEmitterMode": 0,
+      "symetry": false,
+      "localRotation": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "repeatForever": false
+     }
+    ],
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "Ray4"
+    ]
+   }
+  ]
+ }
+}
+{
+ "mpTransfer_ring": {
+  "nodes": [
+   {
+    "name": "mpTransfer_ring",
+    "parent": -1,
+    "comps": [
+     {
+      "type": "EffectControl",
+      "life": 1.0,
+      "afterLife": 1.0,
+      "followPosition": true,
+      "followState": true,
+      "effectRotationMode": 0,
+      "velocity": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     50.0,
+     -64.0
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   {
+    "name": "ImageEmitter",
+    "parent": 0,
+    "comps": [
+     {
+      "type": "ImageEmitter",
+      "Emission": 2,
+      "EmissionTime": 0.3,
+      "Life": 0.5,
+      "Delay": 0.3,
+      "startHeight": 0.6,
+      "endHeight": 1.6,
+      "startWidth": 0.6,
+      "endWidth": 1.6,
+      "rndScale": 0.2,
+      "rndLife": 0.0,
+      "startPosition": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "localVelocity": 0.0,
+      "rndVelocity": 0.0,
+      "worldVelocity": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ImageEmitterMode": 3,
+      "useWorldSpace": false,
+      "Color1": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Color2": [
+       1.0,
+       1.0,
+       1.0,
+       0.63137
+      ],
+      "Color3": [
+       1.0,
+       1.0,
+       1.0,
+       0.45
+      ],
+      "Color4": [
+       1.0,
+       1.0,
+       1.0,
+       0.3
+      ],
+      "Color5": [
+       1.0,
+       1.0,
+       1.0,
+       0.04
+      ],
+      "Rotation": 3.14,
+      "rndRotation": 0.0,
+      "startAngle": 0.0,
+      "spreadAngle": 0.0,
+      "repeatForever": true,
+      "mMeshFilter": [
+       0,
+       69920
+      ]
+     }
+    ],
+    "pos": [
+     0.0,
+     0.75,
+     0.5
+    ],
+    "rot": [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mats": [
+     "manaBurn"
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,95 @@
+22507: internal sealed class $RPC_blink$26122 : GenericGenerator<WaitForSeconds>
+22511: public $RPC_blink$26122(Vector3 mPos, Vector3 tDir, int tID, int sLv, Penguin self_)
+22552: public override IEnumerator<WaitForSeconds> GetEnumerator()
+22554: return new Penguin.$RPC_blink$26122.$(this.$mPos$26135, this.$tDir$26136, this.$tID$26137, this.$sLv$26138, this.$self_$26139);
+22587: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+22639: IL_6A4:
+22642: case 0:
+22644: case 1:
+22645: goto IL_1324;
+22646: case 2:
+22649: goto IL_1226;
+22661: goto IL_1226;
+22673: goto Block_92;
+22678: case 3:
+22681: goto IL_C85;
+22691: goto Block_16;
+22723: goto IL_6A4;
+22729: goto IL_6A4;
+22735: goto IL_6A4;
+22740: goto IL_6A4;
+22745: goto IL_6A4;
+22759: this.$mCharacterController$26127.Move((float)(3 * this.$sLv$26133 + 2) * this.$self_$26134.transform.forward);
+22780: goto IL_6A4;
+22786: goto IL_6A4;
+22792: goto IL_6A4;
+22797: goto IL_6A4;
+22802: goto IL_6A4;
+22817: this.$self_$26134.Yl9LUDa6EF = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/blink", typeof(GameObject));
+22829: UnityEngine.Object.Instantiate(this.$self_$26134.Yl9LUDa6EF, this.$self_$26134.lubL6y2W9o.position, this.$self_$26134.lubL6y2W9o.rotation);
+22834: goto IL_AB8;
+22841: goto Block_73;
+22847: case 4:
+22850: goto IL_CD1;
+22860: goto Block_6;
+22878: goto IL_73F;
+22884: if (this.$self_$26134.mChar.getStatusLv("multiCast") <= 0)
+22886: goto IL_73F;
+22892: if (this.$self_$26134.mChar.reduceStatusLv("multiCast", 1) == 0)
+22898: this.$self_$26134.mChar.RPC_RemoveStatus("multiCast");
+22904: this.$self_$26134.RPC_blink_multiCast(this.$self_$26134.lubL6y2W9o.position, this.$self_$26134.lubL6y2W9o.forward, this.$tID$26132, this.$sLv$26133);
+22911: goto IL_73A;
+22917: this.$self_$26134.ActionEvent("RPC_blink" + this.$sLv$26133, this.$self_$26134.lubL6y2W9o.position, this.$self_$26134.lubL6y2W9o.forward, this.$tID$26132);
+22922: goto IL_73A;
+22925: case 5:
+22943: this.$self_$26134.mChar.actionState = "standby";
+22953: this.$self_$26134.mChar.myCommand = "none";
+22982: this.YieldDefault(1);
+22987: goto IL_1324;
+22995: this.$self_$26134.mChar.actionState = "attack";
+23001: this.$self_$26134.mChar.myCommand = "blink";
+23004: this.$self_$26134.mChar.addTimeOut("blink", this.$self_$26134.mChar.agiAdjust((float)12));
+23016: this.$self_$26134.PlayAnimation("blink", (float)0);
+23019: this.$self_$26134.animation.wrapMode = WrapMode.Once;
+23034: this.$self_$26134.dYiLNvIfsd = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/blink_ring", typeof(GameObject));
+23046: UnityEngine.Object.Instantiate(this.$self_$26134.dYiLNvIfsd, this.$self_$26134.lubL6y2W9o.position, this.$self_$26134.lubL6y2W9o.rotation);
+23074: goto IL_23F;
+23082: goto IL_23F;
+23089: if (UnityEngine.Random.Range(0, 2) == 0)
+23101: this.$self_$26134.GLELENeLVm = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/blink1", typeof(AudioClip));
+23113: this.$self_$26134.audio.PlayOneShot(this.$self_$26134.GLELENeLVm, (!this.$self_$26134.mChar.isMine) ? 0.75f : ((float)1));
+23132: this.$self_$26134.SUQLPgE6Je = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/blink2", typeof(AudioClip));
+23144: this.$self_$26134.audio.PlayOneShot(this.$self_$26134.SUQLPgE6Je, (!this.$self_$26134.mChar.isMine) ? 0.75f : ((float)1));
+23156: IL_23F:
+23159: goto IL_1257;
+23163: if (!this.$self_$26134.mChar.hasSkill(431))
+23165: goto IL_1257;
+23169: if (this.$self_$26134.mChar.hasStatus("multiCast"))
+23171: goto IL_1257;
+23175: if (UnityEngine.Random.Range(0, 100) >= this.$self_$26134.mChar.lckAdjust(12))
+23177: goto IL_1257;
+23181: if (this.$self_$26134.sMRLT35VVC)
+23187: this.$self_$26134.mChar.createEffect(this.$self_$26134.sMRLT35VVC, this.$self_$26134.lubL6y2W9o.position, this.$self_$26134.lubL6y2W9o.rotation);
+23193: this.$self_$26134.mChar.RPC_AddStatus("multiCast", 1, 3, 0, this.$self_$26134.mChar.ActorNr);
+23196: goto IL_1257;
+23214: Block_6:
+23215: Block_16:
+23216: IL_73A:
+23217: goto IL_1324;
+23218: IL_73F:
+23219: return this.Yield(5, new WaitForSeconds(0.2f));
+23220: IL_AB8:
+23221: Block_73:
+23222: goto IL_D58;
+23223: IL_C85:
+23224: IL_CD1:
+23225: goto IL_1324;
+23226: IL_D58:
+23227: return this.Yield(4, new WaitForSeconds(0.1f));
+23228: Block_92:
+23229: return this.Yield(3, new WaitForSeconds(0.2f));
+23230: IL_1226:
+23231: goto IL_1324;
+23232: IL_1257:
+23233: return this.Yield(2, new WaitForSeconds(0.1f));
+23234: IL_1324:

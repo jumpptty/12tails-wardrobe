@@ -1,0 +1,71 @@
+== unity default resources 3: 4 materials; props [(('_Color', '_SpecColor'), 4)]
+   e.g. ['IronBall', 'CamBot', 'gravityBot', 'SiegeBot']
+    IronBall: tex IronBall mean rgba [0.24, 0.25, 0.23, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 0%
+    CamBot: tex CamBot mean rgba [0.42, 0.42, 0.42, 1.0], alpha<0.5 0%, white 11%, grey 18%, black 8%
+    gravityBot: tex gravityBot mean rgba [0.18, 0.18, 0.2, 1.0], alpha<0.5 0%, white 0%, grey 5%, black 36%
+    SiegeBot: tex SiegekBot mean rgba [0.24, 0.26, 0.28, 1.0], alpha<0.5 0%, white 1%, grey 10%, black 4%
+== unity default resources 7: 173 materials; props [(('_Color',), 168), (('_Color', '_Emission', '_MainTex_ST', '_SpecColor'), 2), (('_Color', '_TintColor'), 1)]
+   e.g. ['FatBug_weedSwipe_trail', 'littlefatbug@getup-no name', 'giantLock', 'FireBot_frameSweepL-Default', 'FireBot_frameSweepR-Default', 'NeedleBug_w', 'ShogunBug', 'Bat_fanKingHat', 'Bat_lionHead', 'Bat_snowmanHead', 'Bat_starGlasses', 'Bat_eclipseWand']
+== unity default resources 10: 1 materials; props [(('_Color',), 1)]
+   e.g. ['Rabbit_deerHorn']
+    Rabbit_deerHorn: tex Bat_deerHorn mean rgba [1.0, 0.95, 0.45, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 0%
+== unity default resources 30: 7 materials; props [(('_Color',), 5), (('_AdditiveColor', '_Color'), 1), (('_Color', '_TintColor'), 1)]
+   e.g. ['clawPincer_hit', 'volcanicEruption1', 'Rabbit_mall1', 'Rabbit_mall2', 'Rabbit_mall3', 'millionaire_peppon', 'bowlingWhale']
+    clawPincer_hit: tex clawPincer_hit mean rgba [0.22, 0.32, 0.66, 1.0], alpha<0.5 0%, white 0%, grey 7%, black 0%
+    volcanicEruption1: tex volcanicEruption1 mean rgba [0.23, 0.1, 0.06, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 36%
+    Rabbit_mall1: tex Rabbit_mall1 mean rgba [0.72, 0.49, 0.38, 0.85], alpha<0.5 12%, white 0%, grey 3%, black 2%
+    Rabbit_mall2: tex Rabbit_mall2 mean rgba [0.51, 0.55, 0.56, 0.85], alpha<0.5 12%, white 0%, grey 1%, black 2%
+    Rabbit_mall3: tex Rabbit_mall3 mean rgba [0.48, 0.57, 0.39, 0.85], alpha<0.5 12%, white 0%, grey 3%, black 2%
+    millionaire_peppon: tex millionaire_peppon mean rgba [0.29, 0.16, 0.35, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 0%
+    bowlingWhale: tex bowlingWhale mean rgba [0.09, 0.71, 0.93, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 0%
+== unity default resources 34: 1 materials; props [(('_Color', '_Emission', '_SpecColor', '_TintColor'), 1)]
+   e.g. ['stonehammer']
+    stonehammer: tex stoneHammer mean rgba [0.63, 0.6, 0.51, 1.0], alpha<0.5 0%, white 0%, grey 19%, black 0%
+== unity default resources 104: 1 materials; props [(('_Color', '_Tint'), 1)]
+   e.g. ['AllBlack']
+== unity default resources 200: 40 materials; props [(('_Color', '_TintColor'), 26), (('_TintColor',), 6), (('_AdditiveColor', '_Color', '_Emission', '_TintColor'), 2)]
+   e.g. ['shatteringDream_orb', 'qiBurst', 'dreamBurst', 'mirageOrb', 'aspectOfTheHorde', 'trampleDust', 'trample_horn', 'GrandCasinoArcade2', 'GrandCasinoArcade3', 'deltaStrike_line', 'deltastrike_cat', 'deltastrike_shatter']
+== unity default resources 202: 230 materials; props [(('_Color',), 149), ((), 49), (('_Color', '_TintColor'), 21)]
+   e.g. ['emeraldSpit', 'poisonGoo', 'poisonSpit', 'IceBlade', 'shame_ring', 'Chameleon_halo', 'thunderDragon_particle', 'galaxyBlade', 'TripleTrail', 'Doom', 'castEffect', 'charm']
+== unity default resources 203: 52 materials; props [(('_Color', '_TintColor'), 40), (('_TintColor',), 10), (('_AdditiveColor', '_Color', '_ReflectColor', '_SpecColor', '_TintColor'), 1)]
+   e.g. ['spinHack', 'gaosSoul', 'safeGuard', 'Ball_04', 'chiroptophobia', 'confuse', 'curse', 'nAttack1', 'nAttack2', 'nefariousWhip1', 'nefariousWhip2', 'nefariousWhip3']
+== unity default resources 205: 15 materials; props [(('_Color',), 10), (('_Color', '_TintColor'), 3), (('_TintColor',), 1)]
+   e.g. ['darkStalker', 'nightmare_bolt', 'ShadowRing3', 'Dust10', 'Ray1_m', 'needlePoison_dust', 'note1', 'note2', 'darkEdge', 'Dust11', 'Smoke4_multiply', 'Ring6']
+    darkStalker: tex darkStalker mean rgba [0.37, 0.37, 0.37, 1.0], alpha<0.5 0%, white 0%, grey 13%, black 0%
+    nightmare_bolt: tex nightmare_bolt mean rgba [0.09, 0.02, 0.07, 0.28], alpha<0.5 72%, white 0%, grey 0%, black 63%
+    ShadowRing3: tex ShadowRing3 mean rgba [0.78, 0.78, 0.78, 1.0], alpha<0.5 0%, white 56%, grey 10%, black 0%
+    Dust10: tex Dust10 mean rgba [0.77, 0.77, 0.77, 1.0], alpha<0.5 0%, white 57%, grey 12%, black 0%
+    Ray1_m: tex Ray1_m mean rgba [0.74, 0.74, 0.74, 1.0], alpha<0.5 0%, white 55%, grey 8%, black 8%
+    needlePoison_dust: tex Smoke1_small mean rgba [0.34, 0.35, 0.34, 0.31], alpha<0.5 65%, white 4%, grey 12%, black 42%
+    note1: tex note1 mean rgba [0.69, 0.76, 0.77, 0.12], alpha<0.5 90%, white 33%, grey 4%, black 6%
+    note2: tex note2 mean rgba [0.7, 0.68, 0.71, 0.23], alpha<0.5 81%, white 16%, grey 1%, black 11%
+== unity default resources 206: 11 materials; props [(('_Color', '_TintColor'), 4), (('_Color',), 2), (('_TintColor',), 1)]
+   e.g. ['nightmare', 'Bomb2', 'zeroShot1', 'zeroShot2', 'MissileBot_missileSmoke', 'FireBot_backJet', 'Bomb1_m', 'Bomb4', 'fallingComet1', 'giantComet', 'Smoke4']
+    nightmare: tex nightmare mean rgba [0.22, 0.15, 0.2, 1.0], alpha<0.5 0%, white 0%, grey 0%, black 6%
+    Bomb2: tex Bomb2 mean rgba [0.78, 0.43, 0.14, 0.37], alpha<0.5 65%, white 0%, grey 0%, black 22%
+    zeroShot1: tex zeroShot1 mean rgba [0.08, 0.57, 0.55, 0.55], alpha<0.5 46%, white 0%, grey 1%, black 19%
+    zeroShot2: tex zeroShot2 mean rgba [0.27, 0.54, 0.18, 0.59], alpha<0.5 42%, white 0%, grey 1%, black 13%
+    MissileBot_missileSmoke: tex Smoke3 mean rgba [0.41, 0.4, 0.35, 0.58], alpha<0.5 35%, white 0%, grey 23%, black 23%
+    FireBot_backJet: tex Smoke3 mean rgba [0.41, 0.4, 0.35, 0.58], alpha<0.5 35%, white 0%, grey 23%, black 23%
+    Bomb1_m: tex Bomb1 mean rgba [0.65, 0.52, 0.2, 0.61], alpha<0.5 36%, white 0%, grey 0%, black 21%
+    Bomb4: tex Bomb4 mean rgba [0.21, 0.11, 0.08, 0.48], alpha<0.5 52%, white 0%, grey 2%, black 48%
+== unity default resources 207: 12 materials; props [(('_Color',), 8), (('_Color', '_TintColor'), 4)]
+   e.g. ['bat_dead', 'bison_dead', 'cat_dead', 'chameleon_dead', 'mole_dead', 'fireWall', 'monkey_dead', 'penguin_dead', 'rabbit_dead', 'sheep_dead', 'whale_dead', 'wolf_dead']
+    bat_dead: tex bat_dead mean rgba [0.2, 0.02, 0.23, 0.14], alpha<0.5 99%, white 0%, grey 0%, black 63%
+    bison_dead: tex bison_dead mean rgba [0.3, 0.21, 0.08, 0.18], alpha<0.5 97%, white 0%, grey 0%, black 52%
+    cat_dead: tex cat_dead mean rgba [0.33, 0.25, 0.0, 0.18], alpha<0.5 86%, white 0%, grey 0%, black 55%
+    chameleon_dead: tex chameleon_dead mean rgba [0.29, 0.19, 0.0, 0.14], alpha<0.5 86%, white 0%, grey 0%, black 63%
+    mole_dead: tex mole_dead mean rgba [0.29, 0.22, 0.09, 0.18], alpha<0.5 76%, white 0%, grey 0%, black 59%
+    fireWall: tex fireWall mean rgba [0.25, 0.2, 0.14, 0.1], alpha<0.5 99%, white 0%, grey 1%, black 52%
+    monkey_dead: tex monkey_dead mean rgba [0.25, 0.12, 0.02, 0.12], alpha<0.5 100%, white 0%, grey 0%, black 57%
+    penguin_dead: tex penguin_dead mean rgba [0.0, 0.21, 0.27, 0.14], alpha<0.5 84%, white 0%, grey 0%, black 64%
+== unity default resources 10101: 10 materials; props [(('_Color',), 10)]
+   e.g. ['Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material', 'Font Material']
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.1], alpha<0.5 100%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.13], alpha<0.5 100%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.18], alpha<0.5 100%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.16], alpha<0.5 99%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.18], alpha<0.5 98%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.14], alpha<0.5 99%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.1], alpha<0.5 100%, white 0%, grey 0%, black 100%
+    Font Material: tex Font Texture mean rgba [0.0, 0.0, 0.0, 0.13], alpha<0.5 100%, white 0%, grey 0%, black 100%

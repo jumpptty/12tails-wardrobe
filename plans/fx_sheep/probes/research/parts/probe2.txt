@@ -1,0 +1,114 @@
+== nAttack
+  [0] nAttack parent -1 mats ['nAttack_Particle'] ['EllipsoidParticleEmitter', 'ParticleRenderer', 'ParticleAnimator', 'ProjectileControl', 'Sheep_nAttack'] 
+  mats {"nAttack_Particle": {"blend": "add", "tex": "Ball_05", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [1.0, 1.0, 1.0, 0.5], "color": [1.0, 1.0, 1.0, 1.0]}}
+== cAttack
+  [0] cAttack parent -1 mats ['cAttack'] ['EllipsoidParticleEmitter', 'ParticleRenderer', 'ParticleAnimator', 'ProjectileControl', 'Sheep_cAttack'] 
+  [1] Sheep_cAttack_Particle2 parent 0 mats ['cAttack'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  mats {"cAttack": {"blend": "addsoft", "tex": "Ball_04", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}}
+== homingLight
+  [0] homingLight parent -1 mats ['nAttack_Particle'] ['EllipsoidParticleEmitter', 'ParticleRenderer', 'ParticleAnimator', 'ProjectileControl', 'Sheep_homingLight'] 
+  mats {"nAttack_Particle": {"blend": "add", "tex": "Ball_05", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [1.0, 1.0, 1.0, 0.5], "color": [1.0, 1.0, 1.0, 1.0]}}
+== divinityAxe
+  [0] divinityAxe parent -1 mats None ['Animation', 'EffectControl', 'AudioSource'] {"Animation": {"clip": "Base Stack", "play": true, "wrap": 0, "clipnames": ["Base Stack"]}}
+  [1] RingEmitter parent 0 mats ['Dust5'] ['RingEmitter'] 
+  [2] Sheep_divinityAxe parent 0 mats None [] 
+  [3] axe parent 2 mats None ['SkinnedMeshRenderer', 'AlphaTimer'] {"SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_divinityAxe", "verts": 19, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 42]], "w": "...", "j": "...", "bind": "...", "bones": [3], "root": null, "mats": ["divinityAxe"]}}
+  [4] TrailEmitter parent 3 mats ['Line_MultiLines1'] ['TrailEmitter'] 
+  [5] ImageEmitter parent 0 mats ['Ring2'] ['ImageEmitter'] 
+  [6] RingEmitter parent 0 mats ['Dust4'] ['RingEmitter'] 
+  mats {"Dust5": {"blend": "addsoft", "tex": "Dust5", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "divinityAxe": {"blend": "add", "tex": "divinityAxe", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.501960813999176, 0.501960813999176, 0.501960813999176, 0.0], "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 1.0]}, "Line_MultiLines1": {"blend": "addsoft", "tex": "Line_Multilines1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Ring2": {"blend": "addsoft", "tex": "Ring2", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "Dust4": {"blend": "addsoft", "tex": "Dust4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}}
+== divinitySpear
+  [0] divinitySpear parent -1 mats None ['EffectControl', 'AudioSource'] 
+  [1] divinitySpear parent 0 mats None ['Animation', 'EffectControl'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}}
+  [2] root parent 1 mats None ['SkinnedMeshRenderer', 'AlphaTimer'] {"SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_divinitySpear_tri", "verts": 39, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 132]], "w": "...", "j": "...", "bind": "...", "bones": [2], "root": null, "mats": ["divinitySpear"]}}
+  [3] ImageEmitter parent 0 mats ['HitGround1'] ['ImageEmitter'] 
+  [4] Particle System parent 0 mats ['Light1'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [5] ParticleEmitter parent 0 mats ['Smoke1'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [6] RingEmitter parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  mats {"divinitySpear": {"blend": "shader:FX/Phoenix", "tex": "divinitySpear", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 0.501960813999176]}, "HitGround1": {"blend": "alpha", "tex": "HitGround1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.5, 0.5, 0.5, 0.5], "color": null}, "Light1": {"blend": "addsoft", "tex": "Light1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Smoke1": {"blend": "addsoft", "tex": "Smoke1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.558394193649292, 0.8686733841896057, 1.0, 1.0], "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines4": {"blend": "addsoft", "tex": "Line_vertMultilines4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}}
+== divinitySword
+  [0] divinitySword parent -1 mats None ['EffectControl', 'AudioSource'] 
+  [1] ImageEmitter parent 0 mats ['Ring2'] ['ImageEmitter'] 
+  [2] ImageEmitter parent 0 mats ['Ring2'] ['ImageEmitter'] 
+  [3] RingEmitter parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [4] Sheep_divinitySword parent 0 mats None ['Animation', 'SkinnedMeshRenderer', 'AlphaTimer'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}, "SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_divinitySword_tri", "verts": 218, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 792]], "w": "...", "j": "...", "bind": "...", "bones": [6, 5], "root": null, "mats": ["divinitysword"]}}
+  [5] sword_L parent 4 mats None [] 
+  [6] sword_R parent 4 mats None [] 
+  mats {"Ring2": {"blend": "addsoft", "tex": "Ring2", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "Line_vertMultilines4": {"blend": "addsoft", "tex": "Line_vertMultilines4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "divinitysword": {"blend": "shader:FX/Phoenix", "tex": "divinitySword", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.10980392247438431, 0.10980392247438431, 0.10980392247438431, 0.5882353186607361], "color": [1.0, 1.0, 1.0, 0.0]}}
+== edenSanctuary
+  [0] edenSanctuary parent -1 mats None ['Animation', 'Sheep_edenSanctuary', 'AudioSource'] {"Animation": {"clip": "create", "play": true, "wrap": 0, "clipnames": ["create", "destroy"]}}
+  [1] edenSanctuary_tri parent 0 mats ['edenSanctuary'] ['StaticMesh', 'AlphaTimer'] {"StaticMesh": {"type": "StaticMesh", "name": "edenSanctuary_tri", "verts": 3744, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 11712]]}}
+  [2] RingEmitter parent 0 mats ['Line_vertMultilines6'] ['RingEmitter'] 
+  [3] RingEmitter parent 0 mats ['Line_Magic1'] ['RingEmitter'] 
+  [4] VortexEmitter parent 0 mats ['Line_Magic1'] ['VortexEmitter'] 
+  mats {"edenSanctuary": {"blend": "add", "tex": "edenSanctuary", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.5, 0.5, 0.5, 0.0], "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines6": {"blend": "addsoft", "tex": "Line_vertMultilines6", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Line_Magic1": {"blend": "addsoft", "tex": "Line_Magic1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}}
+== lullaby_ring
+  [0] lullaby_ring parent -1 mats None ['Animation', 'EffectControl', 'AudioSource'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}}
+  [1] lullaby_sheep_tri parent 0 mats None ['SkinnedMeshRenderer', 'AlphaTimer'] {"SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "lullaby_sheep_tri", "verts": 78, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 108]], "w": "...", "j": "...", "bind": "...", "bones": [2, 3, 4], "root": 4, "mats": ["lullaby_sheep"]}}
+  [2] ring1 parent 1 mats None [] 
+  [3] ring2 parent 1 mats None [] 
+  [4] ring3 parent 1 mats None [] 
+  [5] RingEmitter parent 0 mats ['quickHeal_ring'] ['RingEmitter'] 
+  [6] ParticleEmitter parent 0 mats ['note1'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [7] ParticleEmitter parent 0 mats ['note2'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [8] RingEmitter parent 0 mats ['quickHeal_ring'] ['RingEmitter'] 
+  mats {"lullaby_sheep": {"blend": "add", "tex": "lullaby_sheep", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": [0.250980406999588, 0.250980406999588, 0.250980406999588, 0.0], "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 1.0]}, "quickHeal_ring": {"blend": "addsoft", "tex": "quickHeal_ring", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "note1": {"blend": "add", "tex": "note1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "note2": {"blend": "add", "tex": "note2", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}}
+== soulOfArms
+  [0] soulOfArms parent -1 mats None ['EffectControl', 'AudioSource'] 
+  [1] all_hit1 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [2] all_hit2 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [3] all_hit3 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [4] all_hit4 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [5] LineEmitter parent 0 mats ['lightRay'] ['LineEmitter'] 
+  [6] spear_hit1 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [7] axe_hit2 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [8] Sheep_soulOfArms parent 0 mats None ['Animation'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}}
+  [9] root parent 8 mats None [] 
+  [10] Sheep_soulOfArms_tri [axe] parent 9 mats ['soulofArms'] ['StaticMesh', 'AlphaTimer'] {"StaticMesh": {"type": "StaticMesh", "name": "Sheep_soulOfArms_tri [axe]", "verts": 140, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 492]]}}
+  [11] TrailPointer parent 10 mats ['Line_MultiLines1'] ['TrailEmitter'] 
+  [12] Sheep_soulOfArms_tri [spear] parent 9 mats ['soulofArms'] ['StaticMesh', 'AlphaTimer'] {"StaticMesh": {"type": "StaticMesh", "name": "Sheep_soulOfArms_tri [spear]", "verts": 95, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 324]]}}
+  [13] TrailPointer parent 12 mats ['Line_MultiLines1'] ['TrailEmitter'] 
+  [14] Sheep_soulOfArms_tri [sword] parent 9 mats ['soulofArms'] ['StaticMesh', 'AlphaTimer'] {"StaticMesh": {"type": "StaticMesh", "name": "Sheep_soulOfArms_tri [sword]", "verts": 103, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 279]]}}
+  [15] Particle System parent 14 mats ['Light1'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [16] TrailPointer parent 14 mats ['Line_MultiLines1'] ['TrailEmitter'] 
+  [17] Sheep_soulOfArms_tri [trident] parent 9 mats ['soulofArms'] ['StaticMesh', 'AlphaTimer'] {"StaticMesh": {"type": "StaticMesh", "name": "Sheep_soulOfArms_tri [trident]", "verts": 69, "pos": "...", "nrm": "...", "uv": "...", "col": null, "idx": "...", "sub": [[0, 276]]}}
+  [18] Particle System parent 17 mats ['Light1'] ['EllipsoidParticleEmitter', 'ParticleAnimator', 'ParticleRenderer'] 
+  [19] TrailPointer parent 17 mats ['Line_MultiLines1'] ['TrailEmitter'] 
+  [20] sword_hit1 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [21] sword_hit2 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [22] axe_hit1 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [23] trident_hit1 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [24] trident_hit2 parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  mats {"Line_vertMultilines4": {"blend": "addsoft", "tex": "Line_vertMultilines4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "lightRay": {"blend": "addsoft", "tex": "lightRay", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "soulofArms": {"blend": "shader:FX/Phoenix", "tex": "soulOfArms", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 0.0]}, "Line_MultiLines1": {"blend": "addsoft", "tex": "Line_Multilines1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Light1": {"blend": "addsoft", "tex": "Light1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}}
+== sealOfAttack
+  [0] sealOfAttack parent -1 mats None ['Sheep_seal', 'AudioSource'] 
+  [1] RingEmitter parent 0 mats ['Line_Magic1'] ['RingEmitter'] 
+  [2] RingEmitter parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [3] Sheep_seal1 parent 0 mats None ['Animation', 'SkinnedMeshRenderer'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}, "SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_seal1_tri", "verts": 68, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 156]], "w": "...", "j": "...", "bind": "...", "bones": [4, 5], "root": null, "mats": ["sealOfAttack"]}}
+  [4] seal1 parent 3 mats None [] 
+  [5] seal2 parent 3 mats None [] 
+  mats {"Line_Magic1": {"blend": "addsoft", "tex": "Line_Magic1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines4": {"blend": "addsoft", "tex": "Line_vertMultilines4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "sealOfAttack": {"blend": "addsoft", "tex": "sealOfAttack", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 1.0]}}
+== sealOfDefense
+  [0] sealOfDefense parent -1 mats None ['Sheep_seal', 'AudioSource'] 
+  [1] RingEmitter parent 0 mats ['Line_Magic1'] ['RingEmitter'] 
+  [2] RingEmitter parent 0 mats ['Line_vertMultilines4'] ['RingEmitter'] 
+  [3] Sheep_seal2 parent 0 mats None ['Animation', 'SkinnedMeshRenderer'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}, "SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_seal2_tri", "verts": 67, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 156]], "w": "...", "j": "...", "bind": "...", "bones": [4, 5], "root": null, "mats": ["sealOfDefense"]}}
+  [4] seal1 parent 3 mats None [] 
+  [5] seal2 parent 3 mats None [] 
+  mats {"Line_Magic1": {"blend": "addsoft", "tex": "Line_Magic1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines4": {"blend": "addsoft", "tex": "Line_vertMultilines4", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}, "sealOfDefense": {"blend": "addsoft", "tex": "sealOfDefense", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 1.0]}}
+== sealOfEarth
+  [0] sealOfEarth parent -1 mats None ['Sheep_seal', 'AudioSource'] 
+  [1] RingEmitter parent 0 mats ['Line_Magic1'] ['RingEmitter'] 
+  [2] RingEmitter parent 0 mats ['Line_vertMultilines6'] ['RingEmitter'] 
+  [3] Sheep_seal2 parent 0 mats None ['Animation', 'SkinnedMeshRenderer'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}, "SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_seal2_tri", "verts": 67, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 156]], "w": "...", "j": "...", "bind": "...", "bones": [4, 5], "root": null, "mats": ["sealOfEarth"]}}
+  [4] seal1 parent 3 mats None [] 
+  [5] seal2 parent 3 mats None [] 
+  mats {"Line_Magic1": {"blend": "addsoft", "tex": "Line_Magic1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines6": {"blend": "addsoft", "tex": "Line_vertMultilines6", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "sealOfEarth": {"blend": "addsoft", "tex": "sealOfEarth", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}}
+== sealOfHeaven
+  [0] sealOfHeaven parent -1 mats None ['Sheep_seal', 'AudioSource'] 
+  [1] RingEmitter parent 0 mats ['Line_Magic1'] ['RingEmitter'] 
+  [2] RingEmitter parent 0 mats ['Line_vertMultilines6'] ['RingEmitter'] 
+  [3] Sheep_seal1 parent 0 mats None ['Animation', 'SkinnedMeshRenderer'] {"Animation": {"clip": "root", "play": true, "wrap": 0, "clipnames": ["root"]}, "SkinnedMeshRenderer": {"type": "SkinnedMeshRenderer", "name": "Sheep_seal1_tri", "verts": 68, "pos": "...", "nrm": "...", "uv": "...", "col": "...", "idx": "...", "sub": [[0, 156]], "w": "...", "j": "...", "bind": "...", "bones": [4, 5], "root": null, "mats": ["sealOfHeaven"]}}
+  [4] seal1 parent 3 mats None [] 
+  [5] seal2 parent 3 mats None [] 
+  mats {"Line_Magic1": {"blend": "addsoft", "tex": "Line_Magic1", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "Line_vertMultilines6": {"blend": "addsoft", "tex": "Line_vertMultilines6", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": [1.0, 1.0, 1.0, 1.0]}, "sealOfHeaven": {"blend": "addsoft", "tex": "sealOfHeaven", "scale": [1.0, 1.0], "offset": [0.0, 0.0], "tint": null, "color": null}}

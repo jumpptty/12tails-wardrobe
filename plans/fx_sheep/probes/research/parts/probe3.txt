@@ -1,0 +1,8 @@
+nAttack nAttack {'minEnergy': 0.4000000059604645, 'maxEnergy': 0.4000000059604645, 'minEmission': 15.0, 'maxEmission': 15.0, 'emitterVelocityScale': 0.05000000074505806, 'Simulate in Worldspace?': True, 'm_OneShot': False, 'm_MinEmitterRange': 0.0}
+   animator {'sizeGrow': 0.0, 'rndForce': {'x': 1.0, 'y': 1.0, 'z': 1.0}, 'force': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'damping': 1.0, 'autodestruct': False}
+cAttack cAttack {'minEnergy': 1.0, 'maxEnergy': 2.0, 'minEmission': 5.0, 'maxEmission': 10.0, 'emitterVelocityScale': 0.05000000074505806, 'Simulate in Worldspace?': False, 'm_OneShot': False, 'm_MinEmitterRange': 0.0}
+   animator {'sizeGrow': 0.25, 'rndForce': {'x': 0.10000000149011612, 'y': 0.10000000149011612, 'z': 0.10000000149011612}, 'force': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'damping': 1.0, 'autodestruct': False}
+cAttack Sheep_cAttack_Particle2 {'minEnergy': 0.5, 'maxEnergy': 1.0, 'minEmission': 10.0, 'maxEmission': 20.0, 'emitterVelocityScale': 0.0, 'Simulate in Worldspace?': True, 'm_OneShot': False, 'm_MinEmitterRange': 0.0}
+   animator {'sizeGrow': 0.0, 'rndForce': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'force': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'damping': 0.5, 'autodestruct': True}
+homingLight homingLight {'minEnergy': 0.4000000059604645, 'maxEnergy': 0.4000000059604645, 'minEmission': 15.0, 'maxEmission': 15.0, 'emitterVelocityScale': 0.05000000074505806, 'Simulate in Worldspace?': True, 'm_OneShot': False, 'm_MinEmitterRange': 0.0}
+   animator {'sizeGrow': 0.0, 'rndForce': {'x': 1.0, 'y': 1.0, 'z': 1.0}, 'force': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'damping': 1.0, 'autodestruct': False}

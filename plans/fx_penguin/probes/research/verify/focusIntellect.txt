@@ -1,0 +1,34 @@
+35709: internal sealed class $RPC_focusIntellect$26482 : GenericGenerator<WaitForSeconds>
+35746: public override IEnumerator<WaitForSeconds> GetEnumerator()
+35775: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+35821: case 0:
+35823: case 1:
+35825: case 2:
+35852: if (this.$self_$26485.mChar.mag <= 100)
+35867: this.$self_$26485.mChar.RPC_AddStatus("focusIntellect", 5, this.$self_$26485.mChar.chaAdjust(6), Mathf.FloorToInt((float)(this.$self_$26485.mChar.mag - 100)), this.$self_
+35876: case 3:
+35895: this.$self_$26485.mChar.actionState = "standby";
+35905: this.$self_$26485.mChar.myCommand = "none";
+35915: this.YieldDefault(1);
+35930: this.$self_$26485.mChar.actionState = "attack";
+35936: this.$self_$26485.mChar.myCommand = "focusIntellect";
+35939: this.$self_$26485.mChar.addTimeOut("focusIntellect", this.$self_$26485.mChar.agiAdjust((float)120));
+35951: this.$self_$26485.PlayAnimation("focusIntellect", (float)0);
+35954: this.$self_$26485.animation.wrapMode = WrapMode.Once;
+35969: this.$self_$26485.Q78UQOji7t = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/focusIntellect_ring", typeof(GameObject));
+35981: this.$self_$26485.mChar.createEffect(this.$self_$26485.Q78UQOji7t, this.$self_$26485.lubL6y2W9o.position, this.$self_$26485.lubL6y2W9o.rotation);
+36024: if (UnityEngine.Random.Range(0, 2) == 0)
+36034: this.$self_$26485.mjwUepwShg = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/focusIntellect1", typeof(AudioClip));
+36065: this.$self_$26485.FqHUIUivLF = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/focusIntellect2", typeof(AudioClip));
+36100: this.$self_$26485.audio.PlayOneShot(this.$self_$26485.mjwUepwShg, (!this.$self_$26485.mChar.isMine) ? 0.75f : ((float)1));
+36102: IL_72:
+36103: IL_13F:
+36104: return this.Yield(3, new WaitForSeconds(0.2f));
+36105: IL_18E:
+36113: IL_375:
+36114: this.$self_$26485.audio.PlayOneShot(this.$self_$26485.FqHUIUivLF, (!this.$self_$26485.mChar.isMine) ? 0.75f : ((float)1));
+36116: IL_575:
+36117: IL_5DE:
+36118: return this.Yield(2, new WaitForSeconds(0.8f));
+36119: IL_658:
+36120: IL_971:

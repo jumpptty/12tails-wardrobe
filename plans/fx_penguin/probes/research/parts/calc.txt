@@ -1,0 +1,12 @@
+tornado t=0.40s x=1.339 m v=2.210
+tornado t=1.00s x=2.088 m v=0.649
+tornado t=2.00s x=2.360 m v=0.084
+tornado t=3.00s x=2.395 m v=0.011
+tornado limit 2.400 m
+typhoon theta 0: within 3 m of the target at 0.68 s, at 6 s (0.00, 10.00), closest 0.00 m
+typhoon theta 120: within 3 m of the target at 1.64 s, at 6 s (-0.02, 10.01), closest 0.00 m
+typhoon theta 240: within 3 m of the target at 1.64 s, at 6 s (0.02, 10.01), closest 0.00 m
+terminal speed 3.84 m/s
+chaAdjust(6) = 6 -> iceBlock life 12 s, typhoon life 6 s
+arcticEmperor phases 0 0.3 8.0 9.0
+nAttack ball: 14 m/s x 1.4 s = 19.599999999999998 m; manaMissile 12 m/s x 3 s = 36 m

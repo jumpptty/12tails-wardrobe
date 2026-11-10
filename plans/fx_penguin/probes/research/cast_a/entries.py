@@ -1,0 +1,98 @@
+"""Read only: builds cast_a's ready-to-paste cue entries (cast1, and the cast3 pool's 8 members) as JSON in sheep.json's
+layout (one cue per line), checks them, and prints them. Writes nothing.
+  py -3 checks/fx_penguin_research/cast_a/entries.py"""
+import json
+
+DS = {"p": 0.12, "roll": "doubleSpell"}          # Double Spell #431: lckAdjust(12) = 12 % (Penguin.cs:20108-20144)
+CE = {"d": 1, "y": 1}                             # castEffect at TransformDirection(0, 1, 1), hero rotation
+
+
+def ds(o=None):
+    return {**(o or {}), **DS}
+
+
+MISSILES = [(-72, [-12.36, -70.57, -6.17]), (-48, [-5.33, -47.38, -4.73]), (-24, [0.99, -23.91, -2.57]), (0, [6.34, 0.0, 0.0]),
+            (24, [0.99, 23.91, 2.57]), (48, [-5.33, 47.38, 4.73]), (72, [-12.36, 70.57, 6.17])]
+HITS = [(0.54, 0.0, 7.44), (0.58, -0.23, 7.84), (0.58, 0.23, 7.84), (0.90, -1.61, 10.93), (0.90, 1.61, 10.93),
+        (1.42, -3.01, 15.06), (1.42, 3.01, 15.06)]          # missile_sim.py: seconds after the fire, x, d
+
+
+def r(t):
+    return round(t, 3)
+
+
+def volley(t0, extra=None):
+    out = [[r(t0), "sound", "manaMissile_fire"] + ([extra] if extra else [])]
+    for _, rot in MISSILES:
+        out.append([r(t0), "fx", "manaMissile_fire", {"d": 1, "y": 1, "rot": rot, "to": [0, 0, 10], **(extra or {})}])
+    for dt, x, d in HITS:
+        o = {"d": d, **({"x": x} if x else {}), **(extra or {})}
+        out.append([r(t0 + dt), "fx", "manaMissile_hit", o])
+    return out
+
+
+def repeat(R, fire):
+    """the Double Spell repeat: the coroutine started again at R (voice multiCast; the game also restarts cast3, the page
+    can't: own_skills.md question 1), its castEffect and fire 0.4 s later; no tint (own_skills.md question 3)"""
+    return [[R, "voice", "multiCast", ds()], [r(R + 0.4), "fx", "castEffect", ds(CE)]] + fire(R + 0.4)
+
+
+flash = [0, "fx", "multiCast", ds()]
+members = {}
+members["manaMissile"] = [flash, [0, "voice", "manaMissile1|manaMissile2"], [0.4, "fx", "castEffect", CE]] + volley(0.4) + repeat(0.5, lambda t: volley(t, DS))
+members["manaBurn"] = [flash, [0, "voice", "manaSurge1|manaSurge2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "manaSurge", {"d": 10}]] + \
+    repeat(0.5, lambda t: [[r(t), "fx", "manaSurge", ds({"d": 10})]])
+comets = lambda t0, extra: [[r(t0 + 0.15 * k), "fx", "giantComet", {"d": 10, "spread": [-10, 9], **extra}] for k in range(8)]
+members["fallingComets"] = [flash, [0, "voice", "fallingComet1|fallingComet2"], [0.4, "fx", "castEffect", CE]] + comets(0.4, {}) + \
+    repeat(1.6, lambda t: comets(t, DS))
+members["manaVortex"] = [[0, "voice", "manaVortex1|manaVortex2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "manaVortex", {"d": 5, "kill": 10}]]
+members["meteora"] = [[0, "voice", "meteora1|meteora2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "meteora_ring", {"d": 10}],
+                      [1.4, "fx", "meteora", {"d": 10, "scale": 1.25}], [2.6, "fx", "meteora_hit", {"d": 10}]]
+members["frozenBlast"] = [flash, [0, "voice", "frozenBreak1|frozenBreak2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "frozenBreak", {"d": 10, "scale": 1.8}]] + \
+    repeat(0.5, lambda t: [[r(t), "fx", "frozenBreak", ds({"d": 10, "scale": 1.8})]])
+members["arcticWind"] = [flash, [0, "voice", "deadlyFrost1|deadlyFrost2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "deadlyFrost", {"d": 1.2, "y": 1}]] + \
+    repeat(0.6, lambda t: [[r(t), "fx", "deadlyFrost", ds({"d": 1.2, "y": 1})]])
+members["iceShield"] = [[0, "voice", "iceShield1|iceShield2"], [0.4, "fx", "castEffect", CE], [0.4, "fx", "iceShield", {"y": 0.6, "scale": 0.7, "kill": 10}]]
+
+for k, cues in members.items():
+    cues.sort(key=lambda c: c[0])
+    for c in cues:
+        assert isinstance(c[0], (int, float)) and c[1] in ("fx", "voice", "sound", "clip"), c
+    print(k, len(cues), "cues")
+
+P = "Penguin.cs"
+DSWHY = ("Double Spell #431 on (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends (:20100-20144; "
+         "lckAdjust CharacterControl.cs:20658-20670, LCK 1), draws multiCast at the hero (:20138; the field is loaded only by RPC_multiCast "
+         ":9838, so BB and TTO show it only after a Double / Triple Cast) and adds multiCast Lv 1 for 3 s (:20144; its purple tint, "
+         "CharacterControl.cs:38470-38475, left out: own_skills.md question 3); one roll per play, shared by the repeat's cues: roll doubleSpell; "
+         "the repeat restarts cast3 in the game (Rewind + PlayAnimation), not on the page (own_skills.md question 1)")
+WHY = {
+ "manaMissile": P + " RPC_manaMissile_cast (:21108-21534, enemy target: the 10 m target point): " + DSWHY + "; at 0: clip cast3 cut (Rewind + PlayAnimation(cast3, 0), :21338-21341), voice manaMissile1 / manaMissile2 (Random.Range(0, 2), :21389-21448, PlayOneShot :21501 / :21527; Voices/multiCast instead within 3 s of the last, :21382-21386, :21463); Yield 0.4 (:21514): castEffect at TransformDirection(0, 1, 1), hero rotation (:21137; the prefab field castEffect, plays its own Sounds/castEffect) and RPC_manaMissile_fire from 1 m up 1 m ahead at the target (:21169-21179): rank 4 + More Missile #402 = 7 missiles (:10087-10099), yaw -72 + 24 i, each LookRotation(fireDir) x Euler(-0.2|yaw|, yaw, 0) (:10105-10220; fireDir to the ground point pitches 6.34 deg down; checks/fx_penguin_research/cast_a/missile_sim.py gives each rot), Sounds/manaMissile_fire (the field manaMissile_Fx, :10258); Penguin_manaMissile flies 12 m/s and turns 0.15 rad per 0.1 s toward to (Penguin_manaMissile.cs ctor, FixedUpdate; life 3 s, :10235) and dies on the floor, manaMissile_hit at the contact, hero rotation (OnTriggerEnter -> RPC_manaMissile_hit :10281-10286): sim times 0.54 / 0.58 / 0.90 / 1.42 s after the fire; Yield 0.1 (:21530): the multiCast check at 0.5 s (:21235-21248): the repeat RPC_manaMissile_multiCast starts the coroutine again (:10018-10021: clip, voice multiCast, the volley at 0.9) and this one ends with no standby; else Yield 0.3 (:21506): standby 0.8 s (:21288)",
+ "manaBurn": P + " RPC_manaBurn_cast (:24017-24520, enemy target: the 10 m target point): " + DSWHY + "; at 0: clip cast3 cut (:24247-24250), Mana Surge #432 on: voice manaSurge1 / manaSurge2 (:24298-24361; else manaBurn1 / manaBurn2 :24367-24426; Voices/multiCast within 3 s, :24291-24295, :24441); Yield 0.4 (:24500): castEffect at TransformDirection(0, 1, 1) (:24049) and RPC_manaBurn_fire at the target (:24081): with #432 manaSurge at the target's position (tChar.createEffect, :24746-24770; else manaBurn :24789-24807; plays its own Sounds/manaBurn), at the target point, drawn in the hero's facing (the target's rotation, APPROXIMATED); the manaBurn status 0.3 s later (:24705) draws nothing (CharacterControl.cs:38572-38590); Yield 0.1 (:24512): the multiCast check at 0.5 s (:24137-24157): the repeat (:10340-10343) restarts it; else Yield 0.3 (:24509): standby 0.8 s (:24197)",
+ "fallingComets": P + " RPC_fallingComets_cast (:26065-26615, enemy target: the 10 m target point): " + DSWHY + "; at 0: clip cast3 cut (:26391-26394), voice fallingComet1 / fallingComet2 (:26477-26524; Voices/multiCast within 12 s, :26470-26474, :26551); Yield 0.4 (:26602): castEffect at TransformDirection(0, 1, 1) (:26097), then 2 + 3 x 2 = 8 comets (:26134), one every 0.15 s (Yield :26589) at 0.4, 0.55 ... 1.45 s: Giant Star #442 on: RPC_giantComets_fire (:26282-26310) puts giantComet at the target's position + (Random.Range(-10, 10), 0, Random.Range(-10, 10)), whole metres -10 to +9 on each axis, on the floor (getSpawnPos), LookRotation(flat hero-to-spot) (:37609-37625; it falls from 16 m up, 6 m off along its own facing; plays its own Sounds/fallingComet); hits 0.6 s later draw nothing (:37531-37596); after the 8th Yield 0.15: the multiCast check at 1.6 s (:26164-26182): the repeat (:10375-10378) restarts it, else standby 1.6 s (:26221); the player's motion blur (:26430-26435) is a camera effect",
+ "manaVortex": P + " RPC_manaVortex_cast (:27088-27383, no target): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19596-19612); at 0: clip cast3 cut (:27247-27250), voice manaVortex1 / manaVortex2 (:27291-27372); Yield 0.4 (:27370): castEffect at TransformDirection(0, 1, 1) (:27120); the spot: getSpawnVector(hero + 2 up, 5 forward - 2 up) (:27133): its 4 m ray ends 0.51 m above flat ground, so getSpawnPos(hero + 5 forward) = 5 m ahead on the floor (Math.cs:1210-1230), getExpandPos keeps a free spot (:27144); RPC_manaVortex_create goes out only as an ActionEvent (:27162-27170; no local call: the server's echo spawns it, a network delay later): RPC_manaVortex_create (:10396-10520) Instantiates the summon Resources Elementals/ManaVortex/ManaVortex (:10421) at the spot, identity (:10431), scale 0.4 + 0.2 x 3 = 1.0, its create clip then root looped after 1 s (ManaVortex.cs:1045-1073, :973), life chaAdjust(60) = 60 s (:10513), cut at 10 s like the Seals (decision 19 by analogy); the summon is not an effect: needs the part ManaVortex summon (wardrobe_fx.py finding it under elementals/manavortex/, its create clip then root looped, its BoltEmitter child); Yield 0.3 (:27376): standby 0.7 s (:27197)",
+ "meteora": P + " RPC_meteora_cast (:27917-28189, enemy target: the 10 m target point; the channel stores the target's position at the bar's start, :20008-20046; with no target it would be 20 m ahead, :20040): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19613-19629); at 0: clip cast3 cut (:28052-28055), voice meteora1 / meteora2 (:28096-28181); Yield 0.4 (:28172): castEffect at TransformDirection(0, 1, 1) (:27949) and RPC_meteora_fire at the point (:27962): meteora_ring there, identity (:28515-28533; plays its own Sounds/meteora); Yield 1.0 (:28574): meteora at 1.4 s, identity, scale 1.25 at rank 2 (:28342-28373); Yield 1.2 (:28567): meteora_hit at 2.6 s (:28406-28424), with the camera shake and white ramp (:28391-28401, camera effects); Yield 0.4 (:28572): the damage at 3.0 s draws nothing (:28442-28502); case 3 of the cast: Yield 0.4 (:28177): standby 0.8 s (:28002); drawn in the hero's facing (identity, APPROXIMATED)",
+ "frozenBlast": P + " RPC_frozenBlast_cast (:28754-29258, enemy target: the 10 m target point): " + DSWHY + "; at 0: clip cast3 cut (:28992-28995), Frozen Break #403 on: voice frozenBreak1 / frozenBreak2 (:29043-29106; else frozenBlast1 / frozenBlast2 :29112-29171; Voices/multiCast within 12 s, :29036-29040, :29186); Yield 0.4 (:29245): castEffect at TransformDirection(0, 1, 1) (:28786) and RPC_frozenBlast_fire at the target's position (:28826): with #403 frozenBreak, identity, scale 4 x 0.4 + 0.2 = 1.8 (:29621-29650; else frozenBlast :29671-29696; plays its own Sounds/frozenBlast); the hit 1 s later (:29716, :29431-29608): ice on the enemies hit and Sounds/iceBreak only on an already iced one (:29553-29582), on enemies; Yield 0.1 (:29221): the multiCast check at 0.5 s (:28882-28902): the repeat (:10613-10616) restarts it; else Yield 0.3 (:29253): standby 0.8 s (:28942)",
+ "arcticWind": P + " RPC_arcticWind_cast (:29912-30385, no target: a cone ahead): " + DSWHY + "; at 0: clip cast3 cut (:30115-30118), Deadly Frost #413 on: voice deadlyFrost1 / deadlyFrost2 (:30166-30229; else arcticWind1 / arcticWind2 :30235-30294; Voices/multiCast within 12 s, :30159-30163, :30309); Yield 0.4 (:30357): castEffect at TransformDirection(0, 1, 1) (:29944) and RPC_arcticWind_fire at the hero (:29957): with #413 deadlyFrost at TransformDirection(0, 1, 1.2), hero rotation (:30727-30751; else arcticWind :30760-30778; plays its own Sounds/arcticWind); its 8 pulses 0.2 s apart (:30831, :30846) hit enemies only (ice / Arctic Frost #314's frost, Deadly Frost's iceBreak, :30549-30708); Yield 0.2 (:30349): the multiCast check at 0.6 s (:30005-30025): the repeat (:10634-10637) restarts it; else Yield 0.2 (:30363): standby 0.8 s (:30065)",
+ "iceShield": P + " RPC_iceShield_cast (:31038-31382, ally target: shown as a self-cast, decision 1 by analogy: eSkillTarget.ally, PenguinSkill.cs:1737-1742, and the ally check takes the caster, GameGui.cs:37900-37904): no Double Spell roll (isDoubleSpell = false :19520, never set in its branch :19674-19690); at 0: clip cast3 cut (:31238-31241), voice iceShield1 / iceShield2 (:31282-31371); Yield 0.4 (:31377): castEffect at TransformDirection(0, 1, 1) (:31070) and the iceShield status on the target for chaAdjust(30) = 30 s (:31124-31146), whose apply puts Effects/iceShield at the receiver's collider centre (the Penguin's CharacterController centre y 0.6), parented, scale Clamp(radius 0.3 + 0.4, 0.5, 2) = 0.7 (CharacterControl.cs:38619-38627; plays its own Sounds/iceShield; no EffectControl: it goes when the status ends, CharacterControl.cs:17417-17430: cut at 10 s like the Seals, decision 19 by analogy; the game's 30 s is open question 2); Yield 0.4 (:31360): standby 0.8 s (:31173)",
+}
+out = {
+  "cast1": {"why": P + " RPC_cast1 (:19251-20930), the cast channel the dispatcher starts for every cast-time skill (17 BB skills, :20158-20869, Cosmic Friday among them in its own tile): at 0: clip cast1 (0.2 fade, :19884) and voice cast (Voices/cast, one file, :19939-19951; voices/cast.wav, not sounds/cast.wav); Yield 0.2 (:20902): castRing at the hero, hero position and rotation (:19419; the prefab field castRing = Resources penguin/effects/castRing; EffectControl life 60 + afterLife 0.5, followState; plays its own looping Sounds/cast); Yield 0.5 (:20907): cast2 looped and the ring's root clip at 0.7 s (:19446-19461), then the cast bar (:19466-19475; the page: none) and the skill's RPC_<skill>_cast, which sets myCommand: the ring's followState cut at the step edge 0.7 s (EffectControl.cs:122-247), cued 0.65 because the page restarts FX.t at each step (as the Sheep's 0.55)",
+            "cues": [[0, "voice", "cast"], [0.2, "fx", "castRing", {"cut": 0.65}]]},
+  "cast3": {"why": "The cast3 clip after the RPC_cast1 channel: 16 Penguin skills (Penguin.cs :21341 ... :38888), one per play, even chance, picked anew on every play; Cosmic Friday plays cast3 after the channel too, in its own tile (:39555)",
+            "skills": {k: {"why": WHY[k], "cues": members[k]} for k in members}},
+}
+
+
+def fmt(o, ind=2):
+    p = " " * ind
+    if isinstance(o, dict) and "cues" in o:
+        return ("{\n" + p + '"why": ' + json.dumps(o["why"]) + ",\n" + p + '"cues": [\n'
+                + ",\n".join(p + json.dumps(c) for c in o["cues"]) + "\n" + p + "]\n" + " " * (ind - 2) + "}")
+    return ("{\n" + ",\n".join(p + json.dumps(k) + ": " + (fmt(v, ind + 2) if isinstance(v, dict) else json.dumps(v))
+                               for k, v in o.items()) + "\n" + " " * (ind - 2) + "}")
+
+
+text = ",\n".join("  " + json.dumps(k) + ": " + fmt(v, 4) for k, v in out.items())
+assert json.loads("{\n" + text + "\n}") == json.loads(json.dumps(out))
+print(text)

@@ -1,0 +1,29 @@
+27421: internal sealed class $RPC_novaFlare$26250 : GenericGenerator<WaitForSeconds>
+27458: public override IEnumerator<WaitForSeconds> GetEnumerator()
+27487: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+27533: case 0:
+27535: case 1:
+27537: case 2:
+27556: this.$self_$26253.mChar.actionState = "standby";
+27566: this.$self_$26253.mChar.myCommand = "none";
+27576: this.YieldDefault(1);
+27591: if (this.$self_$26253.LxAw60aoWG)
+27595: this.$self_$26253.LxAw60aoWG.SendMessage("RPC_novaFlare");
+27598: this.$self_$26253.mChar.actionState = "attack";
+27604: this.$self_$26253.mChar.myCommand = "novaFLare";
+27607: this.$self_$26253.mChar.addTimeOut("novaFLare", this.$self_$26253.mChar.agiAdjust((float)120));
+27619: this.$self_$26253.PlayAnimation("cast4", (float)0);
+27622: this.$self_$26253.animation.wrapMode = WrapMode.Once;
+27660: if (UnityEngine.Random.Range(0, 2) == 0)
+27670: this.$self_$26253.v9owt6BtlW = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/novaFlare1", typeof(AudioClip));
+27701: this.$self_$26253.wiFwXEg0wG = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/novaFlare2", typeof(AudioClip));
+27740: Camera.main.SendMessage("newGameMessage", "Cannot use manaPool: no manaVortex in place");
+27748: IL_160:
+27749: IL_275:
+27750: return this.Yield(2, new WaitForSeconds(0.4f));
+27751: IL_322:
+27752: this.$self_$26253.audio.PlayOneShot(this.$self_$26253.wiFwXEg0wG, (!this.$self_$26253.mChar.isMine) ? 0.75f : ((float)1));
+27755: IL_3EF:
+27756: this.$self_$26253.audio.PlayOneShot(this.$self_$26253.v9owt6BtlW, (!this.$self_$26253.mChar.isMine) ? 0.75f : ((float)1));
+27759: IL_454:
+27762: IL_75E:

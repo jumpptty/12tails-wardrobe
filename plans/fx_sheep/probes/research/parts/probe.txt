@@ -1,0 +1,406 @@
+==================== nAttack
+node nAttack layer 1 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - MeshFilter
+  - Rigidbody {"m_Mass": 1.0, "m_Drag": 0.0, "m_AngularDrag": 0.05000000074505806, "m_UseGravity": false, "m_IsKinematic": false, "m_Interpolate": 0, "m_Constraints": 112, "m_CollisionDetection": 0}
+  - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.15000000596046448, "maxSize": 0.30000001192092896, "minEnergy": 0.4000000059604645, "maxEnergy": 0.4000000059604645, "minEmission": 15.0, "maxEmission": 15.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.15000000596046448, "y": 0.15000000596046448, "z": 0.0}}
+  - ParticleRenderer enabled True [('nAttack_Particle', 'shader 1:200', {'_Color': [1.0, 1.0, 1.0, 1.0], '_TintColor': [1.0, 1.0, 1.0, 0.5], '_OutlineColor': [0.0, 0.0, 0.0, 1.0]})]
+  - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 1.0, "autodestruct": false}
+  - SphereCollider {"m_Material": {"m_FileID": 0, "m_PathID": 0}, "m_IsTrigger": true, "m_Enabled": true, "m_Radius": 0.30000001192092896, "m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}}
+  - Mono ProjectileControl (32 B) {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False} 
+  - Mono Sheep_nAttack (0 B)  
+==================== cAttack
+node cAttack layer 1 active 0
+  - Transform {'m_LocalPosition': {'x': 247.72897338867188, 'y': 56.605831146240234, 'z': 148.1106719970703}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - MeshFilter
+  - Rigidbody {"m_Mass": 1.0, "m_Drag": 0.0, "m_AngularDrag": 0.05000000074505806, "m_UseGravity": false, "m_IsKinematic": false, "m_Interpolate": 0, "m_Constraints": 112, "m_CollisionDetection": 0}
+  - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.30000001192092896, "maxSize": 0.5, "minEnergy": 1.0, "maxEnergy": 2.0, "minEmission": 5.0, "maxEmission": 10.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 0.10000000149011612, "y": 0.10000000149011612, "z": 0.10000000149011612}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.10000000149011612, "y": 0.10000000149011612, "z": 0.10000000149011612}}
+  - ParticleRenderer enabled True [('cAttack', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+  - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.25, "damping": 1.0, "autodestruct": false}
+  - SphereCollider {"m_Material": {"m_FileID": 0, "m_PathID": 0}, "m_IsTrigger": true, "m_Enabled": true, "m_Radius": 0.5, "m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}}
+  - Mono ProjectileControl (32 B) {'life': 10.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 8.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False} 
+  - Mono Sheep_cAttack (0 B)  
+  node Sheep_cAttack_Particle2 layer 1 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.10000000149011612, "maxSize": 0.20000000298023224, "minEnergy": 0.5, "maxEnergy": 1.0, "minEmission": 10.0, "maxEmission": 20.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 2.0, "y": 2.0, "z": 2.0}, "emitterVelocityScale": 0.0, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.0, "y": 0.0, "z": 0.0}}
+    - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 0.5, "autodestruct": true}
+    - ParticleRenderer enabled True [('cAttack', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+==================== homingLight
+node homingLight layer 1 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - MeshFilter
+  - Rigidbody {"m_Mass": 1.0, "m_Drag": 0.0, "m_AngularDrag": 0.05000000074505806, "m_UseGravity": false, "m_IsKinematic": false, "m_Interpolate": 0, "m_Constraints": 112, "m_CollisionDetection": 0}
+  - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.15000000596046448, "maxSize": 0.30000001192092896, "minEnergy": 0.4000000059604645, "maxEnergy": 0.4000000059604645, "minEmission": 15.0, "maxEmission": 15.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.15000000596046448, "y": 0.15000000596046448, "z": 0.0}}
+  - ParticleRenderer enabled True [('nAttack_Particle', 'shader 1:200', {'_Color': [1.0, 1.0, 1.0, 1.0], '_TintColor': [1.0, 1.0, 1.0, 0.5], '_OutlineColor': [0.0, 0.0, 0.0, 1.0]})]
+  - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 1.0, "autodestruct": false}
+  - SphereCollider {"m_Material": {"m_FileID": 0, "m_PathID": 0}, "m_IsTrigger": true, "m_Enabled": true, "m_Radius": 0.30000001192092896, "m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}}
+  - Mono ProjectileControl (32 B) {'life': 0.0, 'dmg': 0.0, 'velocity': [0.0, 0.0, 12.0], 'OwnerID': 0, 'isInitialized': False, 'isDestroyed': False} 
+  - Mono Sheep_homingLight (0 B)  
+==================== divinityAxe
+node divinityAxe layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Animation default Base Stack play True wrap 0 [('Base Stack', 'len 2.700', 'wrap 1', 'rot 1 pos 1 scale 1 float 0', [], 'events 0')]
+  - Mono EffectControl (32 B) {'life': 2.0, 'afterLife': 1.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 292}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": true, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfini
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.10000000149011612, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Dust5', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.3, 'Delay': 0.5, 'Emission': 9.0, 'EmissionPeriod': 0.2, 'startRadius': 0.0, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.5, 'endWidth': 0.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.59216], 'Color2': [1.0, 0.96131, 0.81961, 0.70588], 'Color3': [1.0, 0.98518, 0.76863, 0.60392], 'Color4': [1.0, 0.86195, 0.44314, 0.47059], 'Color5': [1.0, 0.45385, 0.45385, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': -1.0, 'ringTri': 24, 'uvTile': 1.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_divinityAxe layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node axe layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.6075679659843445, 'z': 0.0}, 'm_LocalRotation': {'x': 6.097113222670395e-17, 'y': 0.6912862062454224, 'z': -6.097113222670395e-17, 'w': 0.7225810885429382}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+      - SkinnedMeshRenderer enabled True [('divinityAxe', 'shader 1:200', {'_Color': [0.784, 0.784, 0.784, 1.0], '_TintColor': [0.502, 0.502, 0.502, 0.0], '_AdditiveColor': [1.0, 1.0, 1.0, 1.0]})]
+      - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 0.2, 'FadeDelay': 0.0, 'FadeEaseIn': 0.2, 'FadeMiddle': 2.0, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+      node TrailEmitter layer 0 active 0
+        - Transform {'m_LocalPosition': {'x': 0.6164463758468628, 'y': 0.3434780240058899, 'z': -1.4407882690429688}, 'm_LocalRotation': {'x': -0.46117904782295227, 'y': 0.39014559984207153, 'z': -0.5730672478675842, 'w': 0.5537999272346497}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+        - MeshFilter
+        - MeshRenderer enabled True [('Line_MultiLines1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+        - Mono TrailEmitter (124 B) {'startWidth': 2.0, 'endWidth': 1.0, 'life': 0.2, 'alwaysUp': False, 'minDistance': 0.01, 'Color1': [1.0, 0.93593, 0.0, 0.12549], 'Color2': [1.0, 0.98318, 0.45098, 0.25098], 'Color3': [1.0, 0.93593, 0.0, 0.12549], 'Color4': [1.0, 0.61838, 0.0, 0.0], 'TrailEmitterMode': 0, 'uvHeight': 1.0, 'localVelocity': 0.0, 'worldVelocity': 0.0, 'isTimer': False, 'delay': 0.0, 'easeIn': 0.0, 'easeMiddle': 0.0, 'easeOut': 0.0, 'minQuality': 0} 
+  node ImageEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.5, 'y': 0.800000011920929, 'z': -1.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Ring2', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono ImageEmitter (188 B) {'Emission': 2, 'EmissionTime': 0.2, 'Life': 0.3, 'Delay': 0.0, 'startHeight': 1.0, 'endHeight': 3.0, 'startWidth': 1.0, 'endWidth': 3.0, 'rndScale': 0.0, 'rndLife': 0.0, 'startPosition': [0.0, 0.0, 0.0], 'localVelocity': 0.0, 'rndVelocity': 0.0, 'worldVelocity': [0.0, 0.0, 0.0], 'ImageEmitterMode': 0, 'useWorldSpace': False, 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 1.0, 1.0, 0.3], 'Color3': [1.0, 1.0, 1.0, 0.45], 'Color4': [1.0, 1.0, 1.0, 0.3], 'Color5': [1.0, 1.0, 1.0, 0.04], 'Rotation': 0.0, 'rndRotation': 0.0, 'startAngle': 0.0, 'spreadAngle': 0.0, 'repeatForever': False, 'mMeshFilter': [0, 71905]} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Dust4', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 0.5, 'Emission': 4.0, 'EmissionPeriod': 0.4, 'startRadius': 1.5, 'endRadius': 2.5, 'rndRadius': 0.0, 'startHeight': 0.5, 'endHeight': 1.0, 'rndHeight': 0.0, 'startWidth': 0.5, 'endWidth': 1.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 0.94068, 0.48462, 0.03922], 'Color2': [1.0, 0.91, 0.58039, 0.70588], 'Color3': [1.0, 0.95779, 0.34118, 0.78431], 'Color4': [1.0, 0.87393, 0.48462, 0.47059], 'Color5': [1.0, 0.45385, 0.45385, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': -2.0, 'ringTri': 24, 'uvTile': -4.0, 'repeatForever': False, 'qualitySetting': 0} 
+==================== divinitySpear
+node divinitySpear layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono EffectControl (32 B) {'life': 2.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 273}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 0.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 1.0292945368261694e-35, "outSlope": 2.1972359920613132e-39}, {"time": 0.00020000000949949026, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.0004000000189989805, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.00080
+  node divinitySpear layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': -0.5, 'z': -0.5, 'w': 0.5}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - Animation default root play True wrap 0 [('root', 'len 0.500', 'wrap 0', 'rot 1 pos 1 scale 0 float 0', [], 'events 0')]
+    - Mono EffectControl (32 B) {'life': 1.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+    node root layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.7071068286895752, 'y': 0.0, 'z': -0.7071068286895752, 'w': 0.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+      - SkinnedMeshRenderer enabled True [('divinitySpear', 'shader 6:77', {'_Color': [0.784, 0.784, 0.784, 0.502], '_Emission': [0.502, 0.502, 0.502, 0.0]})]
+      - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 0.0, 'FadeMiddle': 0.5, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+  node ImageEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.05000000074505806, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('HitGround1', 'shader 1:203', {'_TintColor': [0.5, 0.5, 0.5, 0.5]})]
+    - MeshFilter
+    - Mono ImageEmitter (188 B) {'Emission': 1, 'EmissionTime': 0.0, 'Life': 1.0, 'Delay': 0.0, 'startHeight': 1.0, 'endHeight': 1.0, 'startWidth': 2.0, 'endWidth': 2.0, 'rndScale': 0.0, 'rndLife': 0.0, 'startPosition': [0.0, 0.0, 0.0], 'localVelocity': 0.0, 'rndVelocity': 0.0, 'worldVelocity': [0.0, 0.0, 0.0], 'ImageEmitterMode': 1, 'useWorldSpace': False, 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 1.0, 1.0, 0.78431], 'Color3': [1.0, 1.0, 1.0, 0.78431], 'Color4': [1.0, 1.0, 1.0, 0.78431], 'Color5': [1.0, 1.0, 1.0, 0.04], 'Rotation': 0.0, 'rndRotation': 0.0, 'startAngle': 0.0, 'spreadAngle': 0.0, 'repeatForever': False, 'mMeshFilter': [0, 0]} 
+  node Particle System layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.46668243408203125, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.10000000149011612, "maxSize": 0.20000000298023224, "minEnergy": 0.5, "maxEnergy": 1.0, "minEmission": 24.0, "maxEmission": 36.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 2.0, "z": 0.0}, "rndVelocity": {"x": 2.0, "y": 2.0, "z": 2.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": true, "m_Ellipsoid": {"x": 0.5, "y": 1.0, "z": 0.5}}
+    - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 1.0, "autodestruct": true}
+    - ParticleRenderer enabled True [('Light1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+  node ParticleEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.6000000238418579, "maxSize": 1.0, "minEnergy": 0.6000000238418579, "maxEnergy": 1.0, "minEmission": 12.0, "maxEmission": 24.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 4.0, "y": 0.0, "z": 4.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": true, "m_Ellipsoid": {"x": 0.0, "y": 0.0, "z": 0.0}}
+    - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.20000000298023224, "damping": 0.10000000149011612, "autodestruct": true}
+    - ParticleRenderer enabled True [('Smoke1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0], '_TintColor': [0.558, 0.869, 1.0, 1.0]})]
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 0.0, 'Emission': 2.0, 'EmissionPeriod': 0.1, 'startRadius': 1.0, 'endRadius': 2.0, 'rndRadius': 0.0, 'startHeight': 1.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.5, 'endWidth': 0.5, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 0.94068, 0.48462, 0.03922], 'Color2': [1.0, 1.0, 1.0, 0.70588], 'Color3': [0.97056, 1.0, 0.70769, 0.47059], 'Color4': [1.0, 0.87393, 0.48462, 0.23529], 'Color5': [1.0, 0.45385, 0.45385, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 4.0, 'repeatForever': False, 'qualitySetting': 0} 
+==================== divinitySword
+node divinitySword layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono EffectControl (32 B) {'life': 2.0, 'afterLife': 1.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 246}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 0.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 1.0292945368261694e-35, "outSlope": 1.6367166063313863e-39}, {"time": 0.00020000000949949026, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.0004000000189989805, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.00080
+  node ImageEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': -4.5, 'y': 6.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Ring2', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono ImageEmitter (188 B) {'Emission': 2, 'EmissionTime': 0.3, 'Life': 0.3, 'Delay': 0.0, 'startHeight': 1.0, 'endHeight': 3.0, 'startWidth': 1.0, 'endWidth': 3.0, 'rndScale': 0.0, 'rndLife': 0.0, 'startPosition': [0.0, 0.0, 0.0], 'localVelocity': 0.0, 'rndVelocity': 0.0, 'worldVelocity': [0.0, 0.0, 0.0], 'ImageEmitterMode': 0, 'useWorldSpace': False, 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 1.0, 1.0, 0.3], 'Color3': [1.0, 1.0, 1.0, 0.45], 'Color4': [1.0, 1.0, 1.0, 0.3], 'Color5': [1.0, 1.0, 1.0, 0.04], 'Rotation': 0.0, 'rndRotation': 0.0, 'startAngle': 0.0, 'spreadAngle': 0.0, 'repeatForever': False, 'mMeshFilter': [0, 0]} 
+  node ImageEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 4.5, 'y': 6.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Ring2', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono ImageEmitter (188 B) {'Emission': 2, 'EmissionTime': 0.3, 'Life': 0.3, 'Delay': 0.0, 'startHeight': 1.0, 'endHeight': 3.0, 'startWidth': 1.0, 'endWidth': 3.0, 'rndScale': 0.0, 'rndLife': 0.0, 'startPosition': [0.0, 0.0, 0.0], 'localVelocity': 0.0, 'rndVelocity': 0.0, 'worldVelocity': [0.0, 0.0, 0.0], 'ImageEmitterMode': 0, 'useWorldSpace': False, 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 1.0, 1.0, 0.3], 'Color3': [1.0, 1.0, 1.0, 0.45], 'Color4': [1.0, 1.0, 1.0, 0.3], 'Color5': [1.0, 1.0, 1.0, 0.04], 'Rotation': 0.0, 'rndRotation': 0.0, 'startAngle': 0.0, 'spreadAngle': 0.0, 'repeatForever': False, 'mMeshFilter': [0, 0]} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 0.8, 'Emission': 1.0, 'EmissionPeriod': 0.1, 'startRadius': 0.8, 'endRadius': 1.6, 'rndRadius': 0.0, 'startHeight': 1.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.5, 'endWidth': 0.5, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 0.94068, 0.48462, 0.03922], 'Color2': [1.0, 1.0, 1.0, 0.70588], 'Color3': [0.97056, 1.0, 0.70769, 0.47059], 'Color4': [1.0, 0.87393, 0.48462, 0.23529], 'Color5': [1.0, 0.45385, 0.45385, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 4.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_divinitySword layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': -0.5, 'z': -0.5, 'w': 0.5}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - Animation default root play True wrap 0 [('root', 'len 1.000', 'wrap 0', 'rot 2 pos 2 scale 0 float 0', [], 'events 0')]
+    - SkinnedMeshRenderer enabled True [('divinitysword', 'shader 6:77', {'_Color': [1.0, 1.0, 1.0, 0.0], '_TintColor': [0.11, 0.11, 0.11, 0.588], '_Emission': [0.502, 0.502, 0.502, 0.0], '_AdditiveColor': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.3, 'FadeEaseIn': 0.4, 'FadeMiddle': 0.6, 'FadeEaseOut': 0.2, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+    node sword_L layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': -5.299999713897705, 'z': 6.699999809265137}, 'm_LocalRotation': {'x': 0.21850790083408356, 'y': -0.6724985241889954, 'z': -0.21850790083408356, 'w': 0.6724985837936401}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node sword_R layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 5.299999713897705, 'z': 6.699999809265137}, 'm_LocalRotation': {'x': -0.21850790083408356, 'y': -0.6724985241889954, 'z': 0.21850790083408356, 'w': 0.6724985837936401}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+==================== edenSanctuary
+node edenSanctuary layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Animation default create play True wrap 0 [('create', 'len 1.000', 'wrap 0', 'rot 1 pos 1 scale 1 float 0', [], 'events 0'), ('destroy', 'len 1.000', 'wrap 0', 'rot 1 pos 1 scale 1 float 0', [], 'events 0')]
+  - Mono Sheep_edenSanctuary (0 B)  
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 206}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": true, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfini
+  node edenSanctuary_tri layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': -10.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('edenSanctuary', 'shader 1:200', {'_Color': [1.0, 1.0, 1.0, 1.0], '_TintColor': [0.5, 0.5, 0.5, 0.0]})]
+    - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 11.0, 'FadeEaseOut': 1.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.09999847412109375, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_vertMultilines6', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.6, 'Delay': 0.0, 'Emission': 3.0, 'EmissionPeriod': 0.3, 'startRadius': 18.0, 'endRadius': 18.0, 'rndRadius': 0.0, 'startHeight': 1.0, 'endHeight': 0.0, 'rndHeight': 1.0, 'startWidth': 0.0, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.90994, 0.55294, 0.47059], 'Color3': [1.0, 0.98036, 0.31765, 0.47059], 'Color4': [1.0, 0.94724, 0.26667, 0.23529], 'Color5': [1.0, 0.88489, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 128, 'uvTile': 24.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.09999847412109375, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 3.0, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 6.0, 'endRadius': 12.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -0.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.90994, 0.55294, 0.47059], 'Color3': [1.0, 0.98036, 0.31765, 0.47059], 'Color4': [1.0, 0.94724, 0.26667, 0.38824], 'Color5': [1.0, 0.88489, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 128, 'uvTile': 24.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node VortexEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono VortexEmitter (164 B) {'Life': 1.0, 'Delay': 0.0, 'startRadius': 18.0, 'endRadius': 18.0, 'rndRadius': 0.0, 'startWidth': 1.0, 'endWidth': 0.3, 'length': 256, 'alwaysUp': True, 'localVelocity': [0.0, 6.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.96985, 0.52941, 0.70588], 'Color3': [1.0, 0.95051, 0.22745, 0.58824], 'Color4': [1.0, 0.81894, 0.0, 0.29804], 'Color5': [1.0, 0.58496, 0.0, 0.0], 'Rotation': 1.0, 'vortexCount': 8, 'vortexRadian': 0.8, 'Spin': [0.0, 0.0, 0.0], 'VortexEmitterMode': 1, 'UVTile': 1.0, 'repeatForever': True} 
+==================== lullaby_ring
+node lullaby_ring layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': -0.01149645447731018, 'y': 50.0, 'z': -60.56110382080078}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Animation default root play True wrap 0 [('root', 'len 7.967', 'wrap 2', 'rot 4 pos 3 scale 4 float 0', [], 'events 0')]
+  - Mono EffectControl (32 B) {'life': 99.0, 'afterLife': 0.0, 'followPosition': True, 'followState': True, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 188}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": true, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfini
+  node lullaby_sheep_tri layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - SkinnedMeshRenderer enabled True [('lullaby_sheep', 'shader 1:200', {'_Color': [0.784, 0.784, 0.784, 1.0], '_TintColor': [0.251, 0.251, 0.251, 0.0], '_Emission': [0.0, 0.0, 0.0, 0.0], '_AdditiveColor': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 0.5, 'FadeDelay': 0.0, 'FadeEaseIn': 1.0, 'FadeMiddle': 99.0, 'FadeEaseOut': 0.0, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+    node ring1 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.6212530136108398, 'y': -0.3377051055431366, 'z': 0.3377051055431366, 'w': -0.6212530136108398}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node ring2 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.16063915193080902, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.44806593656539917, 'z': 0.0, 'w': -0.8940005302429199}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node ring3 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 6.123234262925839e-17, 'y': 1.0, 'z': -6.123234262925839e-17, 'w': -6.123234262925839e-17}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('quickHeal_ring', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 1.0, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.0, 'endRadius': 2.0, 'rndRadius': 0.0, 'startHeight': 0.3, 'endHeight': 0.2, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.4, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 1.0, 1.0, 0.37647], 'Color3': [0.99849, 0.45882, 1.0, 0.25098], 'Color4': [0.94708, 0.0, 1.0, 0.12549], 'Color5': [0.94708, 0.0, 1.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.4, 'ringTri': 24, 'uvTile': 12.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node ParticleEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.5, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.20000000298023224, "maxSize": 0.30000001192092896, "minEnergy": 0.4000000059604645, "maxEnergy": 0.6000000238418579, "minEmission": 12.0, "maxEmission": 24.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 6.0, "y": 0.5, "z": 6.0}}
+    - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 0.5, "autodestruct": false}
+    - ParticleRenderer enabled True [('note1', 'shader 1:205', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+  node ParticleEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 1.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.20000000298023224, "maxSize": 0.30000001192092896, "minEnergy": 0.4000000059604645, "maxEnergy": 0.6000000238418579, "minEmission": 12.0, "maxEmission": 24.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 1.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 6.0, "y": 1.0, "z": 6.0}}
+    - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 0.5, "autodestruct": false}
+    - ParticleRenderer enabled True [('note2', 'shader 1:205', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('quickHeal_ring', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 1.0, 'Delay': 0.0, 'Emission': 2.0, 'EmissionPeriod': 0.0, 'startRadius': 0.2, 'endRadius': 0.4, 'rndRadius': 0.3, 'startHeight': 3.0, 'endHeight': 0.5, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.4, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 1.0, 1.0, 0.37647], 'Color3': [0.99849, 0.45882, 1.0, 0.25098], 'Color4': [0.94708, 0.0, 1.0, 0.12549], 'Color5': [0.94708, 0.0, 1.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.4, 'ringTri': 24, 'uvTile': 6.0, 'repeatForever': True, 'qualitySetting': 0} 
+==================== soulOfArms
+node soulOfArms layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono EffectControl (32 B) {'life': 10.0, 'afterLife': 2.0, 'followPosition': True, 'followState': False, 'effectRotationMode': 0, 'velocity': [0.0, 0.0, 0.0]} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 233}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 100.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": -1.9986162185668945, "outSlope": 8.562470314336469e-39}, {"time": 0.10000000149011612, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.20000000298023224, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 0.4000000059604
+  node all_hit1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.38268351554870605, 'w': 0.9238795042037964}, 'm_LocalScale': {'x': 1.0000004768371582, 'y': 1.0000004768371582, 'z': 1.0000001192092896}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.5, 'Delay': 9.5, 'Emission': 3.0, 'EmissionPeriod': 0.1, 'startRadius': 1.0, 'endRadius': 5.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -2.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 1.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node all_hit2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.18467089533805847, 'y': 0.4458351135253906, 'z': 0.3351765275001526, 'w': 0.8091875314712524}, 'm_LocalScale': {'x': 1.0000004768371582, 'y': 1.0000004768371582, 'z': 1.0000001192092896}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.5, 'Delay': 9.5, 'Emission': 3.0, 'EmissionPeriod': 0.1, 'startRadius': 1.0, 'endRadius': 5.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -2.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 1.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node all_hit3 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.3755968511104584, 'y': 0.9067700505256653, 'z': -0.07330697774887085, 'w': -0.1769781857728958}, 'm_LocalScale': {'x': 1.0000004768371582, 'y': 1.0, 'z': 1.000000238418579}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.5, 'Delay': 9.5, 'Emission': 3.0, 'EmissionPeriod': 0.1, 'startRadius': 1.0, 'endRadius': 5.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -2.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 1.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node all_hit4 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.5, 'Delay': 9.7, 'Emission': 2.0, 'EmissionPeriod': 0.1, 'startRadius': 1.0, 'endRadius': 5.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -2.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 1.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node LineEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('lightRay', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono LineEmitter (180 B) {'Life': 0.5, 'Delay': 9.4, 'Emission': 32.0, 'EmissionTime': 0.0, 'startRadius': -5.0, 'endRadius': 1.0, 'rndRadius': 1.0, 'startHeight': 2.0, 'endHeight': 2.0, 'rndHeight': 1.0, 'startWidth': 0.5, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [1.0, 1.0, 1.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 1.0, 1.0, 0.66667], 'Color3': [1.0, 1.0, 1.0, 0.45], 'Color4': [1.0, 1.0, 1.0, 0.3], 'Color5': [1.0, 1.0, 1.0, 0.04], 'lineEmitterMode': 0, 'symetry': False, 'localRotation': [0.0, 0.0, 0.0], 'repeatForever': False} 
+  node spear_hit1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.8199999928474426, 'y': 0.4799995422363281, 'z': 0.5}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': -0.40140092372894287, 'w': 0.9159024953842163}, 'm_LocalScale': {'x': 1.0000004768371582, 'y': 1.0000004768371582, 'z': 1.0000001192092896}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 5.5, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 1.0, 'endRadius': 3.4, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node axe_hit2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.5387120246887207, 'y': 0.7276725769042969, 'z': -0.5837020874023438}, 'm_LocalRotation': {'x': 0.46964627504348755, 'y': 0.21000143885612488, 'z': -0.7828195095062256, 'w': -0.35003626346588135}, 'm_LocalScale': {'x': 1.0000004768371582, 'y': 1.0000004768371582, 'z': 1.0000001192092896}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 5.7, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 1.0, 'endRadius': 2.4, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_soulOfArms layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.4999998211860657, 'y': -0.5000002384185791, 'z': -0.49999991059303284, 'w': -0.5000001192092896}, 'm_LocalScale': {'x': 1.000000238418579, 'y': 1.000000238418579, 'z': 1.000000238418579}}
+    - Animation default root play True wrap 0 [('root', 'len 10.000', 'wrap 0', 'rot 5 pos 5 scale 0 float 0', [], 'events 0')]
+    node root layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 6.0}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': -0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+      node Sheep_soulOfArms_tri [axe] layer 0 active 0
+        - Transform {'m_LocalPosition': {'x': -0.0, 'y': 3.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.708340048789978, 'w': 0.7058714032173157}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+        - MeshFilter
+        - MeshRenderer enabled True [('soulofArms', 'shader 6:77', {'_Color': [0.784, 0.784, 0.784, 0.0], '_Emission': [0.251, 0.251, 0.251, 0.0]})]
+        - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+        node TrailPointer layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.75}, 'm_LocalRotation': {'x': 0.7071068286895752, 'y': 0.0, 'z': 0.0, 'w': 0.7071067094802856}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+          - MeshRenderer enabled True [('Line_MultiLines1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+          - MeshFilter
+          - Mono TrailEmitter (124 B) {'startWidth': 1.5, 'endWidth': 1.0, 'life': 0.4, 'alwaysUp': False, 'minDistance': 0.1, 'Color1': [1.0, 0.96471, 0.52157, 0.35294], 'Color2': [1.0, 0.82014, 0.52157, 0.23529], 'Color3': [1.0, 0.67505, 0.52157, 0.11765], 'Color4': [1.0, 0.52157, 0.52157, 0.0], 'TrailEmitterMode': 0, 'uvHeight': 1.0, 'localVelocity': 0.0, 'worldVelocity': 1.0, 'isTimer': False, 'delay': 0.0, 'easeIn': 0.0, 'easeMiddle': 0.0, 'easeOut': 0.0, 'minQuality': 0} 
+      node Sheep_soulOfArms_tri [spear] layer 0 active 0
+        - Transform {'m_LocalPosition': {'x': 3.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': -0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+        - MeshFilter
+        - MeshRenderer enabled True [('soulofArms', 'shader 6:77', {'_Color': [0.784, 0.784, 0.784, 0.0], '_Emission': [0.251, 0.251, 0.251, 0.0]})]
+        - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+        node TrailPointer layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 2.75}, 'm_LocalRotation': {'x': 0.5000002384185791, 'y': 0.5, 'z': 0.5, 'w': 0.4999998211860657}, 'm_LocalScale': {'x': 1.0000003576278687, 'y': 1.0, 'z': 1.0}}
+          - MeshRenderer enabled True [('Line_MultiLines1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+          - MeshFilter
+          - Mono TrailEmitter (124 B) {'startWidth': 2.0, 'endWidth': 1.0, 'life': 0.4, 'alwaysUp': False, 'minDistance': 0.1, 'Color1': [1.0, 0.96471, 0.52157, 0.35294], 'Color2': [1.0, 0.82014, 0.52157, 0.23529], 'Color3': [1.0, 0.67505, 0.52157, 0.11765], 'Color4': [1.0, 0.52157, 0.52157, 0.0], 'TrailEmitterMode': 0, 'uvHeight': 1.0, 'localVelocity': 0.0, 'worldVelocity': 1.0, 'isTimer': False, 'delay': 0.0, 'easeIn': 0.0, 'easeMiddle': 0.0, 'easeOut': 0.0, 'minQuality': 0} 
+      node Sheep_soulOfArms_tri [sword] layer 0 active 0
+        - Transform {'m_LocalPosition': {'x': -3.0, 'y': 0.0, 'z': 0.5}, 'm_LocalRotation': {'x': 0.0, 'y': -0.0, 'z': -0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+        - MeshFilter
+        - MeshRenderer enabled True [('soulofArms', 'shader 6:77', {'_Color': [0.784, 0.784, 0.784, 0.0], '_Emission': [0.251, 0.251, 0.251, 0.0]})]
+        - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+        node Particle System layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 3.000000238418579, 'y': 3.000000476837158, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0000004768371582}}
+          - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.019999999552965164, "maxSize": 0.05000000074505806, "minEnergy": 2.0, "maxEnergy": 3.0, "minEmission": 12.0, "maxEmission": 24.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.30000001192092896, "y": 1.0, "z": 0.30000001192092896}}
+          - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 1.0, "autodestruct": false}
+          - ParticleRenderer enabled True [('Light1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+        node TrailPointer layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': -1.0}, 'm_LocalRotation': {'x': 0.7071065902709961, 'y': 0.0, 'z': 0.0, 'w': -0.7071069478988647}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+          - MeshRenderer enabled True [('Line_MultiLines1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+          - MeshFilter
+          - Mono TrailEmitter (124 B) {'startWidth': 2.0, 'endWidth': 1.0, 'life': 0.4, 'alwaysUp': False, 'minDistance': 0.1, 'Color1': [1.0, 0.96471, 0.52157, 0.35294], 'Color2': [1.0, 0.82014, 0.52157, 0.23529], 'Color3': [1.0, 0.67505, 0.52157, 0.11765], 'Color4': [1.0, 0.52157, 0.52157, 0.0], 'TrailEmitterMode': 0, 'uvHeight': 1.0, 'localVelocity': 0.0, 'worldVelocity': 1.0, 'isTimer': False, 'delay': 0.0, 'easeIn': 0.0, 'easeMiddle': 0.0, 'easeOut': 0.0, 'minQuality': 0} 
+      node Sheep_soulOfArms_tri [trident] layer 0 active 0
+        - Transform {'m_LocalPosition': {'x': -0.024262720718979836, 'y': -3.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.0, 'y': -0.0, 'z': 0.7071067690849304, 'w': 0.7071068286895752}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+        - MeshFilter
+        - MeshRenderer enabled True [('soulofArms', 'shader 6:77', {'_Color': [0.784, 0.784, 0.784, 0.0], '_Emission': [0.251, 0.251, 0.251, 0.0]})]
+        - Mono AlphaTimer (36 B) {'MinAlpha': 0.0, 'MaxAlpha': 1.0, 'FadeDelay': 0.0, 'FadeEaseIn': 0.5, 'FadeMiddle': 9.2, 'FadeEaseOut': 0.3, 'eraseShadow': False, 'repeat': False, 'endDestroy': False} 
+        node Particle System layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 6.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0000001192092896, 'z': 1.0}}
+          - EllipsoidParticleEmitter {"m_Enabled": true, "m_Emit": true, "minSize": 0.019999999552965164, "maxSize": 0.05000000074505806, "minEnergy": 2.0, "maxEnergy": 3.0, "minEmission": 12.0, "maxEmission": 24.0, "worldVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "localVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "rndVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "emitterVelocityScale": 0.05000000074505806, "tangentVelocity": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_OneShot": false, "m_Ellipsoid": {"x": 0.30000001192092896, "y": 1.0, "z": 0.30000001192092896}}
+          - ParticleAnimator {"Does Animate Color?": true, "sizeGrow": 0.0, "damping": 1.0, "autodestruct": false}
+          - ParticleRenderer enabled True [('Light1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+        node TrailPointer layer 0 active 0
+          - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.5}, 'm_LocalRotation': {'x': 0.7071068286895752, 'y': 0.0, 'z': 0.0, 'w': 0.7071067094802856}, 'm_LocalScale': {'x': 1.0000003576278687, 'y': 1.0000004768371582, 'z': 1.0000004768371582}}
+          - MeshRenderer enabled True [('Line_MultiLines1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+          - MeshFilter
+          - Mono TrailEmitter (124 B) {'startWidth': 1.0, 'endWidth': 0.5, 'life': 0.4, 'alwaysUp': False, 'minDistance': 0.1, 'Color1': [1.0, 0.96471, 0.52157, 0.35294], 'Color2': [1.0, 0.82014, 0.52157, 0.23529], 'Color3': [1.0, 0.67505, 0.52157, 0.11765], 'Color4': [1.0, 0.52157, 0.52157, 0.0], 'TrailEmitterMode': 0, 'uvHeight': 1.0, 'localVelocity': 0.0, 'worldVelocity': 1.0, 'isTimer': False, 'delay': 0.0, 'easeIn': 0.0, 'easeMiddle': 0.0, 'easeOut': 0.0, 'minQuality': 0} 
+  node sword_hit1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.6000000238418579, 'y': 1.7000007629394531, 'z': 0.75}, 'm_LocalRotation': {'x': -0.217605859041214, 'y': 0.035811714828014374, 'z': 0.15766453742980957, 'w': 0.9625524282455444}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 5.1, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.4, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node sword_hit2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': -0.22712379693984985, 'y': 0.40000152587890625, 'z': -0.3000030517578125}, 'm_LocalRotation': {'x': 0.14731481671333313, 'y': 0.08215498924255371, 'z': 0.5775868892669678, 'w': 0.798712968826294}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 6.2, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.4, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node axe_hit1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.44999998807907104, 'y': 1.0, 'z': -0.75}, 'm_LocalRotation': {'x': -0.36377763748168945, 'y': -0.36377763748168945, 'z': 0.6063545942306519, 'w': 0.6063545942306519}, 'm_LocalScale': {'x': 1.000000238418579, 'y': 1.000000238418579, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.4, 'Delay': 5.3, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 1.0, 'endRadius': 3.4, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node trident_hit1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': -0.30000001192092896, 'y': 0.8699989318847656, 'z': 0.17499923706054688}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.21681253612041473, 'w': 0.976213276386261}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.3, 'Delay': 4.6, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.3, 'endRadius': 2.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node trident_hit2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.7999992370605469, 'z': 0.0}, 'm_LocalRotation': {'x': -0.18452738225460052, 'y': 0.027486411854624748, 'z': -0.1449051797389984, 'w': 0.9716978073120117}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - MeshFilter
+    - Mono RingEmitter (188 B) {'Life': 0.3, 'Delay': 5.3, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.3, 'endRadius': 2.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -1.0, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.0], 'Color2': [1.0, 0.91157, 0.63846, 0.86275], 'Color3': [1.0, 0.85888, 0.42308, 0.70588], 'Color4': [1.0, 0.77394, 0.07692, 0.35294], 'Color5': [1.0, 0.7551, 0.0, 0.0], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 0.0, 'ringTri': 24, 'uvTile': 5.0, 'repeatForever': False, 'qualitySetting': 0} 
+==================== sealOfAttack
+node sealOfAttack layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono Sheep_seal (4 B) {'mSealType': 0} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 291}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfin
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.10000000149011612, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.0, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -0.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.55294, 0.55294, 0.47059], 'Color3': [1.0, 0.31765, 0.31765, 0.47059], 'Color4': [1.0, 0.26667, 0.26667, 0.23529], 'Color5': [1.0, 0.0, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.09999847412109375, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 2.0, 'EmissionPeriod': 0.1, 'startRadius': 0.1, 'endRadius': 1.0, 'rndRadius': 0.0, 'startHeight': 6.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.73333, 0.73333, 0.77255], 'Color3': [1.0, 0.31765, 0.31765, 0.47059], 'Color4': [1.0, 0.26667, 0.26667, 0.23529], 'Color5': [1.0, 0.0, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 24, 'uvTile': 2.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_seal1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': -0.5, 'z': -0.4999997615814209, 'w': 0.5000002980232239}, 'm_LocalScale': {'x': 0.75, 'y': 0.75, 'z': 0.75}}
+    - Animation default root play True wrap 0 [('root', 'len 2.000', 'wrap 2', 'rot 2 pos 2 scale 0 float 0', [], 'events 0')]
+    - SkinnedMeshRenderer enabled True [('sealOfAttack', 'shader 1:202', {'_Color': [0.784, 0.784, 0.784, 1.0], '_AdditiveColor': [1.0, 1.0, 1.0, 1.0]})]
+    node seal1 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.03925487771630287}, 'm_LocalRotation': {'x': 0.23790766298770905, 'y': 0.6658828258514404, 'z': -0.23790766298770905, 'w': 0.6658828258514404}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node seal2 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.3193381726741791}, 'm_LocalRotation': {'x': -0.5470238924026489, 'y': -0.44806796312332153, 'z': 0.5470238924026489, 'w': -0.44806796312332153}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+==================== sealOfDefense
+node sealOfDefense layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono Sheep_seal (4 B) {'mSealType': 1} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 291}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfin
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.10000000149011612, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.0, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -0.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [0.55294, 0.76843, 1.0, 0.47059], 'Color3': [0.31765, 0.88218, 1.0, 0.47059], 'Color4': [0.26667, 0.71511, 1.0, 0.23529], 'Color5': [0.1223, 0.0, 1.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_vertMultilines4', 'shader 1:202', {})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 2.0, 'EmissionPeriod': 0.2, 'startRadius': 0.1, 'endRadius': 1.0, 'rndRadius': 0.0, 'startHeight': 6.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [0.55294, 0.76843, 1.0, 0.68627], 'Color3': [0.31765, 0.88218, 1.0, 0.47059], 'Color4': [0.26667, 0.71511, 1.0, 0.23529], 'Color5': [0.1223, 0.0, 1.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 24, 'uvTile': 2.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_seal2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.4999998211860657, 'y': -0.5000002384185791, 'z': -0.49999991059303284, 'w': -0.5000001192092896}, 'm_LocalScale': {'x': 0.75, 'y': 0.75, 'z': 0.75}}
+    - Animation default root play True wrap 0 [('root', 'len 2.000', 'wrap 2', 'rot 2 pos 2 scale 0 float 0', [], 'events 0')]
+    - SkinnedMeshRenderer enabled True [('sealOfDefense', 'shader 1:202', {'_Color': [0.784, 0.784, 0.784, 1.0]})]
+    node seal1 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': 0.5, 'z': 0.5, 'w': 0.5}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node seal2 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 0.25}, 'm_LocalRotation': {'x': 0.7071068286895752, 'y': 0.0, 'z': -0.7071068286895752, 'w': 0.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+==================== sealOfEarth
+node sealOfEarth layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono Sheep_seal (4 B) {'mSealType': 2} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 291}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfin
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.10000000149011612, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.0, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -0.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.96784, 0.55294, 0.47059], 'Color3': [0.93127, 1.0, 0.31765, 0.47059], 'Color4': [1.0, 0.9789, 0.26667, 0.23529], 'Color5': [1.0, 0.84173, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_vertMultilines6', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 3.0, 'EmissionPeriod': 0.2, 'startRadius': 0.0, 'endRadius': 1.2, 'rndRadius': 0.0, 'startHeight': 6.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.96784, 0.55294, 0.47059], 'Color3': [0.93127, 1.0, 0.31765, 0.47059], 'Color4': [1.0, 0.9789, 0.26667, 0.23529], 'Color5': [1.0, 0.84173, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_seal2 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': 0.4999998211860657, 'y': -0.5000002384185791, 'z': -0.49999991059303284, 'w': -0.5000001192092896}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - Animation default root play True wrap 0 [('root', 'len 2.000', 'wrap 2', 'rot 2 pos 2 scale 0 float 0', [], 'events 0')]
+    - SkinnedMeshRenderer enabled True [('sealOfEarth', 'shader 1:202', {})]
+    node seal1 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': 0.5, 'z': 0.5, 'w': 0.5}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node seal2 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': -0.0, 'y': 0.0, 'z': 0.25}, 'm_LocalRotation': {'x': 0.7071068286895752, 'y': 0.0, 'z': -0.7071068286895752, 'w': 0.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+==================== sealOfHeaven
+node sealOfHeaven layer 0 active 0
+  - Transform {'m_LocalPosition': {'x': 0.0, 'y': 50.0, 'z': -64.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+  - Mono Sheep_seal (4 B) {'mSealType': 3} 
+  - AudioSource {"m_Enabled": 1, "m_audioClip": {"m_FileID": 14, "m_PathID": 291}, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 1.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false, "rolloffCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}, {"time": 1.0, "value": 0.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfinity": 2, "m_PostInfinity": 2}, "panLevelCustomCurve": {"m_Curve": [{"time": 0.0, "value": 1.0, "inSlope": 0.0, "outSlope": 0.0}], "m_PreInfin
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.10000000149011612, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_Magic1', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.8, 'Delay': 0.0, 'Emission': 1.0, 'EmissionPeriod': 0.0, 'startRadius': 0.0, 'endRadius': 3.0, 'rndRadius': 0.0, 'startHeight': 0.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': -1.0, 'endWidth': -0.2, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.90994, 0.55294, 0.47059], 'Color3': [1.0, 0.98036, 0.31765, 0.47059], 'Color4': [1.0, 0.94724, 0.26667, 0.23529], 'Color5': [1.0, 0.88489, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': True, 'qualitySetting': 0} 
+  node RingEmitter layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.09999847412109375, 'z': 0.0}, 'm_LocalRotation': {'x': 0.0, 'y': 0.0, 'z': 0.0, 'w': 1.0}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - MeshFilter
+    - MeshRenderer enabled True [('Line_vertMultilines6', 'shader 1:202', {'_Color': [1.0, 1.0, 1.0, 1.0]})]
+    - Mono RingEmitter (188 B) {'Life': 0.6, 'Delay': 0.0, 'Emission': 3.0, 'EmissionPeriod': 0.3, 'startRadius': 0.0, 'endRadius': 1.2, 'rndRadius': 0.0, 'startHeight': 6.0, 'endHeight': 0.0, 'rndHeight': 0.0, 'startWidth': 0.0, 'endWidth': 0.3, 'rndWidth': 0.0, 'localVelocity': [0.0, 0.0, 0.0], 'rndVelocity': [0.0, 0.0, 0.0], 'Color1': [1.0, 1.0, 1.0, 0.04], 'Color2': [1.0, 0.90994, 0.55294, 0.47059], 'Color3': [1.0, 0.98036, 0.31765, 0.47059], 'Color4': [1.0, 0.94724, 0.26667, 0.23529], 'Color5': [1.0, 0.88489, 0.0, 0.03922], 'localRotation': [0.0, 0.0, 0.0], 'uvRotation': 1.0, 'ringTri': 36, 'uvTile': 2.0, 'repeatForever': False, 'qualitySetting': 0} 
+  node Sheep_seal1 layer 0 active 0
+    - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'm_LocalRotation': {'x': -0.5, 'y': -0.5, 'z': -0.4999997615814209, 'w': 0.5000002980232239}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    - Animation default root play True wrap 0 [('root', 'len 2.000', 'wrap 2', 'rot 2 pos 2 scale 0 float 0', [], 'events 0')]
+    - SkinnedMeshRenderer enabled True [('sealOfHeaven', 'shader 1:202', {})]
+    node seal1 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.03925487771630287}, 'm_LocalRotation': {'x': 0.23790766298770905, 'y': 0.6658828258514404, 'z': -0.23790766298770905, 'w': 0.6658828258514404}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}
+    node seal2 layer 0 active 0
+      - Transform {'m_LocalPosition': {'x': 0.0, 'y': 0.0, 'z': 0.3193381726741791}, 'm_LocalRotation': {'x': -0.5470238924026489, 'y': -0.44806796312332153, 'z': 0.5470238924026489, 'w': -0.44806796312332153}, 'm_LocalScale': {'x': 1.0, 'y': 1.0, 'z': 1.0}}

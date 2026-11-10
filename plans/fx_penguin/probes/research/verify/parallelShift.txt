@@ -1,0 +1,152 @@
+36150: internal sealed class $RPC_parallelShift$26489 : GenericGenerator<WaitForSeconds>
+36154: public $RPC_parallelShift$26489(Vector3 mPos, Vector3 tDir, int tID, Penguin self_)
+36191: public override IEnumerator<WaitForSeconds> GetEnumerator()
+36193: return new Penguin.$RPC_parallelShift$26489.$(this.$mPos$26506, this.$tDir$26507, this.$tID$26508, this.$self_$26509);
+36223: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+36271: IL_591:
+36274: case 0:
+36276: case 1:
+36277: goto IL_1874;
+36278: case 2:
+36281: goto IL_1814;
+36291: goto Block_82;
+36307: goto IL_1C9;
+36310: case 3:
+36313: goto IL_46B;
+36323: goto Block_101;
+36344: this.$hitList$26493 = Damage.FindAreaTarget(this.$mPos$26502, (float)6, (float)3, this.$hitLayer$26492);
+36365: goto IL_591;
+36370: goto IL_591;
+36375: goto IL_591;
+36381: goto IL_591;
+36386: goto IL_591;
+36392: goto IL_591;
+36400: goto IL_591;
+36408: goto IL_591;
+36415: goto IL_591;
+36421: goto IL_591;
+36423: this.$self_$26505.Yl9LUDa6EF = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/blink", typeof(GameObject));
+36426: goto IL_591;
+36433: goto IL_591;
+36435: UnityEngine.Object.Instantiate(this.$self_$26505.Yl9LUDa6EF, this.$hitObject$26494.transform.position, this.$hitObject$26494.transform.rotation);
+36438: goto IL_591;
+36443: goto IL_591;
+36451: goto IL_591;
+36459: goto IL_591;
+36464: goto IL_591;
+36477: goto IL_591;
+36483: goto IL_591;
+36489: goto IL_591;
+36494: goto IL_591;
+36499: goto IL_591;
+36504: goto IL_591;
+36511: goto IL_591;
+36516: goto IL_591;
+36521: goto IL_591;
+36523: this.$hitController$26498.Move((float)10 * this.$tDir$26503);
+36526: goto IL_591;
+36531: goto IL_591;
+36544: goto IL_591;
+36550: goto IL_591;
+36556: goto IL_591;
+36561: goto IL_591;
+36566: goto IL_591;
+36571: goto IL_591;
+36578: goto IL_591;
+36583: goto IL_591;
+36590: goto IL_591;
+36596: goto IL_591;
+36598: this.$self_$26505.Yl9LUDa6EF = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/blink", typeof(GameObject));
+36601: goto IL_591;
+36608: goto IL_591;
+36610: UnityEngine.Object.Instantiate(this.$self_$26505.Yl9LUDa6EF, this.$hitObject$26494.transform.position, this.$hitObject$26494.transform.rotation);
+36613: goto IL_591;
+36618: goto IL_591;
+36626: goto IL_591;
+36642: this.$self_$26505.J0CUJGyw3o = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/parallelShift", typeof(GameObject));
+36654: UnityEngine.Object.Instantiate(this.$self_$26505.J0CUJGyw3o, this.$self_$26505.lubL6y2W9o.position, this.$self_$26505.lubL6y2W9o.rotation);
+36659: goto IL_15F8;
+36666: goto Block_155;
+36672: case 4:
+36675: goto IL_15C7;
+36685: goto Block_133;
+36698: goto IL_10A8;
+36704: if (this.$self_$26505.mChar.getStatusLv("multiCast") <= 0)
+36706: goto IL_10A8;
+36712: if (this.$self_$26505.mChar.reduceStatusLv("multiCast", 1) == 0)
+36718: this.$self_$26505.mChar.RPC_RemoveStatus("multiCast");
+36724: this.$self_$26505.RPC_parallelShift_multiCast(this.$self_$26505.lubL6y2W9o.position, this.$self_$26505.lubL6y2W9o.forward, this.$tID$26504);
+36731: goto IL_10A3;
+36737: this.$self_$26505.ActionEvent("RPC_parallelShift", this.$self_$26505.lubL6y2W9o.position, this.$self_$26505.lubL6y2W9o.forward, this.$tID$26504);
+36740: goto Block_53;
+36745: case 5:
+36763: this.$self_$26505.mChar.actionState = "standby";
+36773: this.$self_$26505.mChar.myCommand = "none";
+36802: this.YieldDefault(1);
+36807: goto IL_1874;
+36815: this.$self_$26505.mChar.actionState = "attack";
+36821: this.$self_$26505.mChar.myCommand = "parallelShift";
+36824: this.$self_$26505.mChar.addTimeOut("blink", this.$self_$26505.mChar.agiAdjust((float)30));
+36836: this.$self_$26505.PlayAnimation("blink", (float)0);
+36839: this.$self_$26505.animation.wrapMode = WrapMode.Once;
+36854: this.$self_$26505.y7RU6wYRYD = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/parallelShift_ring", typeof(GameObject));
+36866: UnityEngine.Object.Instantiate(this.$self_$26505.y7RU6wYRYD, this.$mPos$26502, this.$self_$26505.lubL6y2W9o.rotation);
+36882: goto IL_FBD;
+36894: goto IL_FBD;
+36902: goto IL_FBD;
+36909: if (Time.time > this.$self_$26505.abSUOYOYsq)
+36913: this.$self_$26505.abSUOYOYsq = Time.time + (float)12;
+36916: if (UnityEngine.Random.Range(0, 2) == 0)
+36926: this.$self_$26505.B3OUtyrDC4 = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/parallelShift1", typeof(AudioClip));
+36936: goto IL_B3E;
+36944: goto Block_78;
+36957: this.$self_$26505.wd5UXfOYdT = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/parallelShift2", typeof(AudioClip));
+36967: goto IL_6FD;
+36975: goto Block_47;
+36990: this.$self_$26505.l6cLdS2tKC = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/multiCast", typeof(AudioClip));
+37000: goto Block_50;
+37005: Debug.LogError("Cannot find multiCast voice");
+37008: goto Block_150;
+37025: IL_1C9:
+37026: return this.Yield(3, new WaitForSeconds(0.2f));
+37027: IL_30D:
+37028: return this.Yield(4, new WaitForSeconds(0.1f));
+37029: IL_40C:
+37030: goto IL_894;
+37031: IL_46B:
+37032: goto IL_1874;
+37033: IL_6FD:
+37034: this.$self_$26505.audio.PlayOneShot(this.$self_$26505.wd5UXfOYdT, (!this.$self_$26505.mChar.isMine) ? 0.75f : ((float)1));
+37035: Block_47:
+37036: goto IL_894;
+37037: Block_50:
+37038: this.$self_$26505.audio.PlayOneShot(this.$self_$26505.l6cLdS2tKC, (!this.$self_$26505.mChar.isMine) ? 0.75f : ((float)1));
+37039: goto IL_FBD;
+37040: Block_53:
+37041: goto IL_10A3;
+37042: IL_894:
+37043: goto IL_FBD;
+37044: IL_B3E:
+37045: this.$self_$26505.audio.PlayOneShot(this.$self_$26505.B3OUtyrDC4, (!this.$self_$26505.mChar.isMine) ? 0.75f : ((float)1));
+37046: Block_78:
+37047: goto IL_40C;
+37048: Block_82:
+37049: Block_101:
+37050: goto IL_46B;
+37051: IL_FBD:
+37052: return this.Yield(2, new WaitForSeconds(0.1f));
+37053: IL_10A3:
+37054: goto IL_1874;
+37055: IL_10A8:
+37056: return this.Yield(5, new WaitForSeconds(0.2f));
+37057: Block_133:
+37058: goto IL_15C7;
+37059: Block_150:
+37060: goto IL_FBD;
+37061: IL_15C7:
+37062: goto IL_1874;
+37063: IL_15F8:
+37064: Block_155:
+37065: goto IL_30D;
+37066: IL_1814:
+37067: IL_1874:

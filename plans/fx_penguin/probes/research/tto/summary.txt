@@ -1,0 +1,614 @@
+== tto/constellation_cast
+  [0] constellation_cast p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.0 after=0.5 fP=True fS=False vel=[0.0, 0.0, 0.0])
+  [1] Rune p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Streak p=0 pos=[0.0, 2.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] SkyRing p=0 pos=[0.0, 4.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Stars p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.7 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [5] Flash p=0 pos=[0.0, 1.4, 0.2] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [6] Glow p=0 pos=[0.0, 1.4, 0.2] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+== tto/constellation_mark
+  [0] constellation_mark p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=5.0 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Sigil p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [2] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Core p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Pop p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Beam p=0 pos=[0.0, 3.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [6] Floor p=0 pos=[0.0, -1.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [7] Dust p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+== tto/constellation_line
+  [0] constellation_line p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=6.0 after=0.2 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] LineRenderer{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Positions, m_Parameters, m_UseWorldSpace, m_Loop, m_ApplyActiveColorSpace}
+  [2] Core p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] LineRenderer{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Positions, m_Parameters, m_UseWorldSpace, m_Loop, m_ApplyActiveColorSpace}
+== tto/constellation_star
+  [0] constellation_star p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Meteor0 p=0 pos=[-3.0, 12.0, 2.5] rot=[0.249234, 0.732759, -0.532124, 0.343206] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [2] Meteor1 p=0 pos=[-3.0, 12.0, 2.5] rot=[0.249234, 0.732759, -0.532124, 0.343206] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission,Rotation,Trail) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star', 'tto_Line_DoubleEdge1'])
+  [3] Meteor2 p=0 pos=[-3.0, 12.0, 2.5] rot=[0.249234, 0.732759, -0.532124, 0.343206] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [4] MeteorShed p=0 pos=[-3.0, 12.0, 2.5] rot=[0.249234, 0.732759, -0.532124, 0.343206] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [5] Warn p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+== tto/constellation_impact
+  [0] constellation_impact p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.0 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Rune p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Pillar p=0 pos=[0.0, 2.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Flash p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Starburst p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [6] Sparks p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [7] Dust p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [8] Sound_fallingStar_hit p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=fallingStar_hit vol=0.8 poa=True loop=False)
+== tto/constellation_lineFire
+  [0] constellation_lineFire p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.0 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Sparks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [2] Motes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+== tto/constellation_ignite
+  [0] constellation_ignite p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.9 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 1.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [2] Star p=0 pos=[0.0, 1.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Motes p=0 pos=[0.0, 1.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+== tto/constellation_giant
+  [0] constellation_giant p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Giant0 p=0 pos=[-6.0, 22.0, 5.0] rot=[0.244662, 0.739749, -0.522363, 0.34648] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [2] Giant1 p=0 pos=[-6.0, 22.0, 5.0] rot=[0.244662, 0.739749, -0.522363, 0.34648] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission,Rotation,Trail) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star', 'tto_Line_DoubleEdge1'])
+  [3] Giant2 p=0 pos=[-6.0, 22.0, 5.0] rot=[0.244662, 0.739749, -0.522363, 0.34648] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [4] GiantShed p=0 pos=[-6.0, 22.0, 5.0] rot=[0.244662, 0.739749, -0.522363, 0.34648] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [5] Escort0 p=0 pos=[-4.0, 20.0, 7.0] rot=[0.14361, 0.801052, -0.540774, 0.212731] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] Escort1 p=0 pos=[-4.0, 20.0, 7.0] rot=[0.14361, 0.801052, -0.540774, 0.212731] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission,Rotation,Trail) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star', 'tto_Line_DoubleEdge1'])
+  [7] Escort2 p=0 pos=[-4.0, 20.0, 7.0] rot=[0.14361, 0.801052, -0.540774, 0.212731] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=1 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [8] EscortShed p=0 pos=[-4.0, 20.0, 7.0] rot=[0.14361, 0.801052, -0.540774, 0.212731] sc=[1.0, 1.0, 1.0] PS(dur=0.62 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [9] Warn p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [10] Gather p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+== tto/constellation_giantImpact
+  [0] constellation_giantImpact p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.8 after=0.6 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Rune p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Pillar p=0 pos=[0.0, 5.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] PillarCore p=0 pos=[0.0, 5.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [6] Shock2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [7] Flash p=0 pos=[0.0, 1.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [8] Starburst p=0 pos=[0.0, 1.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [9] Five p=0 pos=[0.0, 1.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,Trail) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star', 'tto_Line_DoubleEdge1'])
+  [10] Motes p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [11] StarFall p=0 pos=[0.0, 7.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [12] Sound_fallingStar_hit p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=fallingStar_hit vol=1.0 poa=True loop=False)
+== tto/frostField_leap
+  [0] frostField_leap p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.9 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Rune p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Frost p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Puff p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [4] Geyser p=0 pos=[0.0, 1.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Snow p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] Glints p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [7] Chunks p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+== tto/frostField_trail
+  [0] frostField_trail p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.75 after=0.6 fP=True fS=False vel=[0.0, 0.0, 0.0])
+  [1] Body p=0 pos=[0.0, 0.35, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [2] Aura p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Trail p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+  [4] Snow p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Flakes p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Rotation,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_snowflake'])
+  [6] Glints p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [7] Top p=0 pos=[0.0, 0.9, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [8] Trail p=7 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+== tto/frostField_land
+  [0] frostField_land p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.8 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Glyph p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Pillar p=0 pos=[0.0, 3.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] PillarCore p=0 pos=[0.0, 3.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Cluster p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [6] ClusterGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [7] Spikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [8] SpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [9] Spikes2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [10] Spikes2Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [11] Spikes3 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [12] Spikes4 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [13] Spikes5 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [14] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [15] Wave p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [16] Edge p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [17] Dome p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [18] Shards p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [19] Chunks p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [20] Snow p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [21] Glint p=0 pos=[0.0, 0.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+== tto/frostField_field
+  [0] frostField_field p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=8.0 after=0.6 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Floor p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Cracks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_crack']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Glyph p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [4] RuneRing p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [5] RimSpikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [6] RimSpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [7] RimOuter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [8] MidSpikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [9] MidSpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [10] InnerSpikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [11] InnerSpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [12] Scatter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [13] Rim p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [14] Curtain p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [15] Pulse p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [16] Mist p=0 pos=[0.0, 0.25, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=6.5 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [17] Snowfall p=0 pos=[0.0, 3.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=7.0 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [18] Wind p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=7.0 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [19] Glints p=0 pos=[0.0, 0.15, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=7.0 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [20] Crystals p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=6.5 loop=False sim=1 mods=Initial,Shape,Emission,Size,Velocity) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+== tto/frostField_burst
+  [0] frostField_burst p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.4 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Cluster p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [2] ClusterGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [3] Ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [4] RingGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [5] Ring2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [6] Ring2Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [7] Ring3 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [8] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [9] Pillar p=0 pos=[0.0, 2.25, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [10] PillarCore p=0 pos=[0.0, 2.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [11] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [12] Shock2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [13] Dome p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [14] Flake p=0 pos=[0.0, 1.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [15] Star p=0 pos=[0.0, 1.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [16] Shards p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [17] Chunks p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [18] Snow p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/emperorPenguin_whistle
+  [0] emperorPenguin_whistle p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.7 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Glint p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [2] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Pulse0 p=0 pos=[0.0, 0.0, 0.05] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Pulse1 p=0 pos=[0.0, 0.0, 0.17] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Pulse2 p=0 pos=[0.0, 0.0, 0.29] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [6] Pulse3 p=0 pos=[0.0, 0.0, 0.41] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [7] Notes p=0 pos=[0.0, 0.05, 0.1] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [8] Gust p=0 pos=[0.0, 0.0, 0.1] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/emperorPenguin_summon
+  [0] emperorPenguin_summon p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.1 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Rune p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Flake p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Gust p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [4] Swirl p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Glints p=0 pos=[0.0, 0.15, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.6 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+== tto/emperorPenguin_crack
+  [0] emperorPenguin_crack p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.6 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Crack p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_crack']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Chunks p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [4] Snow p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Sound_iceBlock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] AS(clip=iceBlock vol=0.8 poa=True loop=False)
+== tto/emperorPenguin_emerge
+  [0] emperorPenguin_emerge p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.2 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Geyser p=0 pos=[0.0, 1.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [2] GeyserCore p=0 pos=[0.0, 1.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Spikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [4] SpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [5] Hole p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [6] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [7] Plume p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [8] Glints p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [9] Chunks p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [10] Glint p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+== tto/emperorPenguin_penguin
+  [0] emperorPenguin_penguin p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=6.0 after=0.2 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Body p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.4, 1.4, 1.4] 
+  [2] SmallIcePenguin_tri p=1 pos=[0.0, 0.0, 0.0] rot=[0.0, 1.0, 0.0, -0.0] sc=[1.0, 1.0, 1.0] SkinnedMeshRenderer{m_Enabled, m_CastShadows, m_ReceiveShadows, m_DynamicOccludee, m_StaticShadowCaster, m_MotionVectors, m_LightProbeUsage, m_ReflectionProbeUsage, m_RayTracingMode, m_RayTraceProcedural, m_RayTracingAccelStructBuildFlagsOverride, m_RayTracingAccelStructBuildFlags, m_SmallMeshCulling, m_ForceMeshLod, m_MeshLodSelectionBias, m_RenderingLayerMask, m_RendererPriority, m_LightmapIndex, m_LightmapIndexDynamic, m_LightmapTilingOffset, m_LightmapTilingOffsetDynamic, m_Materials, m_StaticBatchInfo, m_StaticBatchRoot, m_ProbeAnchor, m_LightProbeVolumeOverride, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction}
+  [3] Leg_L p=2 pos=[0.07117, 0.13124, 0.01305] rot=[-0.705848, -0.000298, 0.000299, 0.708363] sc=[1.0, 1.0, 1.0] 
+  [4] Leg_R p=2 pos=[-0.06739, 0.13124, 0.01305] rot=[-0.705846, 0.001657, -0.001663, 0.708361] sc=[1.0, 1.0, 1.0] 
+  [5] Root p=2 pos=[0.0, 0.21475, -0.00034] rot=[0.0, 0.0, 0.707107, 0.707107] sc=[1.0, 1.0, 1.0] 
+  [6] Spine p=5 pos=[-0.0, 0.0, -0.00511] rot=[-0.0, -0.683442, -0.0, 0.730005] sc=[1.0, 1.0, 1.0] 
+  [7] Head p=6 pos=[0.0, -0.0, -0.15654] rot=[0.0, -0.051856, -0.0, 0.998655] sc=[1.0, 1.0, 1.0] 
+  [8] staff p=2 pos=[-0.32184, 0.32482, -0.35931] rot=[0.659949, 0.130576, 0.131787, 0.728045] sc=[0.0, 0.0, 0.0] 
+  [9] Tail p=2 pos=[-0.0, 0.0747, 0.14941] rot=[0.705551, -0.659683, -0.046879, -0.254596] sc=[1.0, 1.0, 1.0] 
+  [10] Mid p=0 pos=[0.0, 0.35, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [11] Aura p=10 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [12] Trail p=10 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+  [13] Snow p=10 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [14] Glints p=10 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [15] Head p=0 pos=[0.0, 0.75, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [16] Trail p=15 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+== tto/emperorPenguin_ball
+  [0] emperorPenguin_ball p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=4.0 after=0.2 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Ball p=0 pos=[-0.0, -0.30171, -0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.99101, 1.99101, 1.99101] MF({'mesh': 'SoccerBall_tri'}) | StaticMesh{name, verts, pos, nrm, uv, col, idx, sub} | MR(['tto_penguinRow6_iceBall'])
+  [2] Aura p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Halo p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Core p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [6] OrbitStars p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Shape,Emission,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [7] OrbitFlakes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Shape,Emission,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_snowflake'])
+  [8] Trail p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+  [9] Trail p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] TrailRendererModern{m_Enabled, m_RendererPriority, m_Materials, m_SortingLayerID, m_SortingLayer, m_SortingOrder, m_MaskInteraction, m_Time, m_Parameters, m_MinVertexDistance, m_Autodestruct, m_Emitting, m_ApplyActiveColorSpace}
+  [10] Frost p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [11] Stars p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [12] IceBits p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Velocity) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+== tto/emperorPenguin_kick
+  [0] emperorPenguin_kick p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.5 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [2] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] RingGold p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Sparks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] Stars p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+== tto/emperorPenguin_launch
+  [0] emperorPenguin_launch p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.9 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Ring1 p=0 pos=[0.0, 0.0, 0.3] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': '?', 'file': 3, 'pathID': 10210} mats=['tto_penguinRow6_rune'])
+  [2] Ring2 p=0 pos=[0.0, 0.0, 1.4] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': '?', 'file': 3, 'pathID': 10210} mats=['tto_penguinRow6_rune'])
+  [3] Ring3 p=0 pos=[0.0, 0.0, 2.8] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': '?', 'file': 3, 'pathID': 10210} mats=['tto_penguinRow6_rune'])
+  [4] Streaks p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [5] Gust p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [6] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [7] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [8] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+== tto/emperorPenguin_frost
+  [0] emperorPenguin_frost p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=1.6 after=0.4 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Scar p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_crack']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Spikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [4] SpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [5] Snow p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/emperorPenguin_goal
+  [0] emperorPenguin_goal p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=2.2 after=0.5 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_iceDisc']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [2] Frost p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_crack']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [3] Pillar p=0 pos=[0.0, 4.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] PillarCore p=0 pos=[0.0, 4.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Cluster p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [6] ClusterGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [7] Spikes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [8] SpikesGlow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [9] Spikes2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [10] Spikes2Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=0 mods=Initial,Shape,Emission,Size) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystalGlow'])
+  [11] Shock p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [12] Shock2 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [13] Shock3 p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_vertMultilines4']) | GroundHugEmitter{shape, Life, Delay, repeatForever, Emission, EmissionPeriod, startRadius, endRadius, startWidth, endWidth, startHeight, endHeight, startAngle, Rotation, uvTile, uvRotation, Color1, Color2, Color3, Color4, Color5, lift, segments, rings, resample, motes, motesPerSecond}
+  [14] Net p=0 pos=[0.0, 1.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': '?', 'file': 3, 'pathID': 10210} mats=['tto_penguinRow6_rune'])
+  [15] Net2 p=0 pos=[0.0, 1.4, 0.4] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.1 loop=False sim=0 mods=Initial,Emission,Size,Rotation,Color) | PSR(mode=4 align=2 mesh={'asset': '?', 'file': 3, 'pathID': 10210} mats=['tto_penguinRow6_rune'])
+  [16] Dome p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [17] Flash3D p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_Line_SimpleBall']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [18] Star p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [19] Flake p=0 pos=[0.0, 1.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [20] Shards p=0 pos=[0.0, 0.3, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [21] Chunks p=0 pos=[0.0, 0.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Rotation,Color) | PSR(mode=4 align=2 mesh={'mesh': 'penguinRow6_spike'} mats=['tto_penguinRow6_crystal'])
+  [22] Stars p=0 pos=[0.0, 0.8, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_star'])
+  [23] Afterfall p=0 pos=[0.0, 4.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.2 loop=False sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/emperorPenguin_poof
+  [0] emperorPenguin_poof p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] EC(life=0.8 after=0.3 fP=False fS=False vel=[0.0, 0.0, 0.0])
+  [1] Flakes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [2] Flash p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_snowflake']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [3] Star p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_star']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [4] Ring p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] MF(None) | MR(['tto_penguinRow6_rune']) | ImageEmitter{Emission, EmissionTime, Life, Delay, startHeight, endHeight, startWidth, endWidth, rndScale, rndLife, startPosition, localVelocity, rndVelocity, worldVelocity, ImageEmitterMode, useWorldSpace, Color1, Color2, Color3, Color4, Color5, Rotation, rndRotation, startAngle, spreadAngle, repeatForever, mMeshFilter}
+  [5] Shards p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=0.2 loop=False sim=1 mods=Initial,Shape,Emission,Color) | PSR(mode=1 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/frostMarkFx
+  [0] frostMarkFx p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Flake p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_snowflake'])
+  [2] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [3] Flakes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/frostBiteFx
+  [0] frostBiteFx p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Fangs p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission,Rotation) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_fang'])
+  [2] Ice p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [3] Blood p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+== tto/manaFractureFx
+  [0] manaFractureFx p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] 
+  [1] Fracture p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_penguinRow6_fracture'])
+  [2] Glow p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=False sim=0 mods=Initial,Emission) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+  [3] Motes p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0] PS(dur=1.0 loop=True sim=1 mods=Initial,Shape,Emission,Color,Velocity) | PSR(mode=0 align=0 mesh=None mats=['tto_Line_SimpleBall'])
+materials {
+"tto_penguinRow6_rune": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_rune",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_Line_SimpleBall": {
+"blend": "addsoft",
+"tex": "tto_Line_SimpleBall",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+},
+"tto_penguinRow6_star": {
+"blend": "add",
+"tex": "tto_penguinRow6_star",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_Line_DoubleEdge1": {
+"blend": "addsoft",
+"tex": "tto_Line_DoubleEdge1",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+},
+"tto_Line_vertMultilines4": {
+"blend": "addsoft",
+"tex": "tto_Line_vertMultilines4",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_penguinRow6_snowflake": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_snowflake",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_penguinRow6_crystal": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_frostFacets",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.784314,
+0.784314,
+0.784314,
+0.698039
+]
+},
+"tto_penguinRow6_iceDisc": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_iceDisc",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_penguinRow6_crystalGlow": {
+"blend": "add",
+"tex": "tto_frost",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.12,
+0.2,
+0.26,
+0.5
+],
+"color": null
+},
+"tto_penguinRow6_crack": {
+"blend": "add",
+"tex": "tto_penguinRow6_crack",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": [
+0.5,
+0.5,
+0.5,
+0.5
+],
+"color": null
+},
+"tto_SmallIcePenguin": {
+"blend": "shader:FlexibleCelShader/Cel No Outline",
+"tex": "tto_IcePenguin1",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+1.0,
+1.0,
+1.0,
+1.0
+],
+"props": {
+"_BumpScale": 1.0,
+"_Cutoff": 0.5,
+"_DetailNormalMapScale": 1.0,
+"_DstBlend": 0.0,
+"_FresnelBrightness": 0.0,
+"_FresnelPower": 0.0,
+"_FresnelShadowDropoff": 0.0,
+"_GlossMapScale": 1.0,
+"_Glossiness": 0.0,
+"_GlossyReflections": 1.0,
+"_HighIntensity": 1.5,
+"_LightScalar": 1.0,
+"_LowIntensity": 1.0,
+"_Metallic": 0.0,
+"_Mode": 0.0,
+"_OcclusionStrength": 1.0,
+"_OutlineSize": 0.0,
+"_Parallax": 0.02,
+"_RampLevels": 2.0,
+"_RimAlpha": 0.0,
+"_RimDropOff": 0.0,
+"_RimPower": 0.0,
+"_SceneLighting": 1.0,
+"_SmoothnessTextureChannel": 0.0,
+"_SpecularHighlights": 1.0,
+"_SrcBlend": 1.0,
+"_UVSec": 0.0,
+"_ZWrite": 1.0,
+"_Color": [
+1.0,
+1.0,
+1.0,
+1.0
+],
+"_EmissionColor": [
+0.0,
+0.0,
+0.0,
+1.0
+],
+"_FresnelColor": [
+1.0,
+1.0,
+1.0,
+1.0
+],
+"_HighColor": [
+1.0,
+1.0,
+1.0,
+1.0
+],
+"_LowColor": [
+1.0,
+1.0,
+1.0,
+1.0
+],
+"_OutlineColor": [
+0.0,
+0.0,
+0.0,
+1.0
+],
+"_RimColor": [
+1.0,
+1.0,
+1.0,
+1.0
+]
+}
+},
+"tto_penguinRow6_iceBall": {
+"blend": "opaque",
+"tex": "tto_SoccerBall",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": [
+0.72,
+0.92,
+1.0,
+1.0
+]
+},
+"tto_penguinRow6_fang": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_fang",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+},
+"tto_penguinRow6_fracture": {
+"blend": "addsoft",
+"tex": "tto_penguinRow6_fracture",
+"scale": [
+1.0,
+1.0
+],
+"offset": [
+0.0,
+0.0
+],
+"tint": null,
+"color": null
+}
+}
+textures ['tto_IcePenguin1', 'tto_Line_DoubleEdge1', 'tto_Line_SimpleBall', 'tto_Line_vertMultilines4', 'tto_SoccerBall', 'tto_frost', 'tto_penguinRow6_crack', 'tto_penguinRow6_fang', 'tto_penguinRow6_fracture', 'tto_penguinRow6_frostFacets', 'tto_penguinRow6_iceDisc', 'tto_penguinRow6_rune', 'tto_penguinRow6_snowflake', 'tto_penguinRow6_star']
+sounds ['fallingStar_hit', 'iceBlock']

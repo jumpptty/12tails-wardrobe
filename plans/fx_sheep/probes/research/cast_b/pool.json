@@ -1,0 +1,104 @@
+{
+  "cast3": {
+    "why": "(the editor's merge line: cast_a's 11 skills + these 12, one per play at even chance)",
+    "skills": {
+      "lightBind": {
+        "why": "Sheep.cs RPC_lightBind_cast (:28501-28974, enemy target): Free Cast roll at the start (getFreeCast :28832; Free Cast 2 + Return Cast #431 on: 24 %, Random.Range(0, 100) < lckAdjust(12 x 2) :10070, returnCast at the hero :10085-10101, Instantiate :11651-11661); clip cast3 (0.2 s fade, :28723) and voice lightBind1 / lightBind2 (Random.Range(0, 2), :28758-28813) at 0; castEffect2 (the Sheep prefab's castEffect2 field = Resources sheep/effects/castEffect2) at the hero 0.7 m ahead 1 m up (TransformDirection(0, 1, 0.7), :28844; plays its own Sounds/castEffect); Yield 0.5 (:28922): standby 0.5 s (:28658); left out: the lightBind status's Effects/lightBind on the enemy (RPC_AddStatus :28899-28902, CharacterControl.cs:39611; at the target, needs AlphaTimer); Intense Bind #403 changes only the status level and duration",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "lightBind1|lightBind2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "illuminate": {
+        "why": "Sheep.cs RPC_illuminate_cast (:28975-29478, ally target): Free Cast roll (getFreeCast :29306; 24 %, returnCast, :10070-10101); clip cast3 (:29197) and voice illuminate1 / illuminate2 (:29232-29287) at 0; castEffect2 0.7 m ahead 1 m up (:29318; plays Sounds/castEffect); standby 0.5 s (Yield :29433, :29132); left out: Effects/illuminate at the ally's body centre (createEffect(.., collider.bounds.center), :29372-29384, at the target; ready) and the illuminate status's 3 s heal tick illuminate_hit on the ally (RPC_AddStatus :29411, CharacterControl.cs:9378-9414); Blinding Light #413 changes only the status level",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "illuminate1|illuminate2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "feather": {
+        "why": "Sheep.cs RPC_feather_cast (:29479-29957, ally target): Free Cast roll (getFreeCast :29810; 24 %, returnCast, :10070-10101); clip cast3 (:29701) and voice feather1 / feather2 (:29736-29791) at 0; castEffect2 0.7 m ahead 1 m up (:29822; plays Sounds/castEffect); standby 0.5 s (Yield :29910, :29636); left out: the wing status (Floating Wing #423 on: wing, not feather, :29876-29889) puts Effects/wing on the ally's back for chaAdjust(15) (CharacterControl.cs:39840-39864; at the target)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "feather1|feather2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "allFeather": {
+        "why": "Sheep.cs RPC_allFeather_cast (:29958-30428, every ally within 12 m of the Sheep, herself included: FindAreaTarget(her position, 12, 3, her own layer) :30303-30306): Free Cast roll (getFreeCast :30279; 24 %, returnCast, :10070-10101); clip cast3 (:30170) and voice allFeather1 / allFeather2 (:30205-30260) at 0; castEffect2 0.7 m ahead 1 m up (:30291; plays Sounds/castEffect); the wing status on her at 0 (Floating Wing #423 on: wing, :30335-30349, chaAdjust(15)): Effects/wing parented to her at (0, 0.85 x height, -radius) = 1.275 m up, 0.3 m behind (CharacterController height 1.5, radius 0.3, Sheep.prefab:783-784; CharacterControl.cs:39840-39864), destroyed when the status ends (:18004-18017; EffectControl life 300, so kill 15 = the 15 s before CHA); standby 0.5 s (Yield :30380, :30105); left out: the wings on the other allies (at the targets)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "allFeather1|allFeather2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0, "fx", "wing", {"d": -0.3, "y": 1.275, "kill": 15}]
+        ]
+      },
+      "divinitySword": {
+        "why": "Sheep.cs RPC_divinitySword_cast (:30429-30903, enemy target): Free Cast roll (getFreeCast :30827; 24 %, returnCast, :10070-10101); clip cast3 (:30718) and voice divinitySword1 / divinitySword2 (:30753-30808) at 0; castEffect2 0.7 m ahead 1 m up (:30839; plays Sounds/castEffect); Yield 0.2 (:30860): RPC_divinitySword_fire at the target's spot (:30613); Yield 0.3 (:30863): standby 0.5 s (:30653); left out: Effects/divinitySword at that spot at 0.2 s, turned the hero's way (Instantiate(.., LookRotation(hero forward)), :31107-31117; a target point = 10 m ahead) needs AlphaTimer; its hit 0.8 s later, at 1.0 s (:31137, :31044-31072)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "divinitySword1|divinitySword2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "divinitySpear": {
+        "why": "Sheep.cs RPC_divinitySpear_cast (:31186-31618, enemy target): Free Cast roll (getFreeCast :31544; 24 %, returnCast, :10070-10101); clip cast3 (:31435) and voice divinitySpear1 / divinitySpear2 (:31470-31525) at 0; castEffect2 0.7 m ahead 1 m up (:31556; plays Sounds/castEffect); Yield 0.2 (:31580): divinitySpear_fire starts (:31343); Yield 0.3 (:31575): standby 0.5 s (:31370); left out: divinitySpear_ring on the enemy at 0.2 s (tChar.createEffect at its position, :31886-31898; on the target; ready) and the three strikes 1 s apart at 1.2 / 2.2 / 3.2 s (Yield 1 :31924, i < 3 :31840), each Effects/divinitySpear at the target's spot (RPC_divinitySpear_fire :10739-10770; a target point = 10 m ahead) needs AlphaTimer",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "divinitySpear1|divinitySpear2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "seal": {
+        "why": "Sheep.cs RPC_seal (:31985-32839; Seal of Attack sLv 1 / Seal of Defense sLv 2, instant: no cast bar, started straight from the press :8189): no voice; Free Cast roll (getFreeCast :32749; 24 %, returnCast, :10070-10101); clip cast3 as a cut (PlayAnimation(cast3, 0), :32731) and castEffect2 0.7 m ahead 1 m up (:32761; plays Sounds/castEffect) at 0; Yield 0.2 (:32783): the seal on the ground 1 m ahead (mPos + forward, raycast down to the ground :32147-32162): redSeal for Seal of Attack, blueSeal for Seal of Defense (:32179-32238), lasting chaAdjust(60) (:32284; EffectControl life 60); Yield 0.3 (:32781): standby 0.5 s (:32678); left out: the seal field a 3rd seal makes (RPC_seal_create :32402-32656, :10789-11255: sealOfAttack / Defense / Earth / Heaven need Sheep_seal and three placed seals) and its voices",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}],
+        [0.2, "fx", "redSeal|blueSeal", {"d": 1}]
+        ]
+      },
+      "repel": {
+        "why": "Sheep.cs RPC_repel_cast (:32840-33266, ally target): Free Cast roll (getFreeCast :33143; 24 %, returnCast, :10070-10101); clip cast3 (:33034) and voice repel1 / repel2 (:33069-33124) at 0; castEffect2 0.7 m ahead 1 m up (:33155; plays Sounds/castEffect); standby 0.5 s (Yield :33226, :32975); left out: the repel status's Effects/repel on the ally's body centre for chaAdjust(6) (RPC_AddStatus :33209, CharacterControl.cs:39743-39746, removed :17953-17957; at the target; ready)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "repel1|repel2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "reverse": {
+        "why": "Sheep.cs RPC_reverse_cast (:33267-33695, ally target): Free Cast roll (getFreeCast :33570; 24 %, returnCast, :10070-10101); clip cast3 (:33461) and voice reverse1 / reverse2 (:33496-33551) at 0; castEffect2 0.7 m ahead 1 m up (:33582; plays Sounds/castEffect); standby 0.5 s (Yield :33659, :33402); left out: the reverse status's Effects/reverse on the ally's body centre for chaAdjust(3) (RPC_AddStatus :33636, CharacterControl.cs:39770-39773, removed :17975-17979; at the target; ready)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "reverse1|reverse2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "divinityAxe": {
+        "why": "Sheep.cs RPC_divinityAxe_cast (:35975-36446, enemy target): Free Cast roll, only with Return Cast #431 (on: :36362-36368; 24 %, returnCast, :10070-10101); clip cast3 (:36253) and voice divinityAxe1 / divinityAxe2 (:36288-36343) at 0; castEffect2 0.7 m ahead 1 m up (:36381; plays Sounds/castEffect); Yield 0.2 (:36409): RPC_divinityAxe_fire at the target's spot (:36148-36161); Yield 0.3 (:36403): standby 0.5 s (:36188); left out: Effects/divinityAxe at that spot at 0.2 s (Instantiate(.., Quaternion.identity), :36690-36700; a target point = 10 m ahead) needs AlphaTimer; its 5 strikes at 1.2 / 1.6 / 2.0 / 2.4 / 2.8 s (Yield 1 :36717, Yield 0.4 :36719) and divinityAxe_hit on each struck enemy (:36651, :11744-11757; at the target)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "divinityAxe1|divinityAxe2"],
+        [0, "fx", "castEffect2", {"d": 0.7, "y": 1}]
+        ]
+      },
+      "edenSanctuary": {
+        "why": "Sheep.cs RPC_edenSanctuary (:36772-37219; instant, started straight from the press :7540-7551, needs a seal field in place): Free Cast roll with no Return Cast gate (getFreeCast(.., 5) :37075; 24 %, returnCast, :10070-10101); clip cast3 (:36960) and voice edenSanctuary1 / edenSanctuary2 (:37001-37056) at 0; edenSanctuary_ring at the hero (createEffect(.., position, rotation), :37087-37099; its own flash 0.7 m ahead 1 m up and a ground ring; plays its own Sounds/edenSanctuary_ring); no castEffect2; standby 0.5 s (Yield :37186, :36907); left out: Effects/edenSanctuary at the current seal field (jl98IkUjQ5, :37123-37142; the field from RPC_seal_create :10834-11255) needs AlphaTimer, Sheep_edenSanctuary and a placed field",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "edenSanctuary1|edenSanctuary2"],
+        [0, "fx", "edenSanctuary_ring"]
+        ]
+      },
+      "worldEncarta": {
+        "why": "Sheep.cs RPC_worldEncarta_cast (:37948-38425, ally target): clip cast3 (:38159) and voice worldEncarta1 / worldEncarta2 (:38194-38249) at 0; castEffect1 (the prefab's castEffect1 field = Resources sheep/effects/castEffect1) at the hero turned hero rotation x Euler(270, 90, 0) (:38262-38268; no castEffect2); Free Cast roll with no Return Cast gate (getFreeCast(.., 5) :38354; 24 %, returnCast, :10070-10101); standby 0.5 s (Yield :38386, :38094); left out: worldEncarta_ring at the ally's feet (tChar.createEffect, :38322-38334; at the target; ready), the worldEncarta status's Effects/worldEncarta on the ally for chaAdjust(9) (:38357, CharacterControl.cs:39886-39911, a looping sound), and OnWorldEncarta's hits on enemies next to the ally every 0.5 s (:38360, worldEncarta_hit :11858-11912)",
+        "cues": [
+        [0, "fx", "returnCast", {"p": 0.24}],
+        [0, "voice", "worldEncarta1|worldEncarta2"],
+        [0, "fx", "castEffect1", {"rot": [270, 90, 0]}]
+        ]
+      }
+    }
+  }
+}

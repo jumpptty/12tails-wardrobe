@@ -1,0 +1,77 @@
+== castEffect
+  [castEffect p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=False, followPosition=False, effectRotationMode=0); Audio(clip=castEffect, volume=1.0, playOnAwake=True, loop=False)
+  [ImageEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.2 Delay=0.0 repeatForever=False EmissionTime=0.0
+== multiCast
+  [multiCast p=-1 pos=[0.0, 50.0, -64.7817] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=0.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=trippleCast, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.25 Delay=0.0 repeatForever=False
+  [LineEmitter p=0 pos=[0.0, 0.55, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.3 Delay=0.0 repeatForever=False EmissionTime=0.0
+== iceBlock
+   ValueError: iceBlock/iceBlock: no layout for Penguin_iceBlock (8 field bytes)
+== snowMan_ring
+  [snowMan_ring p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=False, followPosition=False, effectRotationMode=0); Audio(clip=snowMan, volume=1.0, playOnAwake=True, loop=False)
+== snowMan
+  [snowMan p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=root, clips={'root': 1.0}); Penguin_snowMan
+  [ParticleEmitter p=0 pos=[0.0, 50.2, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [Penguin_snowMan p=0 pos=[-0.0, 0.0, 0.0] rot=[0.5, -0.5, -0.5, -0.5] sc=[1.0, 1.0, 1.0]] SkinnedMeshRenderer
+  [snowMan1 p=2 pos=[-0.0, 0.0, 0.0] rot=[-0.5, 0.5, 0.5, 0.5] sc=[1.0, 1.0, 1.0]] 
+  [snowMan2 p=3 pos=[-0.06, 0.0, 0.0] rot=[-0.707107, 0.0, 0.0, 0.707107] sc=[1.0, 1.0, 1.0]] 
+  [snow1 p=3 pos=[-0.69, 0.0, 0.0] rot=[-0.485935, -0.51368, -0.51368, 0.485935] sc=[1.0, 1.0, 1.0]] 
+  [snow2 p=3 pos=[-0.69, 0.0, 0.01] rot=[-0.5, 0.5, 0.5, 0.5] sc=[1.0, 1.0, 1.0]] 
+== tornado3
+   ValueError: tornado3/tornado3: no layout for Penguin_tornado (28 field bytes)
+== tornado_ring
+  [tornado_ring p=-1 pos=[0.0, 50.0, -63.27603] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=3.0, afterLife=1.0, followState=False, followPosition=False, effectRotationMode=0); Audio(clip=cyclone_create, volume=1.0, playOnAwake=True, loop=False)
+  [LineEmiter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.4 Delay=0.0 repeatForever=False EmissionTime=0.0
+== tornado_hit
+  [tornado_hit p=-1 pos=[0.0, 50.0, -67.4125] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=0.0, followState=False, followPosition=False, effectRotationMode=0); Audio(clip=explosion1, volume=1.0, playOnAwake=True, loop=False)
+  [LineEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.2 Delay=0.0 repeatForever=False EmissionTime=0.0
+== typhoon3
+   ValueError: typhoon3/typhoon3: no layout for Penguin_typhoon (28 field bytes)
+== absoluteZero
+  [absoluteZero p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=absoluteZero, volume=1.0, playOnAwake=True, loop=False)
+  [absoluteZero p=0 pos=[0.0, 0.0, 0.0] rot=[0.5, -0.5, -0.5, -0.5] sc=[0.8, 0.8, 0.8]] StaticMesh; AlphaTimer; ShatterMesh Life=0.4 Delay=0.4
+  [LineEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] LineEmitter Life=0.3 Delay=0.0 repeatForever=False EmissionTime=0.0
+  [Particle System p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.3 Delay=0.0 repeatForever=False
+  [VortexEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.4 Delay=0.0 repeatForever=False
+== blizzard
+  [blizzard p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=6.0, afterLife=1.0, followState=False, followPosition=True, effectRotationMode=0); Audio(clip=blizzard, volume=1.0, playOnAwake=True, loop=True)
+  [RingEmitter p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=1.0 Delay=0.0 repeatForever=False
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=1.0 Delay=0.0 repeatForever=False
+  [RingEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=7.0 Delay=0.0 repeatForever=True EmissionTime=0.0
+  [SnowEmitter2 p=0 pos=[0.0, 0.4, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+== snowBall_cast
+  [snowBall_cast p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] 
+  [ImageEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=1.0 Delay=0.0 repeatForever=False EmissionTime=0.0
+  [ParticleEmitter p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [ParticleSystem p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer; EmitterControl Life=3.0 Delay=1.0
+  [VortexEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.3 Delay=0.0 repeatForever=False
+== snowBall
+  [snowBall p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] StaticMesh
+== snowBall_break
+  [snowBall_break p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=False, followPosition=False, effectRotationMode=0)
+  [ParticleEmitter p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [ParticleSystem p=0 pos=[0.0, 0.2, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer; EmitterControl Life=3.0 Delay=1.0
+== cosmicRift_ring
+  [cosmicRift_ring p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=cosmicRift_ring, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.5 Delay=0.1 repeatForever=False
+  [VortexEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.5 Delay=0.0 repeatForever=False
+  [ImageEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.5 Delay=0.0 repeatForever=False EmissionTime=0.0
+== cosmicRift
+  [cosmicRift p=-1 pos=[0.0, 50.0, -64.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=cosmicRift, volume=1.0, playOnAwake=True, loop=False)
+  [ImageEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=0.0 repeatForever=False EmissionTime=0.1
+  [ParticleEmitter p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [VortexEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.998472, 0.0, -0.055255] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.5 Delay=0.0 repeatForever=False
+  [ImageEmitter p=0 pos=[0.0, 0.6, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=0.3 Delay=0.0 repeatForever=False EmissionTime=0.1
+== cosmicFriday_ring
+  [cosmicFriday_ring p=-1 pos=[0.0, 0.0, -4.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EC(life=1.0, afterLife=1.0, followState=True, followPosition=True, effectRotationMode=0); Audio(clip=cosmicFriday_ring, volume=1.0, playOnAwake=True, loop=False)
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.5 Delay=0.0 repeatForever=False
+== cosmicFriday
+  [cosmicFriday p=-1 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] Anim(play=True, clip=create, clips={'create': 0.5, 'root': 9.0333, 'destroy': 0.5}); Penguin_cosmicFriday; Audio(clip=cosmicFriday, volume=1.0, playOnAwake=True, loop=True)
+  [cosmicFriday_tri p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, -0.382683, 0.0, 0.92388] sc=[1.0, 1.0, 1.0]] StaticMesh
+  [ImageEmitter p=0 pos=[0.0, 0.1, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] ImageEmitter Life=2.0 Delay=0.0 repeatForever=True EmissionTime=0.0
+  [ParticleEmitter p=0 pos=[0.0, 0.5, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] EllipsoidParticleEmitter; ParticleAnimator; ParticleRenderer
+  [RingEmitter p=0 pos=[0.0, 0.0, 0.0] rot=[0.0, 0.0, 0.0, 1.0] sc=[1.0, 1.0, 1.0]] RingEmitter Life=0.5 Delay=0.1 repeatForever=True
+  [VortexEmitter p=0 pos=[0.0, 0.05, 0.0] rot=[0.0, 0.998472, 0.0, -0.055255] sc=[1.0, 1.0, 1.0]] VortexEmitter Life=0.5 Delay=0.0 repeatForever=True
+== frost
+  [frost p=-1 pos=[0.0, 50.0, -64.0] rot=[0.5, -0.5, -0.5, -0.5] sc=[1.0, 1.0, 1.0]] StaticMesh

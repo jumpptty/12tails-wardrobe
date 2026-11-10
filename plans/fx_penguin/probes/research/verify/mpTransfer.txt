@@ -1,0 +1,76 @@
+23291: internal sealed class $RPC_mpTransfer$26140 : GenericGenerator<WaitForSeconds>
+23295: public $RPC_mpTransfer$26140(Vector3 mPos, Vector3 tDir, int tID, int sLv, Penguin self_)
+23336: public override IEnumerator<WaitForSeconds> GetEnumerator()
+23338: return new Penguin.$RPC_mpTransfer$26140.$(this.$mPos$26148, this.$tDir$26149, this.$tID$26150, this.$sLv$26151, this.$self_$26152);
+23371: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+23425: case 0:
+23427: case 1:
+23428: goto IL_D93;
+23429: case 2:
+23432: goto IL_BBC;
+23442: goto Block_41;
+23450: goto IL_A4B;
+23456: if (!this.$tObject$26141)
+23458: goto IL_A4B;
+23464: this.$tChar$26142 = (CharacterControl)this.$tObject$26141.GetComponent(typeof(CharacterControl));
+23471: goto IL_A4B;
+23477: this.$tChar$26142.RPC_AddHeal(1, 0, 30 * this.$sLv$26146 + Mathf.FloorToInt(0.1f * (float)this.$self_$26147.mChar.mmp) + ((!this.$self_$26147.mChar.hasSkill(432)) ? 0 : M
+23488: this.$self_$26147.aamLS3c4p3 = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/mpTransfer", typeof(GameObject));
+23500: this.$tChar$26142.createEffect(this.$self_$26147.aamLS3c4p3, this.$tObject$26141.transform.position, this.$tObject$26141.transform.rotation);
+23505: goto IL_4CB;
+23512: goto Block_34;
+23518: case 3:
+23536: this.$self_$26147.mChar.actionState = "standby";
+23546: this.$self_$26147.mChar.myCommand = "none";
+23557: this.$self_$26147.mChar.nPosition = this.$self_$26147.lubL6y2W9o.position;
+23562: this.$self_$26147.mChar.oPosition = this.$self_$26147.lubL6y2W9o.position;
+23575: this.YieldDefault(1);
+23580: goto IL_D93;
+23592: goto Block_92;
+23603: this.$tObject$26141 = (GameObject)obj2;
+23606: if (!this.$tObject$26141)
+23610: goto Block_27;
+23615: this.$self_$26147.mChar.actionState = "attack";
+23621: this.$self_$26147.mChar.myCommand = "mpTransfer";
+23624: this.$self_$26147.mChar.addTimeOut("mpTransfer", this.$self_$26147.mChar.agiAdjust((float)30));
+23627: this.$self_$26147.transform.position = this.$mPos$26143;
+23633: this.$self_$26147.PlayAnimation("nAttack1", (float)0);
+23636: this.$self_$26147.animation.wrapMode = WrapMode.Once;
+23651: this.$self_$26147.CDTLByS7hy = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/mpTransfer_ring", typeof(GameObject));
+23663: this.$self_$26147.mChar.createEffect(this.$self_$26147.CDTLByS7hy, this.$self_$26147.lubL6y2W9o.position, this.$self_$26147.lubL6y2W9o.rotation);
+23706: if (Time.time > this.$self_$26147.XNlLiUa5Tw)
+23713: if (UnityEngine.Random.Range(0, 2) == 0)
+23723: this.$self_$26147.hdTL0nNP3Z = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/mpTransfer1", typeof(AudioClip));
+23733: goto Block_55;
+23754: this.$self_$26147.UjLL8aVTJh = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/mpTransfer2", typeof(AudioClip));
+23764: goto IL_67C;
+23787: this.$self_$26147.l6cLdS2tKC = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/multiCast", typeof(AudioClip));
+23797: goto Block_21;
+23824: IL_101:
+23825: goto IL_95E;
+23826: Block_21:
+23827: this.$self_$26147.audio.PlayOneShot(this.$self_$26147.l6cLdS2tKC, (!this.$self_$26147.mChar.isMine) ? 0.75f : ((float)1));
+23828: goto IL_95E;
+23829: Block_27:
+23830: goto IL_D93;
+23831: IL_3C8:
+23832: goto IL_101;
+23833: IL_4CB:
+23834: Block_34:
+23835: goto IL_A4B;
+23836: Block_41:
+23837: goto IL_BBC;
+23838: IL_67C:
+23839: this.$self_$26147.audio.PlayOneShot(this.$self_$26147.UjLL8aVTJh, (!this.$self_$26147.mChar.isMine) ? 0.75f : ((float)1));
+23840: goto IL_101;
+23841: Block_55:
+23842: this.$self_$26147.audio.PlayOneShot(this.$self_$26147.hdTL0nNP3Z, (!this.$self_$26147.mChar.isMine) ? 0.75f : ((float)1));
+23843: IL_95E:
+23844: return this.Yield(2, new WaitForSeconds(0.3f));
+23845: IL_A4B:
+23846: return this.Yield(3, new WaitForSeconds(0.2f));
+23847: goto IL_3C8;
+23848: IL_BBC:
+23849: Block_92:
+23850: IL_D93:
+23867: internal GameObject $tObject$26141;

@@ -1,0 +1,18 @@
+## nAttack_fire
+   nAttack_fire SphereCollider {"m_Material": {"m_FileID": 0, "m_PathID": 0}, "m_IsTrigger": true, "m_Enabled": true, "m_Radius": 0.3499999940395355, "m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}}
+   nAttack_fire Rigidbody {"m_Mass": 1.0, "m_Drag": 0.0, "m_AngularDrag": 0.0, "m_UseGravity": false, "m_IsKinematic": false, "m_Interpolate": 0, "m_Constraints": 112, "m_CollisionDetection": 0}
+   nAttack_fire AudioSource {"m_Enabled": 1, "m_PlayOnAwake": true, "m_Volume": 1.0, "m_Pitch": 1.0, "Loop": false, "Mute": false, "Priority": 128, "DopplerLevel": 1.0, "MinDistance": 0.0, "MaxDistance": 50.0, "Pan2D": 0.0, "rolloffMode": 1, "BypassEffects": false}
+## manaMissile_fire
+   manaMissile_fire SphereCollider {"m_Material": {"m_FileID": 0, "m_PathID": 0}, "m_IsTrigger": true, "m_Enabled": true, "m_Radius": 0.30000001192092896, "m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}}
+   manaMissile_fire Rigidbody {"m_Mass": 1.0, "m_Drag": 0.0, "m_AngularDrag": 0.05000000074505806, "m_UseGravity": false, "m_IsKinematic": false, "m_Interpolate": 0, "m_Constraints": 112, "m_CollisionDetection": 0}
+## snowMan
+  Animation on [0] snowMan: default root play True wrap 2
+    clip root: len 1.0 wrap 0
+      [3] Penguin_snowMan/snowMan1 p: 2 keys, t 0.0..1.0, first [-0.0, 0.0, 0.0], last [-0.0, 0.0, 0.0]
+      [3] Penguin_snowMan/snowMan1 q: 2 keys, t 0.0..1.0, first [-0.5, 0.5, 0.5, 0.5], last [-0.5, 0.5, 0.5, 0.5]
+      [4] Penguin_snowMan/snowMan1/snowMan2 p: 18 keys, t 0.0..1.0, first [-0.06, -0.0, 0.0], last [-0.06, -0.0, 0.0]
+      [4] Penguin_snowMan/snowMan1/snowMan2 q: 2 keys, t 0.0..1.0, first [-0.70711, 0.0, -0.0, 0.70711], last [-0.70711, 0.0, -0.0, 0.70711]
+      [5] Penguin_snowMan/snowMan1/snow1 p: 5 keys, t 0.0..1.0, first [-0.50308, 0.0, 0.0], last [-0.50308, 0.0, 0.0]
+      [5] Penguin_snowMan/snowMan1/snow1 q: 12 keys, t 0.0..1.0, first [0.0, -0.0, -0.0, 1.0], last [-0.0, 0.0, 0.0, -1.0]
+      [6] Penguin_snowMan/snowMan1/snow2 p: 5 keys, t 0.0..1.0, first [-0.74867, 0.0, 0.01], last [-0.74867, 0.0, 0.01]
+      [6] Penguin_snowMan/snowMan1/snow2 q: 10 keys, t 0.0..1.0, first [0.0, -0.0, -0.0, 1.0], last [-0.0, 0.0, 0.0, -1.0]

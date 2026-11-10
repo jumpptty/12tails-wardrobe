@@ -1,0 +1,14 @@
+CharacterControl 676 field bytes
+Penguin 88 field bytes
+  field 0: (0, 79829) -> MonoBehaviour  None
+  field 1: (25, 197) -> step_light2  sound/fx/step_light2
+  field 2: (19, 230) -> step_light3  sound/fx/step_light3
+  field 3: (22, 320) -> nAttack_fire  gameassets/characters/heroes/penguin/effects/nattack_fire
+  field 4: (22, 314) -> nAttack_hit  gameassets/characters/heroes/penguin/effects/nattack_hit
+  field 5: (22, 308) -> castEffect  gameassets/characters/heroes/penguin/effects/casteffect
+  field 6: (22, 316) -> castRing  gameassets/characters/heroes/penguin/effects/castring
+  field 7: (22, 311) -> manaMissile_fire  gameassets/characters/heroes/penguin/effects/manamissile_fire
+  field 8: (22, 172) -> manaMissile_fire  gameassets/characters/heroes/penguin/sounds/manamissile_fire
+  field 9: (22, 319) -> manaMissile_hit  gameassets/characters/heroes/penguin/effects/manamissile_hit
+  field 10: (22, 317) -> deadEffect  gameassets/characters/heroes/penguin/effects/deadeffect
+PenguinEquipment 80 field bytes

@@ -1,0 +1,86 @@
+18388: internal sealed class $RPC_cAttack1$26041 : GenericGenerator<YieldInstruction>
+18392: public $RPC_cAttack1$26041(Vector3 mPos, Vector3 tDir, Penguin self_)
+18425: public override IEnumerator<YieldInstruction> GetEnumerator()
+18427: return new Penguin.$RPC_cAttack1$26041.$(this.$mPos$26049, this.$tDir$26050, this.$self_$26051);
+18454: internal sealed class $ : GenericGeneratorEnumerator<YieldInstruction>, IEnumerator
+18500: case 0:
+18502: case 1:
+18503: goto IL_F3D;
+18504: case 2:
+18511: if (this.$self_$26048.mChar.myCommand != "cAttack1")
+18515: goto Block_39;
+18520: this.$self_$26048.PlayAnimation("cAttack2", 0.2f);
+18525: this.$self_$26048.animation.wrapMode = WrapMode.Loop;
+18540: if (Game.mGameType > 4)
+18546: if (this.$self_$26048.mChar.hasSkill(411))
+18558: this.$self_$26048.Hf3LqZZFFZ = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/manaField_ring");
+18570: this.$self_$26048.mChar.createEffect(this.$self_$26048.Hf3LqZZFFZ, this.$self_$26048.lubL6y2W9o.position, this.$self_$26048.lubL6y2W9o.rotation);
+18593: this.$self_$26048.H4oLvyNiXQ = (GameObject)Resources.Load("GameAssets/Characters/Heroes/Penguin/Effects/cAttack_ring", typeof(GameObject));
+18605: this.$self_$26048.mChar.createEffect(this.$self_$26048.H4oLvyNiXQ, this.$self_$26048.lubL6y2W9o.position, this.$self_$26048.lubL6y2W9o.rotation);
+18621: goto IL_DDD;
+18622: case 3:
+18623: goto IL_DDD;
+18631: this.$self_$26048.mChar.actionState = "attack";
+18641: this.$self_$26048.mChar.myCommand = "cAttack1";
+18651: this.$self_$26048.mChar.addTimeOut("cAttack", 1f);
+18666: this.$self_$26048.PlayAnimation("cAttack1", (float)0);
+18671: this.$self_$26048.animation.wrapMode = WrapMode.Once;
+18678: goto IL_E61;
+18690: if (Game.mGameType <= 4)
+18692: goto IL_E61;
+18700: goto IL_E61;
+18707: if (Time.time <= this.$self_$26048.c25L1h7gBm)
+18709: goto IL_E61;
+18720: if (this.$self_$26048.mChar.hasSkill(411))
+18726: if (UnityEngine.Random.Range(0, 2) == 0)
+18738: this.$self_$26048.TnuLpIIQ6w = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/manaField1", typeof(AudioClip));
+18750: goto IL_B46;
+18757: goto Block_81;
+18770: this.$self_$26048.X5uLReDoow = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/manaField2", typeof(AudioClip));
+18782: goto IL_71B;
+18789: goto Block_51;
+18795: else if (UnityEngine.Random.Range(0, 2) == 0)
+18807: this.$self_$26048.h8aLlUj7PM = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/cAttack1", typeof(AudioClip));
+18817: goto Block_56;
+18828: goto IL_600;
+18839: this.$self_$26048.nPsLGTidM4 = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/cAttack2", typeof(AudioClip));
+18860: goto IL_E61;
+18863: IL_DDD:
+18870: if (!(this.$self_$26048.mChar.myCommand == "cAttack1"))
+18881: goto IL_DCC;
+18892: this.$nMp$26044 = Mathf.Clamp(Mathf.CeilToInt(0.03f * (float)this.$mChargeAttackLv$26043 * (float)this.$self_$26048.mChar.atk) + ((!this.$self_$26048.mChar.hasSkill(411))
+18903: this.$self_$26048.mChar.RPC_AddHeal(364, 0, this.$nMp$26044, 0, 0, 0, this.$self_$26048.mChar.ActorNr);
+18909: if (!this.$self_$26048.mChar.hasSkill(411))
+18911: goto IL_DCC;
+18919: goto IL_DCC;
+18927: goto IL_DCC;
+18935: goto IL_DCC;
+18948: goto IL_DCC;
+18961: goto IL_DCC;
+18967: this.$mPlayerChar$26045.RPC_AddHeal(411, 0, this.$mChargeAttackLv$26043, 0, 0, 0, this.$self_$26048.mChar.ActorNr);
+18972: goto IL_DCC;
+18975: this.YieldDefault(1);
+18978: goto IL_F3D;
+18981: this.$self_$26048.audio.PlayOneShot(this.$self_$26048.nPsLGTidM4, (!this.$self_$26048.mChar.isMine) ? 0.75f : ((float)1));
+18982: goto IL_E61;
+18983: Block_39:
+18984: goto IL_F3D;
+18985: IL_600:
+18986: goto IL_E61;
+18987: IL_71B:
+18988: this.$self_$26048.audio.PlayOneShot(this.$self_$26048.X5uLReDoow, (!this.$self_$26048.mChar.isMine) ? 0.75f : ((float)1));
+18989: Block_51:
+18990: goto IL_A9B;
+18991: Block_56:
+18992: this.$self_$26048.audio.PlayOneShot(this.$self_$26048.h8aLlUj7PM, (!this.$self_$26048.mChar.isMine) ? 0.75f : ((float)1));
+18993: IL_A9B:
+18994: goto IL_E61;
+18995: IL_B46:
+18996: this.$self_$26048.audio.PlayOneShot(this.$self_$26048.TnuLpIIQ6w, (!this.$self_$26048.mChar.isMine) ? 0.75f : ((float)1));
+18997: Block_81:
+18998: goto IL_A9B;
+18999: IL_DCC:
+19000: return this.Yield(3, new WaitForFixedUpdate());
+19001: IL_E61:
+19002: return this.Yield(2, new WaitForSeconds(0.7f));
+19003: IL_F3D:

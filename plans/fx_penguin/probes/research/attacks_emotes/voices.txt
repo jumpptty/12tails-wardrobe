@@ -1,0 +1,6 @@
+voices present: ['nattack1', 'nattack2', 'nattack3', 'manafield1', 'manafield2', 'cattack1', 'cattack2', 'mptransfer1', 'mptransfer2', 'multicast', 'activate1', 'activate2', 'ko1', 'ko2', 'dead1', 'dead2', 'hi', 'wave', 'ty', 'bow', 'laugh', 'sleep', 'cheer', 'beg', 'cry', 'battle', 'chat1', 'chat2', 'chat3', 'chat4', 'chat5', 'spreadshot1', 'frostbite1']
+voices MISSING: ['sit', 'talk', 'pose', 'dance']
+sounds present: ['nattack', 'nattack_hit', 'cattack', 'mptransfer', 'cast']
+sounds MISSING: []
+effects present: ['nattack_fire', 'spreadshot_fire', 'nattack_hit', 'cattack_ring', 'manafield_ring', 'mptransfer', 'mptransfer_ring', 'deadeffect']
+effects MISSING: []

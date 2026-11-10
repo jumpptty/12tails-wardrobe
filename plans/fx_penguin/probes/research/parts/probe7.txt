@@ -1,0 +1,27 @@
+unity default resources 17 Hidden/InternalErrorShader
+unity default resources 68 Hidden/InternalClear
+unity default resources 69 Hidden/Internal-Colored
+unity default resources 70 Hidden/Internal-Loading
+unity_builtin_extra 6 Legacy Shaders/VertexLit
+unity_builtin_extra 7 Legacy Shaders/Diffuse
+unity_builtin_extra 19 Hidden/Internal-StencilWrite
+unity_builtin_extra 30 Legacy Shaders/Transparent/Diffuse
+unity_builtin_extra 34 Legacy Shaders/Transparent/VertexLit
+unity_builtin_extra 50 Legacy Shaders/Transparent/Cutout/VertexLit
+unity_builtin_extra 51 Legacy Shaders/Transparent/Cutout/Diffuse
+unity_builtin_extra 62 Hidden/Internal-DepthNormalsTexture
+unity_builtin_extra 63 Hidden/Internal-PrePassLighting
+unity_builtin_extra 64 Hidden/Internal-ScreenSpaceShadows
+unity_builtin_extra 65 Hidden/Internal-CombineDepthNormals
+unity_builtin_extra 66 Hidden/BlitCopy
+unity_builtin_extra 67 Hidden/BlitCopyDepth
+unity_builtin_extra 68 Hidden/ConvertTexture
+unity_builtin_extra 69 Hidden/Internal-DeferredShading
+unity_builtin_extra 74 Hidden/Internal-DeferredReflections
+unity_builtin_extra 75 Hidden/Internal-MotionVectors
+unity_builtin_extra 102 Hidden/Internal-Flare
+unity_builtin_extra 105 Hidden/Internal-Halo
+unity_builtin_extra 107 Hidden/BlitCopyWithDepth
+unity_builtin_extra 109 Hidden/BlitToDepth
+unity_builtin_extra 110 Hidden/BlitToDepth_MSAA
+unity_builtin_extra 111 Hidden/BlitCopyHDRTonemap

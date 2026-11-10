@@ -1,0 +1,50 @@
+34890: internal sealed class $RPC_arcticEmperor$26455 : GenericGenerator<WaitForSeconds>
+34892: // Token: 0x06002E5D RID: 11869 RVA: 0x005C5ED0 File Offset: 0x005C40D0
+34929: // Token: 0x06002E5E RID: 11870 RVA: 0x005C5FD0 File Offset: 0x005C41D0
+34931: public override IEnumerator<WaitForSeconds> GetEnumerator()
+34936: // Token: 0x06002E5F RID: 11871 RVA: 0x005C5FF0 File Offset: 0x005C41F0
+34942: // Token: 0x06002E60 RID: 11872 RVA: 0x005C5FF4 File Offset: 0x005C41F4
+34943: internal static bool zJlblB5NOQTWaxliBZ9E()
+34948: // Token: 0x04003659 RID: 13913
+34951: // Token: 0x0400365A RID: 13914
+34954: // Token: 0x0400365B RID: 13915
+34957: // Token: 0x0400365C RID: 13916
+34960: // Token: 0x0200082C RID: 2092
+34963: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+34965: // Token: 0x06002E61 RID: 11873 RVA: 0x005C5FF8 File Offset: 0x005C41F8
+35002: // Token: 0x06002E62 RID: 11874 RVA: 0x005C60F8 File Offset: 0x005C42F8
+35004: public override bool MoveNext()
+35013: case 0:
+35015: case 1:
+35017: case 2:
+35084: case 3:
+35103: this.$self_$26459.mChar.actionState = "standby";
+35113: this.$self_$26459.mChar.myCommand = "none";
+35123: this.YieldDefault(1);
+35138: this.$self_$26459.mChar.actionState = "attack";
+35144: this.$self_$26459.mChar.myCommand = "arcticEmperor";
+35147: this.$self_$26459.mChar.addTimeOut("arcticEmperor", this.$self_$26459.mChar.agiAdjust((float)600));
+35159: this.$self_$26459.PlayAnimation("arcticEmperor", (float)0);
+35162: this.$self_$26459.animation.wrapMode = WrapMode.Once;
+35200: if (UnityEngine.Random.Range(0, 2) == 0)
+35204: if (!this.$self_$26459.xD7U5LMRlG)
+35210: this.$self_$26459.xD7U5LMRlG = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/arcticEmperor1", typeof(AudioClip));
+35216: if (this.$self_$26459.xD7U5LMRlG)
+35276: IL_49:
+35277: return this.Yield(3, new WaitForSeconds(0.7f));
+35278: IL_EA:
+35280: IL_1CB:
+35281: return this.Yield(2, new WaitForSeconds(0.3f));
+35282: IL_3C5:
+35287: IL_512:
+35290: IL_5A2:
+35291: this.$self_$26459.audio.PlayOneShot(this.$self_$26459.xD7U5LMRlG, (!this.$self_$26459.mChar.isMine) ? 0.75f : ((float)1));
+35295: IL_8E2:
+35299: // Token: 0x06002E63 RID: 11875 RVA: 0x005C69FC File Offset: 0x005C4BFC
+35305: // Token: 0x06002E64 RID: 11876 RVA: 0x005C6A00 File Offset: 0x005C4C00
+35306: internal static bool hr7xmQ5NFJt8S0AJY8xi()
+35311: // Token: 0x0400365D RID: 13917
+35314: // Token: 0x0400365E RID: 13918
+35317: // Token: 0x0400365F RID: 13919
+35320: // Token: 0x04003660 RID: 13920
+35325: // Token: 0x0200082D RID: 2093

@@ -1,0 +1,285 @@
+==
+absolutezero
+   absoluteZero: EC life 1.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   LineEmitter: lineEmitterMode 3
+   Particle System: world, emitterVelocityScale 1.0
+   Particle System: oneShot
+   Particle System: worldRotationAxis {'x': 0.0, 'y': 4.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+==
+arcticemperor
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   Particle System: render mode 3 length -1.0 vel -1.0
+   SnowEmitter1: world, emitterVelocityScale 0.05000000074505806
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+==
+arcticwind
+   ImageEmitter: ImageEmitterMode 3 world False
+   particleEmitter: oneShot
+   particleEmitter: localRotationAxis {'x': 0.0, 'y': 0.0, 'z': 12.0}
+==
+astralshift_ring
+   astralShift_ring: EC life 1.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   ImageEmitter: ImageEmitterMode 1 world False
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+==
+blink
+   (nothing unusual)
+==
+blink_ring
+   (nothing unusual)
+==
+blizzard
+   blizzard: EC life 6.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   RingEmitter: ImageEmitterMode 1 world False
+   SnowEmitter2: world, emitterVelocityScale 0.05000000074505806
+   SnowEmitter2: worldRotationAxis {'x': 0.0, 'y': -4.0, 'z': 0.0}
+==
+casteffect
+   (nothing unusual)
+==
+castring
+   castRing (root): Animation default create play True clips ['create', 'root', 'destroy']
+   castRing: EC life 60.0+0.5 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+==
+cattack_ring
+   cAttack_ring: EC life 300.0+0.3 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+==
+cosmicfriday
+   cosmicFriday (root): Animation default create play True clips ['create', 'root', 'destroy']
+   ImageEmitter: ImageEmitterMode 1 world False
+   ParticleEmitter: world, emitterVelocityScale 0.05000000074505806
+   ParticleEmitter: localRotationAxis {'x': 1.0, 'y': 3.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 1 alwaysUp True
+==
+cosmicfriday_ring
+   cosmicFriday_ring: EC life 1.0+1.0 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+==
+cosmicrift
+   cosmicRift: EC life 1.0+1.0 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+   ImageEmitter: ImageEmitterMode 1 world False
+   ParticleEmitter: world, emitterVelocityScale 0.05000000074505806
+   ParticleEmitter: oneShot
+   ParticleEmitter: localRotationAxis {'x': 1.0, 'y': 3.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 1 alwaysUp True
+==
+cosmicrift_ring
+   cosmicRift_ring: EC life 1.0+1.0 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+deadeffect
+   (nothing unusual)
+==
+deadlyfrost
+   ImageEmitter: ImageEmitterMode 3 world False
+   particleEmitter: oneShot
+   particleEmitter: localRotationAxis {'x': 0.0, 'y': 0.0, 'z': 12.0}
+==
+dispell
+   dispell: EC life 1.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   VortexEmitter: VortexEmitterMode 0 alwaysUp True
+==
+fallingcomet
+   ParticleSystem: render mode 3 length -1.0 vel -1.0
+   ParticleSystem: UV tiles {'x Tile': 2, 'y Tile': 2, 'cycles': 4.0}
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+fallingstar
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+==
+fallingstar_ring
+   fallingStar_ring: EC life 2.0+0.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+==
+focusintellect
+   (nothing unusual)
+==
+focusintellect_ring
+   focusIntellect_ring: EC life 1.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+frost
+   (nothing unusual)
+==
+frostspike_ring
+   Particle System: world, emitterVelocityScale 1.0
+   Particle System: oneShot
+==
+frozenblast
+   ImageEmitter: ImageEmitterMode 1 world False
+   LineEmitter: lineEmitterMode 3
+   Particle System: world, emitterVelocityScale 1.0
+   Particle System: oneShot
+   Particle System: worldRotationAxis {'x': 0.0, 'y': 4.0, 'z': 0.0}
+==
+frozenbreak
+   ImageEmitter: ImageEmitterMode 1 world False
+   LineEmitter: lineEmitterMode 3
+   Particle System: world, emitterVelocityScale 1.0
+   Particle System: oneShot
+   Particle System: worldRotationAxis {'x': 0.0, 'y': 4.0, 'z': 0.0}
+==
+giantcomet
+   giantComet (root): Animation default Base Stack play True clips ['Base Stack']
+   ParticleSystem: render mode 3 length -1.0 vel -1.0
+   ParticleSystem: UV tiles {'x Tile': 2, 'y Tile': 2, 'cycles': 4.0}
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+giantstar
+   giantStar (root): Animation default Base Stack play True clips ['Base Stack']
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+==
+iceblock
+   (nothing unusual)
+==
+iceshield
+   iceShield (root): Animation default root play True clips ['root']
+   TrailEmitter: TrailRenderer
+   TrailEmitter: TrailRenderer
+==
+manaarc
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   Particle System: localRotationAxis {'x': 1.0, 'y': 3.0, 'z': 0.0}
+==
+manaburn
+   manaBurn: EC life 2.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   LineEmitter: lineEmitterMode 3
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   Particle System: localRotationAxis {'x': 0.0, 'y': 1.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+==
+manafield_ring
+   manaField_ring: EC life 300.0+0.3 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+manamissile_fire
+   manaMissile_fire: TrailRenderer
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+==
+manamissile_hit
+   (nothing unusual)
+==
+manapool_hit
+   manaPool_hit: EC life 1.0+2.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+==
+manasurge
+   manaSurge: EC life 2.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+   LineEmitter: lineEmitterMode 3
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   Particle System: localRotationAxis {'x': 0.0, 'y': 1.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+==
+meteora
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+meteora_hit
+   ParticleSystem: world, emitterVelocityScale 0.05000000074505806
+   ParticleSystem: oneShot
+==
+meteora_ring
+   LineEmitter: lineEmitterMode 3
+==
+mptransfer
+   mpTransfer: EC life 1.0+1.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+==
+mptransfer_ring
+   mpTransfer_ring: EC life 1.0+1.0 rotMode 0 followPos True followState True vel [0.0, 0.0, 0.0]
+   ImageEmitter: ImageEmitterMode 3 world False
+==
+multicast
+   multiCast: EC life 1.0+0.0 rotMode 0 followPos True followState False vel [0.0, 0.0, 0.0]
+==
+nattack_fire
+   Penguin_nAttack_ice: world, emitterVelocityScale 0.05000000074505806
+   Penguin_nAttack_snowFlake: world, emitterVelocityScale 0.05000000074505806
+   Penguin_nAttack_snowFlake: localRotationAxis {'x': 1.0, 'y': 1.0, 'z': 1.0}
+==
+nattack_hit
+   (nothing unusual)
+==
+parallelshift
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+parallelshift_ring
+   ImageEmitter: ImageEmitterMode 1 world False
+==
+penguinofarc
+   Particle System: world, emitterVelocityScale 0.05000000074505806
+   Particle System: oneShot
+   Particle System: localRotationAxis {'x': 1.0, 'y': 3.0, 'z': 0.0}
+==
+snowball
+   (nothing unusual)
+==
+snowball_break
+   ParticleEmitter: world, emitterVelocityScale 0.05000000074505806
+   ParticleEmitter: oneShot
+   ParticleSystem: world, emitterVelocityScale 1.0
+   ParticleSystem: oneShot
+   ParticleSystem: worldRotationAxis {'x': 0.0, 'y': 4.0, 'z': 0.0}
+==
+snowball_cast
+   ParticleEmitter: world, emitterVelocityScale 0.05000000074505806
+   ParticleEmitter: oneShot
+   ParticleEmitter: render mode 2 length -1.0 vel 0.0
+   ParticleSystem: world, emitterVelocityScale 1.0
+   ParticleSystem: oneShot
+   ParticleSystem: worldRotationAxis {'x': 0.0, 'y': 4.0, 'z': 0.0}
+   VortexEmitter: VortexEmitterMode 0 alwaysUp False
+==
+snowman
+   snowMan (root): Animation default root play True clips ['root']
+   ParticleEmitter: world, emitterVelocityScale 0.05000000074505806
+   ParticleEmitter: oneShot
+   ParticleEmitter: render mode 2 length -1.0 vel 0.0
+==
+snowman_ring
+   (nothing unusual)
+==
+spreadshot_fire
+   Penguin_nAttack_ice: world, emitterVelocityScale 0.05000000074505806
+   Penguin_nAttack_snowFlake: world, emitterVelocityScale 0.05000000074505806
+   Penguin_nAttack_snowFlake: localRotationAxis {'x': 1.0, 'y': 1.0, 'z': 1.0}
+==
+tornado1
+   tornado1 (root): Animation default root play True clips ['root', 'create', 'destroy']
+   dustEmitter: worldRotationAxis {'x': 0.0, 'y': -10.0, 'z': 0.0}
+   dustEmitter: render mode 3 length 1.5 vel 0.10000000149011612
+   particleEmitter: world, emitterVelocityScale 0.05000000074505806
+   particleEmitter: worldRotationAxis {'x': 0.0, 'y': -15.0, 'z': 0.0}
+==
+tornado2
+   tornado2 (root): Animation default root play True clips ['root', 'create', 'destroy']
+   dustEmitter: worldRotationAxis {'x': 0.0, 'y': -10.0, 'z': 0.0}
+   dustEmitter: render mode 3 length 2.0 vel 0.10000000149011612
+   particleEmitter: world, emitterVelocityScale 0.05000000074505806
+   particleEmitter: worldRotationAxis {'x': 0.0, 'y': -15.0, 'z': 0.0}
+==
+tornado3
+   tornado3 (root): Animation default root play True clips ['root', 'create', 'destroy']
+   dustEmitter: worldRotationAxis {'x': 0.0, 'y': -10.0, 'z': 0.0}
+   dustEmitter: render mode 3 length 3.0 vel 0.10000000149011612
+   particleEmitter: world, emitterVelocityScale 0.05000000074505806
+   particleEmitter: worldRotationAxis {'x': 0.0, 'y': -15.0, 'z': 0.0}
+==
+tornado_hit
+   LineEmitter: lineEmitterMode 3
+==
+tornado_ring
+   LineEmiter: lineEmitterMode 3
+==
+typhoon1
+   typhoon1 (root): Animation default root play True clips ['root', 'create', 'destroy']
+==
+typhoon2
+   typhoon2 (root): Animation default root play True clips ['root', 'create', 'destroy']
+==
+typhoon3
+   typhoon3 (root): Animation default root play True clips ['root', 'create', 'destroy']

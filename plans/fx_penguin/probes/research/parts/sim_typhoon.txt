@@ -1,0 +1,8 @@
+tornado (v *= 1 - 2dt): from 4 m ahead, at 0.5 / 1 / 2 / 6 s: ['0.5s z 5.54', '1.0s z 6.09', '2.0s z 6.36', '6.0s z 6.40'] (closed form 2.5 (1 - e^-2t) at 6 s: 6.50)
+  typhoon (v *= 1 - 2dt) angle   0: v0 (-0.00, +5.00); within 0.5 m of the 10 m point at 1.3 s; at 6 s at (+0.00, 10.00); wobble after arrival + 1 s: 0.25 m; terminal speed F / drag = 4 m/s
+  typhoon (v *= 1 - 2dt) angle 120: v0 (-4.33, -2.50); within 0.5 m of the 10 m point at 2.32 s; at 6 s at (-0.02, 10.01); wobble after arrival + 1 s: 0.23 m; terminal speed F / drag = 4 m/s
+  typhoon (v *= 1 - 2dt) angle 240: v0 (+4.33, -2.50); within 0.5 m of the 10 m point at 2.32 s; at 6 s at (+0.02, 10.01); wobble after arrival + 1 s: 0.23 m; terminal speed F / drag = 4 m/s
+tornado (v /= 1 + 2dt): from 4 m ahead, at 0.5 / 1 / 2 / 6 s: ['0.5s z 5.56', '1.0s z 6.15', '2.0s z 6.45', '6.0s z 6.50'] (closed form 2.5 (1 - e^-2t) at 6 s: 6.50)
+  typhoon (v /= 1 + 2dt) angle   0: v0 (-0.00, +5.00); within 0.5 m of the 10 m point at 1.28 s; at 6 s at (+0.00, 10.01); wobble after arrival + 1 s: 0.29 m; terminal speed F / drag = 4 m/s
+  typhoon (v /= 1 + 2dt) angle 120: v0 (-4.33, -2.50); within 0.5 m of the 10 m point at 2.28 s; at 6 s at (-0.01, 10.01); wobble after arrival + 1 s: 0.26 m; terminal speed F / drag = 4 m/s
+  typhoon (v /= 1 + 2dt) angle 240: v0 (+4.33, -2.50); within 0.5 m of the 10 m point at 2.28 s; at 6 s at (+0.01, 10.01); wobble after arrival + 1 s: 0.26 m; terminal speed F / drag = 4 m/s

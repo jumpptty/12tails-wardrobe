@@ -1,0 +1,71 @@
+castRing: nodes 4, root pos [248.83299, 54.82311, 146.1424] scale [1.0, 1.0, 1.0]
+   parts {'Animation': 1, 'EffectControl': 1, 'AudioSource': 1, 'SkinnedMeshRenderer': 1}
+   EC ('castRing', {'life': 60.0, 'afterLife': 0.5, 'followPosition': True, 'followState': True, 'effectRotationMode': 0})
+   audio ('castRing', 'cast', 1.0, True, True)
+   anim ('castRing', {'clip': 'create', 'play': True, 'wrap': 1, 'clips': {'create': {'len': 0.4667, 'wrap': 0, 'tracks': {'2': {'path': 'Penguin_castRing/OuterRing', 'q': [[0.0, 0.0, 0.0, 0.66893, 0.74333, 0.0, 0.0, -1.17855, 1.0601, 0.0, 0.0, -1.17855, 1.0601], [0.33333, 0.0, 0.0, 0.19872, 0.98006, 0.0, 0
+castEffect: nodes 2, root pos [0.0, 0.0, 0.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1}
+   EC ('castEffect', {'life': 1.0, 'afterLife': 1.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('castEffect', 'castEffect', 1.0, True, False)
+multiCast: nodes 3, root pos [0.0, 50.0, -64.7817] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'RingEmitter': 1, 'LineEmitter': 1}
+   EC ('multiCast', {'life': 1.0, 'afterLife': 0.0, 'followPosition': True, 'followState': False, 'effectRotationMode': 0})
+   audio ('multiCast', 'trippleCast', 1.0, True, False)
+manaMissile_fire: nodes 2, root pos [250.0, 50.0, 250.0] scale [1.0, 1.0, 1.0]
+   parts {'ProjectileControl': 1, 'Penguin_manaMissile': 1, 'TrailRenderer': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1}
+manaMissile_hit: nodes 2, root pos [-8.41465, 52.76994, 1.60034] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1}
+   EC ('manaMissile_hit', {'life': 1.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('manaMissile_hit', 'manaMissile_hit', 1.0, True, False)
+manaSurge: nodes 6, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'EmblemEmitter': 1, 'RingEmitter': 1, 'LineEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1, 'EmitterControl': 1, 'VortexEmitter': 1}
+   EC ('manaSurge', {'life': 2.0, 'afterLife': 1.0, 'followPosition': True, 'followState': False, 'effectRotationMode': 0})
+   audio ('manaSurge', 'manaBurn', 1.0, True, False)
+manaBurn: nodes 6, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'EmblemEmitter': 1, 'RingEmitter': 1, 'LineEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1, 'EmitterControl': 1, 'VortexEmitter': 1}
+   EC ('manaBurn', {'life': 2.0, 'afterLife': 1.0, 'followPosition': True, 'followState': False, 'effectRotationMode': 0})
+   audio ('manaBurn', 'manaBurn', 1.0, True, False)
+giantComet: nodes 7, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'Animation': 1, 'EffectControl': 2, 'AudioSource': 1, 'SkinnedMeshRenderer': 1, 'EllipsoidParticleEmitter': 1, 'ParticleRenderer': 1, 'ParticleAnimator': 1, 'ImageEmitter': 1, 'LineEmitter': 1, 'RingEmitter': 1}
+   EC ('giantComet', {'life': 4.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   EC ('giantComet_tri', {'life': 0.6, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('giantComet', 'fallingComet', 1.0, True, False)
+   anim ('giantComet', {'clip': 'Base Stack', 'play': True, 'wrap': 0, 'clips': {'Base Stack': {'len': 0.6, 'wrap': 0, 'tracks': {'2': {'path': 'giantComet_tri/root', 'q': [[0.0, 0.0, 0.82904, -0.55919, -0.0, -4.31717, -0.37755, 0.25467, -2.91196, -4.31717, -0.37755, 0.25467, -2.91196], [0.03333, -0.14391, 
+fallingComet: nodes 7, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 2, 'AudioSource': 1, 'Animation': 1, 'SkinnedMeshRenderer': 1, 'EllipsoidParticleEmitter': 1, 'ParticleRenderer': 1, 'ParticleAnimator': 1, 'LineEmitter': 1, 'ImageEmitter': 1, 'RingEmitter': 1}
+   EC ('fallingComet', {'life': 4.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   EC ('fallingComet', {'life': 0.6, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('fallingComet', 'fallingComet', 1.0, True, False)
+   anim ('fallingComet', {'clip': 'root', 'play': True, 'wrap': 0, 'clips': {'root': {'len': 0.6, 'wrap': 0, 'tracks': {'2': {'path': 'root', 'q': [[0.0, -0.55919, 0.0, 0.82904, 0.0, 0.25486, -4.31883, -0.37785, -2.91309, 0.25486, -4.31883, -0.37785, -2.91309], [0.03333, -0.5507, -0.14396, 0.81644, -0.0971,
+meteora_ring: nodes 3, root pos [11.76374, 21.31652, -0.00746] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'RingEmitter': 1, 'LineEmitter': 1}
+   EC ('meteora_ring', {'life': 9.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('meteora_ring', 'meteora', 1.0, True, False)
+meteora: nodes 6, root pos [0.0, 50.0, 0.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 2, 'ImageEmitter': 1, 'Animation': 1, 'SkinnedMeshRenderer': 1, 'RingEmitter': 2}
+   EC ('meteora', {'life': 3.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   EC ('meteora', {'life': 2.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   anim ('meteora', {'clip': 'root', 'play': True, 'wrap': 0, 'clips': {'root': {'len': 2.0, 'wrap': 0, 'tracks': {'3': {'path': 'root', 'q': [[0.0, 0.36419, 0.36419, -0.60611, 0.60611, -0.34299, 0.33915, 0.20813, 0.20174, -0.34299, 0.33915, 0.20813, 0.20174], [0.73333, 0.08173, 0.58179, -0.4019, 0.70237, -
+meteora_hit: nodes 3, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1, 'RingEmitter': 1}
+   EC ('meteora_hit', {'life': 3.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+frozenBreak: nodes 4, root pos [0.01096, 49.99999, -61.39545] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1, 'LineEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1, 'EmitterControl': 1}
+   EC ('frozenBreak', {'life': 3.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('frozenBreak', 'frozenBlast', 1.0, True, False)
+frozenBlast: nodes 4, root pos [0.0, 50.0, -64.0] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1, 'LineEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1, 'EmitterControl': 1}
+   EC ('frozenBlast', {'life': 3.0, 'afterLife': 0.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('frozenBlast', 'frozenBlast', 1.0, True, False)
+deadlyFrost: nodes 3, root pos [0.0, 50.0, -63.27603] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1}
+   EC ('deadlyFrost', {'life': 4.0, 'afterLife': 2.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('deadlyFrost', 'arcticWind', 1.0, True, False)
+arcticWind: nodes 3, root pos [0.0, 50.0, -63.27603] scale [1.0, 1.0, 1.0]
+   parts {'EffectControl': 1, 'AudioSource': 1, 'ImageEmitter': 1, 'EllipsoidParticleEmitter': 1, 'ParticleAnimator': 1, 'ParticleRenderer': 1}
+   EC ('arcticWind', {'life': 2.0, 'afterLife': 2.0, 'followPosition': False, 'followState': False, 'effectRotationMode': 0})
+   audio ('arcticWind', 'arcticWind', 1.0, True, False)
+iceShield: nodes 8, root pos [-1.01849, 51.39231, -67.4125] scale [1.0, 1.0, 1.0]
+   parts {'Animation': 1, 'AudioSource': 1, 'EllipsoidParticleEmitter': 1, 'ParticleRenderer': 1, 'ParticleAnimator': 1, 'SkinnedMeshRenderer': 1, 'TrailRenderer': 2}
+   audio ('iceShield', 'iceShield', 1.0, True, False)
+   anim ('iceShield', {'clip': 'root', 'play': True, 'wrap': 2, 'clips': {'root': {'len': 3.0, 'wrap': 0, 'tracks': {'3': {'path': 'Penguin_iceShield_tri/root', 'q': [[0.0, 0.70711, 0.0, -0.70711, 0.0, -0.01292, 0.74033, 0.01292, 0.74033, -0.01292, 0.74033, 0.01292, 0.74033], [0.33333, 0.66446, 0.24184, -0.

@@ -1,0 +1,49 @@
+== homingLight (root homingLight); sounds []
+   homingLight {"type": "ProjectileControl", "life": 0.0, "dmg": 0.0, "velocity": [0.0, 0.0, 12.0], "OwnerID": 0, "isInitialized": false, "isDestroyed": false}
+   homingLight {"type": "Sheep_homingLight"}
+== nAttack (root nAttack); sounds []
+   nAttack {"type": "ProjectileControl", "life": 0.0, "dmg": 0.0, "velocity": [0.0, 0.0, 12.0], "OwnerID": 0, "isInitialized": false, "isDestroyed": false}
+   nAttack {"type": "Sheep_nAttack"}
+== cAttack (root cAttack); sounds []
+   cAttack {"type": "ProjectileControl", "life": 10.0, "dmg": 0.0, "velocity": [0.0, 0.0, 8.0], "OwnerID": 0, "isInitialized": false, "isDestroyed": false}
+   cAttack {"type": "Sheep_cAttack"}
+== lullaby_ring (root lullaby_ring); sounds ['lullaby']
+   lullaby_ring {"type": "AudioSource", "clip": "lullaby", "volume": 1.0, "playOnAwake": true, "loop": true}
+   lullaby_sheep_tri {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 0.5, "FadeDelay": 0.0, "FadeEaseIn": 1.0, "FadeMiddle": 99.0, "FadeEaseOut": 0.0, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   mat lullaby_sheep add tint [0.250980406999588, 0.250980406999588, 0.250980406999588, 0.0] color [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 1.0] emission [0.0, 0.0, 0.0, 0.0]
+== soulOfArms (root soulOfArms); sounds ['soulOfArms']
+   soulOfArms {"type": "AudioSource", "clip": "soulOfArms", "volume": 1.0, "playOnAwake": true, "loop": false}
+   Sheep_soulOfArms_tri [axe] {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 1.0, "FadeDelay": 0.0, "FadeEaseIn": 0.5, "FadeMiddle": 9.2, "FadeEaseOut": 0.3, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   Sheep_soulOfArms_tri [spear] {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 1.0, "FadeDelay": 0.0, "FadeEaseIn": 0.5, "FadeMiddle": 9.2, "FadeEaseOut": 0.3, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   Sheep_soulOfArms_tri [sword] {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 1.0, "FadeDelay": 0.0, "FadeEaseIn": 0.5, "FadeMiddle": 9.2, "FadeEaseOut": 0.3, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   Sheep_soulOfArms_tri [trident] {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 1.0, "FadeDelay": 0.0, "FadeEaseIn": 0.5, "FadeMiddle": 9.2, "FadeEaseOut": 0.3, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   mat soulofArms shader:FX/Phoenix tint None color [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 0.0] emission [0.250980406999588, 0.250980406999588, 0.250980406999588, 0.0]
+== edenSanctuary (root edenSanctuary); sounds ['edenSanctuary']
+   edenSanctuary {"type": "Sheep_edenSanctuary"}
+   edenSanctuary {"type": "AudioSource", "clip": "edenSanctuary", "volume": 1.0, "playOnAwake": true, "loop": true}
+   edenSanctuary_tri {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 0.5, "FadeDelay": 0.0, "FadeEaseIn": 1.0, "FadeMiddle": 11.0, "FadeEaseOut": 1.0, "eraseShadow": false, "repeat": false, "endDestroy": false}
+== sealOfAttack (root sealOfAttack); sounds ['seal']
+   sealOfAttack {"type": "Sheep_seal", "mSealType": 0}
+   sealOfAttack {"type": "AudioSource", "clip": "seal", "volume": 1.0, "playOnAwake": true, "loop": false}
+== sealOfDefense (root sealOfDefense); sounds ['seal']
+   sealOfDefense {"type": "Sheep_seal", "mSealType": 1}
+   sealOfDefense {"type": "AudioSource", "clip": "seal", "volume": 1.0, "playOnAwake": true, "loop": false}
+== sealOfEarth (root sealOfEarth); sounds ['seal']
+   sealOfEarth {"type": "Sheep_seal", "mSealType": 2}
+   sealOfEarth {"type": "AudioSource", "clip": "seal", "volume": 1.0, "playOnAwake": true, "loop": false}
+== sealOfHeaven (root sealOfHeaven); sounds ['seal']
+   sealOfHeaven {"type": "Sheep_seal", "mSealType": 3}
+   sealOfHeaven {"type": "AudioSource", "clip": "seal", "volume": 1.0, "playOnAwake": true, "loop": false}
+== divinitySpear (root divinitySpear); sounds ['divinitySpear']
+   divinitySpear {"type": "AudioSource", "clip": "divinitySpear", "volume": 1.0, "playOnAwake": true, "loop": false}
+   root {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 0.5, "FadeDelay": 0.0, "FadeEaseIn": 0.0, "FadeMiddle": 0.5, "FadeEaseOut": 0.2, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   mat divinitySpear shader:FX/Phoenix tint None color [0.7843137383460999, 0.7843137383460999, 0.7843137383460999, 0.501960813999176] emission [0.501960813999176, 0.501960813999176, 0.501960813999176, 0.0]
+== divinitySword (root divinitySword); sounds ['divinitySword']
+   divinitySword {"type": "AudioSource", "clip": "divinitySword", "volume": 1.0, "playOnAwake": true, "loop": false}
+   Sheep_divinitySword {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 0.5, "FadeDelay": 0.3, "FadeEaseIn": 0.4, "FadeMiddle": 0.6, "FadeEaseOut": 0.2, "eraseShadow": false, "repeat": false, "endDestroy": false}
+   mat divinitysword shader:FX/Phoenix tint [0.10980392247438431, 0.10980392247438431, 0.10980392247438431, 0.5882353186607361] color [1.0, 1.0, 1.0, 0.0] emission [0.501960813999176, 0.501960813999176, 0.501960813999176, 0.0]
+== divinityAxe (root divinityAxe); sounds ['divinityAxe']
+   divinityAxe {"type": "AudioSource", "clip": "divinityAxe", "volume": 1.0, "playOnAwake": true, "loop": true}
+   axe {"type": "AlphaTimer", "MinAlpha": 0.0, "MaxAlpha": 0.2, "FadeDelay": 0.0, "FadeEaseIn": 0.2, "FadeMiddle": 2.0, "FadeEaseOut": 0.2, "eraseShadow": false, "repeat": false, "endDestroy": false}
+== returncast (root returnCast); sounds []
+   mat retuunCast shader:Particles/AlphaOffset tint None color [1.0, 1.0, 1.0, 1.0] emission None

@@ -1,0 +1,35 @@
+17012: internal sealed class $RPC_nAttack1$26014 : GenericGenerator<WaitForSeconds>
+17049: public override IEnumerator<WaitForSeconds> GetEnumerator()
+17078: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+17124: case 0:
+17126: case 1:
+17128: case 2:
+17129: if (this.$self_$26019.mChar.actionState != "attack")
+17181: this.$self_$26019.k0gLXMxb2T = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/nAttack1", typeof(AudioClip));
+17206: case 3:
+17207: if (this.$self_$26019.mChar.actionState != "attack")
+17248: if (this.$self_$26019.mChar.hasSkill(401))
+17254: if (UnityEngine.Random.Range(0, 100) <= this.$self_$26019.mChar.lckAdjust(20))
+17302: case 4:
+17303: if (this.$self_$26019.mChar.actionState == "attack")
+17315: this.$self_$26019.mChar.actionState = "standby";
+17320: this.$self_$26019.mChar.actionTime = Time.time;
+17325: this.$self_$26019.mChar.myCommand = "none";
+17354: this.YieldDefault(1);
+17367: this.$self_$26019.mChar.actionState = "attack";
+17370: this.$self_$26019.mChar.actionTime = Time.time;
+17373: this.$self_$26019.mChar.myCommand = "nAttack1";
+17376: this.$self_$26019.mChar.addTimeOut("nAttack", 1.5f);
+17385: this.$self_$26019.PlayAnimation("nAttack1", (float)0);
+17388: this.$self_$26019.animation.wrapMode = WrapMode.Once;
+17409: IL_130:
+17410: return this.Yield(4, new WaitForSeconds(0.2f));
+17413: IL_368:
+17416: IL_605:
+17418: IL_6E6:
+17419: return this.Yield(3, new WaitForSeconds(0.2f));
+17420: IL_7D8:
+17421: return this.Yield(2, new WaitForSeconds(0.1f));
+17424: IL_8F8:
+17425: this.$self_$26019.audio.PlayOneShot(this.$self_$26019.k0gLXMxb2T, (!this.$self_$26019.mChar.isMine) ? 0.75f : ((float)1));
+17427: IL_982:

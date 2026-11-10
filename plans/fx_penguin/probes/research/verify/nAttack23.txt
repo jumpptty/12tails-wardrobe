@@ -1,0 +1,145 @@
+=== RPC_nAttack2
+17463: internal sealed class $RPC_nAttack2$26023 : GenericGenerator<WaitForSeconds>
+17467: public $RPC_nAttack2$26023(Vector3 mPos, Vector3 tDir, Penguin self_)
+17500: public override IEnumerator<WaitForSeconds> GetEnumerator()
+17502: return new Penguin.$RPC_nAttack2$26023.$(this.$mPos$26029, this.$tDir$26030, this.$self_$26031);
+17529: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+17575: case 0:
+17577: case 1:
+17578: goto IL_95B;
+17579: case 2:
+17586: goto IL_61C;
+17595: this.$self_$26028.mChar.moveSpeed = (float)0;
+17600: this.$self_$26028.mChar.addTimeOut("nAttack", 1.5f);
+17605: this.$self_$26028.PlayAnimation("nAttack2", 0.2f);
+17610: this.$self_$26028.animation.wrapMode = WrapMode.Once;
+17613: goto Block_39;
+17618: case 3:
+17625: goto IL_92A;
+17629: this.$self_$26028.mChar.moveSpeed = (float)-1;
+17636: goto IL_6F5;
+17650: goto IL_6F5;
+17658: goto IL_6F5;
+17671: this.$self_$26028.GqsLOY820a = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/nAttack2", typeof(AudioClip));
+17681: goto Block_13;
+17692: goto IL_6F5;
+17696: case 4:
+17703: goto IL_174;
+17707: this.$self_$26028.mChar.moveSpeed = (float)0;
+17714: goto IL_2A3;
+17722: goto IL_2A3;
+17738: if (this.$self_$26028.mChar.hasSkill(401))
+17744: if (UnityEngine.Random.Range(0, 100) <= this.$self_$26028.mChar.lckAdjust(20))
+17750: this.$self_$26028.RPC_spreadShot_fire(this.$firePos$26024, this.$fireDir$26025, 0);
+17757: goto IL_1A;
+17763: this.$self_$26028.ActionEvent("RPC_spreadShot_fire", this.$firePos$26024, this.$fireDir$26025, 0);
+17766: goto Block_40;
+17771: this.$self_$26028.RPC_nAttack_fire(this.$firePos$26024, this.$fireDir$26025, 0);
+17778: goto IL_2A3;
+17784: this.$self_$26028.ActionEvent("RPC_nAttack_fire", this.$firePos$26024, this.$fireDir$26025, 0);
+17787: goto Block_61;
+17792: case 5:
+17805: this.$self_$26028.mChar.actionState = "standby";
+17810: this.$self_$26028.mChar.actionTime = Time.time;
+17815: this.$self_$26028.mChar.myCommand = "none";
+17844: this.YieldDefault(1);
+17849: goto IL_95B;
+17857: this.$self_$26028.mChar.actionState = "attack";
+17860: this.$self_$26028.mChar.myCommand = "nAttack2";
+17863: goto IL_3C4;
+17867: IL_1A:
+17868: goto IL_2A3;
+17869: Block_13:
+17870: this.$self_$26028.audio.PlayOneShot(this.$self_$26028.GqsLOY820a, (!this.$self_$26028.mChar.isMine) ? 0.75f : ((float)1));
+17871: goto IL_6F5;
+17872: IL_174:
+17873: goto IL_95B;
+17874: IL_2A3:
+17875: return this.Yield(5, new WaitForSeconds(0.2f));
+17876: IL_3C4:
+17877: return this.Yield(2, new WaitForSeconds(this.$self_$26028.mChar.actionTime - Time.time + 0.5f));
+17878: Block_39:
+17879: return this.Yield(3, new WaitForSeconds(0.2f));
+17880: Block_40:
+17881: goto IL_1A;
+17882: IL_61C:
+17883: goto IL_95B;
+17884: IL_6F5:
+17885: return this.Yield(4, new WaitForSeconds(0.1f));
+17886: Block_61:
+17887: goto IL_2A3;
+17888: IL_92A:
+17889: IL_95B:
+=== RPC_nAttack3
+17925: internal sealed class $RPC_nAttack3$26032 : GenericGenerator<WaitForSeconds>
+17929: public $RPC_nAttack3$26032(Vector3 mPos, Vector3 tDir, Penguin self_)
+17962: public override IEnumerator<WaitForSeconds> GetEnumerator()
+17964: return new Penguin.$RPC_nAttack3$26032.$(this.$mPos$26038, this.$tDir$26039, this.$self_$26040);
+17991: internal sealed class $ : GenericGeneratorEnumerator<WaitForSeconds>, IEnumerator
+18037: case 0:
+18039: case 1:
+18040: goto IL_95E;
+18041: case 2:
+18046: goto Block_38;
+18057: this.$self_$26037.mChar.moveSpeed = (float)0;
+18062: this.$self_$26037.mChar.addTimeOut("nAttack", 1.5f);
+18067: this.$self_$26037.PlayAnimation("nAttack3", 0.2f);
+18072: this.$self_$26037.animation.wrapMode = WrapMode.Once;
+18075: goto Block_55;
+18080: case 3:
+18085: goto Block_11;
+18091: this.$self_$26037.mChar.moveSpeed = -0.5f;
+18098: goto IL_7F5;
+18112: goto IL_7F5;
+18120: goto IL_7F5;
+18133: this.$self_$26037.wpfL2ICsXr = (AudioClip)Resources.Load("GameAssets/Characters/Heroes/Penguin/Voices/nAttack3", typeof(AudioClip));
+18145: goto IL_5CD;
+18152: goto Block_43;
+18158: case 4:
+18165: goto IL_654;
+18169: this.$self_$26037.mChar.moveSpeed = (float)0;
+18176: goto IL_90F;
+18184: goto IL_90F;
+18200: if (this.$self_$26037.mChar.hasSkill(401))
+18206: if (UnityEngine.Random.Range(0, 100) <= this.$self_$26037.mChar.lckAdjust(40))
+18212: this.$self_$26037.RPC_spreadShot_fire(this.$firePos$26033, this.$fireDir$26034, 0);
+18219: goto IL_434;
+18225: this.$self_$26037.ActionEvent("RPC_spreadShot_fire", this.$firePos$26033, this.$fireDir$26034, 0);
+18230: goto IL_434;
+18233: this.$self_$26037.RPC_nAttack_fire(this.$firePos$26033, this.$fireDir$26034, 0);
+18240: goto IL_90F;
+18246: this.$self_$26037.ActionEvent("RPC_nAttack_fire", this.$firePos$26033, this.$fireDir$26034, 0);
+18249: goto Block_41;
+18254: case 5:
+18267: this.$self_$26037.mChar.actionState = "standby";
+18272: this.$self_$26037.mChar.actionTime = Time.time;
+18277: this.$self_$26037.mChar.myCommand = "none";
+18306: this.YieldDefault(1);
+18309: goto Block_44;
+18319: this.$self_$26037.mChar.actionState = "attack";
+18322: this.$self_$26037.mChar.myCommand = "nAttack3";
+18325: goto Block_16;
+18329: Block_11:
+18330: goto IL_95E;
+18331: Block_16:
+18332: return this.Yield(2, new WaitForSeconds(this.$self_$26037.mChar.actionTime - Time.time + 1f));
+18333: IL_434:
+18334: goto IL_90F;
+18335: Block_38:
+18336: goto IL_95E;
+18337: Block_41:
+18338: goto IL_90F;
+18339: IL_5CD:
+18340: this.$self_$26037.audio.PlayOneShot(this.$self_$26037.wpfL2ICsXr, (!this.$self_$26037.mChar.isMine) ? 0.75f : ((float)1));
+18341: Block_43:
+18342: goto IL_7F5;
+18343: Block_44:
+18344: IL_654:
+18345: goto IL_95E;
+18346: Block_55:
+18347: return this.Yield(3, new WaitForSeconds(0.1f));
+18348: IL_7F5:
+18349: return this.Yield(4, new WaitForSeconds(0.2f));
+18350: IL_90F:
+18351: return this.Yield(5, new WaitForSeconds(0.2f));
+18352: IL_95E:

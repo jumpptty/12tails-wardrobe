@@ -1,0 +1,48 @@
+edenSanctuary on edenSanctuary clip create wrap 0
+    Rotation 'edenSanctuary_tri' 2 keys 0.0 [0.0, -0.0, -0.0, 1.0] -> 1.0 [0.0, -0.0, -0.0, 1.0]
+    Position 'edenSanctuary_tri' 3 keys 0.0 [-0.0, -10.0, 0.0] -> 1.0 [-0.0, 0.0, 0.0]
+    Scale 'edenSanctuary_tri' 2 keys 0.0 [1.0, 1.0, 1.0] -> 1.0 [1.0, 1.0, 1.0]
+edenSanctuary on edenSanctuary clip destroy wrap 0
+    Rotation 'edenSanctuary_tri' 2 keys 0.0 [0.0, -0.0, -0.0, 1.0] -> 1.0 [0.0, -0.0, -0.0, 1.0]
+    Position 'edenSanctuary_tri' 3 keys 0.0 [-0.0, 0.0, 0.0] -> 1.0 [-0.0, -10.0, 0.0]
+    Scale 'edenSanctuary_tri' 2 keys 0.0 [1.0, 1.0, 1.0] -> 1.0 [1.0, 1.0, 1.0]
+divinityAxe on divinityAxe clip Base Stack wrap 1
+    Rotation 'Sheep_divinityAxe/axe' 72 keys 0.0 [0.0, -0.0, -0.0, 1.0] -> 2.7 [0.0, 0.856, -0.0, -0.517]
+    Position 'Sheep_divinityAxe/axe' 2 keys 0.0 [-0.0, 0.608, 0.0] -> 2.5 [-0.0, 0.608, 0.0]
+    Scale 'Sheep_divinityAxe/axe' 2 keys 0.0 [1.0, 1.0, 1.0] -> 2.7 [1.0, 1.0, 1.0]
+divinitySpear on divinitySpear clip root wrap 0
+    Rotation 'root' 2 keys 0.0 [0.707, 0.0, -0.707, 0.0] -> 0.5 [0.707, 0.0, -0.707, 0.0]
+    Position 'root' 6 keys 0.0 [-0.0, 0.0, -4.0] -> 0.5 [-0.0, 0.0, 0.0]
+divinitySword on Sheep_divinitySword clip root wrap 0
+    Rotation 'sword_R' 2 keys 0.0 [-0.129, -0.638, 0.304, 0.695] -> 1.0 [-0.129, -0.638, 0.304, 0.695]
+    Rotation 'sword_L' 2 keys 0.0 [0.129, -0.638, -0.304, 0.695] -> 1.0 [0.129, -0.638, -0.304, 0.695]
+    Position 'sword_R' 7 keys 0.0 [0.1, 4.528, 6.028] -> 1.0 [0.1, 0.441, 0.878]
+    Position 'sword_L' 7 keys 0.0 [-0.1, -4.437, 5.995] -> 1.0 [-0.1, -0.162, 0.791]
+lullaby_ring on lullaby_ring clip root wrap 2
+    Rotation 'lullaby_sheep_tri' 6 keys 0.0 [-0.0, 0.007, 0.0, -1.0] -> 7.967 [0.0, 1.0, -0.0, -0.0]
+    Rotation 'lullaby_sheep_tri/ring1' 19 keys 0.0 [0.525, -0.473, 0.473, 0.525] -> 7.967 [0.5, -0.5, 0.5, 0.5]
+    Rotation 'lullaby_sheep_tri/ring2' 6 keys 0.0 [0.0, 0.013, -0.0, 1.0] -> 7.967 [-0.0, 0.0, 0.0, -1.0]
+    Rotation 'lullaby_sheep_tri/ring3' 2 keys 0.0 [0.0, 1.0, -0.0, -0.0] -> 7.967 [0.0, 1.0, -0.0, -0.0]
+    Position 'lullaby_sheep_tri/ring1' 2 keys 0.0 [-0.0, 0.0, 0.0] -> 7.967 [-0.0, 0.0, 0.0]
+    Position 'lullaby_sheep_tri/ring2' 26 keys 0.0 [-0.0, 0.038, 0.0] -> 7.967 [-0.0, 0.0, 0.0]
+    Position 'lullaby_sheep_tri/ring3' 2 keys 0.0 [-0.0, 0.0, 0.0] -> 7.967 [-0.0, 0.0, 0.0]
+    Scale 'lullaby_sheep_tri' 2 keys 0.0 [1.0, 1.0, 1.0] -> 7.967 [1.0, 1.0, 1.0]
+    Scale 'lullaby_sheep_tri/ring1' 2 keys 0.0 [1.0, 1.0, 1.0] -> 7.967 [1.0, 1.0, 1.0]
+    Scale 'lullaby_sheep_tri/ring2' 2 keys 0.0 [1.0, 1.0, 1.0] -> 7.967 [1.0, 1.0, 1.0]
+    Scale 'lullaby_sheep_tri/ring3' 2 keys 0.0 [1.0, 1.0, 1.0] -> 7.967 [1.0, 1.0, 1.0]
+soulOfArms on Sheep_soulOfArms clip root wrap 0
+    Rotation 'root' 37 keys 0.0 [0.0, -0.0, -0.0, 1.0] -> 10.0 [-0.0, -0.0, -0.909, -0.418]
+    Rotation 'root/Sheep_soulOfArms_tri [sword]' 53 keys 0.0 [0.0, -0.0, -0.0, 1.0] -> 9.4 [0.0, -0.596, -0.0, 0.803]
+    Rotation 'root/Sheep_soulOfArms_tri [trident]' 54 keys 0.0 [0.0, 0.0, 0.707, 0.707] -> 9.4 [-0.582, 0.582, 0.402, 0.402]
+    Rotation 'root/Sheep_soulOfArms_tri [axe]' 43 keys 0.0 [0.0, 0.0, 0.708, 0.706] -> 9.4 [0.541, -0.539, 0.457, 0.456]
+    Rotation 'root/Sheep_soulOfArms_tri [spear]' 29 keys 0.0 [-0.0, 0.0, 0.0, -1.0] -> 9.5 [-0.779, -0.0, 0.627, 0.0]
+    Position 'root' 12 keys 0.0 [-0.0, 0.0, 4.847] -> 10.0 [-0.0, 0.0, -0.2]
+    Position 'root/Sheep_soulOfArms_tri [sword]' 17 keys 0.0 [-3.0, 0.0, 0.5] -> 9.5 [-0.338, 0.0, 0.233]
+    Position 'root/Sheep_soulOfArms_tri [trident]' 17 keys 0.0 [-0.024, -3.0, 0.0] -> 9.5 [0.008, -0.096, 0.087]
+    Position 'root/Sheep_soulOfArms_tri [axe]' 20 keys 0.0 [-0.0, 3.0, 0.0] -> 9.5 [-0.0, 0.716, 0.01]
+    Position 'root/Sheep_soulOfArms_tri [spear]' 20 keys 0.0 [3.0, 0.0, 0.0] -> 9.5 [1.701, 0.0, 0.322]
+sealOfAttack on Sheep_seal1 clip root wrap 2
+    Rotation 'seal1' 4 keys 0.0 [-0.5, 0.5, 0.5, 0.5] -> 2.0 [0.5, 0.5, -0.5, 0.5]
+    Rotation 'seal2' 7 keys 0.0 [0.0, 0.707, -0.0, 0.707] -> 2.0 [-0.0, -0.707, 0.0, -0.707]
+    Position 'seal1' 5 keys 0.0 [-0.0, 0.0, 0.101] -> 2.0 [-0.0, 0.0, 0.101]
+    Position 'seal2' 5 keys 0.0 [-0.0, 0.0, 0.2] -> 2.0 [-0.0, 0.0, 0.2]
