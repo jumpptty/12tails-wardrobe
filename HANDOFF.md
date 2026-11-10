@@ -17,6 +17,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Either PC
 
+- **Done for the Wolf and the Sheep (2026-11-10, NOTES.md "one tile per skill"); the Penguin's pools split by the same
+  page code already; left for the Penguin: its effect-only tiles (Mana Arc, Dispell, Frost Spike, Double / Triple Cast:
+  read each RPC, add SEQ "<Name>: root@<t>" + SEQ_SKILL + cue key "@<Name>:root", build with `wardrobe_fx.py penguin
+  --fx ... --voices ...`), then its QA.** The original item:
 - **Every skill gets a tile, Wolf and Sheep first, then the Penguin** (user 2026-11-10: "Yes to both, but redo Wolf and
   Sheep first"; NOTES.md "skills without an animation, and the pooled tiles"): (1) one tile per skill instead of the
   pools (the Cast tile's random pick among the skills sharing cast3, cast4, blink): each tile plays the shared clip with

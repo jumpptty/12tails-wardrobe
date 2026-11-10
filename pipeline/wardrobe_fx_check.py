@@ -210,7 +210,24 @@ async def main():
                 await page.click('button.topic[data-t="move"]')
                 clips = list(CUES[cls])
                 tile_of = dict(zip(clips, await page.evaluate(TILES, clips)))
-                for tile, group in dict.fromkeys(map(tuple, tile_of.values())):   # in cue order, one play per tile
+                # one tile per pool member (index.html poolChains, 2026-11-10): a pool's clip is played through each
+                # member's own tile, which expects that member's cues; its host tile (the Cast sequence) is not listed
+                pools = {p[0]: p for p in await page.evaluate(
+                    "() => wardrobe.debug().chains().filter(c => c.pick).map(c => [c.id, c.pick, c.steps.map(s => s.clip)])")}
+                pooled = {clip for _, pick, steps in pools.values() for clip in steps if CUES[cls].get(clip, {}).get("skills", {}).get(pick)}
+                hidden = set(await page.evaluate("() => wardrobe.debug().chains().filter(c => c.hidden).map(c => c.id)"))
+                order = [t for c in clips if tile_of[c][0] not in hidden or c in pooled for t in ([tuple(tile_of[c])] if c not in pooled else
+                         [(pid, "skill") for pid, pick, steps in pools.values() if c in steps and CUES[cls][c].get("skills", {}).get(pick)])]
+                for tile, group in dict.fromkeys(order):   # in cue order, one play per tile
+                    if tile in pools:                      # a pool member's tile: its steps, the pool's clip as that member
+                        _, pick, steps = pools[tile]
+                        entries = [(CUES[cls][c]["skills"][pick] if CUES[cls].get(c, {}).get("skills", {}).get(pick) else entry_for(cls, None, c)) for c in steps]
+                        expect = sorted({("skin:" if cue[1] == "skin" else "") + cue[2] for e in entries for cue in e.get("cues", [])
+                                         if cue[1] in ("fx", "skin") and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
+                        cap = CAP + max([c[0] for e in entries for c in e.get("cues", [])] or [0])
+                        errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)
+                        errors += [e for e in errs if e not in errors]
+                        continue
                     # effects every play must show: a plain entry's (its "a|b" picks and rolled procs vary: not expected);
                     # a shared clip's skills are picked at random, so none of theirs is expected either
                     # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)

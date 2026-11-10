@@ -1026,3 +1026,21 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   effect-only tiles on the idle stance, "but redo Wolf and Sheep first" (HANDOFF "Either PC").
 - **2026-11-10, the Penguin's build committed as is** (QA cut off; checks after the lag fix: fx check dark penguin /
   sheep / wolf exit 0, errors []; unit tests 52 OK).
+- **2026-11-10 (night, home), one tile per skill; Quick Heal; Wolf and Sheep first** (user: "Yes to both, but redo Wolf
+  and Sheep first"). Page: `chains()` adds `poolChains`: every member of a plain-clip pool in the cue file
+  ({skills: {...}}) gets its own sequence tile (`pick` = the member, name from its id: "@IceShield"), with the steps of the
+  tile that played the pool (the sequence holding the clip with no cue key of its own for it, "Cast" first; else the clip
+  alone); that host is not listed (`hidden`, `C.poolClips`); `fxStart` plays the pick's cues only; the icon is the
+  member's own (`moveSkillIcons` via `chainOf(name).skill`). "@<sequence>:<clip>" pools stay random (the Sheep's seal
+  fields are one skill's outcomes). chains() is not cached until the cue file has loaded. Wolf: Dark Edge, Holy Armor,
+  Brave Spirit, Second Wind, Lunar Eclipse, Holy Sword (were 2 tiles); Sheep: the 21 Cast skills (was 1). Skills with no
+  animation, found per class as the class's own RPC_* that call no clip (clip_calls.js), phases (_hit, _fire, _multiCast,
+  _move ...) and the shared item / pet / mount RPCs left aside: Wolf none (grandMark = Cross Break's mark, nAttack5 the
+  combo's restart, doubleArt the roll, all cued); Sheep Quick Heal (Free Cast is the returnCast roll, cast0 / holyLight0
+  / lullaby0 the cancels): SEQ "Quick Heal: root@1" + SEQ_SKILL, cue key "@QuickHeal:root" (voice quickHeal1|2, koHeal
+  with KO Heal #422 on, returnCast 24 %; Sheep.cs:10201-10420), built with `wardrobe_fx.py sheep --fx koHeal,quickHeal
+  --voices quickHeal1,quickHeal2` (merges). `wardrobe_skill_icons.py`: every pool member (its pool's clip) and
+  EFFECT_ONLY skill (root) gets its Bible icon, so the publish keeps them. `wardrobe_fx_check.py` plays each member's
+  tile expecting its own cues, and skips the hidden hosts. Checks: files-only sheep / wolf no problems; dark wolf exit 0,
+  errors [].
+  Then: dark sheep exit 0 errors [] (all 21 Cast skills and Quick Heal played); moves check errors []; menu check errors [] (a first run's failed emote-icon requests did not repeat); unit tests 52 OK. New pipeline/wardrobe_picker_shot.py (screenshots of a class's picker tab).

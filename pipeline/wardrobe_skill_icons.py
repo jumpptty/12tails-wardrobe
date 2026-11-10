@@ -34,6 +34,13 @@ CLIP_SKILLS = {
 }
 
 
+# skills the game plays with no body animation, shown as idle-stance tiles (index.html SEQ "<Name>: root@<t>", 2026-11-10;
+# found by listing each class's RPC_* that calls no clip, NOTES.md that day)
+EFFECT_ONLY = {"sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast"]}
+# sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip
+OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "edenSanctuary": ["cast3"]}}
+
+
 def bible_icons():
     """{key: webp bytes} of BIBLE_ASSETS.SKILL_ICONS."""
     text = open(ASSETS, encoding="utf-8").read()
@@ -70,6 +77,23 @@ def main():
                     print(f"  {cls}/{clip}: the Bible has no icon for {s}", file=sys.stderr)
                     continue
                 out.setdefault(s, {"icon": f"icons/hd/{cls}/{s}.webp", "clips": []})["clips"].append(clip)
+        # one tile per skill (2026-11-10): every member of a cue-file pool (a clip several skills play, {skills: {...}}, the
+        # page's poolChains) gets its own icon, the pool's clip as its clip; a skill the game plays with no animation
+        # (EFFECT_ONLY, an idle-stance tile) the idle clip root
+        cues_path = os.path.join(ROOT, "wardrobe", "fx_cues", f"{cls}.json")
+        pools = {}
+        if os.path.isfile(cues_path):
+            for key, e in json.load(open(cues_path, encoding="utf-8")).items():
+                if not key.startswith("@") and isinstance(e, dict) and e.get("skills"):
+                    for m in e["skills"]:
+                        pools.setdefault(m, []).append(key)
+        for s, cl in [*pools.items(), *((s, ["root"]) for s in EFFECT_ONLY.get(cls, [])), *OWN_TILE.get(cls, {}).items()]:
+            s = lower.get(s.lower(), s)
+            if s not in best:
+                print(f"  {cls}: the Bible has no icon for {s}", file=sys.stderr)
+                continue
+            v = out.setdefault(s, {"icon": f"icons/hd/{cls}/{s}.webp", "clips": []})
+            v["clips"] += [c for c in cl if c not in v["clips"]]
         os.makedirs(os.path.join(DATA, "icons", "hd", cls), exist_ok=True)
         for s in out:
             open(os.path.join(DATA, "icons", "hd", cls, s + ".webp"), "wb").write(icons[best[s][1]])

@@ -462,6 +462,14 @@
     [20.7, "fx", "tto/grandCodex_close", {"d": 10, "y": 2.602, "rot": [-35, 0, 0]}]
     ]
   },
+  "@QuickHeal:root": {
+    "why": "Sheep.cs RPC_quickHeal (:10201-10420, a plain method: no clip, no wait; the tile plays it on the idle stance), all at 0: voice quickHeal1 / quickHeal2 (Random.Range(0, 2), :10256, :10287; played for the caster's own team); addTimeOut 1 s (:10316); KO Heal #422 on (passives on, hasSkill(422) :10319): Effects/koHeal at the hero's position and rotation (createEffect :10334-10346), else Effects/quickHeal there (:10369-10381); Free Cast 2 #132 + Return Cast #431 (decision 6, one roll per play): getFreeCast(quickHeal) :10402 rolls lckAdjust(12 x 2) = 24 % (:10049-10070), a proc Instantiates returnCast at the hero (:10085-10101, :11651-11661); the heal on allies within 5 m (7 with KO Heal, Damage.FindAreaTarget :10417) draws nothing more",
+    "cues": [
+    [0, "voice", "quickHeal1|quickHeal2"],
+    [0, "fx", "koHeal"],
+    [0, "fx", "returnCast", {"p": 0.24, "roll": "returnCast"}]
+    ]
+  },
   "wave": {
     "why": "Sheep.cs RPC_emotion (:40348): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40646, PlayOneShot :40658; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:40694) and emo_wave (:40702) both play the wave clip (:41144): voice hi or wave",
     "cues": [

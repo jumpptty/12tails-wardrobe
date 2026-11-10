@@ -1048,7 +1048,10 @@ const SEQ = {
   sheep: ["Normal Attack: nAttack1@0.7 nAttack2^@0.8 nAttack3", "Charge Attack: cAttack1@0.8 cAttack0*~@4 cAttack2", "Cast: cast1 cast2*@0 cast3~",
     "Holy Light: holyLight1@0.6 holyLight2*@0 holyLight3@0.4 holyLight4*@3", "Lullaby: holyLight1@0.6 holyLight2*@0 lullaby*@3",
     "Soul of Arms: cast1 cast2*@0 soulOfArms~", "Seal of Attack: cast3!", "Seal of Defense: cast3!", "Eden Sanctuary: cast3",
-    "Gleaming Breath: cast1 cast2*@0 gleamingBreath^", "Lucent Barrier: cast1 cast2*@0 lucentBarrier^"],
+    "Gleaming Breath: cast1 cast2*@0 gleamingBreath^", "Lucent Barrier: cast1 cast2*@0 lucentBarrier^",
+    // Quick Heal plays no animation (RPC_quickHeal Sheep.cs:10201-10420 calls no PlayAnimation: the Sheep goes on with what
+    // she was doing): its effect on the idle stance (2026-11-10, the user: effect-only tiles)
+    "Quick Heal: root@1"],
   whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
     "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0"],
   // the Wolf's step times corrected from the code 2026-11-09 (plans/fx_wolf/attacks.md, checked by hand): stage 2 from 0.8 s,
@@ -1073,14 +1076,42 @@ const HOLD_SECS = 1.5;
 // the class's sequences whose clips are all in this copy (the online copy has no TTO clips), parsed once per class
 function chains() {
   if (C.chains) return C.chains;
-  return (C.chains = (SEQ[C.cls] || []).map(line => {
+  const base = (SEQ[C.cls] || []).map(line => {
     const [name, body] = line.split(": ");
     const steps = body.split(" ").map(tok => {
       const m = tok.match(/^(\w+)(\*)?([~^!])?(?:@([\d.]+))?$/);
       return { clip: m[1], hold: !!m[2], fade: m[3] === "~" ? 0.2 : m[3] === "^" ? 0.1 : 0, cut: m[3] === "!", t: m[4] ? +m[4] : null };
     });
     return { id: "@" + name.replace(/\s+/g, ""), name, steps, tto: steps.some(s => C.clipsData[s.clip]?.tto) };
-  }).filter(ch => ch.steps.every(s => C.clipsData[s.clip])));
+  }).filter(ch => ch.steps.every(s => C.clipsData[s.clip]));
+  const tab = FX.cueTab[C.cls];
+  if (FX_ON && !tab) return base;                     // the cue file is still loading: the per-skill tiles come with it (not cached)
+  return (C.chains = base.concat(poolChains(base, tab || {})));
+}
+// One tile per skill (user 2026-11-10: "there's much less skills than I thought"; "Yes to both"): a clip several skills
+// play is a pool in the cue file ({skills: {name: {cues}}}, picked at random each play: the Penguin's cast3 holds 16
+// skills, the Sheep's 21, the Wolf's instantCast 4). Each pool member gets a sequence of its own, `pick` = the member
+// (fxStart plays only its cues), with the steps of the tile that plays the pool now: the sequence holding that clip with
+// no cue key of its own for it ("Cast" first), else the clip alone; that host tile is then not listed (`hidden`, or the
+// clip in C.poolClips). "@<sequence>:<clip>" pools stay random: they are one skill's outcomes (the Sheep's seal fields).
+function poolChains(base, tab) {
+  const out = [], taken = new Set(base.map(ch => ch.id));
+  C.poolClips = new Set();
+  const own = (ch, clip) => tab[ch.id + ":" + clip] || tab["@" + ch.name + ":" + clip];
+  for (const [key, e] of Object.entries(tab)) {
+    if (key.startsWith("@") || !e?.skills || !C.clipsData[key]) continue;
+    const hosts = base.filter(ch => ch.steps.some(s => s.clip === key) && !own(ch, key));
+    const host = hosts.find(ch => ch.name === "Cast") || hosts[0];
+    const steps = host ? host.steps : [{ clip: key, hold: playMode(key) === "loop", fade: 0.2, cut: false, t: null }];
+    for (const m of Object.keys(e.skills)) {
+      const name = m.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, x => x.toUpperCase()), id = "@" + name.replace(/\s+/g, "");
+      if (taken.has(id)) continue;
+      taken.add(id);
+      out.push({ id, name, steps, pick: m, skill: m, tto: host ? host.tto : !!C.clipsData[key].tto });
+    }
+    if (host) host.hidden = true; else C.poolClips.add(key);
+  }
+  return out;
 }
 const chainOf = id => typeof id === "string" && id.startsWith("@") ? chains().find(c => c.id === id) : null;
 const idleName = () => Object.keys(C.clipsData).find(k => k.toLowerCase() === "root") || Object.keys(C.clipsData)[0];
@@ -2563,15 +2594,19 @@ const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.
 // a sequence that is one skill played on another skill's clip (2026-11-10, the Penguin's MP Transfer on nAttack1,
 // Penguin.cs:23633): its own skill's icon (the Bible's upscale when it has one, else the class's top-rank icon), not the
 // icons of the skills its clip belongs to (Normal Attack's)
-const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer" } };
+// (also the sequences on a pool's clip, 2026-11-10: the Sheep's seals and Eden Sanctuary on cast3, the Penguin's Cosmic
+// Friday, which would otherwise show the pool's skills)
+const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday" },
+  sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" } };
 function moveSkillIcons(name) {
-  const own = SEQ_SKILL[C?.cls]?.[name];
+  const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
     const hd = HDI[C.cls]?.[own]?.icon, sk = (UI.skills?.[C.cls] || []).filter(s => s.replace(/\d+$/, "") === own.toLowerCase()).sort(numSort);
     return hd ? [hd] : sk.length ? [`icons/skills/${C.cls}/${sk[sk.length - 1]}.webp`] : [];
   }
   const ch = chainOf(name), clips = ch ? ch.steps.map(s => s.clip) : [name];
-  const hd = Object.values(HDI[C?.cls] || {}).filter(v => v.clips.some(c => clips.includes(c))).map(v => v.icon);
+  const pooled = new Set(chains().filter(c => c.skill).map(c => c.skill));   // a pool member shows on its own tile only
+  const hd = Object.entries(HDI[C?.cls] || {}).filter(([s, v]) => !pooled.has(s) && v.clips.some(c => clips.includes(c))).map(([, v]) => v.icon);
   return (hd.length ? hd : [moveIcon(name)].filter(Boolean)).slice(0, 5);
 }
 const ringCover = srcs => !srcs.length ? "" : `<span class="rc" aria-hidden="true">` + RING_SPOTS[srcs.length].map(([x, y, d], i) => {
@@ -2799,7 +2834,8 @@ async function openPicker(t, opts = {}) {
     if (tab) tools.querySelector(`.pk-tab[data-g="${tab}"]`)?.focus();     // a tab switched by keyboard keeps the focus
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
     // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
-    const seqs = moveTab === "skill" ? chains() : [], used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(LOWER_RANK[C.cls] || []), ...(NEVER_PLAYED[C.cls] || [])]);
+    const seqs = moveTab === "skill" ? chains().filter(ch => !ch.hidden) : [];
+    const used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(C.poolClips || []), ...(LOWER_RANK[C.cls] || []), ...(NEVER_PLAYED[C.cls] || [])]);
     const names = Object.keys(C.clipsData).filter(k => moveGroup(k) === moveTab && !used.has(k)).sort(moveSort);
     const tiles = [...seqs.map(ch => ({ id: ch.id, tto: ch.tto, title: esc(moveText(ch.id)) })), ...names.map(n => ({ id: n, tto: C.clipsData[n].tto }))]
       .sort((a, b) => a.tto - b.tto);
@@ -3772,6 +3808,7 @@ function fxStart(clip, step = 0) {
   if (step === 0) FX.pick = null;
   if (e?.skills) {
     const names = Object.keys(e.skills);
+    if (ch?.pick && e.skills[ch.pick]) FX.pick = ch.pick;   // a skill's own tile (poolChains): always that skill
     if (!e.skills[FX.pick]) FX.pick = names[Math.floor(Math.random() * names.length)];
     cues = e.skills[FX.pick].cues || [];
   }

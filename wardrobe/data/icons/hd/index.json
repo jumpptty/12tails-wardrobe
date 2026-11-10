@@ -726,16 +726,34 @@
   }
  },
  "penguin": {
+  "absoluteZero": {
+   "icon": "icons/hd/penguin/absoluteZero.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "arcticEmperor": {
    "icon": "icons/hd/penguin/arcticEmperor.webp",
    "clips": [
     "arcticEmperor"
    ]
   },
+  "arcticWind": {
+   "icon": "icons/hd/penguin/arcticWind.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "blink": {
    "icon": "icons/hd/penguin/blink.webp",
    "clips": [
     "blink"
+   ]
+  },
+  "blizzard": {
+   "icon": "icons/hd/penguin/blizzard.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "cAttack": {
@@ -757,10 +775,88 @@
     "cosmicFriday"
    ]
   },
+  "cosmicRift": {
+   "icon": "icons/hd/penguin/cosmicRift.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "dispell": {
+   "icon": "icons/hd/penguin/dispell.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "doubleCast": {
+   "icon": "icons/hd/penguin/doubleCast.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "fallingComets": {
+   "icon": "icons/hd/penguin/fallingComets.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "fallingStars": {
+   "icon": "icons/hd/penguin/fallingStars.webp",
+   "clips": [
+    "cast4"
+   ]
+  },
   "focusIntellect": {
    "icon": "icons/hd/penguin/focusIntellect.webp",
    "clips": [
     "focusIntellect"
+   ]
+  },
+  "frozenBlast": {
+   "icon": "icons/hd/penguin/frozenBlast.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "iceBlock": {
+   "icon": "icons/hd/penguin/iceBlock.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "iceShield": {
+   "icon": "icons/hd/penguin/iceShield.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "manaArc": {
+   "icon": "icons/hd/penguin/manaArc.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "manaBurn": {
+   "icon": "icons/hd/penguin/manaBurn.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "manaMissile": {
+   "icon": "icons/hd/penguin/manaMissile.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "manaVortex": {
+   "icon": "icons/hd/penguin/manaVortex.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "meteora": {
+   "icon": "icons/hd/penguin/meteora.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "nAttack": {
@@ -769,6 +865,48 @@
     "nAttack1",
     "nAttack2",
     "nAttack3"
+   ]
+  },
+  "novaFlare": {
+   "icon": "icons/hd/penguin/novaFlare.webp",
+   "clips": [
+    "cast4"
+   ]
+  },
+  "parallelShift": {
+   "icon": "icons/hd/penguin/parallelShift.webp",
+   "clips": [
+    "blink"
+   ]
+  },
+  "snowBall": {
+   "icon": "icons/hd/penguin/snowBall.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "snowMan": {
+   "icon": "icons/hd/penguin/snowMan.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "tornado": {
+   "icon": "icons/hd/penguin/tornado.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "tripleCast": {
+   "icon": "icons/hd/penguin/tripleCast.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "typhoon": {
+   "icon": "icons/hd/penguin/typhoon.webp",
+   "clips": [
+    "cast3"
    ]
   }
  },
@@ -902,6 +1040,30 @@
   }
  },
  "sheep": {
+  "allCleanse": {
+   "icon": "icons/hd/sheep/allCleanse.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "allFeather": {
+   "icon": "icons/hd/sheep/allFeather.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "allHeal": {
+   "icon": "icons/hd/sheep/allHeal.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "bless": {
+   "icon": "icons/hd/sheep/bless.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "bookBash": {
    "icon": "icons/hd/sheep/bookBash.webp",
    "clips": [
@@ -918,6 +1080,48 @@
     "cAttack2"
    ]
   },
+  "cleanse": {
+   "icon": "icons/hd/sheep/cleanse.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "clear": {
+   "icon": "icons/hd/sheep/clear.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "divinityAxe": {
+   "icon": "icons/hd/sheep/divinityAxe.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "divinitySpear": {
+   "icon": "icons/hd/sheep/divinitySpear.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "divinitySword": {
+   "icon": "icons/hd/sheep/divinitySword.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "edenSanctuary": {
+   "icon": "icons/hd/sheep/edenSanctuary.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "feather": {
+   "icon": "icons/hd/sheep/feather.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "gleamingBreath": {
    "icon": "icons/hd/sheep/gleamingBreath.webp",
    "clips": [
@@ -930,6 +1134,12 @@
     "grandCodex"
    ]
   },
+  "heal": {
+   "icon": "icons/hd/sheep/heal.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "holyLight": {
    "icon": "icons/hd/sheep/holyLight.webp",
    "clips": [
@@ -937,6 +1147,18 @@
     "holyLight2",
     "holyLight3",
     "holyLight4"
+   ]
+  },
+  "illuminate": {
+   "icon": "icons/hd/sheep/illuminate.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "lightBind": {
+   "icon": "icons/hd/sheep/lightBind.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "lucentBarrier": {
@@ -959,16 +1181,82 @@
     "nAttack3"
    ]
   },
+  "overHeal": {
+   "icon": "icons/hd/sheep/overHeal.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "pacify": {
+   "icon": "icons/hd/sheep/pacify.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "purifyingTear": {
    "icon": "icons/hd/sheep/purifyingTear.webp",
    "clips": [
     "purifyingTear"
    ]
   },
+  "quickHeal": {
+   "icon": "icons/hd/sheep/quickHeal.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "repel": {
+   "icon": "icons/hd/sheep/repel.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "reverse": {
+   "icon": "icons/hd/sheep/reverse.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "revert": {
+   "icon": "icons/hd/sheep/revert.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "revive": {
+   "icon": "icons/hd/sheep/revive.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "sealOfAttack": {
+   "icon": "icons/hd/sheep/sealOfAttack.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "sealOfDefense": {
+   "icon": "icons/hd/sheep/sealOfDefense.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "sleep": {
+   "icon": "icons/hd/sheep/sleep.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "soulOfArms": {
    "icon": "icons/hd/sheep/soulOfArms.webp",
    "clips": [
     "soulOfArms"
+   ]
+  },
+  "worldEncarta": {
+   "icon": "icons/hd/sheep/worldEncarta.webp",
+   "clips": [
+    "cast3"
    ]
   }
  },
