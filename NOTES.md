@@ -848,3 +848,11 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   + `catalog.bin` in this repo (top-level, so git-ignored by the whitelist; never in the video folder).
   `wardrobe_fx_tto.py`'s ASSETS: the video folder's 2026-11-04 if present, else the newest `tto_assets\<date>` here.
   Probe of the Wolf's 18 TTO effects from it: all identical to the home build. After a TTO patch: decrypt into a new date.
+- **2026-11-10, the Sheep's effects: research done** (user: "now's let use workflows to complete Sheep class next!").
+  Workflow 1 (9 agents, 31 min): six read-only researchers wrote `plans/fx_sheep/{attacks_emotes,own_skills,cast_a,
+  cast_b,tto,parts}.md`, three checkers re-traced ~424 claims and corrected 15 in place (each report's "Verification"
+  section). cast3 is shared by 23 Sheep skills (one pool); the Normal Attack's stages run at 0.7 / 1.5 s (SEQ had 0.8 /
+  1.8); BB asks for voices that don't exist (All Cleanse, Seal of Defense; the charge release always cAttack1): TTO
+  fixed them (Bible findings to offer). The user took all 20 recommendations: `plans/fx_sheep/decisions.md`, and set
+  the rule that missing parts are always built (memory + plans/fx_recipe.md). Workflow 2 (build) started: AlphaTimer +
+  Phoenix material, the Sheep's projectiles / Eden, page + pipeline changes, the TTO side; one editor; one QA pass.
