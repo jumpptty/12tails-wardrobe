@@ -122,6 +122,7 @@ def page_edits(data_dir, ui_dir):
          "// the published copy (wardrobe_publish.py) keeps its data in a folder named by a hash of the content: a rebuilt\n"
          "// file gets a new address, so the browser may keep every file it has\n", 1),
         ("no-cache fetch", 'fetch(p, { cache: "no-cache" })', "fetch(p)", 1),
+        ("no-cache effects", 'dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" })', "dataBytes(`${DATA}${cls}/fx.json`)", 1),
         # the local copy's toolbar ends with a "copy for Claude" button behind a divider: both go
         ("copy button", '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
          "", 1),

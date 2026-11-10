@@ -52,6 +52,7 @@ const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
+const fxData = cls => dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" });
       const t = loadTex(`${DATA}props/tex/${m.tex}`);
 $("shot").onclick = () => {};
 $("copy").onclick = async () => {

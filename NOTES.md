@@ -910,3 +910,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   buff, but the arms hit the target (Sheep.cs:34100-34118, QA), so its cue is at the 10 m point (decision 2). Checks
   (one at a time): unit tests OK, files no problems (sheep, wolf), fx check sheep / wolf dark exit 0 errors [], moves
   check errors [], menu check errors [], adopt test fails 0.
+- **2026-11-10, deployed: the Sheep** (user: "deploy automatically after all work is done"). The first publish stopped
+  on its own guard ("'no-cache' is still in the published page": the new fx.json read); the publish now strips it like
+  getJSON's ("no-cache effects" edit, in the test page too). Build: 7,685 files (+186), 331.7 MB (+5.4 MB);
+  sheep/fx.json, wolf/fx.json and tto_* textures scrambled ("TTOx"), BB's wolf_dead.webp plain; check no problems;
+  `wardrobe_dist_check.py` errors []. Deployed from a fresh empty folder: version
+  `c58df635-d5d5-47a0-be6f-9e3b36481bf2`, live `data-f8b8ebe61a`, the bg / vfx buttons, fxparts alphatimer / sheep /
+  tto_sheep and fx_cues/sheep.json 200, the old data folder 404.
