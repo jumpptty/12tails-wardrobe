@@ -9,6 +9,7 @@ another PC or in a new session, run the script again (pass it to the Workflow to
 |---|---|---|
 | `sheep-fx-research.js` | six read-only researchers write `plans/fx_sheep/*.md`, three checkers re-trace and fix them | 9 |
 | `sheep-fx-build.js` | four part builders (own files each), one editor (`fx_cues/sheep.json`, data build, checks), one QA pass | 6 |
+| `penguin-fx-build.js` | the Sheep's build for the Penguin (home PC paths): four builders (mesh.js shaders, penguin.js, page + pipeline, TTO), one editor, one QA pass that also re-checks the Sheep and the Wolf | 6 |
 | `penguin-fx-research.js` | the Sheep's research for the Penguin, the Sheep / Wolf decisions applied by analogy; stopped at 98 % of the weekly limit after `own_skills` (HANDOFF.md "Continue the Penguin's effects research") | 9 |
 
 To continue the Penguin from a new session: copy `penguin-fx-research.js`, keep only the RESEARCH entries still to

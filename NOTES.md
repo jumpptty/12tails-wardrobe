@@ -933,3 +933,16 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   Attack's aim point (a 0.35 m ball radius the Sheep's cues ignored too), Tornado / Typhoon as two pool members, Cosmic
   Rift / Friday's hero-skin look, Snow Man hiding the hero, the Staff of Time's slow ball. Next: the user answers them
   (or takes the defaults), then the build workflow (HANDOFF).
+- **2026-11-10 (evening, home PC), pulled and checked** (user: "git pull and continue Penguin work"): 1bb66aa..47ead9a.
+  The office-built Sheep data came with the pull (`wardrobe_fx_check.py ... --cls sheep --files-only`: no problems);
+  the usage guard runs here without a prompt (`--once`: weekly 2.0 %). The Penguin's 17 questions plus the checkers' two
+  conventions (missile aim: floor at 10 m or the target 0.6 m up; effects drawn with the target's rotation: the hero's
+  facing or `rot [0, 180, 0]`) put to the user; attacks_emotes Q3 and parts Q1 give opposite defaults for the Staff of
+  Time (no / yes).
+- **2026-11-10 (evening, home), the Penguin's decisions; the build workflow started** (user: "go with your recc"): all 20
+  in `plans/fx_penguin/decisions.md`. Two of them are new rules for every class: homing missiles aim at the target
+  0.6 m up, and effects drawn with the target's rotation use `rot [0, 180, 0]` (the target faces the hero). Workflow
+  `penguin-fx-build` (`pipeline/workflows/penguin-fx-build.js`, run wf_c0c24a49-de0): builders shaders (mesh.js),
+  penguin (`fxparts/penguin.js`), page_pipeline, tto (`fxparts/tto_penguin.js`, shuriken.js's Trail module, the TTO
+  skinned mesh + cel shader), then one editor (`fx_cues/penguin.json`, the data build), then QA over Penguin, Sheep and
+  Wolf. Usage guard on (`usage_watch.py 98 60`).
