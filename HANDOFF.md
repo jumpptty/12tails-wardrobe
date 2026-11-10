@@ -32,22 +32,16 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
   `plans\wardrobe_trailer_*.md`, `captions\wardrobe_trailer\`, `renders\yt_shorts\wardrobe_trailer\`; check `music_*.py`
   and anything else only the trailer uses. The wardrobe no longer keeps `window.wardrobe` working for it.
 
-## Next up (either PC; agreed at the office 2026-11-09)
+## Next up (either PC)
 
-- **Effects + sounds for every class**, the plan the user and Claude settled on (NOTES.md "skill effects" entries):
-  1. ~~Prep~~ done at home 2026-11-09 (NOTES.md "step 1 (prep) done"): cues in `wardrobe/fx_cues/<cls>.json`, the
-     recipe `plans/fx_recipe.md`, the parts list `plans/fx_inventory.md` (403 of the classes' 699 own effects are
-     buildable today; its greedy build order is the order to build the missing parts in).
-  2. Next: one agent does the Wolf's remaining skills from `plans/fx_recipe.md` alone, to prove it (48 of the Wolf's
-     69 effects are ready).
-  3. Fan out: one agent per missing effect part (in the inventory's build order: VortexEmitter, EmblemEmitter,
-     EmitterControl, then the mesh parts StaticMesh + Animation + SkinnedMeshRenderer together), then one per class
-     (the session limit is under 10 agents per workflow unless the user raises it; the user starts it with "use a
-     workflow"). Part agents touch `index.html` and `wardrobe_fx.py` (`LAYOUTS`), so run them one after another or
-     in worktrees; class agents touch only their cue file and data. Headless browser checks one at a time (three at
-     below-normal priority if the user asks for speed): the PC rule.
-  Measured: Feral Strike took 4 min 7 s end to end; about 16-20 agent-hours in all, about 4-6 h wall clock in parallel.
-- **The user's open decisions** (ask before building on them): the backdrop (`?fxbg=dark` / `spot` / `white`); a game
-  clip of Cross Break to check its stretched slashes (they come out huge); whether to add the four skills' effect and
-  sound timings to the Bible's Wolf reference; effects the game spawns at the target (hits on an enemy): the recipe
-  leaves them out (no target in the wardrobe), or show them a fixed distance ahead?
+- **Effects + sounds for every class, one class at a time with two workflows** (user 2026-11-10: "use workflows to do
+  the next class"): research (six read-only researchers + three checkers, reports in `plans/fx_<cls>/`), then build
+  (one builder per missing part with its own files, one editor writes `wardrobe/fx_cues/<cls>.json` and builds, one QA
+  pass), then the user's checks list and a deploy. Done: Wolf, Sheep. In progress: Penguin (2026-11-10). Left: Bat,
+  Bison, Cat, Chameleon, Mole, Monkey, Panda, Rabbit, Whale. The user's standing decisions: `plans/fx_wolf/decisions.md`
+  and `plans/fx_sheep/decisions.md` apply to every class by analogy; missing parts are always built (memory
+  "feedback-build-missing-fx-parts", `plans/fx_recipe.md`).
+- Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);
+  effects on an enemy go to the target point 10 m ahead; the user doesn't want Bible findings offered (2026-11-10: "no
+  need to offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched
+  slashes.
