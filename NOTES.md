@@ -25,7 +25,8 @@ from here. The split's design and plan: `plans\wardrobe_split_design.md`, `plans
 
 ## Wardrobe app (2026-11-04)
 
-`wardrobe.cmd` (this repo's root) serves the folder on http://127.0.0.1:8771 (Python http.server) and opens
+`wardrobe.cmd` (this repo's root) serves the folder on http://127.0.0.1:8771 (`pipeline/wardrobe_serve.py`, Python's
+http.server that closes itself about 10-15 s after the last wardrobe page closes, 2026-11-10) and opens
 `wardrobe/index.html`: three.js r160 (jsdelivr importmap), one class at a time in its game idle (`root`), every outfit
 (BB + TTO) in every colour, any face (composed on the texture in a canvas with skins.py's face-block rule), right /
 left hand weapons, headpiece, back trinket (BB's mounts and rotations above), emotes with Thai labels (TTO's clap /
@@ -774,3 +775,22 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   the office's old `wardrobe\data` still in place, no Move-Item needed: it was ignored before the pull, and git
   overwrites ignored files without asking. `git status` clean; 8,029 tracked data files plus the 52 of `bb_rip_fix`
   (still there, still ignored); `wardrobe_fx_check.py --cls wolf --files-only`: no problems.
+- **2026-11-10, the Wolf's emote and basic-move voices; the server closes with the page** (user: "there's no sfx / vfx
+  if any, for other emotes other than the skill animations, Wolf first"; "closing the Wardrobe viewport browser closes
+  the server instance together with it too"). What the game does: `RPC_emotion` (Wolf.cs :39385) only plays a voice,
+  at 0 before the clip: `emo_<name>` = `Voices/<name>` (:39636), `emo_chat` = chat1-5 at random (:39628). No effect,
+  no Sounds/ (the `doEmoticon` bubbles in CharacterControl are statuses: tent zzz, panic, heart; not the emotes). The
+  rip has voices for hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5; none for sit, dance, talk, pose*,
+  clap, wai, cooking, mining, planting, fishingWolf (silent in the game too). Shared clips: wave (emo_hi, emo_wave) =
+  `hi|wave`, bow (emo_ty, emo_bow) = `ty|bow`, talk (emo_chat; emo_talk is silent) = chat1-5, battle (emo_battle; the
+  fight stance silent) = battle, ko = `ko1|ko2|dead1|dead2` (RPC_ko :45604-45695 and RPC_dead :45975-46006 share the
+  clip). getUp, walk, run, falling, root: nothing. Cues in `fx_cues/wolf.json` (10 entries), the 19 `v_*.mp3` built
+  by `wardrobe_fx.py wolf`; its rebuilt `fx.json` differed only in four `mMeshFilter` path IDs (the office's game data
+  numbers its assets differently), so the home build's fx.json was kept (`git checkout`). Page: an emote or basic move
+  replayed (mode "again") says its line once per pick (`C.seq.round`; cry's 0.8 s clip said it on every replay);
+  skills unchanged. `wardrobe_fx_check.py` opens the clip's own picker tab (อีโมต / ท่าพื้นฐาน keys failed as "no
+  ท่าสกิล tile"); dark check exit 0, no errors. Server: `pipeline/wardrobe_serve.py` (ThreadingHTTPServer, queue 128);
+  the page and tto_picker.html hold `/__alive` (an EventSource, only when `location.port === "8771"`, so the checks'
+  servers and the public copy never ask); 10 s after the last one closes it exits (measured: survives a reload, gone
+  15 s after the tab closed). Caveat: a browser that discards idle tabs (Chrome's Memory Saver) drops the stream too:
+  run `wardrobe.cmd` again. Online: the emote voices go with the next publish (from home).

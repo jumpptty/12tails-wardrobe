@@ -74,7 +74,9 @@ uv run --no-project --with playwright python -I pipeline/wardrobe_fx_check.py D:
 
 The build takes every effect and voice the cue file names (it reads `12TailsOnline_Data` in the Bible folder; both
 PCs have it). The check must exit 0: it fails on a named effect or voice missing from the data, a cued effect that never
-spawns (a cue key that isn't a ท่าสกิล clip shows as "no ท่าสกิล tile"), and any page error. Then look at
+spawns (a cue key that isn't a clip of the class shows as "no tile ... in the <group> tab"; emote and basic-move keys
+are played from their own tab, 2026-11-10), and any page error. Emotes and basic moves: see NOTES.md 2026-11-10 (the
+Wolf's emote voices, from `RPC_emotion`, `RPC_ko`, `RPC_dead`). Then look at
 `checks/fx_<cls>/compare.html` (or the `_peak.png` shots): the effect should sit where the game puts it. Headless checks
 run one at a time on this PC.
 

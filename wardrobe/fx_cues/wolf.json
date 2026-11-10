@@ -434,5 +434,65 @@
     [0.8, "fx", "tto/windBoundDomain_domain"],
     [0.8, "fx", "tto/windBoundDomain_pulse"]
     ]
+  },
+  "wave": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:39702) and emo_wave (:39709) both play the wave clip (:40143): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_ty (:39718) and emo_bow (:39725) both play the bow clip (:40136): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_laugh (:39732)",
+    "cues": [
+    [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_sleep (:39764)",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cheer (:39776)",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_beg (:39788)",
+    "cues": [
+    [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cry (:39800)",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_chat (:39821) plays the talk clip with chat1-5 at random (Random.Range(1, 6), :39628); emo_talk (:39814) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Wolf.cs RPC_emotion (:39385): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:39636, PlayOneShot :39648; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_battle (:40084): voice battle; the battle stance in a fight plays the clip silent: the tile takes the emote's voice",
+    "cues": [
+    [0, "voice", "battle"]
+    ]
+  },
+  "ko": {
+    "why": "Wolf.cs RPC_ko (:45355): clip and voice ko1 or ko2 at 0 (:45604-45695), getUp after 3 s; RPC_dead (:45731) plays the same clip with dead1 or dead2 at 0 (:45975-46006): one of the four at random",
+    "cues": [
+    [0, "voice", "ko1|ko2|dead1|dead2"]
+    ]
   }
 }

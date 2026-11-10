@@ -79,18 +79,20 @@ URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"
 LIVE = """() => { const { FX } = wardrobe.debug();
   return FX.live.map(f => f.name + ':' + f.emitters.reduce((s, e) => s + (f.attached(e.node) ?
     (e.node.children.find(c => c.isMesh)?.geometry.attributes.position?.count || 0) : 0), 0) + 'v'); }"""
-# the tile that plays a clip: the sequence holding it (ท่าสกิล lists those instead of their clips), else the clip
-TILES = """clips => { const { chains } = wardrobe.debug(), ch = chains();
-  return clips.map(c => (ch.find(s => s.steps.some(st => st.clip === c)) || { id: c }).id); }"""
+# the tile that plays a clip and its picker tab: the sequence holding it (ท่าสกิล lists those instead of their clips),
+# else the clip in its own group's tab (อีโมต / ท่าพื้นฐาน cues since 2026-11-10: the Wolf's emote voices)
+TILES = """clips => { const { chains, C } = wardrobe.debug(), ch = chains();
+  return clips.map(c => { const s = ch.find(s => s.steps.some(st => st.clip === c));
+    return s ? [s.id, "skill"] : [c, /^walk$/i.test(c) ? "base" : C.clipsData[c]?.group || "skill"]; }); }"""
 
 
-async def play_tile(page, var, cls, tile, expect, shots):
+async def play_tile(page, var, cls, tile, group, expect, shots):
     await page.evaluate("() => { const { FX } = wardrobe.debug(); FX.spawned = {}; FX.missing = {}; }")
-    if await page.locator('#picker').is_hidden():                      # reopen the move picker's skill tab
+    if await page.locator('#picker').is_hidden():                      # reopen the move picker
         await page.click('button.topic[data-t="move"]')
-        await page.click('.pk-tab[data-g="skill"]')
+    await page.click(f'.pk-tab[data-g="{group}"]')
     if await page.locator(f'#pkBody .pk-item[data-m="{tile}"]').count() == 0:
-        return [f"{cls}: no ท่าสกิล tile {tile} (cue file key not a clip of this class?)"]
+        return [f"{cls}: no tile {tile} in the {group} tab (cue file key not a clip of this class?)"]
     await page.click(f'#pkBody .pk-item[data-m="{tile}"]')
     await page.click('#pkClose') if await page.locator('#pkClose').count() else None
     t0 = await page.evaluate("() => performance.now()")
@@ -140,15 +142,14 @@ async def main():
                 await page.evaluate("c => wardrobe.show(c)", cls)
                 await page.wait_for_function("c => wardrobe.debug().C?.cls === c && wardrobe.debug().FX.cueTab[c]", arg=cls, timeout=120000)
                 await page.click('button.topic[data-t="move"]')
-                await page.click('.pk-tab[data-g="skill"]')
                 clips = list(CUES[cls])
                 tile_of = dict(zip(clips, await page.evaluate(TILES, clips)))
-                for tile in dict.fromkeys(tile_of.values()):                  # in cue order, one play per tile
+                for tile, group in dict.fromkeys(map(tuple, tile_of.values())):   # in cue order, one play per tile
                     # effects every play must show: a plain entry's (its "a|b" picks and rolled procs vary: not expected);
                     # a shared clip's skills are picked at random, so none of theirs is expected either
-                    expect = sorted({cue[2] for c in clips if tile_of[c] == tile for cue in CUES[cls][c].get("cues", [])
+                    expect = sorted({cue[2] for c in clips if tile_of[c][0] == tile for cue in CUES[cls][c].get("cues", [])
                                      if cue[1] == "fx" and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
-                    errs = await play_tile(page, var, cls, tile, expect, shots)
+                    errs = await play_tile(page, var, cls, tile, group, expect, shots)
                     errors += [e for e in errs if e not in errors]
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")
         print("sound:", snd)

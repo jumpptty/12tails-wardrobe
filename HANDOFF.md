@@ -5,6 +5,11 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Home PC
 
+- **Publish + deploy the Wolf's emote voices and the self-closing server** (office 2026-11-10, user: "commit push and
+  deploy"; NOTES.md 2026-11-10 "emote and basic-move voices"): `git pull`, then
+  `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then the user deploys (NOTES.md "Online copy"). Online
+  check: the Wolf's wave / cry / ko tiles speak with เสียงท่าทาง on, once per pick.
+
 - Publishing from the office still drops 4 Monkey back items (its rip is damaged, NOTES.md 2026-11-09 "office
   publishing"): publish from home.
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and

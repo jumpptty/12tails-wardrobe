@@ -1091,7 +1091,7 @@ function play(name, tail = false) {
     if (mode === "loop") steps = [{ ...steps[0], hold: true }];   // a looped channel: held for HOLD_SECS, then idle
     mode = "back";
   }
-  C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail };
+  C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail, round: 0 };
   C.cur = name;
   if (!tail) fxClear();                      // a new pick: the last move's effects go with it (not the way back to idle)
   startStep(0, 0.2);
@@ -1107,8 +1107,10 @@ function startStep(i, fade) {
   if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
   C.action = act;
   S.i = i; S.t = 0;
-  if (!S.tail) fxStart(st.clip, i);          // its effects and voice, every time the clip starts (the loop too); the way back
-                                             // to idle keeps the skill's cues running on (FX.t goes on from the skill's clip)
+  // its effects and voice, every time the clip starts (the loop too); the way back to idle keeps the skill's cues running
+  // on (FX.t goes on from the skill's clip). An emote or a basic move replayed says its line once per pick, as the game
+  // plays it once (user 2026-11-10: the Wolf's emote voices; cry's 0.8 s clip would say it again and again)
+  if (!S.tail && (!S.round || isSkillMove(C.cur))) fxStart(st.clip, i);
   S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
     : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
 }
@@ -1119,6 +1121,7 @@ function seqTick(dt) {
   // back: after the last step, idle (ลุกขึ้น; a skill played once: its effects and later cues run on)
   if (S.mode === "back" && S.i + 1 >= S.steps.length) { play(idleName(), true); if (openTopic === "move") syncPressed(); return; }
   const n = S.i + 1 < S.steps.length ? S.i + 1 : 0;
+  if (!n) S.round++;
   startStep(n, n ? S.steps[n].fade : 0.2);
 }
 // a tile's name, icon and tooltip; a sequence's icon is the skill's own (by its name), else its first clip's that has one
@@ -2980,6 +2983,10 @@ $("copy").onclick = async () => {
 // optional: the clip time the hero's action changes, which ends a followState effect]] } }. wardrobe_fx.py builds the
 // effects and sounds those cues name, wardrobe_fx_check.py plays them.
 const FX_ON = true;   // the effects pilot; the published copy turns it off (wardrobe_publish.py: local only for now)
+// wardrobe.cmd's server quits about 10 s after the last page holding this stream closes (pipeline/wardrobe_serve.py; user
+// 2026-11-10: "closing the Wardrobe browser closes the server too"); only on its port, so the checks' servers and the
+// public copy never see it
+if (location.port === "8771") new EventSource("/__alive");
 let soundOn = true;
 try { soundOn = localStorage.getItem("wardrobe.sound") !== "0"; } catch (e) {}
 const Sound = {                          // Web Audio: started by the first pick (a click), as browsers require

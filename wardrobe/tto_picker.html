@@ -81,6 +81,7 @@ section { margin-top: 18px; }
 <main id="main"><p class="empty">กำลังโหลด…</p></main>
 <div class="toast" id="toast" role="status"></div>
 <script type="module">
+if (location.port === "8771") new EventSource("/__alive");   // keeps wardrobe.cmd's server up while open (pipeline/wardrobe_serve.py)
 const $ = id => document.getElementById(id), DATA = "data/", DRAFT = "tto_picker.draft";
 const CLASS_TH = { bat: "ค้างคาว", bison: "กระทิง", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
   penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า", all: "ทุกอาชีพ" };
