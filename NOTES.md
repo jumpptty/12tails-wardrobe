@@ -1059,3 +1059,20 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   check no problems; unit tests 52 OK; `wardrobe_dist_check.py` errors [] (a first run's Halloween tile click didn't wear
   it in time; the rerun passed). From a fresh empty folder: 2 uploaded, version `e5957791-636d-4877-be20-89df43b1c514`,
   live `data-16e5161a08`, the old data folder 404.
+- **2026-11-11, the TTO Halloween weapons drawn as the game draws them** (user: "players report holding a pumpkin
+  instead of the lantern ... also Bat weapon is too long, abnormal size"). Cause: Unity draws submesh i with material i
+  and leaves a submesh with no material undrawn; three TTO prefabs have 2 submeshes and 1 material (the only ones of
+  1,590 prop meshes; everywhere else group i = material i): Sheep halloweenLantern (submesh 0 = 36 triangles from the
+  texture's orange octagon, top left: the "pumpkin", the same shape as TTO's item icon shp37_0; the 796-triangle
+  lantern with its bow is submesh 1, never drawn in the game), Bat halloweenWand (submesh 1 = a 24-triangle purple
+  crystal past the spider head, z 0.84-1.14: the wand drew 1.41 long, the game's is 1.27), Rabbit halloweenRifle (a
+  48-triangle piece). The extractor wrote such a submesh with material 0, so the page drew it. Fix in the page:
+  `propGeometry(m, nMats)` keeps only the first nMats submeshes in the index (the 3D file copies the index, so it
+  matches). Checked against the TTO patch of 2026-11-07 (installed here; 106 bundles decrypted into the session's
+  scratch): both prefabs unchanged (same meshes, scale 1, same material); WeaponPlacement has no Bat entry (fallback,
+  keepPrefabScale, scale 1), so nothing in the game shrinks the wand further; that patch's placements add only Panda
+  t_all182 (placements.json left as is). The Sheep's lantern also sits mostly inside her sleeve. New:
+  `pipeline/tto_prefab_probe.py` (a TTO prefab's nodes, meshes, textures from decrypted bundles),
+  `pipeline/wardrobe_weapon_shot.py` (a class holding each weapon: shots, close-ups, size against the hero).
+  Publish: data folder unchanged (data-16e5161a08), page only, check no problems; unit tests 52 OK; dist check errors []
+  (again its first run's Halloween click failed, the rerun passed: that check step is timing-flaky).
