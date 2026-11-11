@@ -139,7 +139,20 @@ def page_edits(data_dir, ui_dir):
         # pieces) only for automated browsers online: the checks (wardrobe_dist_check.py) run in Playwright, where
         # navigator.webdriver is true; a visitor's browser never gets it (user 2026-11-10: "stop casual copying")
         ("scripting hook", "window.wardrobe = {", "if (navigator.webdriver) window.wardrobe = {", 1),
+        # community skins (2026-11-11): the send dialog's Turnstile site key from wardrobe/community_config.json (empty:
+        # the send action stays hidden); the local page's ?submitkey= test hook goes
+        ("send key", 'const SUBMIT_KEY = new URLSearchParams(location.search).get("submitkey") || "";',
+         f'const SUBMIT_KEY = "{submit_key()}";', 1),
     ]
+
+
+def submit_key(path=None):
+    """The Turnstile site key (public by design) the published page's send dialog uses; "" = no send action."""
+    p = Path(path) if path else ROOT / "wardrobe" / "community_config.json"
+    key = json.loads(p.read_text(encoding="utf-8")).get("turnstile_site_key", "") if p.exists() else ""
+    if not re.fullmatch(r"[0-9A-Za-z_-]*", key):
+        raise PublishError(f"{p.name}: turnstile_site_key {key!r} is not a site key")
+    return key
 
 
 def rewrite_page(html, data_dir, ui_dir="ui-" + "0" * 10):
@@ -899,6 +912,24 @@ def publish_props(run, cls, kind):
     return kept
 
 
+def publish_community(run, outfits, props):
+    """community.json and its pictures (community skins, 2026-11-11; pipeline/wardrobe_community.py): a skin goes online
+    when its piece is published; a TTO piece's skins are written scramble()d like the piece's own textures. Always
+    written, empty or not (the page asks for it)."""
+    pub = {("outfits", cls, o["name"]): bool(o.get("tto")) for cls, kept in outfits.items() for o in kept}
+    pub |= {(kind, cls, p["name"]): bool(p.get("tto")) for (cls, kind), kept in props.items() for p in kept}
+    skins = []
+    for s in run.load("community.json", default={"skins": []}).get("skins", []):
+        key = (s["kind"], s["cls"], s["item"])
+        if key not in pub:
+            run.drop("community", f"{s['cls']}/{s['item']}/{s['id']}", "its piece is not published")
+            continue
+        for rel in s["tex"].values():
+            run.copy(rel, scrambled=pub[key])
+        skins.append(s)
+    run.write_json("community.json", {"skins": skins})
+
+
 def strip_hand(name):
     return re.sub(r"_[LRlr]$", "", name)
 
@@ -1057,6 +1088,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
                                         clips={k: v for k, v in c["clips"].items() if k in clips}))
     for kind in SHARED_KINDS:
         props[("all", kind)] = publish_props(run, "all", kind)
+    publish_community(run, outfits, props)
     icons = publish_icons(run, outfits, props)
     publish_item_map(run, outfits, props)
     publish_placements(run, icons)

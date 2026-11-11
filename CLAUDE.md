@@ -43,14 +43,19 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 - Data: `pipeline\wardrobe_data.py` and its siblings (`wardrobe_icons.py`, `wardrobe_placements.py`, `wardrobe_tot.py`,
   `wardrobe_ui_assets.py`, `wardrobe_editions.py`, `bb_item_codes.py`); each docstring has its exact command line.
   Plain Python runs as `uv run --no-project --with <pkgs> python ...` or `py -3`, never a global `pip install`.
-- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules`;
+- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules pipeline.test_wardrobe_community`;
+  `node --test pipeline/test_site_worker.mjs`;
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
   (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py` (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then deploy (NOTES.md "Online copy"):
   Claude may deploy when the user asks for it (user 2026-11-09: "please change that Claude.md setting then deploy"),
   always from an empty folder, never from the video folder. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the
-  user's content rule, enforced by the publish; TTO is preview only online: no downloads or uploads). ToT never goes online.
+  user's content rule, enforced by the publish; TTO is preview only online: no downloads; since 2026-11-11 a visitor may
+  put their own skin on a TTO piece to try it and send it). ToT never goes online. The deploy names the Worker script
+  `pipeline\site_worker.mjs` (the community skins' send route; NOTES.md "Online copy"). Community skins: two separate
+  uploads: อัปโหลดลายของคุณ stays in the visitor's browser; ส่งลายนี้ให้ทีมงาน sends one skin to the user's private
+  Discord channel; approved (✅) ones come in with `pipeline\wardrobe_community.py`, then publish + deploy.
 
 ## How the user works
 

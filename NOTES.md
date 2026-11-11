@@ -180,6 +180,10 @@ copy of that folder).
   USER uploads from an EMPTY folder (never from the 12tails-video folder: its git-ignored `wrangler.jsonc` makes wrangler upload
   `review/` instead, which once published the private review notes for a few minutes):
   `npx wrangler deploy --assets D:\12tails-wardrobe\wardrobe_dist --name 12tails-wardrobe --compatibility-date 2026-11-07`.
+  **Since community skins (2026-11-11) the deploy names the Worker script too**, or the send route is lost:
+  `npx wrangler deploy D:/12tails-wardrobe/pipeline/site_worker.mjs --assets D:/12tails-wardrobe/wardrobe_dist --name
+  12tails-wardrobe --compatibility-date 2026-11-07` (office: the C:/work/12tails-wardrobe paths). The Worker runs only
+  where no file matches (POST /api/submit); its secrets DISCORD_WEBHOOK / TURNSTILE_SECRET live in Cloudflare.
   Office PC (2026-11-09): the same with `--assets C:\work\12tails-wardrobe\wardrobe_dist` (first time there: `npx wrangler
   login`). Claude cannot run the upload (the auto-mode classifier blocks publishing). Only changed files are sent; the page is
   served no-cache, so visitors get a new page at once and keep the data cache when the data folder name is unchanged.
@@ -1082,3 +1086,42 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   deploy, stopped mid-run by the user, had gone live (version from the stopped run); redeployed the reverted page:
   version `8846e8c2-11e8-4004-bc28-73b125da201a`, data folder unchanged (data-16e5161a08), live page without the
   submesh filter. The cause above stays true; don't "fix" it again without asking. The two scripts stay.
+- **2026-11-11, community skins: decided** (user: "recommend the best workflow to receive skin textures from audiences
+  and upload to the wardrobe website"; "upload = no limit to any pieces"): a Google Form (Thai; the PNG as downloaded
+  with ดาวน์โหลดลาย, so its name gives class + item; credit name + optional link; consent) -> files in the user's Drive,
+  an อนุมัติ column the user ticks -> an import script validates (name, size = the original's, PNG) and writes webp +
+  a creators list into wardrobe/data -> a "ลายจากผู้เล่น" section per piece; publish + deploy as usual. Any piece, TTO
+  included: approved skins show on TTO pieces online too; the visitor's own อัปโหลดลาย and every download stay locked
+  on TTO pieces (TTO_LOCK unchanged). Credit = name + link (the user checks links when approving).
+- **2026-11-11, community skins: Discord instead of the form** (user: "instead of Forms, can we go the cloudflare worker
+  route that send stuff to discord?"; then "(b) Allow preview upload", "Discord bot"). The page's piece menu sends the
+  visitor's own skin (name, optional link, consent, Turnstile) to `POST /api/submit` on the site's own Worker, which
+  checks it and posts it to a private Discord channel through a webhook (secrets in Cloudflare, never in the repo);
+  the user reacts ✅; `pipeline/wardrobe_community.py` reads the channel with a bot token kept only on the PCs and
+  writes the approved skins into wardrobe/data; publish + deploy. TTO rule loosened by the user: online, a visitor may
+  put their own skin on a TTO piece (preview, and to send it); every TTO download (texture, 3D) stays locked.
+- **2026-11-11, community skins built** (not deployed: waits for the user's setup, HANDOFF "community skins"). Two
+  uploads, kept apart (user: "there's 2 upload pipelines, upload for just local testing and upload that intend to be
+  public"): อัปโหลดลายของคุณ stays in the browser as before; ส่งลายนี้ให้ทีมงาน (the piece menu, only when the visitor's own
+  skin is on and SUBMIT_KEY is set) opens a dialog (name <= 40, optional https link, consent, Turnstile) and posts that
+  one skin. Pieces:
+  - `pipeline/site_worker.mjs`: the site's Worker (assets first; it runs only for POST /api/submit): origin check,
+    Turnstile siteverify, fields and PNG checks (<= 2 files, 4 MB, 4096 px), a rough per-IP limit in the colo cache,
+    then the webhook (`?wait=true`, `allowed_mentions: {parse: []}`, the PNGs + meta.json). 503 without its secrets.
+    Tests: `node --test pipeline/test_site_worker.mjs` (stubs); `py -3 -I pipeline/site_worker_check.py` (wrangler dev,
+    Cloudflare's test secret, a stand-in webhook).
+  - Page: COMMUNITY from data/community.json; a worn community skin is a SKINS entry with `by` (ownSkin / skinBy):
+    menu list "ลายจากผู้เล่น" (wear = one undo step; a link button opens the creator's link), the nameplate's "ลายโดย",
+    badge ลายผู้เล่น, download names `_ลายโดย<name>`, beforeunload only for own skins. TTO lock: downloads only (upload,
+    reset, Ctrl+V allowed on TTO pieces). `SUBMIT_KEY` = ?submitkey= locally (test key 1x00000000000000000000AA), the
+    publish writes `wardrobe/community_config.json`'s site key. The disclaimer goes to top 66 px while the desktop
+    picker is open (`main.inset`; it ran under the toolbar at 1366 px: live since this morning's deploy).
+  - `pipeline/wardrobe_community.py`: the bot reads the channel (webhook messages with a person's ✅), checks each
+    skin against the data (the piece, its textures, the original's size, a real PNG, https link), writes
+    data/community/<cls|all>/<message id>_<n>.webp (q92) + community.json, mirrored (✅ taken away = gone). Tests:
+    `pipeline.test_wardrobe_community`.
+  - Publish: `publish_community` keeps a skin when its piece is published, scrambled for a TTO piece; community.json is
+    always written. Tests: 3 new in test_wardrobe_publish.
+  - Checks: `pipeline/wardrobe_community_check.py` (the browser flow with a stand-in community.json and api/submit);
+    `wardrobe_tto_check.py` and `wardrobe_dist_check.py` now expect upload kept on TTO pieces. All green: unit 59 OK,
+    node 4/4, community check, worker check, menu check, TTO check, dist check (twice).

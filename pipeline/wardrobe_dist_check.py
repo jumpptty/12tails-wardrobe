@@ -1,6 +1,6 @@
 """Headless check of the built public copy (wardrobe_dist) itself, served on its own (2026-11-09, TTO online): the page
 loads with no errors or failed requests; the Wolf's Halloween outfit (released TTO) is in the outfit list with the TTO
-mark, wears, and its menu has no download / upload (preview only); a BB outfit's menu still has them; a released TTO
+mark, wears, and its menu has no downloads (its own-skin upload stays, 2026-11-11); a BB outfit's menu still has them; a released TTO
 skill tile (Blade Surge) and Clap are in the move lists; the effects are on (the sound button shown).
   uv run --no-project --with playwright python -I pipeline/wardrobe_dist_check.py D:/12tails-wardrobe/wardrobe_dist checks/<dir>"""
 import asyncio, functools, http.server, sys, threading
@@ -49,7 +49,8 @@ async def main():
         pt = await page.evaluate(POINT)
         await page.mouse.click(*pt); await page.wait_for_timeout(300)
         items = await page.evaluate(MENU)
-        check(worn == "halloween" and items and not {"png", "glb", "up"} & set(items), f"wearing {worn}: menu {items} (preview only)")
+        # no downloads on a TTO piece; its own-skin upload stays (community skins, 2026-11-11: "(b) Allow preview upload")
+        check(worn == "halloween" and items and not {"png", "glb"} & set(items) and "up" in items, f"wearing {worn}: menu {items} (no downloads)")
         await page.screenshot(path=str(OUT / "dist_tto_menu.png"))
         await page.keyboard.press("Escape")
         await page.evaluate("() => wardrobe.setOutfit('standard')"); await page.wait_for_timeout(1200)

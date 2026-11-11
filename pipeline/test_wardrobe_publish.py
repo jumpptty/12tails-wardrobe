@@ -48,6 +48,7 @@ const DATA = "data/";
 const UI_DIR = "ui/";
 const FX_ON = true;
 const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
+const SUBMIT_KEY = new URLSearchParams(location.search).get("submitkey") || "";
 const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
@@ -820,6 +821,49 @@ class PublishTest(unittest.TestCase):
         self.assertNotEqual((d / "icons" / "armor" / "cat99.webp").read_bytes()[:4], wp.SCRAMBLE_MARK)
         self.assertNotEqual((d / "cat" / "faces" / "0.webp").read_bytes()[:4], wp.SCRAMBLE_MARK)    # BB's face: plain
         self.assertEqual(wp.check(w.out), [])
+
+    def test_community_skins_follow_their_pieces(self):
+        """community.json (community skins, 2026-11-11): a skin goes online when its piece does, plain for a BB piece,
+        scrambled for a released TTO piece; a skin of a piece left out goes too; the file is always written."""
+        w = self.world()
+        png(w.data / "props" / "tex" / "Cat_ttoFlag.png")
+        (w.src / wp.RELEASED_NAME).write_text(json.dumps({"cat": {"trinkets": ["ttoFlag"]}}), encoding="utf-8")
+        skins = [{"id": "1", "cls": "cat", "kind": "outfits", "item": "a", "name": "A", "link": "", "at": "1", "tex": {"": "community/cat/1_0.webp"}},
+                 {"id": "2", "cls": "cat", "kind": "trinkets", "item": "ttoFlag", "name": "B", "link": "https://b.example", "at": "2",
+                  "tex": {"Cat_ttoFlag.png": "community/cat/2_0.webp"}},
+                 {"id": "3", "cls": "all", "kind": "trinkets", "item": "ttoWing", "name": "C", "link": "", "at": "3", "tex": {"ttoWing.png": "community/all/3_0.webp"}}]
+        for s in skins:
+            for rel in s["tex"].values():
+                webp(w.data / rel)
+        (w.data / "community.json").write_text(json.dumps({"skins": skins}), encoding="utf-8")
+        result = w.publish()
+        d = data_dir(w)
+        self.assertEqual([s["id"] for s in json.loads((d / "community.json").read_text("utf-8"))["skins"]], ["1", "2"])
+        self.assertEqual((d / "community/cat/1_0.webp").read_bytes(), (w.data / "community/cat/1_0.webp").read_bytes())
+        tto = (d / "community/cat/2_0.webp").read_bytes()
+        self.assertEqual(tto[:4], wp.SCRAMBLE_MARK)
+        self.assertEqual(unscramble(tto), (w.data / "community/cat/2_0.webp").read_bytes())
+        self.assertFalse((d / "community/all/3_0.webp").exists())
+        self.assertEqual(dropped_names(result, "community"), ["all/ttoWing/3"])
+        html = (w.out / "index.html").read_text(encoding="utf-8")
+        self.assertIn('const SUBMIT_KEY = "', html)
+        self.assertNotIn("submitkey", html)
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_community_json_written_when_the_data_has_none(self):
+        w = self.world()
+        w.publish()
+        self.assertEqual(json.loads((data_dir(w) / "community.json").read_text("utf-8")), {"skins": []})
+
+    def test_submit_key_must_look_like_a_site_key(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "c.json"
+            p.write_text(json.dumps({"turnstile_site_key": "0x4AAAAAAA_b-c"}), encoding="utf-8")
+            self.assertEqual(wp.submit_key(p), "0x4AAAAAAA_b-c")
+            p.write_text(json.dumps({"turnstile_site_key": 'x"; alert(1); "'}), encoding="utf-8")
+            with self.assertRaises(wp.PublishError):
+                wp.submit_key(p)
+            self.assertEqual(wp.submit_key(Path(t) / "missing.json"), "")
 
     def test_released_list_with_an_unknown_kind_fails_loudly(self):
         w = self.world()

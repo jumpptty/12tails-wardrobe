@@ -1,0 +1,4 @@
+{
+ "_about": "Community skins (2026-11-11): the Turnstile site key the published page's send dialog uses (public by design; the secret key lives only in Cloudflare: npx wrangler secret put TURNSTILE_SECRET). Empty = the send action stays hidden.",
+ "turnstile_site_key": ""
+}

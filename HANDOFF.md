@@ -3,6 +3,22 @@
 Steps one PC left for the other. A session reads this at the start, does what is listed for its PC (where the user's
 go-ahead is needed, says so), and deletes each item once it is done. Empty = nothing pending.
 
+## Either PC: community skins, the user's setup (once), then a deploy
+
+Built and tested 2026-11-11 (NOTES.md "community skins"); not deployed yet. The user's steps, in order (Claude never
+sees the secrets):
+1. **Discord:** a private channel for submissions. Channel settings → Integrations → Webhooks → New webhook → copy its URL.
+2. **Discord bot** (for the import): discord.com/developers → New Application → Bot: turn on **Message Content Intent**,
+   copy the token; OAuth2 → URL Generator: scope `bot`, permissions View Channels + Read Message History → open the URL,
+   add it to the server, and allow it in the private channel. Copy the channel's id (Developer Mode → right-click → Copy
+   Channel ID). On each PC write `%APPDATA%\12tails-wardrobe\discord.json` = `{"token": "<bot token>", "channel": "<id>"}`.
+3. **Turnstile:** Cloudflare dashboard → Turnstile → Add widget, hostname `12tails-wardrobe.jumpthai.workers.dev`, mode
+   Managed. Put the **site key** in `wardrobe/community_config.json` ("turnstile_site_key"; public, it goes in git).
+4. **Secrets** (from any folder, logged in to wrangler): `npx wrangler secret put DISCORD_WEBHOOK --name 12tails-wardrobe`
+   (paste the webhook URL), `npx wrangler secret put TURNSTILE_SECRET --name 12tails-wardrobe` (paste the secret key).
+5. Then Claude: publish, deploy with the Worker script (NOTES.md "Online copy"), send one test skin, approve it, run
+   `py -3 -I pipeline/wardrobe_community.py`, publish, deploy, and check it in the menu. Delete this item.
+
 ## Home PC
 
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and

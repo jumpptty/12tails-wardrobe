@@ -127,6 +127,7 @@ main.bg-dark .status.err { color: #f0937c; }
 .disclaimer { position: absolute; top: 14px; left: calc(var(--inset, 0px) + 16px); z-index: 5; margin: 0; max-width: calc(100% - var(--inset, 0px) - 32px);
   color: #c62828; font-size: 13.5px; font-weight: 600; line-height: 1.5; pointer-events: none; transition: left .2s; }
 main.bg-dark .disclaimer { color: #ff8a80; }
+main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the free part is narrow: under the toolbar */
 .app.viewing .toast { align-self: flex-start; }
 .showcase { pointer-events: auto; width: min(640px, 100%); display: flex; flex-direction: column; gap: 5px; padding: 8px 12px 10px;
   background: var(--weave), var(--panel); border: 1px solid var(--line); border-radius: 6px; color: var(--text); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
@@ -340,6 +341,32 @@ main.bg-dark .disclaimer { color: #ff8a80; }
 .pm-item:not(:disabled):hover svg, .pm-item:not(:disabled):focus-visible svg { color: var(--gold); }
 .pm-item:disabled { opacity: .4; cursor: default; }
 .pm-item[data-primary] { color: var(--gold); font-weight: 600; }
+/* community skins (2026-11-11): the "ลายจากผู้เล่น" list in the piece menu (a creator's link beside a skin) and the send dialog */
+.pm-sub { margin: 4px 8px 2px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
+.pm-cs { max-height: 216px; overflow-y: auto; }
+.pm-csrow { display: flex; gap: 2px; }
+.pm-csrow .pm-item:first-child { flex: 1; min-width: 0; }
+.pm-csrow .pm-item:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm-item.pm-link { width: 34px; flex: none; justify-content: center; padding: 0; }
+.plate-by { margin-left: 8px; }
+.send-back { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; background: rgba(10, 7, 5, .55); }
+.send-back[hidden] { display: none; }
+.send { width: min(380px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin: 0;
+  padding: 16px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 18px 48px -18px rgba(0, 0, 0, .7); }
+.send h2 { margin: 0; font-size: 17px; line-height: 1.4; }
+.send p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.send-pic { display: flex; align-items: center; gap: 10px; }
+.send-pic canvas { width: 72px; height: 72px; flex: none; border-radius: 4px; background: var(--well); border: 1px solid var(--line); }
+.send-pic p { color: var(--text); }
+.send label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500; }
+.send input[type=text], .send input[type=url] { height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--well); color: var(--text); font: inherit; font-size: 14px; }
+.send input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.send label.send-ok { flex-direction: row; align-items: flex-start; gap: 8px; font-weight: 400; font-size: 12.5px; line-height: 1.5; }
+.send-ok input { margin: 3px 0 0; accent-color: var(--gold); flex: none; }
+.send p.send-msg { color: #f0937c; font-weight: 500; }
+.send-msg:empty { display: none; }
+.send-acts { display: flex; gap: 8px; justify-content: flex-end; }
+@media (max-width: 760px) { .send input[type=text], .send input[type=url] { font-size: 16px; } }   /* no zoom on focus */
 .pm-foot { margin: 4px 6px 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
 @media (pointer: coarse) { .pm-item { min-height: 44px; } .pm-foot { display: none; } }
 .topic.color.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
@@ -1411,6 +1438,14 @@ function texsOf(kind, item) {            // an outfit has one texture (when it h
   const mats = (p?.nodes || []).flatMap(n => n.mats || []).concat(p?.heroSkin ? p.mats || [] : []);   // a hero-skinned hat: p.mats
   return [...new Set(mats.map(m => m.tex).filter(Boolean))];
 }
+// community skins (2026-11-11): approved visitor skins listed in community.json (pipeline/wardrobe_community.py). A worn
+// one is a SKINS entry like the visitor's own, with by = { id, name, link }; ownSkin / skinBy tell the two apart
+let COMMUNITY = [];
+const skinEntries = (kind, item) => texsOf(kind, item).map(t => SKINS.get(skinKey(kind, item, t))).filter(Boolean);
+const ownSkin = (kind, item) => skinEntries(kind, item).some(s => !s.by);
+const skinBy = (kind, item) => skinEntries(kind, item).find(s => s.by)?.by || null;
+const skinLabel = (kind, item) => { const b = skinBy(kind, item); return b ? `ลายโดย ${esc(b.name)}` : "ลายของคุณ"; };
+const communityOf = (kind, item) => COMMUNITY.filter(s => s.kind === kind && s.item === item && (s.cls === C.cls || s.cls === "all"));
 // an outfit's texture in the current colour / edition (or its first colour when it lacks the current one)
 const outfitTex = o => { const c = o.colors.includes(C.state.color) ? C.state.color : o.colors[0], e = edOf(o, c, C.state.edition);
   return { src: `${DATA}${C.cls}/tex/${o.name}${c}${e}.webp`, tag: `${c}${e}` }; };
@@ -1472,9 +1507,9 @@ function dlName(kind, item, ext, tex = null) {
   const o = kind === "outfits" && C.outfits.find(x => x.name === item), texs = texsOf(kind, item);
   const mine = (tex != null ? [tex] : texs).some(t => SKINS.has(skinKey(kind, item, t)));
   return `12tails_${CLASS_TH[C.cls] || C.cls}_${humanize(item)}` + (o && o.colors.length && !mine ? `_สี${outfitTex(o).tag}` : "")
-    + (tex != null && texs.length > 1 ? `_ลาย${texs.indexOf(tex) + 1}` : "") + (mine ? "_ลายของคุณ" : "") + "." + ext;
+    + (tex != null && texs.length > 1 ? `_ลาย${texs.indexOf(tex) + 1}` : "") + (mine ? (skinBy(kind, item) ? `_ลายโดย${skinBy(kind, item).name}` : "_ลายของคุณ") : "") + "." + ext;
 }
-const TTO_NO = "ของจาก TTO ดูได้อย่างเดียว\nดาวน์โหลดหรือใส่ลายเองไม่ได้";
+const TTO_NO = "ของจาก TTO ดาวน์โหลดไม่ได้\nใส่ลายของคุณเพื่อลองดูได้";
 async function skinDownload(slot, item, tex) {
   if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot);
@@ -1487,7 +1522,6 @@ async function decodeImage(file) {       // in the browser: no URL fetched, noth
   finally { URL.revokeObjectURL(url); }
 }
 async function skinUpload({ slot, item, tex }, file) {
-  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot), up = await decodeImage(file), orig = await texImage(kind, item, tex);
   const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height, uw = up.width, uh = up.height;
   const data = pixels(up, w, h).data;    // any size in, the original's size out
@@ -1521,6 +1555,113 @@ async function skinReset(slot, item) {
   renderTopics(); syncTiles(); refreshShowcase(kind, item);
   toast(`คืนลายเดิมให้ ${humanize(item)} แล้ว`);
 }
+// a community skin on its piece: each texture the import wrote, at the original's size, in place of any skin there;
+// one undo step (it puts the piece on when it is not worn, as an upload does)
+async function wearCommunity(slot, item, id) {
+  const s = COMMUNITY.find(x => x.id === id), kind = kindOf(slot);
+  if (!s) return;
+  const by = { id: s.id, name: s.name, link: s.link || "" }, got = [];
+  for (const [tex, file] of Object.entries(s.tex)) {
+    if (!texsOf(kind, item).includes(tex)) continue;
+    const [img, orig] = await Promise.all([loadImage(DATA + file), texImage(kind, item, tex)]);
+    const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height;
+    got.push([skinKey(kind, item, tex), { w, h, data: pixels(img, w, h).data, by }]);
+  }
+  if (!got.length) return;
+  const worn = kind === "outfits" ? C.state.outfit === item : C.state[slot] === item;
+  await tracked(async () => {
+    for (const t of texsOf(kind, item)) SKINS.delete(skinKey(kind, item, t));
+    for (const [k, v] of got) SKINS.set(k, v);
+    if (!worn) await (kind === "outfits" ? setOutfit(item, C.state.color) : setProp(slot, item));
+    else if (kind === "outfits") await setColorOrFace(null, null);
+    if (kind !== "outfits") for (const sl of wornSlots(kind, item)) skinProp(C.props[sl], kind, item);
+  });
+  renderTopics(); syncTiles(); refreshShowcase(kind, item); autoFit();
+  toast(`ใส่ลายโดย ${s.name} แล้ว`, 2000);
+}
+// ---------- send a skin to the team (community skins, 2026-11-11): the visitor's own skin on one piece, a name to credit,
+// an optional https link, consent and Cloudflare Turnstile -> POST api/submit (pipeline/site_worker.mjs) -> the private
+// Discord channel the user approves from. The menu offers it only when SUBMIT_KEY is set (the published copy)
+const SEND_ERR = { closed: "ยังไม่เปิดรับลายตอนนี้", bot: "ยืนยันว่าไม่ใช่บอตไม่สำเร็จ ลองอีกครั้ง", name: "กรอกชื่อที่จะให้เครดิตก่อน",
+  link: "ลิงก์ต้องขึ้นต้นด้วย https://", consent: "ติ๊กช่องยินยอมก่อนส่ง", png: "ไฟล์ลายเสีย ลองอัปโหลดลายใหม่", big: "ไฟล์ลายใหญ่เกินไป",
+  rate: "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", piece: "ส่งลายของชิ้นนี้ไม่ได้" };
+const SEND_KEY = "wardrobe_sender";          // the name and link typed last time (this browser only)
+const Send = {
+  el: null, cur: null, token: "", widget: null, busy: false, script: null,
+  async open(slot, item) {
+    const kind = kindOf(slot), texs = texsOf(kind, item).filter(t => { const s = SKINS.get(skinKey(kind, item, t)); return s && !s.by; });
+    if (!SUBMIT_KEY || !texs.length) return;
+    this.cur = { slot, item, kind, texs, back: document.activeElement };
+    let me = {}; try { me = JSON.parse(localStorage.getItem(SEND_KEY) || "{}"); } catch (e) {}
+    const el = this.el ||= Object.assign(document.createElement("div"), { className: "send-back" });
+    el.innerHTML = `<form class="send" role="dialog" aria-modal="true" aria-labelledby="sendTitle" novalidate>
+      <h2 id="sendTitle">ส่งลายให้ทีมงาน</h2>
+      <div class="send-pic">${texs.map(() => '<canvas width="144" height="144"></canvas>').join("")}<p>${nameHTML(item)}<br>${SLOT_TH[slot]} · ${CLASS_TH[C.cls] || C.cls}</p></div>
+      <p>ทีมงานจะตรวจลายก่อน ถ้าผ่าน ลายจะขึ้นในเมนูของชิ้นนี้ หัวข้อ "ลายจากผู้เล่น" พร้อมชื่อของคุณ</p>
+      <label>ชื่อที่จะให้เครดิต<input type="text" name="name" maxlength="40" autocomplete="nickname" value="${esc(me.name || "")}"></label>
+      <label>ลิงก์ (ไม่บังคับ)<input type="url" name="link" maxlength="200" placeholder="https://" value="${esc(me.link || "")}"></label>
+      <label class="send-ok"><input type="checkbox" name="consent" value="1"><span>ลายนี้เป็นผลงานของฉัน และยินยอมให้แสดงบนเว็บไซต์ห้องแต่งตัว พร้อมชื่อและลิงก์ที่กรอก</span></label>
+      <div class="send-ts"></div>
+      <p class="send-msg" role="alert"></p>
+      <div class="send-acts"><button type="button" class="sc-b" data-a="cancel">ยกเลิก</button><button type="submit" class="sc-b" data-primary>ส่งลาย</button></div></form>`;
+    el.hidden = false;
+    if (!el.isConnected) document.body.append(el);
+    el.querySelectorAll(".send-pic canvas").forEach((cv, i) => {    // the skin itself, small
+      const s = SKINS.get(skinKey(kind, item, texs[i])), tmp = Object.assign(document.createElement("canvas"), { width: s.w, height: s.h });
+      tmp.getContext("2d").putImageData(new ImageData(s.data, s.w, s.h), 0, 0);
+      const g = cv.getContext("2d"); g.imageSmoothingQuality = "high"; g.drawImage(tmp, 0, 0, cv.width, cv.height);
+    });
+    el.querySelector('[data-a="cancel"]').onclick = () => this.close();
+    el.onpointerdown = e => { if (e.target === el) this.close(); };
+    el.onkeydown = e => { e.stopPropagation(); if (e.key === "Escape") { e.preventDefault(); this.close(); } };   // the page's keys stay out
+    el.querySelector("form").onsubmit = e => { e.preventDefault(); this.send(); };
+    el.querySelector('input[name="name"]').focus({ preventScroll: true });
+    this.token = "";
+    this.turnstile(el.querySelector(".send-ts")).catch(e => { console.warn(e); this.say("โหลดช่องยืนยันว่าไม่ใช่บอตไม่สำเร็จ ลองเปิดหน้านี้ใหม่"); });
+  },
+  say(m) { const p = this.el?.querySelector(".send-msg"); if (p) p.textContent = m || ""; },
+  close() {
+    if (!this.el || this.el.hidden) return;
+    if (this.widget != null) try { window.turnstile.remove(this.widget); } catch (e) {}
+    this.widget = null; this.el.hidden = true; this.el.innerHTML = "";
+    const back = this.cur?.back; this.cur = null;
+    if (back?.isConnected) back.focus({ preventScroll: true });
+  },
+  turnstile(box) {                       // Cloudflare's widget, loaded on the first open only
+    const load = window.turnstile ? Promise.resolve() : (this.script ||= new Promise((ok, no) => {
+      const s = Object.assign(document.createElement("script"), { src: "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit", async: true });
+      s.onload = ok; s.onerror = () => { this.script = null; no(new Error("turnstile")); }; document.head.append(s); }));
+    return load.then(() => {
+      if (!this.el || this.el.hidden || !box.isConnected) return;
+      this.widget = window.turnstile.render(box, { sitekey: SUBMIT_KEY, language: "th", theme: "dark",
+        callback: t => { this.token = t; this.say(""); }, "expired-callback": () => { this.token = ""; }, "error-callback": () => { this.token = ""; } });
+    });
+  },
+  resetTs() { this.token = ""; if (this.widget != null) try { window.turnstile.reset(this.widget); } catch (e) {} },
+  async send() {
+    if (this.busy || !this.cur) return;
+    const f = this.el.querySelector("form"), E = f.elements;
+    const name = E.namedItem("name").value.trim(), link = E.namedItem("link").value.trim();
+    if (!name) return this.say(SEND_ERR.name);
+    if (link && !/^https:\/\/\S+$/i.test(link)) return this.say(SEND_ERR.link);
+    if (!E.namedItem("consent").checked) return this.say(SEND_ERR.consent);
+    if (!this.token) return this.say("รอให้ช่องยืนยันว่าไม่ใช่บอตขึ้นเครื่องหมายถูกก่อน");
+    const { kind, item, texs } = this.cur, fd = new FormData(), btn = f.querySelector('[type="submit"]');
+    this.busy = true; btn.disabled = true; btn.textContent = "กำลังส่ง…"; this.say("");
+    try {
+      for (const [k, v] of Object.entries({ token: this.token, cls: C.cls, kind, item, name, link, consent: "1" })) fd.append(k, v);
+      for (const [i, t] of texs.entries()) {
+        const s = SKINS.get(skinKey(kind, item, t));
+        fd.append("tex" + i, t); fd.append("skin" + i, await pngOf(s.data, s.w, s.h), `skin${i}.png`);
+      }
+      const r = await fetch("api/submit", { method: "POST", body: fd }), v = await r.json().catch(() => ({}));
+      if (!r.ok || !v.ok) { this.resetTs(); return this.say(SEND_ERR[v.error] || "ส่งไม่สำเร็จ ลองอีกครั้ง"); }   // a Turnstile token works once
+      try { localStorage.setItem(SEND_KEY, JSON.stringify({ name, link })); } catch (e) {}
+      this.close(); toast("ส่งลายแล้ว ขอบคุณที่ส่งมา\nทีมงานจะตรวจก่อนขึ้นเว็บ", 3500);
+    } catch (e) { console.error(e); this.resetTs(); this.say("ส่งไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง"); }
+    finally { this.busy = false; if (btn.isConnected) { btn.disabled = false; btn.textContent = "ส่งลาย"; } }
+  },
+};
 // ---------- one piece on its own (task 16): makePiece builds a detached copy of a piece from the data, with the texture
 // it wears now (colour / edition / the visitor's skin; an outfit with the face), the page's own materials. ชมชิ้นส่วน
 // floats it (pose "idle": an outfit on a fresh copy of the class's skeleton in the idle clip's first frame, a prop at rest
@@ -1773,7 +1914,8 @@ async function modelDownload(slot, item) {
 // a tile's "ลายของคุณ" badge: a label now, the actions are the piece menu's (2026-11-09; until then three tools per tile)
 function skinBadge(slot, item) {
   const kind = kindOf(slot), mine = texsOf(kind, item).some(t => SKINS.has(skinKey(kind, item, t)));
-  return mine ? `<span class="sk-badge" title="ชิ้นนี้ใส่ลายของคุณอยู่">ลายของคุณ</span>` : "";
+  if (!mine) return "";
+  return skinBy(kind, item) ? `<span class="sk-badge" title="ชิ้นนี้ใส่ลายจากผู้เล่นอยู่">ลายผู้เล่น</span>` : `<span class="sk-badge" title="ชิ้นนี้ใส่ลายของคุณอยู่">ลายของคุณ</span>`;
 }
 const cell = (slot, name, tile) => `<div class="pk-cell" data-slot="${slot}" data-item="${name}">${tile}<span class="sk-ui">${skinBadge(slot, name)}</span></div>`;
 function syncTiles() {                   // after an upload / reset: the open picker's pressed tile and badges
@@ -1865,7 +2007,6 @@ document.addEventListener("paste", e => {
 // piece menu's choice when it has two (the picture kept); at = where the pointer is (the menu opens there)
 function skinFromFile(t, file, at, kb = false) {
   const texs = texsOf(kindOf(t.slot), t.item);
-  if (ttoLocked(t.slot, t.item)) { toast(TTO_NO, 2500); return; }
   if (!texs.length) { toast(`${humanize(t.item)} ไม่มีลาย`, 2500); return; }
   const tex = t.tex != null && texs.includes(t.tex) ? t.tex : texs.length === 1 ? texs[0] : null;
   if (tex == null) {                     // two textures and none chosen: the piece menu asks which one, the picture kept
@@ -1907,16 +2048,23 @@ renderer.domElement.addEventListener("drop", e => {
 const PM_ICON = Object.fromEntries(Object.entries({
   view: "M1.8 8s2.3-4.3 6.2-4.3S14.2 8 14.2 8s-2.3 4.3-6.2 4.3S1.8 8 1.8 8zM8 6.3a1.7 1.7 0 1 1 0 3.4 1.7 1.7 0 0 1 0-3.4z",
   wear: "M3 8.5 6.5 12 13 4.5", change: "M3 5.5h9.5M10 3l2.5 2.5L10 8M13 10.5H3.5M6 8l-2.5 2.5L6 13",
+  send: "M13.5 2.5 2.5 7.2l4.6 1.7 1.7 4.6zM7.1 8.9l3.4-3.4", brush: "M9.8 2.7l3.5 3.5-5.6 5.6-3.5-3.5zM4.2 9.3c-1.6.1-2 1.6-2 3l-.4 1.2c2.1.1 4-.6 4.6-2.4",
+  link: "M7 3.5H3.5v9h9V9M9.5 2.5h4v4M13.5 2.5 7.5 8.5",
   remove: "M4.2 4.2l7.6 7.6M11.8 4.2l-7.6 7.6", png: "M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10",
   glb: "M8 2.2 13.2 5v6L8 13.8 2.8 11V5zM2.8 5 8 7.8 13.2 5M8 7.8v6", up: "M8 10V2.5M4.8 5.7 8 2.5l3.2 3.2M3 13.5h10",
   reset: "M3.3 8.3a4.7 4.7 0 1 0 1.4-3.5M3.3 2.7v2.6h2.6", more: "M3.5 8h.01M8 8h.01M12.5 8h.01",
 }).map(([k, d]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${k === "more" ? 2.8 : 1.8}" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
 // TTO's items are preview only online (user 2026-11-09: "TTO shouldn't be downloadable nor uploadable, it's preview
-// only"): no skin download / upload / reset, no 3D file, and a TTO face never goes into a BB outfit's 3D file. The
+// only"): no skin download, no 3D file, and a TTO face never goes into a BB outfit's 3D file. Since 2026-11-11 (community
+// skins, user: "(b) Allow preview upload") a visitor may put their own skin on a TTO piece to try it and send it. The
 // published copy sets it (wardrobe_publish.py); locally ?ttolock shows it
 const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
 const recOf = (slot, item) => (slot === "outfit" ? C.outfits.find(x => x.name === item) : (C.propLists[kindOf(slot)] || []).find(x => x.name === item)) || {};
 const ttoLocked = (slot, item) => TTO_LOCK && !!recOf(slot, item).tto;
+// community skins: the send dialog's Turnstile site key (public by design); empty = no send action (the local copy; the
+// publish writes it from wardrobe/community_config.json "turnstile_site_key"; locally ?submitkey=<key> tries the dialog, e.g.
+// Cloudflare's always-pass test key 1x00000000000000000000AA)
+const SUBMIT_KEY = new URLSearchParams(location.search).get("submitkey") || "";
 const PM = { el: $("pmenu"), cur: null, back: null, paste: null, lastBack: null, closedAt: 0 };
 document.body.append(PM.el);               // above every layer (a phone's panel stacks over the stage)
 PM.el.tabIndex = -1;
@@ -1930,7 +2078,7 @@ function pmHead(slot, item) {
   const sets = (C.sets || []).filter(s => [s.outfit, s.R, s.L, s.Head, s.Back].includes(item));
   const c = o && o.colors.length ? (o.colors.includes(C.state.color) ? C.state.color : o.colors[0]) : null, e = c && edOf(o, c, ed);
   const meta = [SLOT_TH[slot], worn ? "ใส่อยู่" : "ยังไม่ได้ใส่",
-    mine ? "ลายของคุณ" : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`,
+    mine ? skinLabel(kind, item) : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`,
     sets.length && `เซ็ต ${setNameHTML(sets[0])}${sets.length > 1 ? ` +<span class="num">${sets.length - 1}</span>` : ""}`,
     rec.tot ? "ของจาก ToT" : rec.tto ? ttoMark("ของจาก TTO", "pm-tto") + "ของจาก TTO" : ""].filter(Boolean);
   return `<div class="pm-head"><span class="pm-pic">${pic(icon, false, noIcon(item))}</span><span class="pm-txt">`
@@ -1942,7 +2090,7 @@ function pmList(slot, item, from, paste) {
   const kind = kindOf(slot), worn = wornNow(slot, item), texs = texsOf(kind, item), model = hasModel(kind, item);
   const mine = texs.some(t => SKINS.has(skinKey(kind, item, t))), two = texs.length > 1;
   const it = (a, label, o = {}) => `<button type="button" class="pm-item" role="menuitem" data-a="${a}"${o.tex != null ? ` data-tex="${o.tex}"` : ""}`
-    + `${o.off ? ` disabled title="${o.off}"` : ""}${o.primary ? " data-primary" : ""}>${PM_ICON[o.icon || a]}<span>${label}</span></button>`;
+    + `${o.cs ? ` data-cs="${o.cs}"` : ""}${o.off ? ` disabled title="${o.off}"` : ""}${o.primary ? " data-primary" : ""}>${PM_ICON[o.icon || a]}<span>${label}</span></button>`;
   const sep = `<div class="pm-sep" role="separator"></div>`;
   const perTex = (a, label, icon) => !texs.length ? [it(a, label, { off: "ชิ้นนี้ไม่มีลาย", icon })]
     : texs.map((t, i) => it(a, two ? `${label} <span class="num">${i + 1}</span>` : label, { tex: t, icon }));
@@ -1952,10 +2100,18 @@ function pmList(slot, item, from, paste) {
   if (!worn) L.push(it("wear", "ใส่ชิ้นนี้", { primary: true }));
   if (from !== "tile") L.push(it("change", `เปลี่ยน${SLOT_TH[slot]}`));
   if (worn && slot !== "outfit" && item !== BASE_HEAD[C.cls]) L.push(it("remove", `ถอด${SLOT_TH[slot]}ออก`));
-  if (ttoLocked(slot, item)) return L.join("");      // TTO, preview only: no download / upload actions
-  L.push(sep, ...perTex("png", "ดาวน์โหลดลาย (PNG)", "png"), it("glb", "ดาวน์โหลดโมเดล 3D (GLB)", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
+  // TTO online: no downloads; the visitor's own skin may still go on (to try it out and send it)
+  if (!ttoLocked(slot, item)) L.push(sep, ...perTex("png", "ดาวน์โหลดลาย (PNG)", "png"), it("glb", "ดาวน์โหลดโมเดล 3D (GLB)", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
   L.push(sep, ...perTex("up", "อัปโหลดลายของคุณ", "up"));
   if (mine) L.push(it("reset", "คืนลายเดิม"));
+  if (SUBMIT_KEY && ownSkin(kind, item)) L.push(it("send", "ส่งลายนี้ให้ทีมงาน"));
+  const cs = communityOf(kind, item), on = skinBy(kind, item)?.id;
+  if (cs.length) {                       // the approved skins: wear one (one undo step), open its creator's link
+    L.push(sep, `<div class="pm-sub">ลายจากผู้เล่น <span class="num">${cs.length}</span></div><div class="pm-cs">`);
+    for (const s of cs) L.push(`<div class="pm-csrow">${it("cs", `ลายโดย ${esc(s.name)}${s.id === on ? " · ใส่อยู่" : ""}`, { cs: s.id, icon: "brush", off: s.id === on ? "ใส่อยู่" : "" })}`
+      + (s.link ? `<button type="button" class="pm-item pm-link" role="menuitem" data-a="link" data-cs="${s.id}" title="${esc(s.link)}" aria-label="เปิดลิงก์ของ ${esc(s.name)}">${PM_ICON.link}</button>` : "") + `</div>`);
+    L.push(`</div>`);
+  }
   return L.join("");
 }
 // at = { x, y } (a click: the menu opens beside it) | { rect } (a tile, a ring, a button: under it, else over it) | null
@@ -1966,7 +2122,7 @@ function openMenu(t, at, o = {}) {
   PM.cur = { slot: t.slot, item: t.item, from: o.from || "model" }; PM.back = o.back || null; PM.paste = o.paste || null;
   const n = texsOf(kindOf(t.slot), t.item).length;
   el.innerHTML = pmHead(t.slot, t.item) + `<div class="pm-list">${pmList(t.slot, t.item, PM.cur.from, PM.paste)}</div>`
-    + (ttoLocked(t.slot, t.item) ? "" : `<p class="pm-foot">${PM.paste ? `ชิ้นนี้มี <span class="num">${n}</span> ลาย เลือกลายที่จะใส่รูปจากคลิปบอร์ด` : "ชี้ที่ชิ้นนี้แล้วกด Ctrl+V เพื่อวางรูปเป็นลายได้"}</p>`);
+    + (`<p class="pm-foot">${PM.paste ? `ชิ้นนี้มี <span class="num">${n}</span> ลาย เลือกลายที่จะใส่รูปจากคลิปบอร์ด` : "ชี้ที่ชิ้นนี้แล้วกด Ctrl+V เพื่อวางรูปเป็นลายได้"}</p>`);
   el.hidden = false; el.style.left = el.style.top = "0px";
   const w = el.offsetWidth, h = el.offsetHeight, W = innerWidth, H = innerHeight, m = 8, cl = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
   let x, y;
@@ -1999,6 +2155,9 @@ PM.el.addEventListener("click", async e => {
   if (a === "glb") return modelDownload(slot, item);
   if (a === "paste") return skinUpload({ slot, item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
   if (a === "reset") return skinReset(slot, item).catch(err);
+  if (a === "cs") return wearCommunity(slot, item, b.dataset.cs).catch(x => { console.error(x); toast("โหลดลายนี้ไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+  if (a === "link") { const s = COMMUNITY.find(x => x.id === b.dataset.cs); if (s?.link) window.open(s.link, "_blank", "noopener"); return; }
+  if (a === "send") return Send.open(slot, item);
   if (a === "view") return Showcase.enter(slot, item, await viewList(slot));
   if (a === "change") return openPicker(slot, { fresh: true, kb: e.detail === 0 });
   if (a === "wear" || a === "remove") {      // one undo step, like a pick in the picker
@@ -2514,7 +2673,7 @@ function renderCard() {
   const c = o && o.colors.length ? (o.colors.includes(C.state.color) ? C.state.color : o.colors[0]) : null, e = c && edOf(o, c, C.state.edition);
   const meta = [`<span class="sc-slot">${SLOT_TH[slot]}</span>`,
     sets.length && `เซ็ต ${sets.slice(0, 2).map(setNameHTML).join(" · ")}${sets.length > 2 ? ` · อีก <span class="num">${sets.length - 2}</span>` : ""}`,
-    mine ? "ลายของคุณ" : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`, S.loading && "กำลังโหลด…"].filter(Boolean);
+    mine ? skinLabel(kind, item) : c && `สี <span class="num">${c}</span>${e ? ` <span class="ed">${e}</span>` : ""}`, S.loading && "กำลังโหลด…"].filter(Boolean);
   const i = S.list.indexOf(item), n = S.list.length;
   const b = (a, label, short, icon, extra = "", title = label) => `<button type="button" class="sc-b" data-a="${a}" title="${title}" aria-label="${label}"${extra}>${icon || ""}`
     + `<span class="l-full">${label}</span><span class="l-short">${short}</span></button>`;
@@ -2692,7 +2851,7 @@ function renderTopics() {
     if (Showcase.on && Showcase.cur?.slot !== "outfit") Showcase.exit();     // a colour shows on the character (or the floating outfit)
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
-    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast("ชุดนี้ใส่ลายของคุณอยู่\nคลิกที่ชุดบนตัวละคร แล้วเลือกคืนลายเดิมเพื่อดูสีนี้", 3000); });
+    if (SKINS.has(skinKey("outfits", C.state.outfit))) toast((skinBy("outfits", C.state.outfit) ? "ชุดนี้ใส่ลายจากผู้เล่นอยู่" : "ชุดนี้ใส่ลายของคุณอยู่") + "\nคลิกที่ชุดบนตัวละคร แล้วเลือกคืนลายเดิมเพื่อดูสีนี้", 3000); });
   fitColors();
   if (keep) box.querySelector(keep)?.focus();
   renderPlate();
@@ -2702,6 +2861,9 @@ function renderPlate() {
   $("plateCls").textContent = CLASS_TH[C?.cls || saved.cls || "sheep"] || "";
   const worn = C && (C.sets || []).find(setWorn);
   $("plateSub").innerHTML = !C ? "" : worn ? `${setNameHTML(worn)}<span class="plate-n"><span class="num">${worn.pieces}</span> ชิ้น</span>` : nameHTML(C.state.outfit);
+  // the creators of the community skins worn (community skins, 2026-11-11)
+  const by = !C ? [] : ["outfit", "R", "L", "Head", "Back"].map(sl => C.state[sl] && skinBy(kindOf(sl), C.state[sl])).filter(Boolean);
+  if (by.length) $("plateSub").insertAdjacentHTML("beforeend", `<span class="plate-by">ลายโดย ${[...new Set(by.map(b => esc(b.name)))].join(", ")}</span>`);
 }
 // the สี box's icons as big as the box allows (user 2026-11-07: "bigger icons there please"): one row of all the colours
 // or a 3 + 2 grid, whichever gives the bigger icon in this box; On a touch
@@ -2735,6 +2897,7 @@ let stageInset = 0, insetNow = 0;
 function setInset() {
   stageInset = openTopic && !isPhone() ? $("picker").offsetWidth : 0;
   stage.style.setProperty("--inset", stageInset + "px");
+  stage.classList.toggle("inset", stageInset > 0);   // the disclaimer goes under the toolbar beside an open picker
   Showcase.refit();                        // the free part of the stage changed under a floating piece
 }
 function closePicker() {
@@ -3057,7 +3220,7 @@ $("shot").onclick = () => {
   out.toBlob(b => { if (b) { saveBlob(b, shotName()); toast("บันทึกภาพแล้ว"); } else toast("บันทึกภาพไม่สำเร็จ ลองกดอีกครั้ง", 2500); }, "image/png");
 };
 // uploaded skins live in this tab only (F12): leaving with one asks first
-addEventListener("beforeunload", e => { if (SKINS.size) { e.preventDefault(); e.returnValue = ""; } });
+addEventListener("beforeunload", e => { if ([...SKINS.values()].some(s => !s.by)) { e.preventDefault(); e.returnValue = ""; } });
 $("copy").onclick = async () => {
   const s = C.state;
   const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
@@ -3916,6 +4079,7 @@ const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.
   getJSON(DATA + "icons.json").catch(() => ({})), getJSON(DATA + "placements.json").catch(() => ({})),
   getJSON(DATA + "item_map.json").catch(() => ({})), getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }))]);
 meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
+getJSON(DATA + "community.json").then(x => { COMMUNITY = x.skins || []; }).catch(() => {});
 getJSON(DATA + "icons/hd/index.json").then(x => { HDI = x; if (openTopic === "move") openPicker("move"); renderTopics(); }).catch(() => {});
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
 await loadClass(first).catch(e => err(e, "โหลดอาชีพนี้ไม่สำเร็จ ลองรีเฟรชหน้านี้"));
