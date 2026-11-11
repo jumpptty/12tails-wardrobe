@@ -1076,3 +1076,9 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `pipeline/wardrobe_weapon_shot.py` (a class holding each weapon: shots, close-ups, size against the hero).
   Publish: data folder unchanged (data-16e5161a08), page only, check no problems; unit tests 52 OK; dist check errors []
   (again its first run's Halloween click failed, the rerun passed: that check step is timing-flaky).
+- **2026-11-11, reverted: the extra submeshes stay drawn** (user: "no, I don't think those are intended, please don't
+  lose the extra pieces"). The page is back to drawing every submesh (the full Sheep lantern, the Bat wand's crystal,
+  the Rabbit rifle's piece): the user reads the game's single material as TTO's mistake, not the design. The fix's
+  deploy, stopped mid-run by the user, had gone live (version from the stopped run); redeployed the reverted page:
+  version `8846e8c2-11e8-4004-bc28-73b125da201a`, data folder unchanged (data-16e5161a08), live page without the
+  submesh filter. The cause above stays true; don't "fix" it again without asking. The two scripts stay.

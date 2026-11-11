@@ -789,23 +789,13 @@ function propMaterials(list) {
     return mat;
   });
 }
-// nMats = the renderer's material count: Unity draws submesh i with material i and leaves a submesh with no material
-// undrawn (2026-11-11, player reports: TTO's Sheep halloweenLantern has 2 submeshes and 1 material, so the game shows only
-// its small orange piece, and the Bat's halloweenWand / the Rabbit's halloweenRifle lose a tip piece); the extractor gave
-// such a submesh material 0, so it is dropped here
-function propGeometry(m, nMats = Infinity) {
+function propGeometry(m) {
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.Float32BufferAttribute(m.pos, 3));
   if (m.nrm) g.setAttribute("normal", new THREE.Float32BufferAttribute(m.nrm, 3)); else g.computeVertexNormals();
   if (m.uv) g.setAttribute("uv", new THREE.Float32BufferAttribute(m.uv, 2));
-  if (m.groups.length <= nMats) {
-    g.setIndex(m.idx);
-    for (const [start, count, mi] of m.groups) g.addGroup(start, count, mi);
-    return g;
-  }
-  const idx = [];        // only the drawn submeshes' triangles stay in the index (the 3D file copies it as it is)
-  m.groups.slice(0, nMats).forEach(([start, count, mi]) => { g.addGroup(idx.length, count, mi); for (let k = start; k < start + count; k++) idx.push(m.idx[k]); });
-  g.setIndex(idx);
+  g.setIndex(m.idx);
+  for (const [start, count, mi] of m.groups) g.addGroup(start, count, mi);
   return g;
 }
 function buildProp(p) {
@@ -814,7 +804,7 @@ function buildProp(p) {
     let o;
     if (n.mesh) { const mats = propMaterials(n.mats);
       if (stacked(n.mesh.pos, n.mesh.idx)) mats.forEach(m => { m.side = THREE.FrontSide; });
-      o = new THREE.Mesh(propGeometry(n.mesh, mats.length), mats.length > 1 ? mats : mats[0]); }
+      o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]); }
     else o = new THREE.Bone();                          // plain nodes double as the bones an animated prop's skin uses
     o.name = "p" + i;                                   // unique in the prop: its clip tracks bind by these names
     o.userData.label = n.name;
