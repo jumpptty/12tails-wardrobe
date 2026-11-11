@@ -823,8 +823,8 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(wp.check(w.out), [])
 
     def test_community_skins_follow_their_pieces(self):
-        """community.json (community skins, 2026-11-11): a skin goes online when its piece does, plain for a BB piece,
-        scrambled for a released TTO piece; a skin of a piece left out goes too; the file is always written."""
+        """community.json (community skins, 2026-11-11): a skin goes online when its BB piece does; a released TTO
+        piece's skin never does (user: "TTO upload should work only on private version"), nor one of a piece left out."""
         w = self.world()
         png(w.data / "props" / "tex" / "Cat_ttoFlag.png")
         (w.src / wp.RELEASED_NAME).write_text(json.dumps({"cat": {"trinkets": ["ttoFlag"]}}), encoding="utf-8")
@@ -838,13 +838,11 @@ class PublishTest(unittest.TestCase):
         (w.data / "community.json").write_text(json.dumps({"skins": skins}), encoding="utf-8")
         result = w.publish()
         d = data_dir(w)
-        self.assertEqual([s["id"] for s in json.loads((d / "community.json").read_text("utf-8"))["skins"]], ["1", "2"])
+        self.assertEqual([s["id"] for s in json.loads((d / "community.json").read_text("utf-8"))["skins"]], ["1"])
         self.assertEqual((d / "community/cat/1_0.webp").read_bytes(), (w.data / "community/cat/1_0.webp").read_bytes())
-        tto = (d / "community/cat/2_0.webp").read_bytes()
-        self.assertEqual(tto[:4], wp.SCRAMBLE_MARK)
-        self.assertEqual(unscramble(tto), (w.data / "community/cat/2_0.webp").read_bytes())
+        self.assertFalse((d / "community/cat/2_0.webp").exists())
         self.assertFalse((d / "community/all/3_0.webp").exists())
-        self.assertEqual(dropped_names(result, "community"), ["all/ttoWing/3"])
+        self.assertEqual(dropped_names(result, "community"), ["cat/ttoFlag/2", "all/ttoWing/3"])
         html = (w.out / "index.html").read_text(encoding="utf-8")
         self.assertIn('const SUBMIT_KEY = "', html)
         self.assertNotIn("submitkey", html)

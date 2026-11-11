@@ -4,7 +4,7 @@ will mark them from html picker"):
   - the picker (wardrobe/tto_picker.html, after a publish wrote wardrobe_dist_tto.json): every class tab, tiles, a click
     toggles an item, select-all / none in a section, the JSON it saves names exactly the chosen items
   - the wardrobe with ?ttolock (what the published copy does): TTO tiles carry the TTO mark (no pink dot), a TTO piece's
-    menu has no download actions (its own-skin upload stays, 2026-11-11), a BB piece's menu still has them
+    menu has no download / upload actions but the preview-only note, a BB piece's menu still has them
 Writes <out>/picker.png, <out>/tto_menu.png, <out>/tto_tiles.png; exit 1 on a failure or a page error.
   uv run --no-project --with playwright python -I pipeline/wardrobe_tto_check.py D:/12tails-wardrobe checks/<dir>"""
 import asyncio, functools, http.server, json, sys, threading
@@ -85,8 +85,7 @@ async def main():
         pt = await page.evaluate(POINT)
         await page.mouse.click(*pt); await page.wait_for_timeout(300)
         m = await page.evaluate(MENU)
-        # since 2026-11-11 (community skins, user: "(b) Allow preview upload") a TTO piece keeps อัปโหลดลายของคุณ; no downloads
-        check(m["items"] and not {"png", "glb"} & set(m["items"]) and "up" in m["items"], f"TTO outfit {tto}: {m['items']} (no downloads, upload kept)")
+        check(m["items"] and not {"png", "glb", "up", "reset"} & set(m["items"]), f"TTO outfit {tto}: {m['items']} (no download / upload)")
         await page.screenshot(path=str(OUT / "tto_menu.png"))
         await page.keyboard.press("Escape")
         await page.evaluate("() => wardrobe.setOutfit('standard')"); await page.wait_for_timeout(800)

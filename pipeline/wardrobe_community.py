@@ -1,7 +1,8 @@
 r"""Community skins: the approved submissions in the private Discord channel -> wardrobe/data (2026-11-11, NOTES.md
 "community skins"). The page's send dialog posts a visitor's skin through the site's Worker (pipeline/site_worker.mjs)
 to the channel's webhook: one message per piece, its PNGs and a meta.json. The user approves a message by reacting ✅;
-this script reads the channel with a bot, checks every approved skin against the data and writes:
+this script reads the channel with a bot, checks every approved skin against the data (never a TTO piece: user 2026-11-11, "TTO upload should work only on private
+version"; the pop-up's picture is the 2D texture) and writes:
   wardrobe/data/community/<cls>/<message id>_<n>.webp   (WebP q92, alpha kept; cls = "all" for a shared piece)
   wardrobe/data/community.json                          {"skins": [{id, cls, kind, item, name, link, at, tex: {tex: file}}]}
 The channel is the truth: a message whose ✅ is taken away (or that is deleted) leaves the data at the next run.
@@ -47,10 +48,14 @@ def piece(data, cls, kind, item):
         o = next((x for x in load(data / cls / "outfits.json", []) if x.get("name") == item), None)
         if not o or not o.get("colors"):
             raise Refused(f"{cls} has no outfit {item!r} with a texture")
+        if o.get("tto"):
+            raise Refused(f"{item!r} is TTO's: no community skins for TTO pieces (its texture would be the picture)")
         return cls, [""], {"": image_size(data / cls / "tex" / f"{item}{o['colors'][0]}.webp")}
     for owner in ([cls] if cls == "all" else [cls, "all"]):
         p = next((x for x in load(data / owner / f"props_{kind}.json", []) if x.get("name") == item), None)
         if p:
+            if p.get("tto"):
+                raise Refused(f"{item!r} is TTO's: no community skins for TTO pieces (its texture would be the picture)")
             mats = [m for n in p.get("nodes", []) for m in n.get("mats") or []] + (p.get("mats") or [] if p.get("heroSkin") else [])
             texs = list(dict.fromkeys(m["tex"] for m in mats if m.get("tex")))
             if not texs:

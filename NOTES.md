@@ -1125,3 +1125,15 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   - Checks: `pipeline/wardrobe_community_check.py` (the browser flow with a stand-in community.json and api/submit);
     `wardrobe_tto_check.py` and `wardrobe_dist_check.py` now expect upload kept on TTO pieces. All green: unit 59 OK,
     node 4/4, community check, worker check, menu check, TTO check, dist check (twice).
+- **2026-11-11, community skins reworked** (user: "ลายจากผู้เล่น implementation is bad, it should be an option for
+  another pop-up box, user can choose to download it or wear it in the wardrobe"; then "TTO upload should work only on
+  private version, there should be no TTO skins from other players to try to begin with since we have to use the 2D
+  texture as the thumbnail"). (1) The piece menu has one entry "ลายจากผู้เล่น <n>" opening `Gallery`: a card per skin
+  (the 2D texture as its picture, "ลายโดย", the link or ไม่มีลิงก์, ใส่ในห้องแต่งตัว = one undo step and the pop-up closes,
+  ดาวน์โหลด = `communityDownload`, PNG `12tails_<class>_<item>[_ลาย<n>]_ลายโดย<name>.png`), Esc / ✕ / the backdrop close;
+  buttons stacked (ใส่ในห้องแต่งตัว did not fit beside ดาวน์โหลด). (2) The TTO loosening is undone: online a TTO piece is
+  preview only again (no upload, paste, reset, send); `communityOf` ignores a TTO piece; the import refuses one ("is
+  TTO's"), the publish drops one (no scrambled copy any more). Checks rewritten on the BB mothLatern + standard outfit;
+  `wardrobe.debug()` also hands out Send / Gallery. The check trap: the pop-up reuses `.send-back`, so a selector for the
+  send dialog must say `:not(.gal-back)`; Cloudflare's test widget always returns the same dummy token. All green: unit
+  59, node 4/4, community check (twice), menu, TTO, dist check (twice), publish no problems.

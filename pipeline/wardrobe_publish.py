@@ -914,18 +914,18 @@ def publish_props(run, cls, kind):
 
 def publish_community(run, outfits, props):
     """community.json and its pictures (community skins, 2026-11-11; pipeline/wardrobe_community.py): a skin goes online
-    when its piece is published; a TTO piece's skins are written scramble()d like the piece's own textures. Always
-    written, empty or not (the page asks for it)."""
+    when its piece is published and is BB's: a TTO piece has none (user 2026-11-11: "TTO upload should work only on
+    private version"; the pop-up shows the 2D texture). Always written, empty or not (the page asks for it)."""
     pub = {("outfits", cls, o["name"]): bool(o.get("tto")) for cls, kept in outfits.items() for o in kept}
     pub |= {(kind, cls, p["name"]): bool(p.get("tto")) for (cls, kind), kept in props.items() for p in kept}
     skins = []
     for s in run.load("community.json", default={"skins": []}).get("skins", []):
         key = (s["kind"], s["cls"], s["item"])
-        if key not in pub:
-            run.drop("community", f"{s['cls']}/{s['item']}/{s['id']}", "its piece is not published")
+        if key not in pub or pub[key]:
+            run.drop("community", f"{s['cls']}/{s['item']}/{s['id']}", "its piece is TTO's" if pub.get(key) else "its piece is not published")
             continue
         for rel in s["tex"].values():
-            run.copy(rel, scrambled=pub[key])
+            run.copy(rel)
         skins.append(s)
     run.write_json("community.json", {"skins": skins})
 

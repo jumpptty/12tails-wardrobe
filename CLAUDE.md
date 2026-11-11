@@ -51,8 +51,8 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then deploy (NOTES.md "Online copy"):
   Claude may deploy when the user asks for it (user 2026-11-09: "please change that Claude.md setting then deploy"),
   always from an empty folder, never from the video folder. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the
-  user's content rule, enforced by the publish; TTO is preview only online: no downloads; since 2026-11-11 a visitor may
-  put their own skin on a TTO piece to try it and send it). ToT never goes online. The deploy names the Worker script
+  user's content rule, enforced by the publish; TTO is preview only online: no downloads or uploads, and no community
+  skins for TTO pieces at all; uploading onto TTO pieces is for the local copy only). ToT never goes online. The deploy names the Worker script
   `pipeline\site_worker.mjs` (the community skins' send route; NOTES.md "Online copy"). Community skins: two separate
   uploads: อัปโหลดลายของคุณ stays in the visitor's browser; ส่งลายนี้ให้ทีมงาน sends one skin to the user's private
   Discord channel; approved (✅) ones come in with `pipeline\wardrobe_community.py`, then publish + deploy.

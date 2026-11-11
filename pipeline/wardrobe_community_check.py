@@ -1,14 +1,18 @@
 """Headless check of community skins in the page (2026-11-11, NOTES.md "community skins"). The local page with ?ttolock
 (the online TTO lock) and ?submitkey=<Cloudflare's always-pass Turnstile test key>; this script's server stands in
-for the data's community.json (two approved skins: the Sheep's TTO halloweenLantern and her standard outfit) and for
-the Worker's api/submit (it records what the page sends). Checks:
-  - a TTO piece's menu: no downloads, อัปโหลดลายของคุณ kept (the visitor may preview), the "ลายจากผู้เล่น" list + link
-  - wearing a community skin: one undo step, the nameplate's "ลายโดย ...", the menu's meta, the tile badge ลายผู้เล่น
-  - the visitor's own skin on the TTO piece, then ส่งลายนี้ให้ทีมงาน: the dialog (Turnstile renders and passes), the
+for the data's community.json (approved skins for the Sheep's BB mothLatern and standard outfit, and one for her TTO
+halloweenLantern that the page must ignore) and for the Worker's api/submit (it records what the page sends). Checks:
+  - a TTO piece's menu online: no download, no upload, no "ลายจากผู้เล่น" (user 2026-11-11: "TTO upload should work only on
+    private version")
+  - a BB piece: one "ลายจากผู้เล่น" entry that opens the pop-up (a card: picture, credit, link; ใส่ในห้องแต่งตัว; ดาวน์โหลด;
+    Esc closes)
+  - wearing a community skin: one undo step, the nameplate's "ลายโดย ...", the menu's meta, the tile badge ลายผู้เล่น;
+    the BB outfit's skin downloads as a PNG at the texture's size, named with its credit
+  - the visitor's own skin on the BB piece, then ส่งลายนี้ให้ทีมงาน: the dialog (Turnstile renders and passes), the
     checks before sending (name, link, consent), the request (fields, the PNG at the texture's size), a refusal shown
     in the dialog, the success toast; the outfit's community skin; a phone-sized dialog
   - no page / console errors
-Shots in <out>: menu.png, dialog.png, dialog_phone.png. Exit 1 on any failure. Needs the internet (Turnstile's script).
+Shots in <out>: menu.png, gallery.png, gallery_phone.png, dialog.png, dialog_phone.png. Exit 1 on any failure. Needs the internet (Turnstile's script).
   uv run --no-project --with playwright --with pillow python -I pipeline/wardrobe_community_check.py D:/12tails-wardrobe checks/<dir>"""
 import asyncio, email.parser, email.policy, functools, http.server, io, json, sys, threading
 from pathlib import Path
@@ -26,15 +30,17 @@ def webp(size, color):
     b = io.BytesIO(); Image.new("RGBA", size, color).save(b, "WEBP", lossless=True); return b.getvalue()
 
 
-LANTERN_TEX = "Sheep_halloweenWeapon.png"
+LANTERN_TEX = "Sheep_mothLantern.png"                # the BB mothLatern's texture
 LANTERN_SIZE = Image.open(DATA / "props" / "tex" / LANTERN_TEX).size
 OUTFIT_SIZE = Image.open(DATA / "sheep" / "tex" / "standard1.webp").size
 FAKE = {
     "/wardrobe/data/community.json": json.dumps({"skins": [
-        {"id": "900001", "cls": "sheep", "kind": "weapons", "item": "halloweenLantern", "name": "ทดสอบ ลายเขียว", "link": "https://example.com/artist",
+        {"id": "900001", "cls": "sheep", "kind": "weapons", "item": "mothLatern", "name": "ทดสอบ ลายเขียว", "link": "https://example.com/artist",
          "at": "2026-11-11T00:00:00Z", "tex": {LANTERN_TEX: "community/sheep/900001_0.webp"}},
         {"id": "900002", "cls": "sheep", "kind": "outfits", "item": "standard", "name": "คนที่สอง", "link": "",
-         "at": "2026-11-11T00:00:01Z", "tex": {"": "community/sheep/900002_0.webp"}}]}, ensure_ascii=False).encode(),
+         "at": "2026-11-11T00:00:01Z", "tex": {"": "community/sheep/900002_0.webp"}},
+        {"id": "900003", "cls": "sheep", "kind": "weapons", "item": "halloweenLantern", "name": "ไม่ควรเห็น", "link": "",
+         "at": "2026-11-11T00:00:02Z", "tex": {"Sheep_halloweenWeapon.png": "community/sheep/900001_0.webp"}}]}, ensure_ascii=False).encode(),
     "/wardrobe/data/community/sheep/900001_0.webp": webp(LANTERN_SIZE, (40, 220, 60, 255)),
     "/wardrobe/data/community/sheep/900002_0.webp": webp(OUTFIT_SIZE, (60, 90, 240, 255)),
 }
@@ -84,11 +90,11 @@ SKINS = "() => [...wardrobe.debug().SKINS.entries()].map(([k, v]) => [k, v.by ? 
 async def main():
     errors, fails = [], []
     check = lambda ok, what: (print(("ok   " if ok else "FAIL ") + what), ok or fails.append(what))
-    own = OUT / "own_skin.png"
+    own = OUT.resolve() / "own_skin.png"
     Image.new("RGBA", LANTERN_SIZE, (250, 120, 0, 255)).save(own)
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
-        ctx = await b.new_context(viewport={"width": 1366, "height": 768})
+        ctx = await b.new_context(viewport={"width": 1366, "height": 768}, accept_downloads=True)
         page = await ctx.new_page()
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: m.type == "error" and "challenges.cloudflare.com" not in ((m.location or {}).get("url", ""))
@@ -107,35 +113,54 @@ async def main():
             return await page.evaluate(MENU)
 
         m = await tile_menu("R", "halloweenLantern")
-        check(m["open"] and not any(i.startswith(("png", "glb")) for i in m["items"]), f"TTO piece: no downloads ({m['items']})")
-        check(any(i.startswith("up") for i in m["items"]), "TTO piece: อัปโหลดลายของคุณ kept (preview)")
-        check("cs:900001" in m["items"] and "link:900001" in m["items"] and "ลายจากผู้เล่น" in m["sub"], f"the community list: {m['sub']!r}")
+        check(m["open"] and not {"png", "glb", "up", "reset", "send", "gallery"} & set(m["items"]),
+              f"TTO piece online: no download / upload / community skins ({m['items']})")
+        await page.keyboard.press("Escape")
+        m = await tile_menu("R", "mothLatern")
+        check("gallery" in m["items"] and not any(i.startswith(("cs", "link")) for i in m["items"]), f"one ลายจากผู้เล่น entry: {m['items']}")
         check(not any(i.startswith("send") for i in m["items"]), "no send action before the visitor's own skin")
-        await page.screenshot(path=str(OUT / "menu.png"))
+        await page.screenshot(path=str(OUT.resolve() / "menu.png"))
 
-        await page.click('#pmenu .pm-item[data-a="cs"]')
+        await page.click('#pmenu .pm-item[data-a="gallery"]')
+        await page.wait_for_selector(".gal-back:not([hidden]) .gal-card")
+        await page.wait_for_function("() => document.querySelector('.gal-card img')?.naturalWidth > 0", timeout=15000)
+        g = await page.evaluate("""() => [...document.querySelectorAll('.gal-card')].map(c => ({ id: c.dataset.cs, by: c.querySelector('.gal-by').innerText,
+          link: c.querySelector('a.gal-link')?.href || null, rel: c.querySelector('a.gal-link')?.rel || null,
+          wear: c.querySelector('[data-a="wear"]').innerText, dl: c.querySelector('[data-a="dl"]').disabled }))""")
+        check(g == [{"id": "900001", "by": "ลายโดย ทดสอบ ลายเขียว", "link": "https://example.com/artist", "rel": "noopener noreferrer",
+                     "wear": "ใส่ในห้องแต่งตัว", "dl": False}], f"the pop-up's card: {g}")
+        await page.screenshot(path=str(OUT.resolve() / "gallery.png"))
+        await page.keyboard.press("Escape")
+        check(await page.locator(".gal-back").is_hidden(), "Esc closes the pop-up")
+        await tile_menu("R", "mothLatern")
+        await page.click('#pmenu .pm-item[data-a="gallery"]')
+        await page.click('.gal-card [data-a="wear"]')
         await page.wait_for_function("() => wardrobe.debug().SKINS.size === 1", timeout=15000)
+        check(await page.locator(".gal-back").is_hidden(), "ใส่ในห้องแต่งตัว closes the pop-up")
         sk = await page.evaluate(SKINS)
         check(sk[0][1] == "ทดสอบ ลายเขียว" and tuple(sk[0][2:]) == LANTERN_SIZE, f"community skin on: {sk}")
-        check((await page.evaluate("() => wardrobe.debug().C.state.R")) == "halloweenLantern", "it put the piece on")
+        check((await page.evaluate("() => wardrobe.debug().C.state.R")) == "mothLatern", "it put the piece on")
         plate = await page.evaluate("() => document.getElementById('plateSub').innerText")
         check("ลายโดย ทดสอบ ลายเขียว" in plate, f"nameplate credit: {plate!r}")
-        badge = await page.locator('#pkBody .pk-cell[data-item="halloweenLantern"] .sk-badge').inner_text()
+        badge = await page.locator('#pkBody .pk-cell[data-item="mothLatern"] .sk-badge').inner_text()
         check(badge == "ลายผู้เล่น", f"tile badge: {badge!r}")
-        m = await tile_menu("R", "halloweenLantern")
-        check("ลายโดย ทดสอบ ลายเขียว" in m["meta"] and "cs:900001(off)" in m["items"] and "reset" in m["items"], f"menu after: {m['meta']!r}")
+        m = await tile_menu("R", "mothLatern")
+        check("ลายโดย ทดสอบ ลายเขียว" in m["meta"] and "reset" in m["items"], f"menu after: {m['meta']!r}")
+        await page.click('#pmenu .pm-item[data-a="gallery"]')
+        w = await page.evaluate("() => { const b = document.querySelector('.gal-card [data-a=\"wear\"]'); return [b.innerText, b.disabled, document.querySelector('.gal-card').classList.contains('on')]; }")
+        check(w == ["ใส่อยู่", True, True], f"the worn card says ใส่อยู่: {w}")
         await page.keyboard.press("Escape")
         await page.click("#undo"); await page.wait_for_timeout(600)
         check((await page.evaluate(SKINS)) == [], "undo takes it off")
 
         # the visitor's own skin on the TTO piece, then send it
-        await tile_menu("R", "halloweenLantern")
+        await tile_menu("R", "mothLatern")
         async with page.expect_file_chooser() as fc:
             await page.locator('#pmenu .pm-item[data-a="up"]').click()
         await (await fc.value).set_files(str(own))
         await page.wait_for_function("() => wardrobe.debug().SKINS.size === 1", timeout=15000)
-        check((await page.evaluate(SKINS))[0][1] is None, "own skin on the TTO piece (preview upload allowed)")
-        m = await tile_menu("R", "halloweenLantern")
+        check((await page.evaluate(SKINS))[0][1] is None, "own skin on the BB piece")
+        m = await tile_menu("R", "mothLatern")
         check("send" in m["items"], f"send offered: {m['items']}")
         await page.click('#pmenu .pm-item[data-a="send"]')
         await page.wait_for_selector(".send-back:not([hidden]) form.send")
@@ -155,20 +180,25 @@ async def main():
             check(True, "Turnstile rendered and passed (test key)")
         except Exception:
             check(False, "Turnstile rendered and passed (test key)")
-        await page.screenshot(path=str(OUT / "dialog.png"))
+        await page.screenshot(path=str(OUT.resolve() / "dialog.png"))
+        TOKEN = "() => document.querySelector('.send-ts input[name=\"cf-turnstile-response\"]')?.value || ''"
+        first = await page.evaluate(TOKEN)
         ANSWER.update(body={"ok": False, "error": "rate"}, status=429)
         await dlg.locator('button[type="submit"]').click()
         await page.wait_for_function("() => document.querySelector('.send-msg')?.innerText", timeout=15000)
         msg = await page.locator(".send-msg").inner_text()
         check(msg == "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", f"a refusal shows in the dialog: {msg!r} (requests {len(POSTS)}, errors {errors})")
         ANSWER.update(body={"ok": True}, status=200)
-        await page.wait_for_function("() => document.querySelector('.send-ts input[name=\"cf-turnstile-response\"]')?.value", timeout=30000)
+        # a refused send resets the widget (a token works once): wait for a new one
+        await page.wait_for_function("() => wardrobe.debug().Send.token", timeout=30000)
+        await page.wait_for_timeout(300)
         await dlg.locator('button[type="submit"]').click()
-        await page.wait_for_selector(".send-back", state="hidden", timeout=15000)
-        check("ส่งลายแล้ว" in await page.evaluate("() => document.getElementById('toast').innerText"), "success toast")
+        await page.wait_for_selector(".send-back:not(.gal-back)", state="hidden", timeout=15000)
+        t = await page.evaluate("() => document.getElementById('toast').textContent")
+        check("ส่งลายแล้ว" in t, f"success toast: {t!r}")
         f = POSTS[-1] if POSTS else {}
         got = {k: f.get(k) for k in ("cls", "kind", "item", "name", "link", "consent", "tex0")}
-        check(got == {"cls": "sheep", "kind": "weapons", "item": "halloweenLantern", "name": "ผู้ทดสอบ", "link": "https://example.com/me",
+        check(got == {"cls": "sheep", "kind": "weapons", "item": "mothLatern", "name": "ผู้ทดสอบ", "link": "https://example.com/me",
                       "consent": "1", "tex0": LANTERN_TEX} and f.get("token"), f"the request: {got}")
         size = Image.open(io.BytesIO(f["skin0"])).size if f.get("skin0") else None
         check(size == LANTERN_SIZE, f"the PNG sent is the texture's size: {size}")
@@ -177,21 +207,30 @@ async def main():
         # the outfit's community skin
         await page.click("#pkClose"); await page.wait_for_timeout(300)
         m = await tile_menu("outfit", "standard")
-        check("cs:900002" in m["items"] and "link:900002" not in m["items"], "outfit: its community skin, no link button without a link")
-        await page.click('#pmenu .pm-item[data-a="cs"]'); await page.wait_for_timeout(1500)
+        check("gallery" in m["items"], "outfit: the ลายจากผู้เล่น entry")
+        await page.click('#pmenu .pm-item[data-a="gallery"]')
+        await page.wait_for_selector(".gal-back:not([hidden]) .gal-card")
+        check(await page.locator(".gal-card .gal-link.none").inner_text() == "ไม่มีลิงก์", "no link: says so")
+        async with page.expect_download() as d:
+            await page.click('.gal-card [data-a="dl"]')
+        dl = await d.value
+        path = OUT.resolve() / "community_download.png"; await dl.save_as(str(path))
+        check(dl.suggested_filename == "12tails_แกะ_Standard_ลายโดยคนที่สอง.png" and Image.open(path).size == OUTFIT_SIZE,
+              f"BB outfit: ดาวน์โหลด saves {dl.suggested_filename} {Image.open(path).size}")
+        await page.click('.gal-card [data-a="wear"]'); await page.wait_for_timeout(1500)
         plate = await page.evaluate("() => document.getElementById('plateSub').innerText")
         check("คนที่สอง" in plate, f"outfit skin credited: {plate!r}")
 
-        # a phone-sized dialog
+        # a phone-sized dialog and pop-up
         pp = await (await b.new_context(viewport={"width": 390, "height": 700}, is_mobile=True, has_touch=True)).new_page()
         pp.on("pageerror", lambda e: errors.append("phone: " + str(e)))
         await pp.goto(URL)
         await pp.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
-        await pp.evaluate("() => wardrobe.show('sheep', { R: 'halloweenLantern' })")
+        await pp.evaluate("() => wardrobe.show('sheep', { R: 'mothLatern' })")
         await pp.evaluate("""async () => { const { SKINS, C } = wardrobe.debug(); const w = 4, h = 4;
-          SKINS.set(`${C.cls}|weapons|halloweenLantern|Sheep_halloweenWeapon.png`, { w, h, data: new Uint8ClampedArray(w * h * 4).fill(200) }); }""")
+          SKINS.set(`${C.cls}|weapons|mothLatern|Sheep_mothLantern.png`, { w, h, data: new Uint8ClampedArray(w * h * 4).fill(200) }); }""")
         await pp.click('#topics [data-t="R"]'); await pp.wait_for_selector("#pkBody .pk-cell")
-        await pp.evaluate("""() => { const c = document.querySelector('#pkBody .pk-cell[data-item="halloweenLantern"]');
+        await pp.evaluate("""() => { const c = document.querySelector('#pkBody .pk-cell[data-item="mothLatern"]');
           c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 50, clientY: 600 })); }""")
         await pp.wait_for_timeout(300)
         if await pp.locator('#pmenu .pm-item[data-a="send"]').count():
@@ -199,7 +238,16 @@ async def main():
             await pp.wait_for_selector("form.send"); await pp.wait_for_timeout(1500)
             r = await pp.evaluate("() => { const r = document.querySelector('form.send').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom, innerWidth, innerHeight]; }")
             check(r[0] >= 0 and r[1] <= r[4] and r[2] >= 0 and r[3] <= r[5], f"phone dialog inside the screen: {r}")
-            await pp.screenshot(path=str(OUT / "dialog_phone.png"))
+            await pp.screenshot(path=str(OUT.resolve() / "dialog_phone.png"))
+            await pp.keyboard.press("Escape")
+            await pp.evaluate("""() => { const c = document.querySelector('#pkBody .pk-cell[data-item="mothLatern"]');
+              c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 50, clientY: 600 })); }""")
+            await pp.wait_for_timeout(300)
+            await pp.locator('#pmenu .pm-item[data-a="gallery"]').click()
+            await pp.wait_for_selector(".gal-back:not([hidden]) .gal-card"); await pp.wait_for_timeout(800)
+            r = await pp.evaluate("() => { const r = document.querySelector('.send.gal').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom, innerWidth, innerHeight]; }")
+            check(r[0] >= 0 and r[1] <= r[4] and r[2] >= 0 and r[3] <= r[5], f"phone pop-up inside the screen: {r}")
+            await pp.screenshot(path=str(OUT.resolve() / "gallery_phone.png"))
         else:
             check(False, "phone: the send action")
         await b.close()

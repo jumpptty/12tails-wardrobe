@@ -26,7 +26,8 @@ class Community(unittest.TestCase):
         (d / "all").mkdir()
         (d / "sheep" / "outfits.json").write_text(json.dumps([{"name": "standard", "colors": [1, 2]}, {"name": "nude", "colors": []}]))
         Image.new("RGB", (16, 16)).save(d / "sheep" / "tex" / "standard1.webp")
-        (d / "sheep" / "props_weapons.json").write_text(json.dumps([{"name": "halloweenLantern", "nodes": [{"mats": [{"tex": "Lantern.png"}]}]}]))
+        (d / "sheep" / "props_weapons.json").write_text(json.dumps([{"name": "halloweenLantern", "nodes": [{"mats": [{"tex": "Lantern.png"}]}]},
+                                                                    {"name": "ttoStaff", "tto": True, "nodes": [{"mats": [{"tex": "Lantern.png"}]}]}]))
         (d / "all" / "props_trinkets.json").write_text(json.dumps([{"name": "Azure_Wing", "nodes": [{"mats": [{"tex": "Wing.png"}, {"tex": "Wing2.png"}]}]}]))
         for n, s in (("Lantern.png", 8), ("Wing.png", 8), ("Wing2.png", 4)):
             Image.new("RGBA", (s, s)).save(d / "props" / "tex" / n)
@@ -62,13 +63,14 @@ class Community(unittest.TestCase):
     def test_refusals(self):
         bad = [self.sub("1", item="nothing"), self.sub("2", tex=(("Lantern.png", 16),)), self.sub("3", kind="outfits", item="nude", tex=(("", 16),)),
                self.sub("4", name="  "), self.sub("5", link="http://plain.example"), self.sub("6", tex=(("Other.png", 8),)),
-               self.sub("7", kind="hats")]
+               self.sub("7", kind="hats"), self.sub("9", item="ttoStaff")]
         m, meta, files, at = self.sub("8")
         files = {"skin0.png": png(8, 8, fmt="BMP")}
         bad.append((m, meta, files, at))
         added, removed, refused = wc.apply(self.d, bad)
         self.assertEqual(added, [])
-        self.assertEqual([i for i, _ in refused], [str(i) for i in range(1, 9)])
+        self.assertEqual(sorted(i for i, _ in refused), [str(i) for i in range(1, 10)])
+        self.assertIn("TTO", dict(refused)["9"])
         self.assertIn("16x16, the original 8x8", dict(refused)["2"])
         self.assertIn("not a PNG", dict(refused)["8"])
 
