@@ -1051,3 +1051,11 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   7,675 already there, version `9d49453e-6890-4ae7-8783-3c7b64d1f2b5`. Live: `data-f37b6da64e`, poolChains and the
   kept buffers in the page, fxparts penguin / tto_penguin, fx_cues/penguin.json, the Quick Heal icon 200; the old data
   folder 404.
+- **2026-11-11, deployed: Devil Wing off, the disclaimer** (user: "remove the Devil Wing from the Wardrobe Online
+  version, that piece has not been released yet, then deploy, also red warning text at top left in white area"):
+  `devilWing` out of `tto_released.json` (all.trinkets; the publish drops it: "not in the released list"); a red
+  `.disclaimer` on the stage's top left "โปรเจกต์ส่วนตัว ไม่มีส่วนเกี่ยวข้องกับเซิร์ฟเวอร์ใด ๆ" (#c62828, #ff8a80 on the dark
+  backdrop; follows `--inset` beside the picker; phone: under the logo chip), local and online. Publish 7,905 files (-1),
+  check no problems; unit tests 52 OK; `wardrobe_dist_check.py` errors [] (a first run's Halloween tile click didn't wear
+  it in time; the rerun passed). From a fresh empty folder: 2 uploaded, version `e5957791-636d-4877-be20-89df43b1c514`,
+  live `data-16e5161a08`, the old data folder 404.

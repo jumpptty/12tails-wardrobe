@@ -123,6 +123,10 @@ main.bg-dark .status.err { color: #f0937c; }
    toasts stay above it, on the left); the WASD hint goes */
 .app.viewing .plate, .app.viewing .keyhint { display: none; }
 .app.viewing .dock { right: 16px; align-items: center; }
+/* the disclaimer (user 2026-11-11: red, the stage's top left): a personal project, not affiliated with any server */
+.disclaimer { position: absolute; top: 14px; left: calc(var(--inset, 0px) + 16px); z-index: 5; margin: 0; max-width: calc(100% - var(--inset, 0px) - 32px);
+  color: #c62828; font-size: 13.5px; font-weight: 600; line-height: 1.5; pointer-events: none; transition: left .2s; }
+main.bg-dark .disclaimer { color: #ff8a80; }
 .app.viewing .toast { align-self: flex-start; }
 .showcase { pointer-events: auto; width: min(640px, 100%); display: flex; flex-direction: column; gap: 5px; padding: 8px 12px 10px;
   background: var(--weave), var(--panel); border: 1px solid var(--line); border-radius: 6px; color: var(--text); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
@@ -406,6 +410,7 @@ main.bg-dark .status.err { color: #f0937c; }
   .bar .l-full { display: none; }
   .bar .l-short { display: inline; }
   .dock { left: 10px; right: 10px; bottom: 8px; gap: 6px; }
+  .disclaimer { top: 58px; left: 10px; max-width: calc(100% - 20px); font-size: 12px; }   /* under the logo chip */
   /* ชมชิ้นส่วน on a phone: the card in the bottom area (where the sheet or the topics were), the stage above it */
   .app { --vcard: 158px; }
   .app.viewing { grid-template-rows: minmax(0, 1fr) var(--vcard); }
@@ -456,6 +461,7 @@ main.bg-dark .status.err { color: #f0937c; }
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
+    <p class="disclaimer" id="disclaimer">โปรเจกต์ส่วนตัว ไม่มีส่วนเกี่ยวข้องกับเซิร์ฟเวอร์ใด ๆ</p>
     <div class="dock">
       <div class="toast" id="toast" role="status"></div>
       <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
