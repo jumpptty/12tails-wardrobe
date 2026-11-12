@@ -16,14 +16,6 @@ the picture from /api/community). Left: when the user takes the test skin's ✅ 
 then run the PC import once (so the data's fallback community.json drops it too), publish, deploy, commit. Delete this
 item.
 
-## Home PC: DeetaeZ's Whale legend set into the gallery, then deploy
-
-The user asked for it 2026-11-12 (their friend DeetaeZ, who agreed to be named); its files are only in the home PC's
-`D:\12tails-assets-archive\tot-skins-2026-11-07` (Armor / Accessory / Weapon `[DeetaeZ]17832683*`). Run
-`uv run --no-project --with pillow --with numpy --with scipy --with playwright python -I pipeline/wardrobe_team_sets.py`
-(it shoots the set from the local page and adds it, credited DeetaeZ), look at its card and ลองทั้งชุด on the Whale,
-then publish, deploy (with the Worker script), commit the data. Delete this item.
-
 ## Either PC: a live test of a whole look
 
 Deployed 2026-11-12 (065f1bf4). Send one 2-piece look from the live site (ส่งลุคนี้), approve it in Discord, check it in

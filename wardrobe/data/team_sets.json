@@ -86,6 +86,53 @@
      }
     }
    ]
+  },
+  {
+   "id": "friend-whale-legend-deetaez",
+   "cls": "whale",
+   "name": "DeetaeZ",
+   "link": "",
+   "at": "2026-11-12T12:00:00Z",
+   "face": null,
+   "thumb": "team/whale/friend-whale-legend-deetaez_p.webp",
+   "pieces": [
+    {
+     "slot": "outfit",
+     "kind": "outfits",
+     "item": "legend",
+     "owner": "whale",
+     "tex": {
+      "": "team/whale/friend-whale-legend-deetaez_0.webp"
+     }
+    },
+    {
+     "slot": "Head",
+     "kind": "accessories",
+     "item": "legendHelmet",
+     "owner": "whale",
+     "tex": {
+      "Whale_legendHelmet.png": "team/whale/friend-whale-legend-deetaez_1.webp"
+     }
+    },
+    {
+     "slot": "R",
+     "kind": "weapons",
+     "item": "legendLance",
+     "owner": "whale",
+     "tex": {
+      "Whale_legendWeapon.png": "team/whale/friend-whale-legend-deetaez_2.webp"
+     }
+    },
+    {
+     "slot": "L",
+     "kind": "weapons",
+     "item": "legendShield",
+     "owner": "whale",
+     "tex": {
+      "Whale_legendWeapon.png": "team/whale/friend-whale-legend-deetaez_3.webp"
+     }
+    }
+   ]
   }
  ]
 }

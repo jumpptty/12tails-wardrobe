@@ -21,14 +21,17 @@ AT = "2026-11-12T12:00:00Z"
 # put that set in there too"; DeetaeZ agreed to be named, the trailer credits them, video NOTES.md): their ToT uploads,
 # archived on the home PC only (D:\12tails-assets-archive). The weapon texture is the lance + shield atlas: both pieces.
 # Left out (with a line saying so) where the archive is missing; its picture is shot from the local page
-ARCHIVE = Path(r"D:\12tails-assets-archive\tot-skins-2026-11-07")
+# Since the user pasted the three textures (2026-11-12, "outfit, weapon, headpiece" ... "Deetaez") they are in the repo,
+# plans/friends/deetaez/ (512 / 256 / 256 px, exactly the originals' sizes, opaque like them): either PC builds the set
+FRIEND_SRC = ROOT / "plans" / "friends" / "deetaez"
 FRIENDS = [  # id, class, credit, face, [(slot, kind, item, {texture name: file})]
     ("friend-whale-legend-deetaez", "whale", "DeetaeZ", None,
-     [("outfit", "outfits", "legend", {"": ARCHIVE / "Armor" / "[DeetaeZ]1783268358_777.png"}),
-      ("Head", "accessories", "legendHelmet", {"Whale_legendHelmet.png": ARCHIVE / "Accessory" / "[DeetaeZ]1783268338_829.png"}),
-      ("R", "weapons", "legendLance", {"Whale_legendWeapon.png": ARCHIVE / "Weapon" / "[DeetaeZ]1783268376_830.png"}),
-      ("L", "weapons", "legendShield", {"Whale_legendWeapon.png": ARCHIVE / "Weapon" / "[DeetaeZ]1783268376_830.png"})]),
+     [("outfit", "outfits", "legend", {"": FRIEND_SRC / "outfit_legend.png"}),
+      ("Head", "accessories", "legendHelmet", {"Whale_legendHelmet.png": FRIEND_SRC / "Whale_legendHelmet.png"}),
+      ("R", "weapons", "legendLance", {"Whale_legendWeapon.png": FRIEND_SRC / "Whale_legendWeapon.png"}),
+      ("L", "weapons", "legendShield", {"Whale_legendWeapon.png": FRIEND_SRC / "Whale_legendWeapon.png"})]),
 ]
+ARCHIVE = FRIEND_SRC
 SETS = [  # id, class, face, the picture (a shot from the front), [(slot, kind, item, {texture name: file})]
     # face 23 (purple eyes): the knight's renders use 38, a TTO face the public copy does not carry
     ("team-cat-knight", "cat", 23, R / "cat" / "shots" / "knight_front.png",

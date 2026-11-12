@@ -1333,4 +1333,9 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   is in the script's FRIENDS but its files are only in the home PC's D:\12tails-assets-archive (not at the office): there
   it is shot from the local page and added (HANDOFF). Checks: unit 64, node 8/8, community check all ok, dist check ok.
   Deployed 065f1bf4 (page + Worker together): live, /api/community (the Discord sets) and team_sets.json load, the
-  card counts Cat 1 / Rabbit 2 / Sheep 2, ลองทั้งชุด on the knight gives champion + default + face 23, no errors.
+  card counts Cat 1 / Rabbit 2 / Sheep 2, ลองทั้งชุด on the knight gives champion + default + face 23, no errors.  Later the same day (the user pasted DeetaeZ's three textures: "outfit, weapon, headpiece", "Deetaez"): 512 / 256 / 256
+  px, exactly Whale legend / Whale_legendWeapon / Whale_legendHelmet, opaque like the originals; kept in
+  plans/friends/deetaez/ (tracked, so either PC rebuilds) and wardrobe_team_sets.py reads them there (no archive
+  needed). The set: outfit legend, legendHelmet, the weapon atlas on legendLance (R) and legendShield (L), credited
+  DeetaeZ, its picture shot from the local page. Deployed 7d3ce552; live: the Whale's card counts 1, ลองทั้งชุด puts all
+  four pieces on, the nameplate "Legend ลายโดย DeetaeZ", no errors.
