@@ -1318,3 +1318,19 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (4) **Publish** keeps a set's published pieces and thumbnail. Checks: unit 63, node 8/8, community check all ok
   (new: gallery, ลองทั้งชุด + undo, drop many + undo, ส่งลุคนี้ one request with both pieces + preview + face), menu
   check 35/35. Not deployed (HANDOFF).
+- **2026-11-12, ลายผู้เล่น as a picture card, the team's looks, deployed** (user: a mark-up "ลายผู้เล่น here is better" =
+  a square under the disclaimer; "awkward crop, please prioritize head"; "please add our Rabbit and Cat creation in it
+  too"; "if you have DeetaeZ skin (my friend Whale legend) also put that set in there too please then deploy"). (1) The
+  toolbar button became `.cm-card` under the disclaimer (116 px; phone 84 px under the disclaimer; beside an open picker
+  top 96 px): the newest set's picture, anchored at the top (background-position 50% 4%; the gallery's thumbnails
+  object-position top) so the head shows, and the count. (2) **team_sets.json** (+ data/team/<cls>/): the team's own
+  looks, apart from community.json (the Discord import mirrors that one and would drop them); the page merges both
+  (sorted by date), the publish carries both with the same per-piece rules. `pipeline/wardrobe_team_sets.py` builds it
+  from plans/reskins: the Cat knight (champion 2048 px + the hair piece, face **23**: the renders' 38 is a TTO face the
+  public copy lacks, the page fell back to face 0), the Rabbit uniforms A and B (outfit + cap), credited ทีมงาน, their
+  pictures cropped 3:4 from the front shots. (3) **DeetaeZ's Whale legend** (outfit, legendHelmet, the lance + shield
+  atlas on legendLance and legendShield; video NOTES.md: archived as a match for Whale_legend, they agreed to be named)
+  is in the script's FRIENDS but its files are only in the home PC's D:\12tails-assets-archive (not at the office): there
+  it is shot from the local page and added (HANDOFF). Checks: unit 64, node 8/8, community check all ok, dist check ok.
+  Deployed 065f1bf4 (page + Worker together): live, /api/community (the Discord sets) and team_sets.json load, the
+  card counts Cat 1 / Rabbit 2 / Sheep 2, ลองทั้งชุด on the knight gives champion + default + face 23, no errors.

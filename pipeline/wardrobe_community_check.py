@@ -263,7 +263,8 @@ async def main():
         await page.click("#redo"); await page.wait_for_timeout(800)
         await page.evaluate("() => wardrobe.debug().setCommunity({ skins: [{ id: '1', cls: 'sheep', kind: 'weapons', item: 'mothLatern', name: 'x', link: '', at: '1', tex: {} }] })")
         legacy = await page.evaluate("() => wardrobe.debug().SETS.map(s => [s.id, s.pieces[0].slot, s.pieces.length])")
-        check(legacy == [["1", "R", 1]], f"the first format's skins read as sets of one: {legacy}")
+        check(legacy[0] == ["1", "R", 1] and {s[0] for s in legacy[1:]} == {"team-cat-knight", "team-rabbit-uniform-a", "team-rabbit-uniform-b"},
+              f"the first format's skins read as sets of one; the team's sets (team_sets.json) come along: {legacy}")
         await page.evaluate(f"() => wardrobe.debug().setCommunity({FAKE['/wardrobe/data/community.json'].decode()})")
 
         # several files dropped at once: each to the piece its name says (the names this page gives a download), one undo step

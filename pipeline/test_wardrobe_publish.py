@@ -872,10 +872,24 @@ class PublishTest(unittest.TestCase):
         self.assertFalse((d / "community/cat/8_p.webp").exists())
         self.assertEqual(dropped_names(result, "community"), ["cat/notThere/7", "cat/notThere/8"])
 
+    def test_team_sets_go_online_like_the_players(self):
+        """the team's own looks (team_sets.json, 2026-11-12): the same rules, their own file"""
+        w = self.world()
+        sets = [{"id": "team-a", "cls": "cat", "name": "ทีมงาน", "link": "", "at": "9", "face": 38, "thumb": "team/cat/team-a_p.webp",
+                 "pieces": [{"slot": "outfit", "kind": "outfits", "item": "a", "owner": "cat", "tex": {"": "team/cat/team-a_0.webp"}}]}]
+        for rel in ("team/cat/team-a_p.webp", "team/cat/team-a_0.webp"):
+            webp(w.data / rel)
+        (w.data / "team_sets.json").write_text(json.dumps({"sets": sets}), encoding="utf-8")
+        w.publish()
+        d = data_dir(w)
+        self.assertEqual([s["id"] for s in json.loads((d / "team_sets.json").read_text("utf-8"))["sets"]], ["team-a"])
+        self.assertTrue((d / "team/cat/team-a_0.webp").exists() and (d / "team/cat/team-a_p.webp").exists())
+
     def test_community_json_written_when_the_data_has_none(self):
         w = self.world()
         w.publish()
         self.assertEqual(json.loads((data_dir(w) / "community.json").read_text("utf-8")), {"sets": []})
+        self.assertEqual(json.loads((data_dir(w) / "team_sets.json").read_text("utf-8")), {"sets": []})
 
     def test_submit_key_must_look_like_a_site_key(self):
         with tempfile.TemporaryDirectory() as t:

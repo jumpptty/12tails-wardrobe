@@ -1,0 +1,91 @@
+{
+ "sets": [
+  {
+   "id": "team-cat-knight",
+   "cls": "cat",
+   "name": "ทีมงาน",
+   "link": "",
+   "at": "2026-11-12T12:00:00Z",
+   "face": 23,
+   "thumb": "team/cat/team-cat-knight_p.webp",
+   "pieces": [
+    {
+     "slot": "outfit",
+     "kind": "outfits",
+     "item": "champion",
+     "owner": "cat",
+     "tex": {
+      "": "team/cat/team-cat-knight_0.webp"
+     }
+    },
+    {
+     "slot": "Head",
+     "kind": "accessories",
+     "item": "default",
+     "owner": "cat",
+     "tex": {
+      "Cat_default.png": "team/cat/team-cat-knight_1.webp"
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-rabbit-uniform-a",
+   "cls": "rabbit",
+   "name": "ทีมงาน",
+   "link": "",
+   "at": "2026-11-12T12:00:00Z",
+   "face": null,
+   "thumb": "team/rabbit/team-rabbit-uniform-a_p.webp",
+   "pieces": [
+    {
+     "slot": "outfit",
+     "kind": "outfits",
+     "item": "summer",
+     "owner": "rabbit",
+     "tex": {
+      "": "team/rabbit/team-rabbit-uniform-a_0.webp"
+     }
+    },
+    {
+     "slot": "Head",
+     "kind": "accessories",
+     "item": "summerHat",
+     "owner": "rabbit",
+     "tex": {
+      "Rabbit_summerHat.png": "team/rabbit/team-rabbit-uniform-a_1.webp"
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-rabbit-uniform-b",
+   "cls": "rabbit",
+   "name": "ทีมงาน",
+   "link": "",
+   "at": "2026-11-12T12:00:00Z",
+   "face": null,
+   "thumb": "team/rabbit/team-rabbit-uniform-b_p.webp",
+   "pieces": [
+    {
+     "slot": "outfit",
+     "kind": "outfits",
+     "item": "summer",
+     "owner": "rabbit",
+     "tex": {
+      "": "team/rabbit/team-rabbit-uniform-b_0.webp"
+     }
+    },
+    {
+     "slot": "Head",
+     "kind": "accessories",
+     "item": "summerHat",
+     "owner": "rabbit",
+     "tex": {
+      "Rabbit_summerHat.png": "team/rabbit/team-rabbit-uniform-b_1.webp"
+     }
+    }
+   ]
+  }
+ ]
+}

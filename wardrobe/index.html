@@ -132,6 +132,21 @@ main.inset .bar .tb.primary { padding: 0 10px; }
   color: #c62828; font-size: 13.5px; font-weight: 600; line-height: 1.5; pointer-events: none; transition: left .2s; }
 main.bg-dark .disclaimer { color: #ff8a80; }
 main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the free part is narrow: under the toolbar */
+/* ลายผู้เล่น (user 2026-11-12: "ลายผู้เล่น here is better", a square under the disclaimer): the newest set's picture, so a
+   visitor sees there are players' skins before opening them; the count beside the name */
+.cm-card { position: absolute; top: 44px; left: calc(var(--inset, 0px) + 16px); z-index: 5; display: flex; flex-direction: column; gap: 0;
+  width: 116px; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bar-bg); color: var(--text);
+  cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 10px 24px -14px rgba(0, 0, 0, .45); transition: left .2s, border-color .15s, transform .15s; }
+.cm-card:hover, .cm-card:focus-visible { border-color: var(--gold); transform: translateY(-1px); }
+.cm-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* a set's picture is 3:4, the card square: anchored at the top so the head shows (user: "awkward crop, please prioritize head") */
+.cm-pic { display: block; width: 100%; aspect-ratio: 1; background: var(--well) 50% 4% / cover no-repeat; }
+.cm-pic.empty { background-image: none; }
+.cm-pic.empty::after { content: ""; display: block; width: 100%; height: 100%; opacity: .45;
+  background: center / 46% no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 4 4.5 6.5l1.8 3.6 1.7-.8V20h8V9.3l1.7.8 1.8-3.6L15 4a3 3 0 0 1-6 0z' fill='none' stroke='%23d4af37' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.cm-l { display: flex; align-items: center; justify-content: center; gap: 5px; height: 30px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+main.inset .cm-card { top: 96px; }
+.app.viewing .cm-card { display: none; }
 .app.viewing .toast { align-self: flex-start; }
 .showcase { pointer-events: auto; width: min(640px, 100%); display: flex; flex-direction: column; gap: 5px; padding: 8px 12px 10px;
   background: var(--weave), var(--panel); border: 1px solid var(--line); border-radius: 6px; color: var(--text); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); }
@@ -371,7 +386,7 @@ main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the
    (each worn piece with the visitor's skin, the character's picture), the toolbar's count */
 .send.gal.sets { width: min(820px, 100%); }
 .gal-pic.tall { aspect-ratio: 3 / 4; }
-.gal-pic img.thumb { object-fit: cover; }
+.gal-pic img.thumb { object-fit: cover; object-position: 50% 0; }
 .gal-send { flex: none; padding: 0 12px; }
 .gal-empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
 .send.look { width: min(560px, 100%); }
@@ -477,6 +492,8 @@ main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the
   .bar .l-short { display: inline; }
   .dock { left: 10px; right: 10px; bottom: 8px; gap: 6px; }
   .disclaimer { top: 58px; left: 10px; max-width: calc(100% - 20px); font-size: 12px; }   /* under the logo chip */
+  .cm-card, main.inset .cm-card { top: 82px; left: 10px; width: 84px; }
+  .cm-l { height: 26px; font-size: 12px; }
   /* ชมชิ้นส่วน on a phone: the card in the bottom area (where the sheet or the topics were), the stage above it */
   .app { --vcard: 158px; }
   .app.viewing { grid-template-rows: minmax(0, 1fr) var(--vcard); }
@@ -524,12 +541,12 @@ main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the
       <button type="button" class="tb fxt" id="vfx" title="เอฟเฟกต์ท่าทาง (VFX)" aria-label="เอฟเฟกต์ VFX" aria-pressed="true">VFX</button>
       <button type="button" class="tb" id="bg" title="พื้นหลังมืด" aria-label="พื้นหลังมืด" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
-      <button type="button" class="tb" id="cm" title="ลายจากผู้เล่น: กดครั้งเดียวใส่ทั้งชุด" aria-label="ลายจากผู้เล่น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 4.5 6.5l1.8 3.6 1.7-.8V20h8V9.3l1.7.8 1.8-3.6L15 4a3 3 0 0 1-6 0z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ลายผู้เล่น</span><span class="l-short">ลาย</span><span class="num cm-n" id="cmN"></span></button>
       <button type="button" class="tb" id="sendlook" title="ส่งลายของคุณบนชุดนี้ให้ทีมงาน" aria-label="ส่งลุคนี้ให้ทีมงาน" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 20 4l-6.5 16-2.6-6.2z M10.9 13.8 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ส่งลุคนี้</span><span class="l-short">ส่ง</span></button>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
     <p class="disclaimer" id="disclaimer">เว็บแฟนเมด ไม่ใช่ของ Official</p>
+    <button type="button" class="cm-card" id="cm" title="ลายจากผู้เล่น: กดครั้งเดียวใส่ทั้งชุด" aria-label="ลายจากผู้เล่น"><span class="cm-pic" id="cmPic"></span><span class="cm-l">ลายผู้เล่น <span class="num cm-n" id="cmN"></span></span></button>
     <div class="dock">
       <div class="toast" id="toast" role="status"></div>
       <div class="plate"><b class="plate-cls" id="plateCls"></b><span class="plate-sub" id="plateSub"></span><span class="status" id="status">กำลังโหลด…</span></div>
@@ -1491,9 +1508,14 @@ let COMMUNITY = [];
 // sets of one. COMMUNITY stays the per-piece list (the piece menu's ลายจากผู้เล่น), one entry per piece, id "<set>#<n>"
 let SETS = [];
 const SLOT_OF_KIND = { outfits: "outfit", weapons: "R", accessories: "Head", trinkets: "Back" };
-function setCommunity(x) {
-  SETS = (x.sets || (x.skins || []).map(s => ({ id: s.id, cls: s.cls, name: s.name, link: s.link || "", at: s.at, face: null, thumb: null,
-    pieces: [{ slot: SLOT_OF_KIND[s.kind], kind: s.kind, item: s.item, tex: s.tex }] }))).filter(s => s?.pieces?.length);
+// x: the players' list (community.json or the Worker's); team: the team's own looks (team_sets.json, 2026-11-12: the
+// import mirrors community.json from Discord, so the team's sets live apart); both shown together, oldest first here
+let TEAM = [];
+function setCommunity(x, team = TEAM) {
+  TEAM = team;
+  SETS = [...(x.sets || (x.skins || []).map(s => ({ id: s.id, cls: s.cls, name: s.name, link: s.link || "", at: s.at, face: null, thumb: null,
+    pieces: [{ slot: SLOT_OF_KIND[s.kind], kind: s.kind, item: s.item, tex: s.tex }] }))), ...team]
+    .filter(s => s?.pieces?.length).sort((a, b) => (a.at > b.at) - (a.at < b.at));
   COMMUNITY = SETS.flatMap(s => s.pieces.map((p, i) => ({ id: `${s.id}#${i}`, setId: s.id, cls: s.cls, kind: p.kind, item: p.item,
     name: s.name, link: s.link || "", at: s.at, tex: p.tex })));
   syncCommunityBtn();
@@ -1503,7 +1525,17 @@ function setCommunity(x) {
 const pieceOk = p => { const r = p.kind === "outfits" ? C.outfits.find(o => o.name === p.item) : C.propLists[p.kind] ? C.propLists[p.kind].find(x => x.name === p.item) : {};
   return !!r && !r.tto; };
 const setsHere = () => (C ? SETS.filter(s => (s.cls === C.cls || s.cls === "all") && s.pieces.some(pieceOk)).slice().reverse() : []);
-function syncCommunityBtn() { const n = setsHere().length, b = $("cmN"); if (b) b.textContent = n ? String(n) : ""; }
+function syncCommunityBtn() {
+  const sets = setsHere(), b = $("cmN"), pic = $("cmPic");
+  if (b) b.textContent = sets.length ? String(sets.length) : "";
+  if (!pic) return;
+  const s = sets[0], src = s && (s.thumb || Object.values(s.pieces[0].tex)[0]);
+  if (!src) { pic.classList.add("empty"); pic.style.backgroundImage = ""; pic.dataset.src = ""; return; }
+  if (pic.dataset.src === src) return;
+  pic.dataset.src = src;
+  loadImage(communitySrc(src)).then(i => { if (pic.dataset.src === src) { pic.classList.remove("empty"); pic.style.backgroundImage = `url("${i.src}")`; } },
+    () => pic.classList.add("empty"));
+}
 // a skin's picture: the published data's webp, or (online, 2026-11-12) the Worker's live copy from the Discord channel
 const communitySrc = f => f.startsWith("api/") ? f : DATA + f;
 const LIVE_COMMUNITY = false;               // the published copy: true (wardrobe_publish.py), its Worker answers api/community
@@ -4432,7 +4464,8 @@ const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.
 meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
 // online the Worker lists the skins approved in Discord right now (a ✅ on the phone is enough); else (the local server,
 // Discord down) the published community.json from the PC import
-(LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).then(setCommunity).catch(() => {});
+(LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).catch(() => ({}))
+  .then(async x => setCommunity(x, (await getJSON(DATA + "team_sets.json").catch(() => ({}))).sets || [])).catch(() => {});
 getJSON(DATA + "icons/hd/index.json").then(x => { HDI = x; if (openTopic === "move") openPicker("move"); renderTopics(); }).catch(() => {});
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
 await loadClass(first).catch(e => err(e, "โหลดอาชีพนี้ไม่สำเร็จ ลองรีเฟรชหน้านี้"));
