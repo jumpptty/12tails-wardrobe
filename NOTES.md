@@ -1523,7 +1523,18 @@ run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, M
   the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
   it in another session, re-create it from this description (the research of one class overlaps the build of the one
   before; builds never overlap, they share index.html).
-- Progress (updated as it goes): Penguin finish started (QA running); Bat research DONE (6 reports + verifications in plans/fx_bat/); Bison research started.
+- Progress (updated as it goes): Penguin DONE + deployed; Bat DONE (32 cue keys, 55 effects, 118 sounds; gates bat / wolf / sheep / penguin pass), committed + deployed below; Bison research DONE, its build next; Cat research running. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
+- **Bat build, page_pipeline builder (2026-11-13):** the game's Particles/MultiplyOffset, AlphaOffset and AdditiveOffset
+  shaders (fxparts/particles.js) and built-in 205 = Particles/Multiply (`BUILTIN_BLEND[205] = "multiply"`) are now built for
+  every class. That changes the look of effects already cued and published: the Wolf's Double Art banner (doubleArt),
+  bladeFang_hit / bloodFang_hit, darkEdge_hit, vitalityStrike_hit; the Sheep's returnCast / freeCast / instantCast banners;
+  the Penguin's nAttack_hit; the status words (miss, resist, immune, evade, reflect ...). The Offset ones now draw in
+  front, with rgb x alpha; the multiply ones darken instead of glowing. This takes effect only after each class's fx.json
+  is rebuilt (`wardrobe_fx.py <cls>`), since the blend is written into the data; until then only the new page shaders
+  apply to materials already saved as `shader:Particles/*Offset` (decision 41, parts.md Q7). Other page changes: Opaque1
+  always builds two passes, so cosmicFriday has one more material that draws nothing; `Fx.dispose` now also stops an
+  effect's one-shot AudioSources (Unity's Destroy does too), so a new pick or an effect's end now cuts its own one-shot
+  sounds in every class.
 
 ## 2026-11-13 (overnight, home), the Penguin's effect-only tiles
 
@@ -1557,3 +1568,83 @@ stance, one per skill: **Mana Arc** (root@2), **Dispell** (root@2), **Double Cas
 - Gate: files-only penguin "no problems"; `wardrobe_fx_check.py ... checks/fx_penguin dark --cls penguin` exit 0,
   errors [], all 44 tiles played, the five new ones each spawning their effect (penguinOfArc 200 v, dispell 84 v,
   multiCast 162 v x2, frostSpike_ring 504 v). Not committed (the run's commit does it).
+
+## 2026-11-13 (overnight, home), the Bat's effects: built and cued
+
+From plans/fx_bat/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after four builders (page_pipeline, bat_parts, shared_parts, tto_bat).
+- **Parts (new):** fxparts/bat.js (Bat_nAttack / Bat_illusionFire bolts with the Homing Wand's homing, Bat_echoes,
+  Bat_mirageOrb, Bat_guardianOfTheNight's AI state machine, the fx:castRing root-loop hook, bat only), particles.js (the
+  Offset shaders + 205 multiply), audiocontrol.js (AudioControl's fade, nefariousWhip_hit), light.js (pooled point lights:
+  drainLife, mindControl_ring), tto_bat.js (BatSwarmFlap + the Bat.NightfallSwarm mover, the hero hidden 0.4-0.9 s). Page:
+  api.spawn (+ followNode), the "clone" cue kind (HeroClone: SkeletonUtils copy of the dressed hero, tinted (0.3, 0.2,
+  0.5), its own mixer), fx.sounds (one-shots stopped at dispose), boltEmitter aiming at a cue's `to`, two pooled
+  PointLights with a 1/(1+25u^2) falloff, cue option `worn`, entry keys `builds` and `everyCycle`, Opaque1's two passes.
+  wardrobe_fx.py: the Bat LAYOUTS, BUILTIN_BLEND[205], ALIASES / SOUND_ALIASES (guardian_hit / guardian_nAttack = Shade4's),
+  hero_sound_wav (a "sound" cue outside the class's sounds/, skipping characters/: step_fly1).
+- **Fix found by the gate:** Bat_guardianOfTheNight looked its `sword` bone up when the part was built, but a root part is
+  built before the later nodes are named (index.html Fx fills them in order), so the blade never spawned; it now looks
+  the bone up when the blade is due (fxparts/bat.js). A part that needs another node of its effect must look it up late.
+- **Cues** (wardrobe/fx_cues/bat.json, 32 entries, 210 cues; assembled from the reports' corrected blocks by
+  checks/fx_bat_research/editor/assemble.py, git-ignored): Normal Attack (nAttack1-3, ground hits `notWorn` the Homing
+  Wand, its hits `worn` at 0.24 / 1.04 s, d 9.7: the bolt part's 0.54 s contact, decision 15), Drain Life (cAttack1-2),
+  cast1, the cast3 pool's 19 members (Auto Mass 12 % on 11), Nightmare and Mind Control sequences (`@Nightmare:*`,
+  `@MindControl:*`), echoes (hits d 9.7), soulEater, bigCast1-2, the bigCast3 pool (Guardian of the Night `{d -4, end 10,
+  to [0, 0, 10], kill 12}` + `builds` guardian_blade, guardian_hit, sound:guardian_nAttack; Nefarious Whip; Black
+  Servant), nightfallSwarm (TTO, released: 28 bats), the four effect-only tiles (`@MassCast:root`, `@ShadowGaze:root`,
+  `@Switch:root` in the hero-stays frame, `@ShadowSacrifice:root`), emotes (wave, bow, laugh, sleep, cheer, beg, cry, talk
+  chat1-3, battle), ko (ko | dead with deadEffect), run (`everyCycle`, step_fly1 at 0.1 s).
+- **Tiles / icons:** SEQ bat and SEQ_SKILL bat as the merged blocks (Normal Attack @0.6 / @0.6, Drain Life cAttack2*@6.2,
+  Nightmare channel @8.9, Mind Control @9.9, Guardian bigCast1@1 bigCast2*@0.1, Mass Cast root@1, Shadow Gaze root@2,
+  Switch root@1, Shadow Sacrifice root@2); wardrobe_skill_icons.py OWN_TILE bat {nightmare, mindControl}, EFFECT_ONLY bat;
+  rerun with the cue file in place: bat 33 HD icons (28 new webp under data/icons/hd/bat + index.json).
+- **Data:** `wardrobe_fx.py bat`: 50 effects, 65 materials, 62 textures, 116 sounds; `wardrobe_fx_tto.py bat`: 5 TTO
+  effects, 7 materials, 7 textures, 2 TTO-only sounds (nightfallSwarm_flap / _screech). data/bat/fx.json 55 effects,
+  sfx/ 118 files, 46 new textures in data/fx/tex (all tracked: they go in the run's commit; the other PC pulls).
+- **Judgement calls (mine):** Hate Transfer has no voice cue: BB and TTO both load voices/hateTransfer1 / 2, which neither
+  BB's rip nor TTO's catalog has (the game logs "Cannot find hateTransfer1 voice", Bat.cs:33619), so the game is silent;
+  Shadow Illusion's clones are `"clone", "root"` cues (the part tints them itself, no `tint` option) with illusion_dust at
+  their end (10.4 s, decision 21); the check no longer expects effects from `worn` cues (wardrobe_fx_check.py expected():
+  they need an item the default dress lacks). Clones (d 2.6, x +-1.5) and every target-point effect sit outside the
+  default camera's frame, toward the camera, as for the other classes.
+- **Gate:** files-only bat "no problems"; `wardrobe_fx_check.py ... checks/fx_bat dark --cls bat` exit 0, errors [], 44
+  tiles played, every cued effect spawned (the guardian's blade and both hits included). Not committed.
+- **Open:** rebuild wolf / sheep / penguin fx.json for the 205 multiply look (above); the light's 2 pi intensity and the
+  Offset shaders' look are by eye, not yet checked by the user; offers for the Bible are listed at the end of
+  plans/fx_bat/decisions.md.
+- **QA pass (2026-11-13, the run's Bat QA step).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_bat_qa/jobs.json, 41 jobs, every Bat tile) on the dark and the white stage, side + behind views (front for the
+  clones and the near effects): Normal Attack (as rolled, and with the Homing Wand worn), Drain Life, Nightmare, Mind
+  Control, Mass Cast, Shadow Gaze, Switch, Shadow Sacrifice, all 19 cast3 members (Auto Mass forced on Dissolute, Charm's
+  50 % roll forced), Guardian of the Night to 14.5 s, Nefarious Whip, Black Servant, Echoes, Soul Eater, Nightfall Swarm,
+  KO (dead forced, and as rolled), run, wave / talk / battle. Sheets: checks/fx_bat_qa/sheets_dark, sheets_white
+  (git-ignored; shots under run/, logs run/*.log). Everything lands where the reports and decisions.md say (boxes in the
+  hero's frame; the cast3 tiles' time = clip time + 0.7 s): the combo's bolts end at the 10 m line at 0.906 / 1.506 s, the
+  stage-3 side hits at x +-3.44 (2.33 s); with the Homing Wand they meet the body at 9.7 m (0.84 / 1.44 / 2.24 s) and the
+  ground hits stay out; the drain beam reaches z 9.83, its ticks at 1.7-5.7 s, Dream Burst at 6.7 s, gone at the 6.87 s
+  release; nightmare (scale 3) and mindControl at the target to 10.1 / 11.1 s, their beams cut at the same time; Phantom
+  Bane's ticks every 2 s from 2.1 s; Blind / Confusion and Chiroptophobia end at 11.1 s; the Mirage Orb flashes every
+  0.5 s and goes after its 11th tick (gone by 6.0 s); the two clones (tinted, idle, at x +-1.5, d 2.6) end at 11.1 s with
+  illusion_dust there; Switch's three flashes and Shadow Sacrifice's dust at the summon spots; Dark Stalker at d 9.6-10
+  to 11.1 s; the guardian walks in behind her (z -4 -> -2), its first attack at spawn + 4 s (6.1 s: fade, the dash z 18 ->
+  12 with the blade, hits at 7.2 / 7.7 s, back, fade in), the scan at 8.6 s finds it still fading in, so the next attack
+  is at 11.1 s and the unsummon at 12.1 s aborts it before its first hit: it falls (ko) where the dash left it, near the
+  target, gone at 14.1 s; Echoes' orbs home and hit at 3.02 / 3.2 s; Nightfall Swarm hides her 0.4-0.9 s, the 28 bats run
+  the 12.5 m road, the hit at 0.73 s, they wait at the road's end and fold into her chest in Regather's last 0.1 s
+  (k^2, as TTO), gone at 1.15 s; the run's step_fly1 every 0.8 s cycle at 0.10-0.12 s (checks/fx_bat_qa/run_sound_probe.py,
+  real time). No page error, no stalled render loop in any job (the only console lines: swiftshader's glBlitFramebuffer
+  feedback warning, in the Penguin's QA logs too).
+  - **No bug found; no file changed by the QA.** Looked into, not bugs: nightmare's Particles/Multiply sphere is solid
+    black on the dark stage (multiply over the empty canvas is the grey approximation, particles.js; on the white stage its
+    texture shows); the cyan glow at her hand during Nightmare / Mind Control (nightmare_ring's ImageEmitter, 2 a second,
+    life 0.5) is there in some shots and not others; bigCast_ring's age 99.x = the cut jumping to its life's end; a
+    sequence step's cues start one frame early (the render loop runs seqTick, which zeroes FX.t, then fxTick adds that
+    frame's dt: Drain Life's cAttack2 at 0.667 s, not 0.7), page-wide and within a frame, left as it is.
+  - Gates: `wardrobe_fx_check.py ... dark --cls bat` exit 0, errors [] (44 tiles); the builders changed shared page /
+    fxparts code, so also `--cls wolf`, `--cls sheep`, `--cls penguin`: exit 0, errors [] each (no other class has cues);
+    unit tests 65 OK, node 8 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK.
+  - For the user's eye: the white stage (the multiply shadows show their texture there, the additive glows are faint or
+    show as coloured haze); the guardian's look (body / wing alphas, the large dark wing quads in its nAttack swing, its ko
+    fall near the target when the 10 s cut lands mid-attack); the Mirage Orb's brightness (two double-sided additive shells
+    at the game's opacity); the light's intensity (drainLife, mindControl_ring); decisions 8, 9, 13, 22, 23 and 44 (what is
+    left out).

@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioSource, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, ImageEmitter, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, VortexEmitter) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, ImageEmitter, Light, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, VortexEmitter) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -11,18 +11,18 @@ like a Sheep's heal): counted apart, never this class's skills.
 
 | class | own effects | ready | not ready | parts missing (own effects needing it) | others' loaded |
 |---|---|---|---|---|---|
-| bat | 26 | 21 | 5 | Bat_echoes 1, Bat_guardianOfTheNight 1, Light 1, Bat_mirageOrb 1, AudioControl 1 | 29 |
+| bat | 26 | 26 | 0 |  | 29 |
 | bison | 46 | 42 | 4 | UVScroll 2, Bison_earthRupture 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | cat | 67 | 60 | 7 | WorldParticleCollider 2, StatusControl 1, UVScroll 1, Cat_grandCasinoArcade 1, Cat_supportFire 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | chameleon | 57 | 52 | 5 | Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2, WorldParticleCollider 1 | 28 |
-| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, AudioControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, CharacterControl 1, Mole_warCapital 1, Mole_warMissile 1 | 28 |
-| monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, rotationControl 1, Monkey_lavu 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, AudioControl 1, ParticleSystemRenderer 1 | 28 |
-| panda | 71 | 69 | 2 | AudioControl 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, CharacterControl 1, Mole_warCapital 1, Mole_warMissile 1 | 28 |
+| monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, Monkey_lavu 1, rotationControl 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| panda | 71 | 70 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | penguin | 48 | 48 | 0 |  | 28 |
 | rabbit | 84 | 64 | 20 | Rabbit_potion 13, WorldParticleCollider 2, Rabbit_acidicField 1, ParticleSystem 1, ParticleSystemRenderer 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
-| whale | 51 | 44 | 7 | whale_kingdomKnight 2, UVScroll 1, AudioControl 1, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
-| wolf | 69 | 67 | 2 | Light 2 | 28 |
+| whale | 51 | 44 | 7 | whale_kingdomKnight 2, UVScroll 1, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
+| wolf | 69 | 69 | 0 |  | 28 |
 
 ## Per missing part
 
@@ -33,15 +33,14 @@ Own effects that need the part (all classes), and how many of those it alone blo
 |---|---|---|---|
 | Rabbit_potion | 13 | 13 | rabbit |
 | WorldParticleCollider | 5 | 5 | cat, chameleon, rabbit |
+| UVScroll | 4 | 4 | bison, cat, whale |
 | Monkey_fireBall | 4 | 4 | monkey |
 | Mole_mine | 4 | 4 | mole |
-| UVScroll | 4 | 3 | bison, cat, whale |
-| Light | 3 | 3 | bat, wolf |
-| AudioControl | 5 | 2 | bat, mole, monkey, panda, whale |
 | whale_kingdomKnight | 2 | 2 | whale |
 | Mole_timeNuke | 2 | 2 | mole |
 | Mole_stunMine | 2 | 2 | mole |
 | Chameleon_nAttack | 2 | 2 | chameleon |
+| rotationControl | 2 | 1 | mole, monkey |
 | Whale_javelin | 1 | 1 | whale |
 | Whale_homingShield | 1 | 1 | whale |
 | Whale_flyingShield | 1 | 1 | whale |
@@ -64,12 +63,8 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Cat_supportFire | 1 | 1 | cat |
 | Cat_grandCasinoArcade | 1 | 1 | cat |
 | Bison_earthRupture | 1 | 1 | bison |
-| Bat_mirageOrb | 1 | 1 | bat |
-| Bat_guardianOfTheNight | 1 | 1 | bat |
-| Bat_echoes | 1 | 1 | bat |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
-| rotationControl | 2 | 0 | mole, monkey |
 | Monkey_lavu | 1 | 0 | monkey |
 | Mole_warCapital | 1 | 0 | mole |
 | CharacterControl | 1 | 0 | mole |
@@ -81,49 +76,44 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 618 | 618 / 699 |
-| 1 | Rabbit_potion | 13 | 631 / 699 |
-| 2 | WorldParticleCollider | 5 | 636 / 699 |
-| 3 | Monkey_fireBall | 4 | 640 / 699 |
-| 4 | Mole_mine | 4 | 644 / 699 |
-| 5 | UVScroll | 3 | 647 / 699 |
-| 6 | AudioControl | 3 | 650 / 699 |
-| 7 | Light | 3 | 653 / 699 |
-| 8 | whale_kingdomKnight | 2 | 655 / 699 |
-| 9 | Mole_timeNuke | 2 | 657 / 699 |
-| 10 | Mole_stunMine | 2 | 659 / 699 |
-| 11 | Chameleon_nAttack | 2 | 661 / 699 |
-| 12 | rotationControl | 1 | 662 / 699 |
-| 13 | Whale_javelin | 1 | 663 / 699 |
-| 14 | Whale_homingShield | 1 | 664 / 699 |
-| 15 | Whale_flyingShield | 1 | 665 / 699 |
-| 16 | StatusControl | 1 | 666 / 699 |
-| 17 | Rabbit_stickyGum | 1 | 667 / 699 |
-| 18 | Rabbit_sniperCamera | 1 | 668 / 699 |
-| 19 | Rabbit_healingField | 1 | 669 / 699 |
-| 20 | Rabbit_acidicField | 1 | 670 / 699 |
-| 21 | Monkey_runicSand | 1 | 671 / 699 |
-| 22 | Monkey_runicFlame | 1 | 672 / 699 |
-| 23 | Monkey_lavu | 1 | 673 / 699 |
-| 24 | Monkey_earthPulse | 1 | 674 / 699 |
-| 25 | Mole_warMissile | 1 | 675 / 699 |
-| 26 | Mole_stunGrenade | 1 | 676 / 699 |
-| 27 | Mole_napalm | 1 | 677 / 699 |
-| 28 | Mole_mortarShot | 1 | 678 / 699 |
-| 29 | Mole_grenadeCluster | 1 | 679 / 699 |
-| 30 | Mole_flameCarnival | 1 | 680 / 699 |
-| 31 | Mole_cartBomb | 1 | 681 / 699 |
-| 32 | Mole_bazooka | 1 | 682 / 699 |
-| 33 | Cat_supportFire | 1 | 683 / 699 |
-| 34 | Cat_grandCasinoArcade | 1 | 684 / 699 |
-| 35 | Bison_earthRupture | 1 | 685 / 699 |
-| 36 | Bat_mirageOrb | 1 | 686 / 699 |
-| 37 | Bat_guardianOfTheNight | 1 | 687 / 699 |
-| 38 | Bat_echoes | 1 | 688 / 699 |
-| 39 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 40 | ParticleSystem | 10 | 698 / 699 |
-| 41 | Mole_warCapital | 0 | 698 / 699 |
-| 42 | CharacterControl | 1 | 699 / 699 |
+| 0 | (built today) | 626 | 626 / 699 |
+| 1 | Rabbit_potion | 13 | 639 / 699 |
+| 2 | WorldParticleCollider | 5 | 644 / 699 |
+| 3 | UVScroll | 4 | 648 / 699 |
+| 4 | Monkey_fireBall | 4 | 652 / 699 |
+| 5 | Mole_mine | 4 | 656 / 699 |
+| 6 | whale_kingdomKnight | 2 | 658 / 699 |
+| 7 | Mole_timeNuke | 2 | 660 / 699 |
+| 8 | Mole_stunMine | 2 | 662 / 699 |
+| 9 | Chameleon_nAttack | 2 | 664 / 699 |
+| 10 | rotationControl | 1 | 665 / 699 |
+| 11 | Whale_javelin | 1 | 666 / 699 |
+| 12 | Whale_homingShield | 1 | 667 / 699 |
+| 13 | Whale_flyingShield | 1 | 668 / 699 |
+| 14 | StatusControl | 1 | 669 / 699 |
+| 15 | Rabbit_stickyGum | 1 | 670 / 699 |
+| 16 | Rabbit_sniperCamera | 1 | 671 / 699 |
+| 17 | Rabbit_healingField | 1 | 672 / 699 |
+| 18 | Rabbit_acidicField | 1 | 673 / 699 |
+| 19 | Monkey_runicSand | 1 | 674 / 699 |
+| 20 | Monkey_runicFlame | 1 | 675 / 699 |
+| 21 | Monkey_lavu | 1 | 676 / 699 |
+| 22 | Monkey_earthPulse | 1 | 677 / 699 |
+| 23 | Mole_warMissile | 1 | 678 / 699 |
+| 24 | Mole_stunGrenade | 1 | 679 / 699 |
+| 25 | Mole_napalm | 1 | 680 / 699 |
+| 26 | Mole_mortarShot | 1 | 681 / 699 |
+| 27 | Mole_grenadeCluster | 1 | 682 / 699 |
+| 28 | Mole_flameCarnival | 1 | 683 / 699 |
+| 29 | Mole_cartBomb | 1 | 684 / 699 |
+| 30 | Mole_bazooka | 1 | 685 / 699 |
+| 31 | Cat_supportFire | 1 | 686 / 699 |
+| 32 | Cat_grandCasinoArcade | 1 | 687 / 699 |
+| 33 | Bison_earthRupture | 1 | 688 / 699 |
+| 34 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 35 | ParticleSystem | 10 | 698 / 699 |
+| 36 | Mole_warCapital | 0 | 698 / 699 |
+| 37 | CharacterControl | 1 | 699 / 699 |
 
 ## Per effect
 
@@ -137,14 +127,14 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `demonGaze_hit` (Bat.cs:11542): ready
 - `dreamBurst_hit` (Bat.cs:13989): ready
 - `dreamDazzle_hit` (Bat.cs:35102): ready
-- `echoes` (Bat.cs:11825): needs Bat_echoes
+- `echoes` (Bat.cs:11825): ready
 - `echoes_hit` (Bat.cs:11928): ready
 - `echoes_ring` (Bat.cs:27967): ready
-- `guardian` (Bat.cs:30549): needs Bat_guardianOfTheNight
+- `guardian` (Bat.cs:30549): ready
 - `massCast` (Bat.cs:11140): ready
-- `mindControl_ring` (Bat.cs:13738): needs Light
-- `mirageOrb` (Bat.cs:12669): needs Bat_mirageOrb
-- `nefariousWhip_hit` (Bat.cs:44025): needs AudioControl
+- `mindControl_ring` (Bat.cs:13738): ready
+- `mirageOrb` (Bat.cs:12669): ready
+- `nefariousWhip_hit` (Bat.cs:44025): ready
 - `nightmare_ring` (Bat.cs:11996): ready
 - `paranoia_hit` (Bat.cs:14599): ready
 - `phantasmBlast_hit` (Bat.cs:36059): ready
@@ -370,7 +360,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `fireBarrage_signal` (Mole.cs:28787): ready
 - `fireBarrage_w` (Mole.cs:29155): ready
 - `flameCarnival` (Mole.cs:38506): needs Mole_flameCarnival
-- `flameCarnival_fire` (Mole.cs:38968): needs AudioControl, rotationControl
+- `flameCarnival_fire` (Mole.cs:38968): needs rotationControl
 - `flameTurret` (Mole.cs:28349): ready
 - `flameTurret_fire` (Mole.cs:27899): ready
 - `grenadeCluster_fire` (Mole.cs:13800): needs Mole_grenadeCluster
@@ -466,7 +456,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `summonSoul_ring` (Monkey.cs:24150): ready
 - `upheaval` (Monkey.cs:35164): ready
 - `upheaval_ring` (Monkey.cs:35389): ready
-- `volcanicEruption` (Monkey.cs:43494): needs AudioControl, ParticleSystem, ParticleSystemRenderer
+- `volcanicEruption` (Monkey.cs:43494): needs ParticleSystem, ParticleSystemRenderer
 - `volcanicEruption_ring` (Monkey.cs:43457): ready
 - `worldIgnition` (Monkey.cs:30309): ready
 
@@ -491,7 +481,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `drunkenSpin` (Panda.cs:31633): ready
 - `fuujinKen_hit` (Panda.cs:9838): ready
 - `fuujinKen_ring1` (Panda.cs:41267): ready
-- `fuujinKen_ring2` (Panda.cs:40928): needs AudioControl
+- `fuujinKen_ring2` (Panda.cs:40928): ready
 - `fuujinKen_ring3` (Panda.cs:41312): ready
 - `heavenPalm` (Panda.cs:9529): ready
 - `heavenPalm_ring` (Panda.cs:40294): ready
@@ -740,7 +730,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 - `asunderImpale` (Whale.cs:27157): ready
 - `asunderRound` (Whale.cs:28013): ready
-- `bowlingWhale` (Whale.cs:36680): needs AudioControl, UVScroll
+- `bowlingWhale` (Whale.cs:36680): needs UVScroll
 - `bowlingWhale_ring` (Whale.cs:37128): ready
 - `bubbleBurst` (Whale.cs:35943): ready
 - `bubbleBurst_ring` (Whale.cs:35768): ready
@@ -816,7 +806,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `crossBreak` (Wolf.cs:23884): ready
 - `crossBreak_ring` (Wolf.cs:23736): ready
 - `crusader` (Wolf.cs:21085): ready
-- `crusader_hit` (Wolf.cs:8492): needs Light
+- `crusader_hit` (Wolf.cs:8492): ready
 - `crusader_ring` (Wolf.cs:21516): ready
 - `darkEdge1` (Wolf.cs:15091): ready
 - `darkEdge2` (Wolf.cs:17682): ready
@@ -843,7 +833,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `holyArmor_ring` (Wolf.cs:33721): ready
 - `holySword_ring` (Wolf.cs:33206): ready
 - `lawBringer` (Wolf.cs:21048): ready
-- `lawBringer_hit` (Wolf.cs:8457): needs Light
+- `lawBringer_hit` (Wolf.cs:8457): ready
 - `lawBringer_ring` (Wolf.cs:21387): ready
 - `mirrorBlade_hit` (Wolf.cs:9225): ready
 - `mirrorBlade_mirror` (Wolf.cs:34562): ready

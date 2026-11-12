@@ -618,6 +618,24 @@ scene.add(new THREE.HemisphereLight(0xf1e8f6, 0x857c95, 1.6));
 const sun = new THREE.DirectionalLight(0xe2e5ff, 2.1);          // V07: the M101 sun colour, from the front left
 sun.position.set(-2.2, 3.2, 3.4);
 scene.add(sun);
+// the effects' point lights (2026-11-13, the Bat: plans/fx_bat/parts.md part 7, decisions.md 42; fxparts/light.js: the
+// Bat's drainLife / mindControl_ring, the Wolf's crusader_hit / lawbringer_hit). Two PointLights are in the scene from the
+// start, dark: three builds the number of lights into every lit program, so one appearing mid-skill would recompile the
+// hero's and every lit effect's material (a stutter); api.pointLight() lends a free one (null when both are out),
+// api.releaseLight(l) puts it back dark. Unity 3.5's point light falloff, 1 / (1 + 25 (d / range)^2) inside its range
+// and nothing beyond, in place of three's (the page has no other point or spot light): three's getDistanceAttenuation
+// patched once here, before any material compiles (each program reads ShaderChunk when it is built)
+{
+  const src = THREE.ShaderChunk.lights_pars_begin, a = src.indexOf("float getDistanceAttenuation("), b = a < 0 ? -1 : src.indexOf("\n}\n", a);
+  if (b < 0) console.warn("effect lights: three's getDistanceAttenuation not found: three's own falloff");
+  else THREE.ShaderChunk.lights_pars_begin = src.slice(0, a)
+    + "float getDistanceAttenuation( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {\n"
+    + "\tif ( cutoffDistance <= 0.0 ) return 1.0;\n\tfloat u = lightDistance / cutoffDistance;\n"
+    + "\treturn u < 1.0 ? 1.0 / ( 1.0 + 25.0 * u * u ) : 0.0;\n}" + src.slice(b + 2);
+}
+const FX_LIGHTS = [0, 1].map(() => { const l = new THREE.PointLight(0xffffff, 0, 0, 0); l.userData.fxBusy = false; scene.add(l); return l; });
+const pointLight = () => { const l = FX_LIGHTS.find(x => !x.userData.fxBusy); if (!l) return null; l.userData.fxBusy = true; l.intensity = 0; return l; };
+const releaseLight = l => { if (!FX_LIGHTS.includes(l)) return; l.intensity = 0; l.userData.fxBusy = false; };
 // the floor (V8): a tight contact shadow under the feet and a faint wide one, not one big grey stain on the white
 function shadowDisc(stops, y) {
   const c = Object.assign(document.createElement("canvas"), { width: 128, height: 128 }), g = c.getContext("2d");
@@ -1148,8 +1166,20 @@ function buildClip(name) {
 // 4 × 4 shots 0.1 s apart = 1.7 s, quickFire3 on the closing shot (Chameleon.cs:19660, :20061, :19787). LOWER_RANK = clips only lower ranks
 // play, kept out of the move list. After the last step the sequence starts again with a 0.2 s crossfade.
 const SEQ = {
-  bat: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Drain Life: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
-    "Nightmare: cast1 cast2*@0 cast3~@0.5 channel*~@9", "Guardian of the Night: bigCast1 bigCast2*@0 bigCast3~"],
+  // the Bat (plans/fx_bat, 2026-11-13, decisions.md 27-33): Normal Attack's stage 2 at 0.6 s and stage 3 at 1.2 s after
+  // stage 1 (Bat.cs Yield(2, actionTime - Time.time + 0.6) :20881, + 1.2 :21360; both later stages cut in, :20664,
+  // :21079; the first step keeps the page's fade, as the Sheep's); Drain Life's cAttack1 (its own 0.7 s), then cAttack2
+  // looped (:21762-21767) held 6.2 s: five drain ticks and Dream Burst 3's first burst at 6.0 s (:21833; passives on);
+  // Nightmare's channel = its 9 s status from 0.4 s (8.9 s), Mind Control's = its 12 s status cut at 10 s (9.9 s), each
+  // 0.5 s into cast3 (plans/fx_bat/skills_b.md); Guardian of the Night's bigCast2 at 1.0 s (:30000; the clip is 1.033 s)
+  // and a 0.1 s bar, magAdjust's floor (CharacterControl.cs:20584-20588), so bigCast_ring shows (plans/fx_bat/skills_a.md)
+  bat: ["Normal Attack: nAttack1@0.6 nAttack2@0.6 nAttack3", "Drain Life: cAttack1 cAttack2*@6.2", "Cast: cast1 cast2*@0 cast3~",
+    "Nightmare: cast1 cast2*@0 cast3~@0.5 channel*~@8.9", "Mind Control: cast1 cast2*@0 cast3~@0.5 channel*~@9.9",
+    "Guardian of the Night: bigCast1@1 bigCast2*@0.1 bigCast3~",
+    // skills the game plays with no animation (plans/fx_bat/effect_only.md: RPC_massCast Bat.cs:11124, RPC_shadowGaze
+    // :11281, RPC_switch :13272, RPC_shadowSacrifice :14100 call no PlayAnimation): their effects on the idle stance,
+    // each step one effect's life (+ afterLife), at least its longest voice (plans/fx_penguin/effect_only.md)
+    "Mass Cast: root@1", "Shadow Gaze: root@2", "Switch: root@1", "Shadow Sacrifice: root@2"],
   bison: ["Normal Attack: nAttack1@0.7 nAttack2@0.7 nAttack3@0.8 nAttack4@0.8 nAttack5", "Charge Attack: cAttack1 cAttack2*~@7 cAttack6*@1.6",
     "Trample: trample1@0.9 trample2*@2.6"],
   cat: ["Normal Attack: nAttack1 nAttack2^ nAttack3 nAttack4", "Charge Attack: cAttack1 cAttack2*@3.4",
@@ -3207,7 +3237,9 @@ const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.
 // Friday, which would otherwise show the pool's skills)
 const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday", "@ManaArc": "manaArc", "@Dispell": "dispell",
     "@DoubleCast": "doubleCast", "@TripleCast": "tripleCast", "@FrostSpike": "frostSpike" },
-  sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" } };
+  sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" },
+  bat: { "@Nightmare": "nightmare", "@MindControl": "mindControl", "@MassCast": "massCast", "@ShadowGaze": "shadowGaze",
+    "@Switch": "switch", "@ShadowSacrifice": "shadowSacrifice" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -3716,10 +3748,13 @@ const Sound = {                          // Web Audio: started by the first pick
   },
 };
 const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: {}, missing: {} };   // spawned / missing: tallies for the checks
+FX.json = {};      // the class's fx.json once loaded (api.spawn reads it at once); gen: counts the picks (fxClear), for late spawns
+FX.gen = 0; FX.cycle = null;   // cycle: an "everyCycle" entry's playing action (fxStart, fxTick)
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
 // (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
-  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null)).catch(() => null);
+  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null)).catch(() => null)
+  .then(d => (d && (FX.json[cls] = d), d));
 // Effect parts in modules of their own (2026-11-09, the Wolf's missing effects: plans/fx_wolf/parts.md, tto.md), so each
 // part is written apart from this page: wardrobe/fxparts/<file>.js default-exports register(api) and calls
 // api.part(type, build) for each component type it draws (a game script's name, a Unity built-in like
@@ -3742,13 +3777,28 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // (Snow Man: CharacterControl.cs:38690-38700 turns the character's renderers off while its snowman stands; key = the
 // part's own fx or emitter; call it with on false in dispose too, so a new pick never leaves her hidden); api.worn(slot) =
 // the item worn there ("R" = the main weapon: "specialScepter" is the Staff of Time, w_pgn59, decisions.md 18), or null
+// 2026-11-13, the Bat (plans/fx_bat/parts.md "Interfaces"): fx.sounds = [{ node, comp, h }], every AudioSource the effect
+// starts (loop or one-shot; a looping one's entry is fx.loops' too, the same object), each h stopped in Fx.dispose (Unity
+// stops a source with its GameObject); a part may put a new Sound.play handle in entry.h (fxparts/audiocontrol.js:
+// AudioControl's delayed start). api.spawn(name, at, opts): an effect a part makes (a game script's Instantiate: the
+// guardian's blade and hits, fxparts/bat.js), new Fx(cls, name, the class's loaded fx.json or opts.data, at) at the cue
+// options `at` (x, y, d, rot, kill, to ...: the cue's shape, "a|b" a random pick), listed in FX.live (a new pick ends it)
+// and FX.spawned, and returned; null, and FX.missing (so the checks fail), when the data lacks it (an entry's "builds"
+// makes wardrobe_fx.py build what no cue names). opts.followNode = a node of another Fx (transform.parent = it): each
+// frame the new root's Unity transform = that node's (both inside a mirror group: no MIRROR_X) x opts.local ({ pos:
+// [x, y, z], rot: [x, y, z] }: the localPosition and localRotation, Unity Euler degrees as a cue's rot, the script sets),
+// the spawned scale kept (Unity keeps the world scale on a reparent); it goes when that node leaves the stage.
+// api.pointLight() lends one of the scene's two pooled point lights, dark (null when both are out: the part sets its
+// colour, distance, intensity and world position each frame), api.releaseLight(l) gives it back dark (fxparts/light.js;
+// the falloff is Unity's, the patch above the floor). A boltEmitter with no TargetNode aims at the cue's `to`
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
-  "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin"];
+  "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
-    fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null };
+    fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null,
+    spawn: fxSpawn, pointLight, releaseLight };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
@@ -3888,6 +3938,7 @@ class Fx {
     const def = d.effects[name];
     this.at = at;                              // the cue, for parts that need its placement options (to)
     this.cls = cls; this.name = name; this.alive = true; this.age = 0; this.emitters = []; this.stopped = false; this.loops = []; this.subs = [];
+    this.sounds = [];                          // every AudioSource it starts: { node, comp, h } (the loops are these too)
     this.group = new THREE.Group(); this.group.visible = vfxOn;
     C.root.getWorldPosition(this.group.position); C.root.getWorldQuaternion(this.group.quaternion);
     this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
@@ -3916,8 +3967,9 @@ class Fx {
         else if (c.type === "LineEmitter" && mat) this.emitters.push(lineEmitter(this, o, c, mat));
         else if (c.type === "BoltEmitter" && mat) this.emitters.push(boltEmitter(this, o, c, mat));
         else if (c.type === "AudioSource" && c.playOnAwake) {
-          const h = Sound.play(cls, c.clip, c.volume, c.loop);
-          if (c.loop) this.loops.push({ node: o, h });      // lullaby_ring, edenSanctuary, divinityAxe, cAttack_charge ...
+          const s = { node: o, comp: c, h: Sound.play(cls, c.clip, c.volume, c.loop) };
+          this.sounds.push(s);
+          if (c.loop) this.loops.push(s);         // lullaby_ring, edenSanctuary, divinityAxe, cAttack_charge ...
         }
         else if (FXPARTS[c.type]) { const em = FXPARTS[c.type](this, o, c, mat, n, d); if (em) this.emitters.push(em); }   // wardrobe/fxparts/
       }
@@ -3942,6 +3994,16 @@ class Fx {
   uQuat(o) { const q = new THREE.Quaternion(); for (; o && o !== this.mirror; o = o.parent) q.premultiply(o.quaternion); return q; }
   // a world (three.js) direction in Unity's world space
   uDir(v) { return v.clone().transformDirection(this.mirrorInv); }
+  // api.spawn's followNode (2026-11-13, the guardian's blade on its sword bone, Bat_guardianOfTheNight.cs:1079-1095): the
+  // root's Unity transform = the other effect's node (mirror^-1 x its world: both effects are in a mirror group) x
+  // followLocal; the spawned scale kept. False once that node is off the stage (its effect gone): this one goes too
+  followSnap() {
+    const f = this.followNode;
+    if (!onStage(f)) return false;
+    f.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
+    this.mirror.matrixWorld.clone().invert().multiply(f.matrixWorld).multiply(this.followLocal).decompose(this.root.position, this.root.quaternion, V());
+    return true;
+  }
   update(dt) {
     this.age += dt;
     this.group.visible = vfxOn;                  // VFX off: the effect runs unseen, so its sounds (a loop too) last as long
@@ -3982,6 +4044,7 @@ class Fx {
       f.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
       this.mirror.matrixWorld.clone().invert().multiply(f.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, this.root.scale);
     }
+    if (this.followNode && !this.followSnap()) return this.dispose();
     if (this.bone) {                             // a cue's bone: parented to it, localPosition 0, localRotation identity
       const b = C?.byName?.[this.bone];
       // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
@@ -4009,7 +4072,8 @@ class Fx {
   // material copies)
   dispose() {
     if (!this.alive) return;
-    for (const s of this.loops) s.h.stop();
+    for (const s of this.sounds) s.h?.stop();    // a one-shot too (Unity: Destroy stops the GameObject's AudioSource)
+    for (const s of this.loops) s.h?.stop();
     this.alive = false; scene.remove(this.group);
     for (const e of this.emitters) try { e.dispose?.(); } catch (x) { console.warn("effect part dispose", this.name, x); }
     this.group.traverse(o => o.geometry?.dispose());
@@ -4159,14 +4223,19 @@ function lineEmitter(fx, node, e, mat) {
 // Width5 envelope, and the colour lerps Color1 ... Color5, both by quarters of the length; the sideways axis is
 // InverseTransformDirection(Cross(the local direction, the camera's forward)), the game's own mix of spaces. The loops are
 // the game's as written (a bolt i > 0 starts at j = i (num + 1), so its first vertex pair stays at the node, zero).
-// Space's pause (dt 0) keeps the strip as it is
+// Space's pause (dt 0) keeps the strip as it is. With no TargetNode, the cue's `to` (2026-11-13, the Bat: plans/fx_bat/
+// parts.md part 8): the hero's code sets the target, TargetPosition = the target's collider.bounds.center every tick
+// (drainLife, Bat.cs:21972) or TargetCollider = its collider (mindControl_ring :13775, nightmare_ring :12033;
+// BoltEmitter.cs:155-173), and the prefab's own TargetPosition is a stale world point ((250, 54, 150): nothing drawn);
+// `to` is in the mirror group's space, as fxparts/penguin.js's target()
 function boltEmitter(fx, node, e, mat) {
   const m = fxMesh(node, mat), tgt = e.TargetNode >= 0 ? fx.nodes[e.TargetNode] : null;
+  const to = !tgt && Array.isArray(fx.at?.to) ? vA(fx.at.to) : null;
   const W = [e.Width1, e.Width2, e.Width3, e.Width4, e.Width5], K = [e.Color1, e.Color2, e.Color3, e.Color4, e.Color5];
   let drawn = false;
   return { node, update(dt, cam) {
     if (!dt && drawn) return;
-    const p0 = V().setFromMatrixPosition(fx.uMatrix(node)), tp = tgt ? V().setFromMatrixPosition(fx.uMatrix(tgt)) : vA(e.TargetPosition);
+    const p0 = V().setFromMatrixPosition(fx.uMatrix(node)), tp = tgt ? V().setFromMatrixPosition(fx.uMatrix(tgt)) : to ? to.clone() : vA(e.TargetPosition);
     const dir = tp.sub(p0), mag = dir.length();
     if (mag <= 0.01 || mag >= 50) return;
     const qi = fx.uQuat(node).invert(), v = nz(dir).applyQuaternion(qi), a = V().crossVectors(v, cam.fwd).applyQuaternion(qi);
@@ -4320,8 +4389,16 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         left out, so [-10, 9]; Instantiate(giantComet, spot, LookRotation(vFlat(spot - hero))) :26305, :37625);
 //         every other option is passed on as it is, for the parts (fx.at: tto.md's i, n, ignite; penguin.js's hideHero);
 //         notWorn [slot, item]: left out of the play while that item is worn there (fxStart; the Staff of Time);
+//         worn [slot, item] (2026-11-13, the Bat's Homing Wand, plans/fx_bat/decisions.md 15): played only while that
+//         item is worn there; end (seconds after the spawn: the guardian's unsummon, fxparts/bat.js) and the others are
+//         the parts' (fx.at)
 //   kind  "skin" (the hero's own look for kill seconds, else until the next pick: HERO_SKINS; Cosmic Rift / Cosmic
 //         Friday's FX/CosmicRift, decisions.md 16)
+//   kind  "clone" (2026-11-13, the Bat's Shadow Illusion: HeroClone): name = the hero clip the copy plays, looped (the
+//         illusion's root); options x, y, d (the copy's spot, as an effect's), kill (its end: RPC_disappear)
+// An entry may also carry "builds": [names] (effects a part spawns, api.spawn, and "sound:<name>" / "voice:<name>" for
+// what it plays, that no cue names: wardrobe_fx.py builds them; the guardian's blade, hits and swing) and
+// "everyCycle": true (a looped clip's cues again on each cycle, against the clip's own time: the run's wing flap, fxTick)
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 // Unity's Random.rotation (Mana Arc's ring cage, Penguin.cs:21798, 2026-11-13): a uniform random rotation (Shoemake), as
 // the Euler [x, y, z] degrees the placement takes ("YXZ"); a uniform rotation after the hero's facing stays uniform
@@ -4436,6 +4513,93 @@ class HeroSkin {
     lookSync();
   }
 }
+// a "clone" cue's copy of the hero (2026-11-13, the Bat's Shadow Illusion: plans/fx_bat/parts.md part 6, decisions.md
+// 21, 22). Bat_illusion.summon (Bat_illusion.cs:60-410) dresses the clone as the Bat is (her weapon, accessory and trinket
+// on its bones, her body's sharedMesh and material, :157-351) and tints it setColor(0.3, 0.2, 0.5) for her own side
+// (:377-382; setColor writes _Color's rgb on every renderer that has one, CharacterControl.cs:21702-21800, whose normal
+// value is 0.86 grey, :139, :15153). Here: SkeletonUtils.clone of the hero taken at the spawn (every mesh as it is shown
+// now: outfit, worn props, a skin cue's look; the hover's glow left out), each material copied with its colour x
+// (0.3, 0.2, 0.5) / 0.86 as gamma values (white -> about (0.349, 0.233, 0.581) sRGB: the page's hero stands for 0.86), a
+// mixer of its own playing the cue's hero clip looped (the illusion's root; its repeats of her combo, drain, emotes and KO
+// are left out, decision 22), at the hero's spot + her facing x (x, y, d) (Unity x = her right: the mirror), her
+// rotation, outside every effect's mirror group. Never under the piece menu's ray. Kept with the effects (FX.live: a new
+// pick, a class change or its kill ends it; Fx's shape for the checks: name, emitters, attached, group, loops). The
+// geometry is the hero's own (shared, never freed here); the material copies and skeleton copies are freed at the end
+let skelUtils = null;
+const skeletonUtils = () => (skelUtils ||= import("three/addons/utils/SkeletonUtils.js"));
+const CLONE_TINT = [0.3 / 0.86, 0.2 / 0.86, 0.5 / 0.86];
+class HeroClone {
+  constructor(SU, clip, at = {}) {
+    this.name = "clone:" + clip; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.sounds = [];
+    const src = C.root, keep = [], glow = new Set();
+    // Object3D.clone copies userData as JSON: a prop's mixer (userData.mixer) cannot be, so every userData is set aside
+    src.traverse(o => { if (o.userData.hoverOverlay && !o.userData.lookCopy) glow.add(o); keep.push([o, o.userData]); o.userData = {}; });
+    let g;
+    try { g = SU.clone(src); } finally { for (const [o, u] of keep) o.userData = u; }
+    this.mats = new Map();
+    const tint = m => {
+      if (!m) return m;
+      if (!this.mats.has(m)) {
+        const y = m.clone(); y.onBeforeCompile = m.onBeforeCompile; y.customProgramCacheKey = m.customProgramCacheKey;   // Material.copy leaves them out
+        if (y.color) {
+          const s = { r: 1, g: 1, b: 1 };
+          y.color.getRGB(s, THREE.SRGBColorSpace);
+          y.color.setRGB(s.r * CLONE_TINT[0], s.g * CLONE_TINT[1], s.b * CLONE_TINT[2], THREE.SRGBColorSpace);
+        }
+        this.mats.set(m, y);
+      }
+      return this.mats.get(m);
+    };
+    const drop = [];
+    (function walk(a, b) {                     // the hero and its copy side by side (SkeletonUtils.clone keeps the order)
+      if (!b) return;
+      if (glow.has(a)) { drop.push(b); return; }
+      if (b.isMesh) b.material = Array.isArray(b.material) ? b.material.map(tint) : tint(b.material);
+      b.raycast = () => {}; b.userData.heroClone = true;
+      for (let i = 0; i < a.children.length; i++) walk(a.children[i], b.children[i]);
+    })(src, g);
+    for (const o of drop) o.removeFromParent();
+    const p = V(), q = new THREE.Quaternion();
+    src.updateWorldMatrix(true, false); src.getWorldPosition(p); src.getWorldQuaternion(q);
+    g.position.copy(p).add(V(-(at.x || 0), at.y || 0, at.d || 0).applyQuaternion(q));
+    g.quaternion.copy(q); src.getWorldScale(g.scale);
+    this.mixer = new THREE.AnimationMixer(g);
+    const act = this.mixer.clipAction(buildClip(clip));
+    act.setLoop(THREE.LoopRepeat, Infinity); act.play(); this.mixer.update(0);
+    this.group = g; g.visible = vfxOn; this.killAt = at.kill;
+    scene.add(g);
+  }
+  attached() { return false; }
+  update(dt) {
+    this.age += dt;
+    if (this.killAt != null && this.age >= this.killAt) return this.dispose();
+    this.group.visible = vfxOn;
+    this.mixer.update(dt);
+  }
+  dispose() {
+    if (!this.alive) return;
+    this.alive = false; scene.remove(this.group);
+    this.mixer.stopAllAction(); this.mixer.uncacheRoot(this.group);
+    this.group.traverse(o => { if (o.isSkinnedMesh) o.skeleton?.dispose(); });
+    for (const m of this.mats.values()) m.dispose();
+    this.mats.clear();
+  }
+}
+// api.spawn (2026-11-13, plans/fx_bat/parts.md Interfaces 4; the comment above FX_PART_FILES)
+function fxSpawn(name, at = {}, opts = {}) {
+  const cls = C?.cls, d = opts.data || FX.json[cls], ns = String(name).split("|"), n = ns[Math.floor(Math.random() * ns.length)];
+  if (!cls || !d?.effects?.[n]) { FX.missing[n] = 1; return null; }
+  const q = { ...at, kind: "fx", name: n, d: at.d || 0, x: at.x || 0, y: at.y || 0, rot: at.rot === "random" ? randRot() : at.rot || null };
+  const f = new Fx(cls, n, d, q); f.cutAt = q.cut; f.killAt = q.kill;
+  if (opts.followNode) {
+    const l = opts.local || {}, lq = new THREE.Quaternion();
+    if (l.rot) lq.setFromEuler(new THREE.Euler(...l.rot.map(v => v * Math.PI / 180), "YXZ"));
+    f.followNode = opts.followNode; f.followLocal = new THREE.Matrix4().compose(l.pos ? vA(l.pos) : V(), lq, V(1, 1, 1));
+    f.followSnap(); f.group.updateMatrixWorld(true);
+  }
+  FX.live.push(f); FX.spawned[n] = (FX.spawned[n] || 0) + 1;
+  return f;
+}
 const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
 function fxStart(clip, step = 0) {
   FX.t = 0;
@@ -4459,12 +4623,21 @@ function fxStart(clip, step = 0) {
   // notWorn [slot, item]: the cue plays only while that item is not worn there (2026-11-10, decisions.md 18: with the Staff
   // of Time, w_pgn59 = "specialScepter", in the main hand the Normal Attack ball is a 0.01 m/s mine that never meets the
   // ground, Penguin_nAttack.cs:115-145, :196-202, so its landing hits at the 10 m point don't come)
-  const worn = c => !(Array.isArray(c.notWorn) && C?.state?.[c.notWorn[0]] === c.notWorn[1]);
+  // worn [slot, item]: only while that item is worn there (2026-11-13, the Bat's Homing Wand, w_bat59 = "specialWand":
+  // the Normal Attack bolts home on the target and hit it, Bat.cs:10765-10788, plans/fx_bat/decisions.md 15)
+  const worn = c => !(Array.isArray(c.notWorn) && C?.state?.[c.notWorn[0]] === c.notWorn[1])
+    && !(Array.isArray(c.worn) && C?.state?.[c.worn[0]] !== c.worn[1]);
   FX.cues = cues.map(cueOf).filter(c => worn(c) && rolled(c));
-  for (const c of FX.cues) if (c.kind !== "fx" && c.kind !== "skin" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+  // "everyCycle": the cues again on every cycle of the looped clip, against its own time (fxTick; the run's wing flap)
+  const own = e?.skills ? e.skills[FX.pick] : e;
+  FX.cycle = (own?.everyCycle || e?.everyCycle) && C.action ? { act: C.action, last: C.action.time } : null;
+  for (const c of FX.cues) {
+    if (c.kind === "clone") skeletonUtils().catch(() => {});   // the copy's module, ahead of its time
+    else if (c.kind !== "fx" && c.kind !== "skin" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+  }
 }
 // (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
-function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; LOOK.hides.clear(); lookSync(); }
+function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; FX.gen++; LOOK.hides.clear(); lookSync(); }
 // A weapon's own effects (user 2026-11-12: "Can you add particle effects for weapons too?"): the flames, sparkles and
 // trails its BB prefab carries (pipeline/wardrobe_weapon_fx.py -> data/<cls>/weapon_fx.json, effects by the weapon's
 // name). Built as a skill effect is (Fx), its root following the worn prop's root every frame; kept apart from FX.live,
@@ -4516,6 +4689,15 @@ function fxDue(t, inclusive) {
       const f = new HeroSkin(c.name, make); f.killAt = c.kill; FX.live.push(f);
       FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
     }
+    else if (c.kind === "clone") {              // a copy of the dressed hero (HeroClone), not an effect file
+      if (!C.clipsData[c.name]) { FX.missing["clone:" + c.name] = 1; continue; }
+      const gen = FX.gen;
+      skeletonUtils().then(SU => {
+        if (C?.cls !== cls || FX.gen !== gen) return;                     // a newer pick meanwhile
+        const f = new HeroClone(SU, c.name, c); FX.live.push(f);
+        FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
+      }).catch(x => { FX.missing["clone:" + c.name] = 1; console.error(x); });
+    }
     else if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
@@ -4529,7 +4711,17 @@ function fxTick(dt) {
   if (!C) return;
   FX.t += dt;
   const cls = C.cls;
-  fxDue(FX.t, true);
+  // an "everyCycle" entry (2026-11-13, the Bat's run: its AnimationEvent playWingFlapEvent at 0.1 s of every cycle,
+  // plans/fx_bat/attacks_emotes.md Verification 1): a loop-mode move starts its step once (S.dur Infinity), its cycles
+  // are three's LoopRepeat, so its cues are armed again each time the action's time wraps and fire against that time
+  const cy = FX.cycle;
+  if (cy && C.action === cy.act) {
+    const t = cy.act.time;
+    if (t < cy.last) for (const c of FX.cues) c.done = false;
+    cy.last = t;
+    fxDue(t, true);
+  }
+  else fxDue(FX.t, true);
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
   for (const f of WFX.live) { if (onStage(f.follow)) f.update(dt); else f.dispose(); }   // its weapon taken off or the class changed

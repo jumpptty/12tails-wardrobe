@@ -34,7 +34,14 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # materials (shaders, not parts: this table doesn't see them); index.html's BoltEmitter and the ManaVortex
          # summon's script (cast_a.md "Read this first" 2; the summon is not under an Effects folder, so it isn't listed)
          "Penguin_tornado", "Penguin_typhoon", "Penguin_arcticEmperor", "Penguin_cosmicFriday", "Penguin_iceBlock",
-         "Penguin_nAttack", "Penguin_manaMissile", "Penguin_snowMan", "BoltEmitter", "ManaVortex"}
+         "Penguin_nAttack", "Penguin_manaMissile", "Penguin_snowMan", "BoltEmitter", "ManaVortex",
+         # 2026-11-13, the Bat (plans/fx_bat/parts.md "Who builds what"): fxparts/bat.js (Echoes' orbs, the bolts, Mirage
+         # Orb, Guardian of the Night; Bat_illusion's clones are the page's "clone" cue, index.html HeroClone),
+         # fxparts/audiocontrol.js, fxparts/light.js (Unity's Light, the page's pooled point lights), fxparts/tto_bat.js
+         # (TTO's BatSwarmFlap); fxparts/particles.js's MultiplyOffset / AlphaOffset / AdditiveOffset / 205 shaders and
+         # mesh.js's Opaque1 with both passes are shaders, not parts (this table doesn't see them)
+         "Bat_echoes", "Bat_guardianOfTheNight", "Bat_illusion", "Bat_illusionFire", "Bat_mirageOrb", "Bat_nAttack",
+         "AudioControl", "Light", "BatSwarmFlap"}
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it
 # for hits, which the wardrobe has no targets for)

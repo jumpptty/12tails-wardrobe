@@ -118,6 +118,11 @@ SKILL_FX = {
         # the status looks on foes: CharacterControl::AddPenguinRow6Fx@0x24ADC20 (CharacterControl.c:25195)
         "frostMarkFx", "frostBiteFx", "manaFractureFx",
     ],
+    # plans/fx_bat/tto.md sections 2, 5, 6 P3 (2026-11-13): Nightfall Swarm, the released one: TTO1102:Bat.
+    # <RPC_nightfallSwarm>d__336::MoveNext (pseudo/Bat.c:18584-19497): the wrap at the cast (Row6Spawn :18863), the burst at
+    # her chest at 0.4 s (:18882-18895), the 28 bats (:19013), the hits on the foes passed (:19082-19214), the reform at the
+    # landing (:19433)
+    "bat": ["nightfallSwarm_wrap", "nightfallSwarm_burst", "nightfallSwarm_bat", "nightfallSwarm_hit", "nightfallSwarm_reform"],
 }
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
@@ -126,6 +131,10 @@ SKILL_FX = {
 SKILL_SOUNDS = {
     # RPC_emperorPenguin: Row6Sound("emperorPenguin_whistle") (:8695), Row6Sound("emperorPenguin_flock") (:9063)
     "penguin": ["emperorPenguin_whistle", "emperorPenguin_flock"],
+    # RPC_nightfallSwarm: Row6Sound("nightfallSwarm_screech"), Row6Sound("nightfallSwarm_flap") at 0.4 s (Bat.c:18896-18897;
+    # Row6Sound@0x1AD00B0 loads sounds/ only, :45157-45190); "nightfallSwarm" is the clip and command, not a sound
+    # (plans/fx_bat/parts.md Verification 2)
+    "bat": ["nightfallSwarm_screech", "nightfallSwarm_flap"],
 }
 # Unity's built-in legacy particle shaders by name, to wardrobe_fx.BUILTIN_BLEND's words (the page's fxMaterial knows
 # these); any other shader -> "shader:<name>"
@@ -156,6 +165,10 @@ CODE_MOVERS = {
     # <FlockRise>d__357::MoveNext@0x1DC31F0 (:986-1167: up the tilt axis over 0.25 s) + EmperorShot's flock (:588-700:
     # whirled after the ball round the lane, Scatter's Destroy at the Goal)
     "emperorPenguin_penguin": "Penguin.FlockRise",
+    # <RPC_nightfallSwarm>d__336 state 2 (Bat.c:19036-19337: each bat along the road with its lag, lane and bob, the hero
+    # hidden from HideBody at 0.4 s to ShowBody at 0.9 s) + <Regather>d__337::MoveNext@0x1B25130 (:25281-25507: back to her
+    # chest, Row6Chest, shrinking, Destroy after 0.25 s) (plans/fx_bat/tto.md 6 P1; wardrobe/fxparts/tto_bat.js)
+    "nightfallSwarm_bat": "Bat.NightfallSwarm",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,
@@ -599,7 +612,9 @@ def main():
     effects = {"tto/" + n: effect(tto, b, n) for n in names}
     # the hero's own TTO-only sounds (SKILL_SOUNDS, and any "sound" cue BB's rip lacks): TTO's clips, as an effect's
     # own TTO clip below (part P8)
-    hero = [n for n in dict.fromkeys(SKILL_SOUNDS.get(a.cls, []) + cue_sounds(a.cls)) if not bb().rip_wav(a.cls, n, "sounds")]
+    # (a "sound" cue BB's rip keeps outside the class's sounds/, wardrobe_fx.hero_sound_wav: the Bat's run step_fly1 in
+    # Resources/sound/fx, 2026-11-13, is BB's: wardrobe_fx.py builds it)
+    hero = [n for n in dict.fromkeys(SKILL_SOUNDS.get(a.cls, []) + cue_sounds(a.cls)) if not bb().hero_sound_wav(a.cls, n)]
     found = tto_clips(a.cls, hero, a.assets)
     for n, o in found.items():
         b.sounds.setdefault(n, o)

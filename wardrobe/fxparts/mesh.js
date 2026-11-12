@@ -108,15 +108,19 @@ export default function register(api) {
   // alpha part has no "double"; a lit primary's alpha is the material's diffuse alpha). No BindChannels: no vertex colour.
   //   Opaque1 pass 1 (:8-19)  ZWrite Off, AlphaTest GEqual 0.95     pass 2 (:20-29)  ZWrite On, Cull Back (defaults)
   //   Opaque2 pass 1 (:8-18)  ZWrite On, AlphaTest GEqual 0.95      pass 2 (:19-31)  ZWrite Off, Cull Off, AlphaTest Less 0.95
-  // Pass 1 can pass only where _Color.a x texture.a >= 0.95, so it is built only when the saved _Color.a reaches 0.95;
-  // below that (cosmicFriday 0.46, iceblock 0.75) it never draws a pixel and material() returns pass 2 alone (one
-  // material, as before). With both, the list is pass 1 then pass 2 (userData.fxPass 0 / 1). three's alphaTest discards
-  // a < alphaTest, the game's GEqual exactly; Opaque2's "Less" is a discard of a >= 0.95 after three's alpha test.
+  // Pass 1 can pass only where _Color.a x texture.a >= 0.95. Opaque2 builds it only when the saved _Color.a reaches 0.95;
+  // below that (iceblock 0.75) it never draws a pixel and material() returns pass 2 alone (one material, as before).
+  // Opaque1 builds both passes always (2026-11-13, plans/fx_bat/parts.md part 10, Interfaces 5): the Bat's guardian wings
+  // (guardian2, _Color.a 0 in the prefab) are faded 0 -> 1 by its script (Bat_guardianOfTheNight.cs:383-406), so a part
+  // drives both passes' opacity (= _Color.a: three's alphaTest compares opacity x texture alpha, the game's test exactly);
+  // at a saved alpha below 0.95 (cosmicFriday 0.46) pass 1 discards every pixel, as the game's. With both, the list is
+  // pass 1 then pass 2 (userData.fxPass 0 / 1). three's alphaTest discards a < alphaTest, the game's GEqual exactly;
+  // Opaque2's "Less" is a discard of a >= 0.95 after three's alpha test.
   // Default _Color (1, 1, 1, 1) (:3). As phoenix(): a Lambert, color = 2 x _Color as sRGB, front faces only where the
   // game culls (the mirror group's flipped winding makes three's front faces Unity's).
   // APPROXIMATED: the game's own ambient and light colours (the page's hemisphere + sun instead); the game clamps the lit
-  // colour at 1 before the doubling. A part that animates _Color.a across 0.95 would need pass 1 too: none does yet
-  // (alphatimer.js does not drive these shaders)
+  // colour at 1 before the doubling. A part that animates an Opaque2 _Color.a across 0.95 would need its pass 1 too: none
+  // does yet (alphatimer.js does not drive these shaders)
   const lit = (d, map, o) => {
     const c = d.color || [1, 1, 1, 1];
     const m = new THREE.MeshLambertMaterial({ transparent: true, opacity: c[3], ...o });
@@ -125,10 +129,9 @@ export default function register(api) {
     return m;
   };
   const opaque1 = d => {
-    const map = d.tex ? texture(d) : null, c = d.color || [1, 1, 1, 1];
+    const map = d.tex ? texture(d) : null;
     const p2 = lit(d, map, { depthWrite: true, side: THREE.FrontSide });
-    if (!(c[3] >= 0.95)) return p2;
-    const p1 = lit(d, map, { depthWrite: false, side: THREE.FrontSide, alphaTest: 0.95 });
+    const p1 = lit(d, map, { depthWrite: false, side: THREE.FrontSide, alphaTest: 0.95 });   // both passes always (above)
     p1.userData.fxPass = 0; p2.userData.fxPass = 1;
     return [p1, p2];
   };

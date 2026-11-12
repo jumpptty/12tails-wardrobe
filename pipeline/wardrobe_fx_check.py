@@ -11,7 +11,10 @@ spawns, a page error, a console error or a failed request.
 A key "@<sequence>:<clip>" (2026-11-10, the Sheep: index.html cueOf) is that clip's cues when the sequence plays it: the
 sequence must be one of the class's in index.html's SEQ and play the clip, and its tile is played. A "skin" cue (2026-11-10,
 the Penguin's Cosmic Rift / Cosmic Friday: the hero's own look, index.html HERO_SKINS) names one of the page's skins; in
-the page it must take hold (FX.spawned "skin:<name>") like an effect."""
+the page it must take hold (FX.spawned "skin:<name>") like an effect. 2026-11-13, the Bat: a "clone" cue (a copy of the
+dressed hero, index.html HeroClone) names a clip of the class and must appear (FX.spawned "clone:<clip>"); an entry's
+"builds" (what a page part spawns, api.spawn, or plays: "sound:<name>" / "voice:<name>") must be in the data too, and
+its effects must spawn (the page counts them in FX.spawned); "everyCycle": true is a flag (the run's wing flap)."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
@@ -85,14 +88,44 @@ def all_cues(cls):
     return [c for e in CUES[cls].values() for cues in cue_lists(e) for c in cues]
 
 
+def builds(e):
+    """An entry's "builds" as (kind, name): "sound:<name>" / "voice:<name>" / ["sound", name], else an effect (as
+    wardrobe_fx.builds reads them); a pool's skills may carry their own."""
+    out = []
+    for x in [e] + list(e.get("skills", {}).values()):
+        for b in x.get("builds", []) if isinstance(x.get("builds", []), list) else []:
+            if isinstance(b, list) and len(b) == 2:
+                out.append((b[0], b[1]))
+            elif isinstance(b, str) and ":" in b and b.split(":", 1)[0] in ("fx", "sound", "voice"):
+                out.append(tuple(b.split(":", 1)))
+            else:
+                out.append(("fx", str(b)))
+    return out
+
+
 def names(cls, kind):
-    return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")})
+    return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")}
+                  | {n for e in CUES[cls].values() for k, n in builds(e) if k == kind})
+
+
+def expected(entries):
+    """The effects every play of these entries must show, as the page tallies them (FX.spawned): fx cues, "skin:<name>",
+    "clone:<clip>" (their "a|b" picks and rolled procs vary: not expected; nor a "worn" cue's, which needs an item the
+    check's default dress lacks: the Bat's Homing Wand hits), and the effects their "builds" names."""
+    out = {("skin:" if cue[1] == "skin" else "clone:" if cue[1] == "clone" else "") + cue[2] for e in entries for cue in e.get("cues", [])
+           if cue[1] in ("fx", "skin", "clone") and "|" not in cue[2]
+           and not (len(cue) > 3 and isinstance(cue[3], dict) and ("p" in cue[3] or "worn" in cue[3]))}
+    return sorted(out | {n for e in entries for k, n in builds({"builds": e.get("builds", [])}) if k == "fx" and "|" not in n})
 
 
 # index.html cueOf (2026-11-10, the Penguin: spread; i, n and ignite, passed on to the TTO parts, plans/fx_penguin/tto.md;
-# hideHero for penguin.js's snowman; notWorn [slot, item], fxStart: the Staff of Time's missing landings)
-OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn"}
-KINDS = ("fx", "voice", "sound", "skin")
+# hideHero for penguin.js's snowman; notWorn [slot, item], fxStart: the Staff of Time's missing landings; 2026-11-13, the
+# Bat: worn [slot, item] (the Homing Wand's hits), end (the guardian's unsummon, fxparts/bat.js); a "clone" cue takes x,
+# y, d, kill)
+OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
+        "worn", "end"}
+KINDS = ("fx", "voice", "sound", "skin", "clone")
+ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle"}, {"why", "cues", "builds", "everyCycle"}
 
 
 def file_errors(cls):
@@ -112,6 +145,14 @@ def file_errors(cls):
             errs.append(f"{cls}: cue key {key}: no sequence {sq} in index.html's SEQ that plays {clip}")
         if not isinstance(e.get("why"), str) or ("cues" in e) == ("skills" in e):
             errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
+        for x, keys, at in [(e, ENTRY_KEYS, key)] + [(s, SKILL_KEYS, f"{key} {n}") for n, s in e.get("skills", {}).items()]:
+            if set(x) - keys:
+                errs.append(f"{cls}: {at}: unknown entry keys {sorted(set(x) - keys)}")
+            if "builds" in x and not (isinstance(x["builds"], list) and all(isinstance(b, str) or (isinstance(b, list) and len(b) == 2
+                                                                                                  and b[0] in ("fx", "sound", "voice")) for b in x["builds"])):
+                errs.append(f"{cls}: {at}: builds must be a list of names (\"sound:<name>\" / \"voice:<name>\" for a sound)")
+            if "everyCycle" in x and not isinstance(x["everyCycle"], bool):
+                errs.append(f"{cls}: {at}: everyCycle must be true or false")
         for cues in cue_lists(e):
             for c in cues:
                 ok = (isinstance(c, list) and 3 <= len(c) <= 5 and isinstance(c[0], (int, float)) and c[1] in KINDS
@@ -121,6 +162,8 @@ def file_errors(cls):
                 elif c[1] == "skin":
                     errs += [f"{cls}: {key}: skin {n} is not one of index.html's HERO_SKINS {sorted(SKINS)}"
                              for n in c[2].split("|") if n not in SKINS]
+                elif c[1] == "clone":                       # a copy of the hero playing one of her clips (HeroClone)
+                    errs += [f"{cls}: {key}: clone {n} is not a clip of the class" for n in c[2].split("|") if n not in clips]
     return errs
 
 
@@ -222,8 +265,7 @@ async def main():
                     if tile in pools:                      # a pool member's tile: its steps, the pool's clip as that member
                         _, pick, steps = pools[tile]
                         entries = [(CUES[cls][c]["skills"][pick] if CUES[cls].get(c, {}).get("skills", {}).get(pick) else entry_for(cls, None, c)) for c in steps]
-                        expect = sorted({("skin:" if cue[1] == "skin" else "") + cue[2] for e in entries for cue in e.get("cues", [])
-                                         if cue[1] in ("fx", "skin") and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
+                        expect = expected(entries)
                         cap = CAP + max([c[0] for e in entries for c in e.get("cues", [])] or [0])
                         errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)
                         errors += [e for e in errs if e not in errors]
@@ -233,9 +275,8 @@ async def main():
                     # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)
                     sq = tile[1:] if tile.startswith("@") and tile[1:] in SEQS.get(cls, {}) else None
                     entries = [entry_for(cls, sq, c) for c in SEQS[cls][sq]] if sq else [CUES[cls].get(tile, {})]
-                    # (a skin cue's look: "skin:<name>", as the page tallies it)
-                    expect = sorted({("skin:" if cue[1] == "skin" else "") + cue[2] for e in entries for cue in e.get("cues", [])
-                                     if cue[1] in ("fx", "skin") and "|" not in cue[2] and not (len(cue) > 3 and isinstance(cue[3], dict) and "p" in cue[3])})
+                    # (a skin cue's look: "skin:<name>", a clone "clone:<clip>", as the page tallies them; a part's spawns too)
+                    expect = expected(entries)
                     # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
                     cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
                     errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)

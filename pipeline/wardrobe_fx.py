@@ -12,7 +12,8 @@ wardrobe_data.py's x -> -x, so positions, rotations and emitter vectors need no 
 
   uv run --no-project --with UnityPy --with imageio-ffmpeg --with pillow python -I pipeline/wardrobe_fx.py wolf
 builds every effect and voice the class's cue file names (wardrobe/fx_cues/<cls>.json, the page's cues: "fx" and
-"voice" cues, "a|b" = both); --fx a,b [--voices c,d] builds those instead (probing a skill before its cues are written).
+"voice" cues, "a|b" = both; and an entry's "builds", the effects and sounds a page part spawns that no cue names,
+2026-11-13); --fx a,b [--voices c,d] builds those instead (probing a skill before its cues are written).
 -> wardrobe/data/<cls>/fx.json (effects, materials, which sound each plays), wardrobe/data/fx/tex/<texture>.webp,
    wardrobe/data/<cls>/sfx/<sound>.mp3 (64 kbps mono: plays in every browser)
 """
@@ -38,9 +39,11 @@ RIP = os.path.join(BIBLE, r"RippedAssets\ExportedProject\Assets\Resources\gameas
 # 205 = Particles/Multiply (its 24 materials in the rip are BlackTrail, ShadowLine1-4, Smoke4_multiply ...: dark on white),
 # so 206 = Particles/Multiply (Double) (15 materials: the Penguin's fallingComet1 and giantComet comet bodies) and 207 =
 # Particles/Alpha Blended Premultiply (13: every class's <cls>_dead, netherBane, fireWall). The page draws them in
-# fxMaterial (wardrobe/index.html: "multiply2", "premul"). 205 is left out until a cued effect uses it (none yet): an
-# unknown id still falls back to "add"
-BUILTIN_BLEND = {200: "add", 202: "addsoft", 203: "alpha", 7: "opaque", 206: "multiply2", 207: "premul"}
+# fxMaterial (wardrobe/index.html: "multiply2", "premul"). 205 = "multiply" since 2026-11-13 (the Bat's shadow effects:
+# ShadowRay, ShadowLine1 / 3, Smoke4_multiply, nightmare_bolt, darkStalker ...; plans/fx_bat/decisions.md 40, parts.md
+# part 9: drawn by wardrobe/fxparts/particles.js through api.shader; before, they fell back to "add" and glowed where the
+# game darkens). An unknown id still falls back to "add"
+BUILTIN_BLEND = {200: "add", 202: "addsoft", 203: "alpha", 7: "opaque", 205: "multiply", 206: "multiply2", 207: "premul"}
 
 # serialized fields of the game's scripts, in declaration order: (name, type); f float, i int, b bool (1 byte, then
 # aligned to 4), v2 / v3 / c (Color) / q, r (a reference: fileID + pathID, 8 bytes in Unity 3.5)
@@ -128,6 +131,21 @@ LAYOUTS.update({
                     ("Color3", "c"), ("Color4", "c"), ("Color5", "c"), ("BoltCount", "i")],
     "ManaVortex": [("novaFlare", "r"), ("mCreator", "r"), ("mCreatorChar", "r"), ("isSummon", "b")],
 })
+# the Bat's parts (plans/fx_bat/parts.md, 2026-11-13; checks/fx_bat_research/parts/probe.txt: each instance's bytes are
+# the listed fields exactly; Bat_nAttack / Bat_illusionFire keep every field private)
+LAYOUTS.update({
+    "Bat_echoes": [("mTarget", "r"), ("mEchoesLv", "i")],                       # Bat_echoes.cs:577, :580 (12 bytes)
+    "Bat_mirageOrb": [("isVisible", "b")],                                       # Bat_mirageOrb.cs:408 (4; Init sets it)
+    "Bat_guardianOfTheNight": [("guardianBlade", "r"), ("castEffect", "r")],     # Bat_guardianOfTheNight.cs:169, :175 (16)
+    # Bat_illusion.cs:2894-2945 (80 bytes): references only (the clone copies the hero, part 6)
+    "Bat_illusion": [("mChar", "r"), ("Weapon", "r"), ("nAttack_fire", "r"), ("nAttack_hit", "r"), ("Bat_drainLife", "r"),
+                     ("Bat_drainLife_charge", "r"), ("cAttack_hit", "r"), ("castEffect_illusion", "r"),
+                     ("castRing_illusion", "r"), ("illusion_dust", "r")],
+    "Bat_nAttack": [], "Bat_illusionFire": [],
+    # AudioControl.cs:233-248 (24 bytes; Bat nefariousWhip_hit, and one effect each of Mole, Monkey, Panda, Whale)
+    "AudioControl": [("minVolume", "f"), ("maxVolume", "f"), ("delay", "f"), ("fadein", "f"), ("middle", "f"),
+                     ("fadeout", "f")],
+})
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
 # state, nothing an effect draws)
 NOT_DRAWN = {"CharacterControl"}
@@ -135,6 +153,13 @@ NOT_DRAWN = {"CharacterControl"}
 # blast is the Mana Vortex's field (ManaVortex.cs:540, Resources characters/elementals/manavortex/effects/novaFlare;
 # plans/fx_penguin/own_skills.md "Read this first" 1); the Mana Vortex summon itself (the cue name manaVortex)
 EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effects", "gameassets/characters/elementals/manavortex"]}
+# an effect the page names otherwise than its prefab, because the class's own folder has a prefab of that name too: the
+# name -> its Resources container path, tried before the class's folder (2026-11-13, plans/fx_bat/parts.md Interfaces 6:
+# Guardian of the Night's hits are Shade4's Effects/nAttack_hit, Bat.cs:12606-12619, not the Bat's own nAttack_hit)
+ALIASES = {"bat": {"guardian_hit": "gameassets/characters/elementals/shade4/effects/nattack_hit"}}
+# the same for a sound (rip_wav): the name -> its WAV under the rip's gameassets, without ".wav" (the guardian's swing is
+# Shade4's Sounds/nAttack, Bat_guardianOfTheNight.cs:1047; the Bat's own sounds/nAttack.wav would win by name)
+SOUND_ALIASES = {"bat": {"guardian_nAttack": "characters/elementals/shade4/sounds/nAttack"}}
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -254,7 +279,7 @@ def material(game, pptr, base, mats, texs):
 
 
 def effect(game, cls, name, mats, texs, sounds):
-    key = f"gameassets/characters/heroes/{cls}/effects/{name.lower()}"
+    key = ALIASES.get(cls, {}).get(name, f"gameassets/characters/heroes/{cls}/effects/{name.lower()}")
     if key not in game.container:                    # another folder the class's code loads it from (EXTRA_FOLDERS)
         key = next((k for k in (f"{f}/{name.lower()}" for f in EXTRA_FOLDERS.get(cls, [])) if k in game.container), key)
     root = game.obj(game.container[key], game.files["mainData"])
@@ -342,7 +367,12 @@ def effect(game, cls, name, mats, texs, sounds):
 
 def rip_wav(cls, name, folder=None):
     """The rip's WAV: from the class's voices/ or sounds/ when the cue says which (they share names: crusader1, nAttack1
-    ... are different recordings in each, 2026-11-09), else sounds/ then voices/ then anywhere (an effect's own sound)."""
+    ... are different recordings in each, 2026-11-09), else sounds/ then voices/ then anywhere (an effect's own sound).
+    A name in SOUND_ALIASES[cls] is that file, whatever the folder."""
+    alias = SOUND_ALIASES.get(cls, {}).get(name)
+    if alias:
+        p = os.path.join(RIP, *alias.split("/")) + ".wav"
+        return p if os.path.exists(p) else None
     if folder:
         p = os.path.join(RIP, "characters", "heroes", cls, folder, name + ".wav")
         return p if os.path.exists(p) else None
@@ -359,6 +389,39 @@ def rip_wav(cls, name, folder=None):
     return None
 
 
+def hero_sound_wav(cls, name):
+    """A "sound" cue's WAV (the hero's code plays it): the class's sounds/ (never its voices/, which share names), else
+    anywhere in the rip's Resources outside the characters' folders (2026-11-13, plans/fx_bat/attacks_emotes.md "Parts
+    needed" 5a: the Bat's wing flap, Bat.cs's field wingFlap = Resources/sound/fx/step_fly1.wav; the other characters'
+    clips are their own recordings under the same names, nAttack1 ..., so one of theirs takes a SOUND_ALIASES line)."""
+    p = rip_wav(cls, name, "sounds")
+    if p or SOUND_ALIASES.get(cls, {}).get(name):
+        return p
+    chars = os.path.normcase(os.path.join(RIP, "characters"))
+    for root, dirs, fs in os.walk(os.path.dirname(RIP)):
+        if os.path.normcase(root) == chars:
+            dirs[:] = []
+        elif name + ".wav" in fs:
+            return os.path.join(root, name + ".wav")
+    return None
+
+
+def builds(entry):
+    """An entry's "builds" (2026-11-13, plans/fx_bat/parts.md Interfaces 6: what a page part spawns or plays that no cue
+    names, api.spawn / Sound.play; the guardian's blade, hits and swing) as (kind, name): "sound:<name>" / "voice:<name>"
+    or ["sound", name], else an effect; a pool's skills may carry their own."""
+    out = []
+    for e in [entry] + list(entry.get("skills", {}).values()):
+        for b in e.get("builds", []):
+            if isinstance(b, (list, tuple)):
+                out.append((b[0], b[1]))
+            elif str(b).split(":", 1)[0] in ("sound", "voice", "fx") and ":" in str(b):
+                out.append(tuple(str(b).split(":", 1)))
+            else:
+                out.append(("fx", str(b)))
+    return out
+
+
 def cue_lists(entry):
     """An entry's cue lists: its cues, or every skill's of a shared clip ({skills: {name: {cues}}})."""
     return [entry.get("cues", [])] + [s.get("cues", []) for s in entry.get("skills", {}).values()]
@@ -370,9 +433,9 @@ def cue_names(cls):
     path = os.path.join(os.path.dirname(DATA), "fx_cues", cls + ".json")
     names = {"fx": [], "voice": [], "sound": []}
     for entry in json.load(open(path, encoding="utf-8")).values():
-        for cues in cue_lists(entry):
+        for cues in cue_lists(entry) + [[[0, k, n] for k, n in builds(entry)]]:
             for cue in cues:
-                if cue[1] not in names:      # a "skin" cue (the hero's own look, index.html HERO_SKINS): nothing to build
+                if cue[1] not in names:      # a "skin" / "clone" cue (the hero's own look, a copy of her): nothing to build
                     continue
                 for n in str(cue[2]).split("|"):
                     if cue[1] == "fx" and n.startswith("tto/"):     # TTO's effects: pipeline/wardrobe_fx_tto.py builds them
@@ -421,7 +484,7 @@ def main():
     missing, jobs = [], []
     # an effect's own sound and a Sounds/ cue: <name>.mp3 (from sounds/ first); a voice: v_<name>.mp3 from voices/ only
     jobs += [(n, rip_wav(a.cls, n), n) for n in sorted(sounds)]
-    jobs += [(n, rip_wav(a.cls, n, "sounds"), n) for n in sorted(set(hero_sounds) - sounds)]
+    jobs += [(n, hero_sound_wav(a.cls, n), n) for n in sorted(set(hero_sounds) - sounds)]
     jobs += [(n, rip_wav(a.cls, n, "voices"), "v_" + n) for n in sorted(set(voices))]
     for n, src, out_name in jobs:
         if not src:

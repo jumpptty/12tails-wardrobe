@@ -1,5 +1,17 @@
 {
  "bat": {
+  "blackServant": {
+   "icon": "icons/hd/bat/blackServant.webp",
+   "clips": [
+    "bigCast3"
+   ]
+  },
+  "blind": {
+   "icon": "icons/hd/bat/blind.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "cAttack": {
    "icon": "icons/hd/bat/cAttack.webp",
    "clips": [
@@ -7,10 +19,95 @@
     "cAttack2"
    ]
   },
+  "charm": {
+   "icon": "icons/hd/bat/charm.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "confusion": {
+   "icon": "icons/hd/bat/confusion.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "corruption": {
+   "icon": "icons/hd/bat/corruption.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "curse": {
+   "icon": "icons/hd/bat/curse.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "darkStalker": {
+   "icon": "icons/hd/bat/darkStalker.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "dissolute": {
+   "icon": "icons/hd/bat/dissolute.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "doom": {
+   "icon": "icons/hd/bat/doom.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "dreamDazzle": {
+   "icon": "icons/hd/bat/dreamDazzle.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "echoes": {
    "icon": "icons/hd/bat/echoes.webp",
    "clips": [
     "echoes"
+   ]
+  },
+  "guardianOfTheNight": {
+   "icon": "icons/hd/bat/guardianOfTheNight.webp",
+   "clips": [
+    "bigCast3"
+   ]
+  },
+  "hateTransfer": {
+   "icon": "icons/hd/bat/hateTransfer.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "massCast": {
+   "icon": "icons/hd/bat/massCast.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "mimic": {
+   "icon": "icons/hd/bat/mimic.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "mindControl": {
+   "icon": "icons/hd/bat/mindControl.webp",
+   "clips": [
+    "cast3",
+    "channel"
+   ]
+  },
+  "mirageOrb": {
+   "icon": "icons/hd/bat/mirageOrb.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "nAttack": {
@@ -21,16 +118,89 @@
     "nAttack3"
    ]
   },
+  "nefariousWhip": {
+   "icon": "icons/hd/bat/nefariousWhip.webp",
+   "clips": [
+    "bigCast3"
+   ]
+  },
   "nightfallSwarm": {
    "icon": "icons/hd/bat/nightfallSwarm.webp",
    "clips": [
     "nightfallSwarm"
    ]
   },
+  "nightmare": {
+   "icon": "icons/hd/bat/nightmare.webp",
+   "clips": [
+    "cast3",
+    "channel"
+   ]
+  },
+  "paranoia": {
+   "icon": "icons/hd/bat/paranoia.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "phantasmBlast": {
+   "icon": "icons/hd/bat/phantasmBlast.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "phantomBane": {
+   "icon": "icons/hd/bat/phantomBane.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "shadowGaze": {
+   "icon": "icons/hd/bat/shadowGaze.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "shadowIllusion": {
+   "icon": "icons/hd/bat/shadowIllusion.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "shadowSacrifice": {
+   "icon": "icons/hd/bat/shadowSacrifice.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "shame": {
+   "icon": "icons/hd/bat/shame.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "shatteringDream": {
+   "icon": "icons/hd/bat/shatteringDream.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "soulEater": {
    "icon": "icons/hd/bat/soulEater.webp",
    "clips": [
     "soulEater"
+   ]
+  },
+  "swap": {
+   "icon": "icons/hd/bat/swap.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "switch": {
+   "icon": "icons/hd/bat/switch.webp",
+   "clips": [
+    "root"
    ]
   }
  },

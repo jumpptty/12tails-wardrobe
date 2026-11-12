@@ -1,1 +1,484 @@
-{}
+{
+  "nAttack1": {
+    "why": "Bat.cs RPC_nAttack1 (:20108-20500): clip at 0 (cut, :20376) with voice nAttack1 (load :20423, PlayOneShot :20461); 0.3 s (Yield(2, 0.3) :20457) the shot, own client, mGameType > 3 (:20254): RPC_nAttack_fire1 (:20272) Instantiate(nAttack_fire = the prefab nAttack, firePos, FromToRotation(forward, fireDir)) (:10753; field order checks/fx_bat_research/attacks_emotes/probe_fields.txt) from TransformDirection(0, 1.3, 1) (:20262), aimed tDir - (0, 1.3, 1) (:20267) at the 10 m target point on the ground (decision 1; the game's own untargeted click, position + 10 forward, GameGui.cs:1659, passed on unchanged :9886): pitch atan(1.3 / 9) = 8.219 deg; Bat_nAttack flies it 15 m/s (ProjectileControl.velocity (0, 0, 15), Bat_nAttack.cs:51) and ends it on the ground (:181-199; the 0.4 m trigger not counted); the hero's code plays Sounds/nAttack (:10802-10812; the bolt has no AudioSource); to = the target 0.6 m up, used only by the Homing Wand (w_bat59 = specialWand, :10765-10788); standby 0.6 s (Yield(3, 0.3) :20464, :20306) unless stage 2 is pressed (stage 2 starts at 0.6 s: its entry carries this bolt's landing at 0.3 + 0.6062 - 0.6 = 0.3062 s)",
+    "cues": [
+    [0, "voice", "nAttack1"],
+    [0.3, "fx", "nAttack", {"d": 1, "y": 1.3, "rot": [8.219, 0, 0], "to": [0, 0.6, 10]}],
+    [0.3, "sound", "nAttack"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Bat.cs RPC_nAttack2 (:20506-20900; its clip 0.6 s after stage 1: Yield(2, actionTime - now + 0.6) :20881, the press window 0.3-0.6 s, doNormalAttack :10047-10063): clip at 0 (cut, :20664) with voice nAttack2 (load :20711, PlayOneShot :20877); 0.3 s (Yield(3, 0.3) :20875) the shot as in nAttack1 (:20763-20773; RPC_nAttack_fire1 :10753, Sounds/nAttack :10812); standby 0.6 s (Yield(4, 0.3) :20870, :20807) unless stage 3 is pressed; at 0.3062 s stage 1's bolt meets the ground at the 10 m point (0.3 + 9.0934 m / 15 m/s - 0.6; checks/fx_bat_research/attacks_emotes/geom.txt): Bat_nAttack calls RPC_nAttack_hit at the contact point before any Player / Enemy test (Bat_nAttack.cs:208-261), nAttack_hit there with the hero's rotation (:10974; plays its own Sounds/nAttack_hit); with the Homing Wand worn the bolt homes on the target instead (question 4) With the Homing Wand worn (decision 15: w_bat59 = specialWand in the main hand) the bolts home on the target (fxparts/bat.js Bat_nAttack: 0.1 rad every 5 fixed steps, 16 m/s) and meet its body (centre 0.6 m up, radius 0.3, decision 4) 0.54 s after the spawn, the centre bolt at (0, 0.63, 9.614) and stage 3's side bolts at (+-0.478, 0.636, 9.492) (checks/fx_bat_build/bat_parts/probe.txt): nAttack_hit at ClosestPointOnBounds, the box's front at 9.7 m (worn cues); the ground hits are left out then (notWorn); stage 1's homing contact 0.3 + 0.54 - 0.6 = 0.24 s",
+    "cues": [
+    [0, "voice", "nAttack2"],
+    [0.3, "fx", "nAttack", {"d": 1, "y": 1.3, "rot": [8.219, 0, 0], "to": [0, 0.6, 10]}],
+    [0.3, "sound", "nAttack"],
+    [0.24, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63, "worn": ["R", "specialWand"]}],
+    [0.3062, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialWand"]}]
+    ]
+  },
+  "nAttack3": {
+    "why": "Bat.cs RPC_nAttack3 (:20921-21372; its clip 1.2 s after stage 1: Yield(2, actionTime - now + 1.2) :21360, the press from 0.9 s, doNormalAttack :10160-10168): clip at 0 (cut, :21079) with voice nAttack3 or nAttack4 (Random.Range(0, 2) :21120, loads :21132 / :21164, PlayOneShot :21353 / :21362); 0.5 s (Yield(3, 0.5) :21369) Combo 3 #103 on (max rank, :21227): RPC_nAttack_fire2's three bolts (:21233) at firePos + i x right, lhs x Euler(0, 15 i, 0) with lhs's roll zeroed (:10844-10868; Unity Euler (7.937, +-15.149, +-2.141), checks/fx_bat_research/attacks_emotes/geom.txt) and one Sounds/nAttack (:10933-10943); standby 0.7 s (Yield(4, 0.2) :21356, :21290); the landings at the 10 m line (Bat_nAttack.cs:208-261, nAttack_hit with the hero's rotation :10974, its own Sounds/nAttack_hit): stage 2's bolt 0.9 + 0.6062 - 1.2 = 0.3062 s, this stage's centre 0.5 + 0.6062 = 1.1062 s and its sides 0.5 + 9.4142 / 15 = 1.1276 s at x +-3.4366 (after the 1.0 s clip: they run on in the idle tail) With the Homing Wand worn (decision 15: w_bat59 = specialWand in the main hand) the bolts home on the target (fxparts/bat.js Bat_nAttack: 0.1 rad every 5 fixed steps, 16 m/s) and meet its body (centre 0.6 m up, radius 0.3, decision 4) 0.54 s after the spawn, the centre bolt at (0, 0.63, 9.614) and stage 3's side bolts at (+-0.478, 0.636, 9.492) (checks/fx_bat_build/bat_parts/probe.txt): nAttack_hit at ClosestPointOnBounds, the box's front at 9.7 m (worn cues); the ground hits are left out then (notWorn); stage 2's contact 0.3 + 0.54 - 0.6 = 0.24 s, this stage's three 0.5 + 0.54 = 1.04 s",
+    "cues": [
+    [0, "voice", "nAttack3|nAttack4"],
+    [0.24, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63, "worn": ["R", "specialWand"]}],
+    [0.3062, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialWand"]}],
+    [0.5, "fx", "nAttack", {"d": 1, "x": -1, "y": 1.3, "rot": [7.937, -15.149, -2.141], "to": [0, 0.6, 10]}],
+    [0.5, "fx", "nAttack", {"d": 1, "y": 1.3, "rot": [8.219, 0, 0], "to": [0, 0.6, 10]}],
+    [0.5, "fx", "nAttack", {"d": 1, "x": 1, "y": 1.3, "rot": [7.937, 15.149, 2.141], "to": [0, 0.6, 10]}],
+    [0.5, "sound", "nAttack"],
+    [1.04, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63, "worn": ["R", "specialWand"]}],
+    [1.04, "fx", "nAttack_hit", {"d": 9.7, "x": -0.3, "y": 0.636, "worn": ["R", "specialWand"]}],
+    [1.04, "fx", "nAttack_hit", {"d": 9.7, "x": 0.3, "y": 0.636, "worn": ["R", "specialWand"]}],
+    [1.1062, "fx", "nAttack_hit", {"d": 10, "notWorn": ["R", "specialWand"]}],
+    [1.1276, "fx", "nAttack_hit", {"d": 10, "x": -3.4366, "notWorn": ["R", "specialWand"]}],
+    [1.1276, "fx", "nAttack_hit", {"d": 10, "x": 3.4366, "notWorn": ["R", "specialWand"]}]
+    ]
+  },
+  "cAttack1": {
+    "why": "Bat.cs RPC_cAttack1 (:21410-22552), a drain on the 10 m target (with none the coroutine ends before its clip, :22355-22362; doBeginCharge needs an enemy within 16 / 28 m, :10369-10406): clip at 0 (cut, :22406) with voice cAttack1 or cAttack2 (Random.Range(0, 2) :22441, loads :22451 / :22482, PlayOneShot :22548 / :22541; no time gate); 0.2 s (Yield(2, 0.2) :22535) moveSpeed -0.5 (no hero mover); 0.4 s (Yield(3, 0.2) :22524) drainLife_charge (the field Bat_drainLife_charge) at position + 1.2 up, Quaternion.identity (:21580), EffectControl followState (life 999): destroyed by the loop the frame after the release (:22282-22288, RPC_cAttack0 sets myCommand cAttack0 :22795): kill 0.3 + the 6.2 s cAttack2 hold - 0.05 = 6.45 (FX.t restarts with the cAttack2 step, so a cut cannot reach it); at 0.7 s (Yield(4, 0.3) :22522) the looped cAttack2, whose entry holds the drain",
+    "cues": [
+    [0, "voice", "cAttack1|cAttack2"],
+    [0.4, "fx", "drainLife_charge", {"y": 1.2, "kill": 6.45}]
+    ]
+  },
+  "cAttack2": {
+    "why": "Bat.cs RPC_cAttack1 case 4 (the change to cAttack2, cut and looped, 0.7 s in: :21762-21767), its loop every frame (case 5, :21854-22267) on the 10 m target: drainLife (the field Bat_drainLife: BoltEmitter, Point light, its own looping Sounds/drainLife) spawned at TransformDirection(0, 0.82, 0.88) (:21772) and moved the same frame, and every frame, to position + TransformDirection(0.1, 1.25, 0.65) (:21967), the bolt's TargetPosition = the target's collider.bounds.center (:21972; 0.6 m up, decision 3: to); no EffectControl: Object.Destroy the frame after the release (:22270-22281): kill 6.15 in the 6.2 s step; the tick every 1 s (drainLifeTimer = now + 1, :21782, :22066-22074): RPC_cAttack_hit, drainLife_hit (the field cAttack_hit) with the hero's rotation (:10995) at the target point 0.6 m up, where the network copy and the clones draw it (:22193; Bat_illusion.cs:4685) (the Bat's own client draws it at her feet, :22182, a BB and TTO bug); Dream Burst 3 on (#363, passives rule, getDreamBurstLv :13908): dreamBurstTimer = 0.7 + 1 + 8 - 3 (:21833) passed at the sixth tick, 6.0 s here: RPC_dreamBurst_hit (:22117) createEffect(dreamBurst_hit, target centre - 0.4 x the Bat's forward, the Bat's rotation) (:13952 ff.: 9.6 m ahead, 0.6 up) and the hero's Sounds/dreamBurst_hit, that second's drain skipped (:22131-22133); the statuses, the heal and Merciless Drain's 66 draw nothing (CharacterControl.cs:33488-33610)",
+    "cues": [
+    [0, "fx", "drainLife", {"d": 0.65, "x": 0.1, "y": 1.25, "to": [0, 0.6, 10], "kill": 6.15}],
+    [1, "fx", "drainLife_hit", {"d": 10, "y": 0.6}],
+    [2, "fx", "drainLife_hit", {"d": 10, "y": 0.6}],
+    [3, "fx", "drainLife_hit", {"d": 10, "y": 0.6}],
+    [4, "fx", "drainLife_hit", {"d": 10, "y": 0.6}],
+    [5, "fx", "drainLife_hit", {"d": 10, "y": 0.6}],
+    [6, "fx", "dreamBurst_hit", {"d": 9.6, "y": 0.6}],
+    [6, "sound", "dreamBurst_hit"]
+    ]
+  },
+  "cast1": {
+    "why": "Bat.cs RPC_cast1 ($RPC_cast1$19912, :22843-25026), the cast channel the dispatcher starts for every cast-time skill (21 BB skills: Phantom Bane, Dissolute, Corruption, Curse, Nightmare, Doom, Mirage Orb, Shadow Illusion, Blind, Confusion, Hate Transfer, Swap, Dream Dazzle, Phantasm Blast, Charm, Mind Control, Mimic, Shame, Dark Stalker, Paranoia, Shattering Dream, :23369-24363; the Cast tile and the Nightmare tile): at 0 (IL_3785): cast time and cooldown per skill (:24451-24800), actionState attack and myCommand cast (:24803-24809), clip cast1 (0.2 fade, :24821) and voice cast1 / cast2 (Random.Range(0, 2) :24862, Voices/cast1 :24874-24886, Voices/cast2 :24905-24917; PlayOneShot volume 1 for the local player); Yield 0.2 (:25021): castRing at the hero position, Quaternion.Euler(270, 90, 0), world-absolute (:23028; the hero prefab's castRing field = Resources bat/effects/castRing, checks/fx_bat_research/skills_a/probe_fields.py), InitEffectControl(hero) (:23033-23038; EffectControl life 60, afterLife 0, followPosition, followState; plays its own looping Sounds/cast_ring); Yield 0.3 (:25019): moveSpeed 0 at 0.5 s (:23065); Yield 0.2 (:25023): cast2 cut in and looped and the ring's root clip looped at 0.7 s (:23092-23107), the cast bar magAdjust (:23112-23129; the page: none), then each frame until it ends (YieldDefault(5) :25013, :23239) the skill's RPC_<skill>_cast starts (:23369-24363) and sets myCommand to the skill (e.g. RPC_phantomBane_cast :25607): the ring's followState cut at the step edge 0.7 s (EffectControl.cs:194-247; afterLife 0: destroyed at once, :179-183), cued 0.65 because the page restarts FX.t at each step (as the Penguin's); Auto Mass #431's roll at the bar's end (:23247-23363) is cued on the 11 cast3 skills it covers; the Shadow Illusion clones' own RPC_cast1 (:24936-24983) left out (no clones on the page)",
+    "cues": [
+    [0, "voice", "cast1|cast2"],
+    [0.2, "fx", "castRing", {"rot": [270, 90, 0], "cut": 0.65}]
+    ]
+  },
+  "cast3": {
+    "why": "Bat.cs: the cast3 clip after the RPC_cast1 channel (:22843-25102; the bar 0 s, then RPC_cast1 starts the skill's coroutine, :23368-24383): 19 Bat skills, one per play, even chance, picked anew on every play (each with its own tile, poolChains): Phantom Bane (:25610), Dissolute (:26266), Corruption (:26928), Curse (:27590), Doom (:29544), Mirage Orb (:31111), Shadow Illusion (:31672), Blind (:32334), Confusion (:32949), Hate Transfer (:33544), Swap (:34093), Dream Dazzle (:34686), Phantasm Blast (:35647), Charm (:36646), Mimic (:38400), Shame (:39840), Dark Stalker (:40376), Paranoia (:41630), Shattering Dream (:42243); Nightmare (:28741) and Mind Control (:37656) play cast3 then channel, in their own sequences (@Nightmare:cast3, @MindControl:cast3); all at max rank, passives on; every one draws castEffect 1 m ahead 1.3 m up at 0; Auto Mass #431 rolls 12 % on 11 of them (RPC_cast1 :23247-23360)",
+    "skills": {
+      "phantomBane": {
+        "why": "Bat.cs RPC_phantomBane_cast :25103-25826 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :25610), voice phantomBane1 / phantomBane2 (Random.Range(0, 2) :25657-25716), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:25725) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:25745): Sounds/phantomBane on the caster's own client (gameObject == Game.mPlayer, :25261-25291) and the phantomBane status, rank 4 + Demon Bane #402 (+1 level, getDebuff(12) + getDebuff(6) = 18 s at equal CHA, :25433-25489; Damage.cs:317-319): CharacterControl addStatus draws Effects/phantomBane at the target's bounds centre, identity (CharacterControl.cs:40059-40068; life 1, followPosition), and its 0.5 s status tick draws phantomBane_hit at the bounds centre once in every 2 s (Math.mod(2 x tick time, 4) == 1, CharacterControl.cs:9455-9491; Math.mod floors, Math.cs:39-67; plays its own Sounds/phantomBane_hit): APPROXIMATED to 1 s after the status and every 2 s up to the 10 s cut (the phase is the game clock's); Yield 0.3 (:25743): moveSpeed 0 at 0.7; Yield 0.4 (:25751): standby 1.1 s",
+        "cues": [
+        [0, "voice", "phantomBane1|phantomBane2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "sound", "phantomBane"],
+        [0.4, "fx", "phantomBane", {"d": 10, "y": 0.6}],
+        [1.4, "fx", "phantomBane_hit", {"d": 10, "y": 0.6}],
+        [3.4, "fx", "phantomBane_hit", {"d": 10, "y": 0.6}],
+        [5.4, "fx", "phantomBane_hit", {"d": 10, "y": 0.6}],
+        [7.4, "fx", "phantomBane_hit", {"d": 10, "y": 0.6}],
+        [9.4, "fx", "phantomBane_hit", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "dissolute": {
+        "why": "Bat.cs RPC_dissolute_cast :25827-26488 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :26266), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:26284), voice dissolute1 / dissolute2 (:26316-26415) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:26409): the dissolute status (:26145) removes the target's buffs and draws nothing (CharacterControl.cs:40160-40246); Yield 0.4 (:26398): moveSpeed 0; Yield 0.4 (:26413): standby 1.2 s",
+        "cues": [
+        [0, "voice", "dissolute1|dissolute2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}]
+        ]
+      },
+      "corruption": {
+        "why": "Bat.cs RPC_corruption_cast :26489-27150 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :26928), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:26946), voice corruption1 / corruption2 (:26978-27065) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:27070): the corruption status (15 s, :26778-26807): Effects/corruption at the target's bounds centre, identity (CharacterControl.cs:40113-40122; life 1); Yield 0.4 (:27063), Yield 0.4 (:27077): standby 1.2 s; left out: corruption_hit, drawn only while the target itself attacks (CharacterControl.cs:9508-9587)",
+        "cues": [
+        [0, "voice", "corruption1|corruption2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "corruption", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "curse": {
+        "why": "Bat.cs RPC_curse_cast :27151-27813 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :27590), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:27608), voice curse1 / curse2 (:27640-27740) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:27732): the curse status (rank 4, +1 with #432, 15 s, :27435-27469): Effects/curse at the target's bounds centre, identity (CharacterControl.cs:40297-40306; life 2, legacy particles, plays its own Sounds/curse); Yield 0.4 (:27734), Yield 0.4 (:27724): standby 1.2 s",
+        "cues": [
+        [0, "voice", "curse1|curse2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "curse", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "doom": {
+        "why": "Bat.cs RPC_doom_cast :29105-29763 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :29544), voice doom1 / doom2 (:29591-29646), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:29659) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:29684): the doom status (getDebuff(60), :29394-29423): Effects/doom at the target's bounds centre, identity (CharacterControl.cs:40491-40500; life 2, plays its own Sounds/doom_cast); Yield 0.4, Yield 0.4 (:29686, :29691): standby 1.2 s; left out: doom_hit when the status runs out 60 s later (CharacterControl.cs:10364-10404, :44199), past the 10 s cut",
+        "cues": [
+        [0, "voice", "doom1|doom2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "doom", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "mirageOrb": {
+        "why": "Bat.cs RPC_mirageOrb_cast :30879-31356 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :31111), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:31129), voice mirageOrb1 / mirageOrb2 (:31161-31216) at 0, and at once RPC_mirageOrb_fire (:31235-31268): Distant Orb #403 on (passives on) puts the orb at the locked target's feet (rtRvLQShcf = the target's transform.position at the key press, :9284-9301; else hero + TransformDirection(0, 1, 1)), Instantiate(mirageOrb, identity), localScale 1 + 0.5 x rank 4 = 3 (:12679-12682), Bat_mirageOrb.Init(rank + 2, life chaAdjust(30) = 30 s, :12799, :31265): the orb's _TintColor starts (0.5, 0.5, 0.5, 0.5) (Bat_mirageOrb.cs:26) and its alpha eases to 0.05 at 5 x dt a frame for the caster's team (:222-244), flashing to 0.4 when an enemy touches it (:319); the part ends it with its 11th tick at 5.0 s on the target standing in it (Bat_mirageOrb.cs:185, :343; decision 5), kill 10 otherwise; plays its own Sounds/mirageOrb; needs the Bat_mirageOrb part; Yield 0.4 (:31304): moveSpeed 0; Yield 0.4 (:31302): standby 0.8 s; its 'DistantOrb' banner (:31253) left out",
+        "cues": [
+        [0, "voice", "mirageOrb1|mirageOrb2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "mirageOrb", {"d": 10, "scale": 3, "kill": 10}]
+        ]
+      },
+      "shadowIllusion": {
+        "why": "Bat.cs RPC_shadowIllusion_cast :31357-31928 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :31672), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:31690), voice shadowIllusion1 / shadowIllusion2 (:31722-31771; the rip's file is ShadowIllusion2.wav, Resources.Load ignores case) at 0; Yield 0.4 (:31882): rank 4 = two clones, RPC_shadowIllusion_create (sent by ActionEvent, :31527, :31559) at getSpawnVector(hero + up, TransformDirection(-1.5, -1, 2.6)) and (1.5, -1, 2.6) (:31511-31546: on the ground 1.5 m left / right, 2.6 m ahead), each Instantiate(illusion, LookRotation(hero forward)) and illusion_ring there, identity (:12944, :13058-13064; plays its own Sounds/illusionSmoke): the clone copies the Bat's mesh, material, weapon, hat and trinket and is tinted (0.3, 0.2, 0.5) for its own team (Bat_illusion.cs:60-421), lives chaAdjust(60) = 60 s (:13115): cut at 10 s; the clone is a new page part, cue kind clone (a copy of the dressed hero as worn, tinted, standing in the idle stance; the illusion prefab's own body is replaced by the owner's at summon, so there is nothing for wardrobe_fx.py to build); Yield 0.3 (:31877): moveSpeed 0; Yield 0.4 (:31871): standby 1.1 s; any earlier clones vanish at 0 (RPC_disappear :31790-31845; none on a fresh play); decision 21: the clones are the page's HeroClone (a 'clone' cue playing the idle clip root, tinted (0.3, 0.2, 0.5) by the part), gone with kill 10 (RPC_disappear), each with illusion_dust 1 m up at its spot then (Bat_illusion.cs:2827-2836)",
+        "cues": [
+        [0, "voice", "shadowIllusion1|shadowIllusion2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0.4, "fx", "illusion_ring", {"x": -1.5, "d": 2.6}],
+        [0.4, "fx", "illusion_ring", {"x": 1.5, "d": 2.6}],
+        [0.4, "clone", "root", {"x": -1.5, "d": 2.6, "kill": 10}],
+        [0.4, "clone", "root", {"x": 1.5, "d": 2.6, "kill": 10}],
+        [10.4, "fx", "illusion_dust", {"x": -1.5, "d": 2.6, "y": 1}],
+        [10.4, "fx", "illusion_dust", {"x": 1.5, "d": 2.6, "y": 1}]
+        ]
+      },
+      "blind": {
+        "why": "Bat.cs RPC_blind_cast :31929-32543 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :32334), voice blind1 / blind2 (:32381-32436), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:32449) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:32478): the blind status (rank 2, getDebuff(15), :32208-32213): Effects/blind parented to the target, localPosition up x height (1 m), no EffectControl: it stays until the status ends (CharacterControl.cs:40581-40600, removal :18192-18208; plays its own Sounds/blind): cut at 10 s; Chiroptophobia #423 (passives on): every 1 s the Bat gives each enemy within 12 m holding blind / confuse the chiroptophobia status (Bat.cs:13166-13241), drawn as Effects/chiroptophobia at up x (height + 1) = 2 m, looping (CharacterControl.cs:41301-41320; removed when blind and confuse are gone, :9703-9715; plays its own Sounds/chiroptophobia): APPROXIMATED 0.5 s after the blind (the Bat's 1 s timer's phase), ending with it; Yield 0.2 (:32472): moveSpeed 0; Yield 0.4 (:32467): standby 1.0 s",
+        "cues": [
+        [0, "voice", "blind1|blind2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "blind", {"d": 10, "y": 1, "kill": 10}],
+        [0.9, "fx", "chiroptophobia", {"d": 10, "y": 2, "kill": 9.5}]
+        ]
+      },
+      "confusion": {
+        "why": "Bat.cs RPC_confusion_cast :32544-33160 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :32949), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:33064) at 0; voice: BB loads Voices/confusion1 / confusion2 (:33008, :33039), which the game has no file for (the rip: voices/confuse1, confuse2), so BB plays nothing; TTO loads Voices/confuse1 / confuse2 (TTO1102 Bat.<RPC_confusion_cast>d__188::MoveNext, pseudo/Bat.c:7358): TTO's fix (Sheep decision 10); Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:33087): the confuse status (rank 2, getDebuff(15), :32823-32828): Effects/confuse parented to the target at up x (height - 0.2) = 0.8 m, no EffectControl: until the status ends (CharacterControl.cs:40626-40645, removal :18214-18230; plays its own Sounds/confusion): cut at 10 s; Chiroptophobia #423 as Blind's (Bat.cs:13166-13241, CharacterControl.cs:41301-41320): APPROXIMATED at 0.9; Yield 0.2 (:33097): moveSpeed 0; Yield 0.4 (:33093): standby 1.0 s",
+        "cues": [
+        [0, "voice", "confuse1|confuse2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "confuse", {"d": 10, "y": 0.8, "kill": 10}],
+        [0.9, "fx", "chiroptophobia", {"d": 10, "y": 2, "kill": 9.5}]
+        ]
+      },
+      "hateTransfer": {
+        "why": "Bat.cs RPC_hateTransfer_cast :33161-33756 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): (an ally target: the Sheep's decision 1, a self-cast) clip cast3 (0.2 fade, :33544), voice hateTransfer1 / hateTransfer2 asked for (:33591-33646) but in neither BB's rip nor TTO's catalog (both log 'Cannot find hateTransfer1 voice', :33619 / :33650; TTO pseudo/Bat.c:13389-13392): silent in the game, so no voice cue, castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:33659) at 0; Yield 0.4 (:33679): the monsters within 40 m of the ally hand the Bat's hate to it (:33338-33420), nothing drawn (BB's code never loads Effects/hateTransfer or hateTransfer_ring); Yield 0.4 (:33687): moveSpeed 0; Yield 0.4 (:33692): standby 1.2 s",
+        "cues": [
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}]
+        ]
+      },
+      "swap": {
+        "why": "Bat.cs RPC_swap_cast :33757-34279 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :34093), voice swap1 / swap2 (:34140-34195), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:34208) at 0; Yield 0.4 (:34238): within 32 m (:33930-33935) RPC_swap_hit twice (:33947-33970): the Bat moved to the target's spot and the target to the Bat's, swap_hit Instantiated at each, hero rotation (:13553-13572; plays its own Sounds/swap at 0.5): at the target point and at the hero, who stays where it is on the page (the Wolf's Feral Assault: no hero mover); Yield 0.4 (:34243): moveSpeed 0; Yield 0.4 (:34236): standby 1.2 s",
+        "cues": [
+        [0, "voice", "swap1|swap2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0.4, "fx", "swap_hit", {"d": 10}],
+        [0.4, "fx", "swap_hit"]
+        ]
+      },
+      "dreamDazzle": {
+        "why": "Bat.cs RPC_dreamDazzle_cast :34280-34894 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :34686), voice dreamDazzle1 / dreamDazzle2 (:34733-34788), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:34801) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:34825): RPC_dreamDazzle_hit (:34550): at once dreamDazzle_hit at the target's feet, identity (tChar.createEffect :35102-35114) and Sounds/dreamDazzle_hit at that point (playAudioAtPoint :35139-35157), then 3 hits 0.2 s apart that draw nothing (:35012-35046, :35201); Shattering Dream #443 adds a level only (:35172-35178); Yield 0.4 (:34833): moveSpeed 0; Yield 0.4 (:34831): standby 1.2 s",
+        "cues": [
+        [0, "voice", "dreamDazzle1|dreamDazzle2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "dreamDazzle_hit", {"d": 10}],
+        [0.4, "sound", "dreamDazzle_hit"]
+        ]
+      },
+      "phantasmBlast": {
+        "why": "Bat.cs RPC_phantasmBlast_cast :35241-35852 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :35647), voice phantasmBlast1 / phantasmBlast2 (:35694-35749), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:35762) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:35788): RPC_phantasmBlast_hit (:35511): at once phantasmBlast_hit at the target's feet, identity (:36059-36071) and Sounds/phantasmBlast_hit there (playAudioAtPoint :36096-36114), then 3 hits 0.2 s apart drawing nothing (:35969-36001, :36156); #443 adds a level only (:36129-36135); Yield 0.4 (:35783): moveSpeed 0; Yield 0.4 (:35792): standby 1.2 s",
+        "cues": [
+        [0, "voice", "phantasmBlast1|phantasmBlast2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "phantasmBlast_hit", {"d": 10}],
+        [0.4, "sound", "phantasmBlast_hit"]
+        ]
+      },
+      "charm": {
+        "why": "Bat.cs RPC_charm_cast :36197-36854 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :36646), voice charm1 / charm2 (:36693-36748), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:36761) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:36784): RPC_charm_hit: charm_hit at the target's feet, hero rotation (:13660-13676; plays its own Sounds/charm), then the roll Random.Range(0, 100) < lckAdjust(20 x 2 + 10) = 50 % (:36505; luck ignored): the charm status for getDebuff(12) = 12 s (:36511-36516): Effects/charm at the target's bounds centre, parented, localScale clamp(radius 0.3 + 0.4, 0.5, 2) = 0.7 (CharacterControl.cs:40668-40677; its RingEmitter repeats until the status ends, :18236-18249): cut at 10 s; its purple tint of the target and emo_heart left out; a failed roll shows a text only (RPC_AddDamage(-83) :36524); Yield 0.4 (:36782): moveSpeed 0; Yield 0.4 (:36788): standby 1.2 s",
+        "cues": [
+        [0, "voice", "charm1|charm2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "charm_hit", {"d": 10}],
+        [0.4, "fx", "charm", {"d": 10, "y": 0.6, "scale": 0.7, "kill": 10, "p": 0.5, "roll": "charm"}]
+        ]
+      },
+      "mimic": {
+        "why": "Bat.cs RPC_mimic_cast :37867-38695 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :38400), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:38605) at 0; voice mimic1 / mimic2 (:38537-38592; allMimic1 / allMimic2 only with #373 and a clone already out, :38447-38521: none on a fresh play); Yield 0.4 (:38648): RPC_mimic_create (by ActionEvent, :38226 / :38266): a copy of the target Instantiated at the Bat's spot and rotation, tinted (0.3, 0.85, 1) by the mimic status, the Bat hidden for chaAdjust(60) + 12 s (Bat.cs:38936-39312, CharacterControl.cs:40851-40858): left out, the wardrobe has no target body to copy (Open questions); Yield 0.2 (:38627): moveSpeed 0; Yield 0.4 (:38642): standby 1.0 s",
+        "cues": [
+        [0, "voice", "mimic1|mimic2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}]
+        ]
+      },
+      "shame": {
+        "why": "Bat.cs RPC_shame_cast :39400-40060 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :39840), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:39858), voice shame1 / shame2 (:39890-39980) at 0; Auto Mass #431 (passives on): RPC_cast1 rolls Random.Range(0, 100) < lckAdjust(12) = 12 % when the bar ends, for this skill (the switch :23270-23332; not while massCast is on, :23253), draws massCast at the hero, hero rotation (createEffect :23354; Resources bat/effects/massCast :11140; life 1, followPosition, plays its own Sounds/massCast) and adds massCast Lv 1 for 3 s (:23360; its purple tint, CharacterControl.cs:40037-40047, left out as the Penguin's multiCast tint), which spreads the debuff to FindAreaTarget(target, 18, 12), up to 6 (one target point shown); Yield 0.4 (:39972): the shame status (Lv 5, getDebuff(15), :39685-39719): Effects/shame at the target's feet, identity (CharacterControl.cs:40944-40953; life 1, plays its own Sounds/shame); emo_blush on the target left out (:40941); Yield 0.4 (:39983): moveSpeed 0; Yield 0.4 (:39987): standby 1.2 s",
+        "cues": [
+        [0, "voice", "shame1|shame2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0, "fx", "massCast", {"p": 0.12, "roll": "autoMass"}],
+        [0.4, "fx", "shame", {"d": 10}]
+        ]
+      },
+      "darkStalker": {
+        "why": "Bat.cs RPC_darkStalker_cast :40061-40561 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :40376), voice darkStalker1 / darkStalker2 (:40423-40478), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:40491) at 0; Yield 0.4 (:40508): the darkStalker status, Lv 9 for 999 s (:40263): Effects/darkStalker (one static mesh, no EffectControl) Instantiated with the target's rotation and parented to a bone by the target's class (CharacterControl.cs:40996-41278; a Penguin: Hip_L, local (-0.15, -0.03, -0.07), Euler(-14, 200, 37) :41240-41256): APPROXIMATED at the target point 0.35 m up (the Penguin's hip), the target facing the hero (rot [0, 180, 0]); cut at 10 s; its tick (Effect Damage, CharacterControl.cs:9770-9794) draws nothing; Yield 0.4 (:40514): moveSpeed 0; Yield 0.4 (:40521): standby 1.2 s",
+        "cues": [
+        [0, "voice", "darkStalker1|darkStalker2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0.4, "fx", "darkStalker", {"d": 10, "y": 0.35, "rot": [0, 180, 0], "kill": 10}]
+        ]
+      },
+      "paranoia": {
+        "why": "Bat.cs RPC_paranoia_cast :41217-41835 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :41630), voice paranoia1 / paranoia2 (:41677-41732), castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:41745) at 0 (no Auto Mass roll: not in RPC_cast1's list, :23270-23332); Yield 0.4 (:41771): RPC_paranoia_hit (:41497): paranoia_hit at the target's feet, hero rotation (:14593-14611; plays its own Sounds/paranoia); Yield 0.4 (:41766): moveSpeed 0; Yield 0.4 (:41777): standby 1.2 s",
+        "cues": [
+        [0, "voice", "paranoia1|paranoia2"],
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0.4, "fx", "paranoia_hit", {"d": 10}]
+        ]
+      },
+      "shatteringDream": {
+        "why": "Bat.cs RPC_shatteringDream_cast :41836-42347 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :42243) and castEffect (the Bat prefab's castEffect field = Resources bat/effects/castEffect, probe_fields.txt field 7) at TransformDirection(0, 1.3, 1), hero rotation (life 2, plays its own Sounds/cast_effect) (:42261) at 0; no voice (BB loads none, the rip has none, TTO1102 Bat.<RPC_shatteringDream_cast>d__216 loads none either); no Auto Mass roll (:23270-23332); Yield 0.4 (:42290): RPC_shatteringDream_hit (:42107): at once shatteringDream_hit at the target's feet, identity (:42542-42560; AlphaTimer + ShatterMesh) and Sounds/shatteringDream_hit there (playAudioAtPoint :42585-42603), then 3 hits 0.2 s apart drawing nothing (:42453-42490, :42633); Yield 0.4 (:42288): moveSpeed 0; Yield 0.4 (:42285): standby 1.2 s",
+        "cues": [
+        [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+        [0.4, "fx", "shatteringDream_hit", {"d": 10}],
+        [0.4, "sound", "shatteringDream_hit"]
+        ]
+      }
+    }
+  },
+  "@Nightmare:cast3": {
+    "why": "Bat.cs RPC_nightmare_cast :28409-29104 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :28741), voice nightmare1 / nightmare2 (:28800-28855), castEffect (the prefab field, Resources bat/effects/castEffect) at TransformDirection(0, 1.3, 1), hero rotation (:28868) at 0 (no Auto Mass roll: not in RPC_cast1's list, :23270-23332); Yield 0.4 (:29046): moveSpeed 0 and the nightmare status for getDebuff(9) = 9 s (:28600-28613): Effects/nightmare at the target's bounds centre, identity, parented, localScale clamp(height 1 + 2, 2, 6) = 3 (CharacterControl.cs:40368-40398; its root clip loops, plays its own looping Sounds/nightMare; no EffectControl: destroyed when the status ends, :18118-18143): kill 9; the target's emo_panic left out (:40414); Yield 0.1 (:29041): the channel step at 0.5 (its entry)",
+    "cues": [
+    [0, "voice", "nightmare1|nightmare2"],
+    [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+    [0.4, "fx", "nightmare", {"d": 10, "y": 0.6, "scale": 3, "kill": 9}]
+    ]
+  },
+  "@Nightmare:channel": {
+    "why": "Bat.cs RPC_nightmare_cast case 3 (:28621-28694) (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): at 0.5 after cast3: clip channel (0.2 fade, looped, :28640-28645) and createNightmareRing(hero, target) (:28654): nightmare_ring at the hero, hero rotation (Bat.cs:11965-12036; EffectControl life 60, followPosition, followState, rotation mode followObject; plays its own looping Sounds/drainLife), its BoltEmitter's TargetCollider = the target's collider, so the bolts run to its bounds centre (BoltEmitter.cs:155-161): to [0, 0.6, 10]; every fixed step the Bat faces the target (:28990) and the channel lasts while the target holds nightmare (:28876-28932): the status's 9 s from 0.4 end it at 9.4 s, 8.9 s into channel, RPC_nightmare0 sets standby (:12060-12109): the ring's followState cut at 8.9",
+    "cues": [
+    [0, "fx", "nightmare_ring", {"to": [0, 0.6, 10], "cut": 8.9}]
+    ]
+  },
+  "@MindControl:cast3": {
+    "why": "Bat.cs RPC_mindControl_cast :36855-37866 (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): clip cast3 (0.2 fade, :37656), voice mindControl1 / mindControl2 (:37703-37758), castEffect (the prefab field) at TransformDirection(0, 1.3, 1), hero rotation (:37771) at 0 (no Auto Mass roll); Yield 0.4 (:37805): moveSpeed 0 and, for a hero-class target no higher in level (:37238-37261), the mindControl status for getDebuff(3 x 2 + 6) = 12 s (:37054): Effects/mindControl at the target's bounds centre, identity, parented, localScale clamp(0.3 + 0.4, 0.5, 2) = 0.7 (CharacterControl.cs:40735-40744; two repeating RingEmitters, no EffectControl: destroyed with the status, :18270-18323): cut at 10 s; its cyan tint of the target left out (:40750-40753); Yield 0.1 (:37796): the channel step at 0.5 (its entry)",
+    "cues": [
+    [0, "voice", "mindControl1|mindControl2"],
+    [0, "fx", "castEffect", {"d": 1, "y": 1.3}],
+    [0.4, "fx", "mindControl", {"d": 10, "y": 0.6, "scale": 0.7, "kill": 10}]
+    ]
+  },
+  "@MindControl:channel": {
+    "why": "Bat.cs RPC_mindControl_cast case 3 (:37290-37404) (target: the 10 m target point, a Penguin-sized body: bounds centre 0.6 m up, CharacterController height 1, radius 0.3): at 0.5 after cast3: clip channel (0.2 fade, looped, :37309) and createMindControlRing(hero, target) (:37325): mindControl_ring at the hero, hero rotation (Bat.cs:13707-13778; life 60, followPosition, followState, followObject rotation; plays its own looping Sounds/drainLife; its Point light, cyan (0.085, 0.92, 1), range 2, intensity 1), its BoltEmitter's TargetCollider = the target: to [0, 0.6, 10]; the camera locks on the target (left out); the channel lasts while the target holds mindControl (:37424-37512), 12 s from 0.4: cut at 10 s from the status, 9.9 s into channel (RPC_mindControl0 :13802-13871 sets standby)",
+    "cues": [
+    [0, "fx", "mindControl_ring", {"to": [0, 0.6, 10], "cut": 9.9}]
+    ]
+  },
+  "echoes": {
+    "why": "Bat.cs RPC_echoes (:27814-28220): clip echoes (:28211, wrapMode Once :28214) at 0; voice echoes1 / echoes2 (Random.Range(0, 2) :28252, Voices/echoes1 :28262, echoes2 :28293, PlayOneShot :28332 / :28348) at 0; Yield(2, 0.1) (:28330): echoes_ring at the hero (createEffect :27979; followState, cut at the standby 0.8 s: Yield(3, 0.5) :28336 + Yield(4, 0.2) :28351, :28141); at 0.6 s three orbs from the hero + 2 m up (:28088), Math.rotateH(forward, 120 i) (:28093) = yaw 0 / -120 / +120 (Math.cs:838-843), each homing on the target (Bat_echoes.cs:153-174: 0.5 rad every 0.1 s, 4 m/s; the target 10 m ahead, 0.6 m up); they meet it 2.42 s / 2.60 s later (checks/fx_bat_research/parts/calc.txt): echoes_hit at mCollider.ClosestPointOnBounds(the orb's centre) (Bat_echoes.cs:308), the front of the target's box at 9.7 m, with the hero's rotation (Bat_echoes.cs:308-324, Bat.cs:11928-11935); one target, no bounce (Bat_echoes.cs:369-530 needs another foe)",
+    "cues": [
+    [0, "voice", "echoes1|echoes2"],
+    [0.1, "fx", "echoes_ring", {"cut": 0.8}],
+    [0.6, "fx", "echoes", {"y": 2, "to": [0, 0.6, 10]}],
+    [0.6, "fx", "echoes", {"y": 2, "rot": [0, -120, 0], "to": [0, 0.6, 10]}],
+    [0.6, "fx", "echoes", {"y": 2, "rot": [0, 120, 0], "to": [0, 0.6, 10]}],
+    [3.02, "fx", "echoes_hit", {"d": 9.7, "y": 0.658}],
+    [3.2, "fx", "echoes_hit", {"x": -0.048, "d": 9.7, "y": 0.657}],
+    [3.2, "fx", "echoes_hit", {"x": 0.048, "d": 9.7, "y": 0.657}]
+    ]
+  },
+  "soulEater": {
+    "why": "Bat.cs RPC_soulEater (:40562-41216; its own key, no cast bar; target: the 10 m target point): clip soulEater cut (PlayAnimation(soulEater, 0) :41016) and voice soulEater1 / soulEater2 (Random.Range(0, 2) :41057-41149) at 0; Yield 0.5 (:41139): soulEater_ring at the hero, hero rotation (createEffect :40709-40727; life 1 + afterLife 1, followPosition, followState; plays its own Sounds/soulEater_ring); Yield 0.2 (:41137): at 0.7 the player's camera colour ramp shadowRamp (:40764-40775, left out: a camera effect) and RPC_soulEater_hit on the target (Auto Mass's area only with #431 and massCast on, :40828-40857): soulEater_hit at its feet, hero rotation (:14407-14425) and Sounds/soulEater_hit on the Bat's own AudioSource (:14439-14468); Yield 0.3 (:41156): standby at 1.0 (:40946): soulEater_ring's followState cut",
+    "cues": [
+    [0, "voice", "soulEater1|soulEater2"],
+    [0.5, "fx", "soulEater_ring", {"cut": 1.0}],
+    [0.7, "fx", "soulEater_hit", {"d": 10}],
+    [0.7, "sound", "soulEater_hit"]
+    ]
+  },
+  "bigCast1": {
+    "why": "The channel of the three bigCast skills, the same in each (Bat.cs RPC_guardianOfTheNight :29768-30311, RPC_nefariousWhip :42675-43239, RPC_blackServant :44569-44688; TTO1102's three load the same names): at 0: actionState attack and myCommand guardianOfTheNight1 / nefariousWhip1 / blackServant (:30191-30197, :43029-43039, :44570-44576), clip bigCast1 (0.2 fade, :30209, :43059, :44588) and voice bigCast (one file; :30256 + :30306, :43116 + :43222, :44635 + :44682); Yield 0.2 (:30298, :43230, :44669): castRing 0.1 m behind the hero, TransformDirection(0, 0, -0.1), Quaternion.Euler(270, 90, 0) world-absolute, by createEffect (InitEffectControl, CharacterControl.cs:24191-24210) (:29933, :42829, :44288); Yield 0.5 (:30302, :43237, :44671): the ring's root clip looped at 0.7 s (:29968-29973, :42864-42869, :44323-44328); Yield 0.3 (:30304, :43228, :44675): bigCast2 cut in and looped at 1.0 s (:30000-30005, :42896-42901, :44355-44360; bigCast2's entry has the rest); the release RPC_<skill>_cast sets myCommand guardianOfTheNight2 / nefariousWhip2 / blackServant2 (:30697, :43605, :45331): the ring's followState cut there, at the bar's end, not at bigCast2's start (EffectControl.cs:194-247; afterLife 0: destroyed at once, :179-183): with the SEQ's bigCast1@1 bigCast2*@0.1 that is 1.1 s, 0.9 s after the spawn: kill 0.9 (a kill counts from the spawn, so it crosses the step edge a cut cannot; afterLife 0 makes it the game's end exactly)",
+    "cues": [
+    [0, "voice", "bigCast"],
+    [0.2, "fx", "castRing", {"d": -0.1, "rot": [270, 90, 0], "kill": 0.9}]
+    ]
+  },
+  "bigCast2": {
+    "why": "The cast bar of the three bigCast skills (Bat.cs :30000-30069, :42896-42965, :44355-44424): at its start bigCast_ring at the hero, hero position and rotation, by createEffect (Resources bat/effects/bigCast_ring :30026-30038, :42922-42934, :44381-44393; EffectControl life 99, afterLife 1, followPosition, followState; plays its own looping Sounds/bigCast_ring); the bar magAdjust(3 x 2 + 7) / magAdjust(7) / magAdjust(7) (:30052, :42948, :44407), at least 0.1 s (magAdjust's floor, CharacterControl.cs:20584-20588: the SEQ's bigCast2*@0.1); the release sets myCommand at the bar's end (:30697, :43605, :45331): the ring's followState cut, cued 0.05 (the step edge 0.1 less the page's margin)",
+    "cues": [
+    [0, "fx", "bigCast_ring", {"cut": 0.05}]
+    ]
+  },
+  "bigCast3": {
+    "why": "The bigCast3 clip is the release of three Bat skills after the bigCast1 / bigCast2 channel (Bat.cs RPC_guardianOfTheNight_cast :30700, RPC_nefariousWhip_cast :43608, RPC_blackServant_cast :45334, each PlayAnimation(bigCast3, 0.2)): one tile each (poolChains, with the Guardian of the Night sequence's steps)",
+    "skills": {
+      "guardianOfTheNight": {
+        "why": "Bat.cs RPC_guardianOfTheNight_cast (:30362-30841; started when the bar ends, :30155-30176), no target: at 0: myCommand guardianOfTheNight2 (:30697), clip bigCast3 (0.2 fade, :30700), voice guardianOfTheNight1 / guardianOfTheNight2 (Random.Range(0, 2) :30741, :30751, :30782, PlayOneShot :30825-30828; the rip's files are voices/guardianOftheNight1 / 2.wav: Resources.Load and Windows paths are case-blind); Yield 0.5 (:30837): castEffect 1.8 m up 1 m ahead, TransformDirection(0, 1.8, 1), hero rotation (:30504; the hero prefab's castEffect field = bat/effects/castEffect; plays its own Sounds/cast_effect); Yield 0.5 (:30821): at 1.0 s the guardian, Resources bat/effects/guardian, 4 m behind the hero (position - 4 x transform.forward, hero rotation, :30549-30561), Bat_guardianOfTheNight.Init(hero, sLv 2) (:30586; walk looped, glides from 4 to 2 m behind in 1 s while its two materials fade in, alpha 0 to 0.8 / 0 to 1, then standby and root, Bat_guardianOfTheNight.cs:283-470, :32-98; plays its own looping guardian_ring, a Shade4 clip: Resources gameassets/characters/elementals/shade4/sounds/guardian_ring.wav), and the guardianOfTheNight status for chaAdjust(30 x 2), 60 s or more (:30592-30603), whose apply puts Effects/guardian_ring at the hero, identity, parented (CharacterControl.cs:40541-40564); both last until the status ends (the summon's ko clip then gone 2 s later, Bat.cs:12436-12442, Bat_guardianOfTheNight.cs:1998-2121): cut at 10 s (end 10: the part's unsummon, ko then gone 2 s later, kill 12; guardian_ring kill 10); its AI on the 10 m target (decision 24: first scan 4 s after the summon, then every 2.5 s, Bat.cs:12275-12445, :30614; fxparts/bat.js Bat_guardianOfTheNight): fade out, behind the target, two hits (Shade4 nAttack_hit at (0, 1, 10.3) / (0, 1, 9.7)), the blade trail guardian_blade and Shade4's Sounds/nAttack (guardian_nAttack), spawned by the part (decision 26: builds), back, fade in; Yield 1 (:30816): standby at 2.0 s (:30641)",
+        "cues": [
+        [0, "voice", "guardianOfTheNight1|guardianOfTheNight2"],
+        [0.5, "fx", "castEffect", {"d": 1, "y": 1.8}],
+        [1.0, "fx", "guardian", {"d": -4, "end": 10, "to": [0, 0, 10], "kill": 12}],
+        [1.0, "fx", "guardian_ring", {"kill": 10}]
+        ],
+        "builds": ["guardian_blade", "guardian_hit", "sound:guardian_nAttack"]
+      },
+      "nefariousWhip": {
+        "why": "Bat.cs RPC_nefariousWhip_cast (:43287-43745; started when the bar ends, :43187-43208; enemy target: the 10 m target point): at 0: myCommand nefariousWhip2 (:43605), clip bigCast3 (0.2 fade, :43608), voice nefariousWhip1 / nefariousWhip2 (Random.Range(0, 2) :43649, :43659, :43690, PlayOneShot :43726, :43742); Yield 0.5 (:43734): castEffect TransformDirection(0, 1.8, 1), hero rotation (:43429), and RPC_nefariousWhip_hit on the target while it lives (:43482), which at once puts nefariousWhip_hit at the target's position with the Bat's rotation (:44025-44037; EffectControl life 5 + afterLife 5; its own looping Sounds/nefariousWhip under an AudioControl: 0.5 s delay, 0.5 s fade-in, 4 s, 0.2 s fade-out, then silent), then 8 damage ticks 0.5 s apart within 4 m of it (:43918-43957, :44060-44075; nothing drawn); Yield 0.4 (:43729): moveSpeed 0 (:43522); Yield 0.4 (:43738): standby at 1.3 s (:43549)",
+        "cues": [
+        [0, "voice", "nefariousWhip1|nefariousWhip2"],
+        [0.5, "fx", "castEffect", {"d": 1, "y": 1.8}],
+        [0.5, "fx", "nefariousWhip_hit", {"d": 10}]
+        ]
+      },
+      "blackServant": {
+        "why": "Bat.cs RPC_blackServant_cast (:44732-45441; started when the bar ends, :44534-44555; target: a dead enemy player, Bat.cs:8468-8511: the 10 m target point): at 0: myCommand blackServant2 (:45331), clip bigCast3 (0.2 fade, :45334), voice blackServant (one file, :45381, PlayOneShot :45433; voices/blackServant1 / 2.wav are never loaded); Yield 0.5 (:45429): castEffect TransformDirection(0, 1.8, 1), hero rotation (:44878), blackServant_ring at the target's position with the target's rotation (:44911-44929; the target faces the hero: rot [0, 180, 0], plans/fx_penguin/decisions.md 4), the Shadow<Class>_AI (:44943-45169) and the blackServant status for getDebuff(90) (:45206), whose apply raises the body (hp and ko to half, standby, grey tint 0.35: no body on the page) and puts Effects/blackServant on top of its collider, collider.bounds.center + up x extents.y, identity, parented, scale Clamp(radius + 0.4, 0.5, 2) (CharacterControl.cs:41338-41413): the standing target body of every target-point cue (plans/fx_penguin/decisions.md 3: the CharacterController centre 0.6 m up, the Penguin's, Penguin.prefab:683-689: height 1, radius 0.3): top at 0.6 + 0.5 = 1.1 m, scale Clamp(0.3 + 0.4, 0.5, 2) = 0.7, no EffectControl: it lasts the status, cut at 10 s (kill 10); Yield 0.4 (:45414): moveSpeed 0 (:45243); Yield 0.4 (:45438): standby at 1.3 s (:45275)",
+        "cues": [
+        [0, "voice", "blackServant"],
+        [0.5, "fx", "castEffect", {"d": 1, "y": 1.8}],
+        [0.5, "fx", "blackServant_ring", {"d": 10, "rot": [0, 180, 0]}],
+        [0.5, "fx", "blackServant", {"d": 10, "y": 1.1, "scale": 0.7, "kill": 10}]
+        ]
+      }
+    }
+  },
+  "nightfallSwarm": {
+    "why": "TTO1102:Bat.<RPC_nightfallSwarm>d__336::MoveNext@0x1B0EFC0 (pseudo/Bat.c:18584-19497; plans/fx_bat/tto.md 2; the 10 m target: length clamp(10 + 2.5, 4, 18) = 12.5 m, Bat::DoRow6Skill@0x1AC2660 :40724-40807; in place, no hero mover, Penguin decision 8): 0: Row6Begin (:18769), nightfallSwarm_wrap owned at the hero (:18863; followPosition + followState: cut at Row6End 1.4), Row6Sound bloodCarnage_ring (sounds/, :18864), Until(start + 0.4) (:18865); 0.4: nightfallSwarm_burst at Row6Chest@0x1ACEE60 = the collider centre, 0.9 m up (Bat CharacterController m_Center y 0.9, TTO's bundle and BB's Bat.prefab:911), the hero's rotation (:18882-18895), Row6Sound nightfallSwarm_screech + nightfallSwarm_flap (TTO's own sounds/ clips, :18896-18897), HideBody@0x1AC44A0 (:18898), 28 x nightfallSwarm_bat (:18940-19013, 0x1c) flown by the coroutine: the road from the hero to the landing in 0x3effffff = 0.5 s smoothstep (:19032-19067), bat i (i % 7) x 0.12 / 7 x (1 - p) behind, 0.9 m up + sin(pi p) x (its lane: right U(-1.1, 1.1) + up U(0.3, 2.1) + fwd U(-0.6, 0.6), capstone 0x1B0F52B-0x1B0F607; + right 0.3 cos(7 T + phase) + up 0.35 sin(9 T + phase), phase U(0, 6.28) 0x1B0F672; :19240-19330), facing its motion (:19375), its wings flapped by its own BatSwarmFlap (Awake@0x1B1AEB0 / Update@0x1B1AFC0); the 10 m target is passed when 12.5 S(p) + 0.8 >= 10 (the lane test :19085-19151): 0.732 s, nightfallSwarm_hit at its chest (0.6 m up, the target rule), LookRotation(dir) = the hero's facing (:19192-19214); 0.9 (p = 1): ShowBody (:19420), Regather@0x1B25130 (:19418; every bat to the Bat's chest, read live, lerp clamp01((4 t)^2), root scale 1 - 0.8 clamp01(4 t), Destroy at 0.25 s: kill 0.75, Bat.c:25391-25496), nightfallSwarm_reform at the Bat with its rotation (:19433), Row6Sound drainLife (sounds/, :19434), the heal (RPC_AddHeal 4541, no look :19451); Until(start + 1.4) (capstone 0x1B1069D), Row6End (:19490); no voice, no roll, one rank; left out: the six statuses' looks on the foe (Afflict@0x1AC1E20, Sheep decision 4)",
+    "cues": [
+    [0, "fx", "tto/nightfallSwarm_wrap", {"cut": 1.4}],
+    [0, "sound", "bloodCarnage_ring"],
+    [0.4, "fx", "tto/nightfallSwarm_burst", {"y": 0.9}],
+    [0.4, "sound", "nightfallSwarm_screech"],
+    [0.4, "sound", "nightfallSwarm_flap"],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 0, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 1, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 2, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 3, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 4, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 5, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 6, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 7, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 8, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 9, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 10, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 11, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 12, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 13, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 14, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 15, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 16, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 17, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 18, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 19, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 20, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 21, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 22, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 23, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 24, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 25, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 26, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.4, "fx", "tto/nightfallSwarm_bat", {"y": 0.9, "i": 27, "to": [0, 0, 12.5], "kill": 0.75}],
+    [0.732, "fx", "tto/nightfallSwarm_hit", {"d": 10, "y": 0.6}],
+    [0.9, "fx", "tto/nightfallSwarm_reform"],
+    [0.9, "sound", "drainLife"]
+    ]
+  },
+  "@MassCast:root": {
+    "why": "Bat.cs RPC_massCast (:11124-11270, a plain method: no clip, no wait; the dispatcher calls it straight from the key press, :9735, and no PlayAnimation runs: the tile plays it on the idle stance), all at 0: addTimeOut agiAdjust(180) (:11131); Effects/massCast (:11140) at the hero's position and rotation (createEffect :11152; EffectControl life 1, followPosition; plays its own Sounds/massCast); the massCast status at the top rank, sLv 2 for chaAdjust(3 + 3 x 2) = 9 s (:11164), its purple body tint (setColor (0.48, 0.29, 0.78), CharacterControl.cs $addStatus :40037-40045; back to grey 0.86 in removeStatus :18064-18070) left out as the Penguin's multiCast tint (plans/fx_penguin/decisions.md 10); voice massCast1 / massCast2 (Random.Range(0, 2) :11199; :11209 / :11240, PlayOneShot :11265 / :11269; played for the caster's own team)",
+    "cues": [
+    [0, "fx", "massCast"],
+    [0, "voice", "massCast1|massCast2"]
+    ]
+  },
+  "@ShadowGaze:root": {
+    "why": "Bat.cs RPC_shadowGaze (:11281-11780, a plain method: no clip, no wait; the dispatcher calls it straight from the key press, :9655, and no PlayAnimation runs: the tile plays it on the idle stance), all at 0: cooldown agiAdjust(20) with Demon Gaze #412 (:11319-11325); voice shadowGaze1 / shadowGaze2 (Random.Range(0, 2) :11368; :11380 / :11411, PlayOneShot :11392 / :11423); no massCast up, so the target alone (getStatusLv(massCast) :11447; with it, up to 6 in FindAreaTarget(target, 18, 12) :11468, :11513); Demon Gaze #412 on (passives on, hasSkill(412) :11525): Effects/demonGaze_hit (:11542; without it shadowGaze_hit, :11582, the same look) Instantiated at the target's collider.bounds.center with Quaternion.identity (:11554; drawn in the hero's facing, APPROXIMATED), on the caster's own client only (isMine :11519): an enemy, so the 10 m target point, 0.6 m up at its body centre (plans/fx_penguin/decisions.md 3); the hit talAdjust(12 + 12 x 4 + 12) (:11614) draws nothing; Sounds/demonGaze_hit (:11663-11675; without #412 shadowGaze_hit, :11710) by playAudioAtPoint at the hit target nearest the camera (:11630-11646, :11687); the 'Demon Gaze' banner (:11531) and the shadowRamp camera tint on a hit local player (:11737-11761) left out",
+    "cues": [
+    [0, "voice", "shadowGaze1|shadowGaze2"],
+    [0, "fx", "demonGaze_hit", {"d": 10, "y": 0.6}],
+    [0, "sound", "demonGaze_hit"]
+    ]
+  },
+  "@Switch:root": {
+    "why": "Bat.cs RPC_switch (:13272-13526, a plain method: no clip, no wait; the dispatcher calls it straight from the key press, :7870-7951, refused with 'No Illusion to switch place with' when no clone is out, :7876-7888; the tile plays it on the idle stance), all at 0: addTimeOut agiAdjust(12) (:13279); the Bat and the chosen clone trade places (:13300-13309); the Bat's lock statuses up to Lv 5 with Paranoia #433 cleared and its target released (:13312-13315), and a Lv 4 clear and release once more per clone that exists, run on the Bat's own CharacterControl in BB (this.GetComponent :13323, :13345; bat-skill-reference.md:630), drawing nothing; Effects/switch_hit (:13368; EffectControl life 1; plays its own Sounds/swap at 0.5) at the Bat's new spot with its rotation (:13380) and at each clone with the clone's (:13391, :13403); the clones: two at Shadow Illusion's top rank, summoned on the ground 1.5 m left and right, 2.6 m ahead, facing the hero's forward (TransformDirection(-+1.5, -1, 2.6) from 1 m up, Math.getSpawnVector Math.cs:1210; Bat.cs:31511-31559, :12944), the left one INmv81bBeH, the right one omdviAIVKF (RPC_shadowIllusion_create :13121-13134); the clone swapped is the right one when Random.Range(0, 2) == 0, else the left (:7901-7958); the page's hero stays put and each effect stays with its owner as the page shows it (as Blink and Swap): one switch_hit at the hero and one at each clone's summon spot, the same three spots whichever clone the game picks; no clone bodies are drawn; voice switch1 / switch2 (Random.Range(0, 2) :13447; :13457 / :13488, PlayOneShot :13525 / :13522)",
+    "cues": [
+    [0, "fx", "switch_hit"],
+    [0, "fx", "switch_hit", {"x": -1.5, "d": 2.6}],
+    [0, "fx", "switch_hit", {"x": 1.5, "d": 2.6}],
+    [0, "voice", "switch1|switch2"]
+    ]
+  },
+  "@ShadowSacrifice:root": {
+    "why": "Bat.cs RPC_shadowSacrifice (:14100-14350, a plain method: no clip, no wait; the dispatcher calls it straight from the key press, :8164-8195, refused with 'Required shadow illusion' when no clone is out, :8170-8182; the tile plays it on the idle stance), all at 0: addTimeOut agiAdjust(120) (:14110); voice Random.Range(0, 2) (:14142): one branch loads and plays shadowSacrifice2 (:14185, :14197); the other loads shadowSacrifice1 into Shame's shame1 field (vsHla13joN, :14154; Shame :39894-39980) and plays a field nothing ever fills (BJyldV2eoL, :14148-14166, declared :19899): no voice, 'Cannot find shadowSacrifice1 voice' (:14170); TTO the same (TTO1102 Bat::RPC_shadowSacrifice@0x1acc0e0 tests audioClip_59, loads audioClip_61): so shadowSacrifice2 on half the plays, as the game; each clone (two at Shadow Illusion's top rank, 1.5 m left and right, 2.6 m ahead, :31511-31559) gives 20 % of its HP (:14230, :14271) and vanishes: Bat_illusion.RPC_disappear (:14247, :14288; Bat_illusion.cs:2829-2836) Instantiates its illusion_dust field (Effects/illusion_dust, the illusion prefab's Bat_illusion field at byte 96: checks/fx_bat_research/effect_only/illusion_field.txt; plays its own Sounds/illusionSmoke) 1 m above the clone, Quaternion.identity (drawn in the hero's facing, APPROXIMATED); no clone bodies are drawn; then Effects/shadowSacrifice_ring (:14301) at the hero's position and rotation (createEffect :14313; EffectControl life 1 + afterLife 1, followPosition); the heal RPC_AddHeal(413) (:14339) draws nothing more",
+    "cues": [
+    [0, "voice", "shadowSacrifice2", {"p": 0.5}],
+    [0, "fx", "illusion_dust", {"x": -1.5, "d": 2.6, "y": 1}],
+    [0, "fx", "illusion_dust", {"x": 1.5, "d": 2.6, "y": 1}],
+    [0, "fx", "shadowSacrifice_ring"]
+    ]
+  },
+  "wave": {
+    "why": "Bat.cs RPC_emotion (:47093): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:47344, PlayOneShot :47356; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:47410) and emo_wave (:47418) both play the wave clip (:47899): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Bat.cs RPC_emotion (:47093): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:47344, PlayOneShot :47356); no effect, no sound; emo_ty (:47428) and emo_bow (:47435) both play the bow clip (:47885): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_laugh = Voices/laugh (:47344, PlayOneShot :47356); clip laugh (:47448); no effect, no sound",
+    "cues": [
+    [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_sleep = Voices/sleep (:47344, PlayOneShot :47356; the Bat has no sounds/sleep); clip sleep (:47480); no effect, no sound",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_cheer = Voices/cheer (:47344, PlayOneShot :47356); clip cheer (:47492); no effect, no sound",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_beg = Voices/beg (:47344, PlayOneShot :47356); clip beg (:47504); no effect, no sound",
+    "cues": [
+    [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_cry = Voices/cry (:47344, PlayOneShot :47356); clip cry (:47516); no effect, no sound",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Bat.cs RPC_emotion (:47093): every emote's voice at 0, before its clip; emo_chat (:47531) plays the talk clip (:47863) with chat1-3 at random (Random.Range(1, 4), :47336: the Bat's BB code never reaches the rip's chat4 / chat5; TTO plays 1-5); emo_talk (:47524) plays it silent (no Voices/talk): the tile takes the chat's voice; no effect, no sound",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3"]
+    ]
+  },
+  "battle": {
+    "why": "Bat.cs RPC_emotion (:47093): the voice at 0, before the clip, emo_battle = Voices/battle (:47344, PlayOneShot :47356); clip battle (:47800; with w_bat65, the japanWagasa, the weapon's own open / close clip toggles, :47803-47835: a prop clip, no effect); the battle stance in a fight plays the clip silent: the tile takes the emote's voice",
+    "cues": [
+    [0, "voice", "battle"]
+    ]
+  },
+  "ko": {
+    "why": "Bat.cs RPC_ko (:53058): clip (PlayAnimation(ko, 0) :53272) and voice ko1 or ko2 at 0 (Random.Range(0, 2) :53307, loads :53317 / :53348, PlayOneShot :53397 / :53393), getUp after 3 s (:53400, :53174), no effect; RPC_dead (:53434) plays the same clip (Rewind + ko :53628-53631) with dead1 or dead2 at 0 (:53666-53721) and always puts deadEffect at the hero's position and rotation (:53733-53750; EffectControl life 3): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / penguin.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+    [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+    [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+    [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvent playWingFlapEvent at 0.1 s (checks/fx_bat_research/attacks_emotes/probe_events.txt) -> Bat.cs playWingFlapEvent (:101-140): the hero's audio.PlayOneShot(wingFlap) = step_fly1 (the field :19572, probe_fields.txt; Resources/sound/fx/step_fly1.wav), own hero or anyone in a mission (mGameType > 4, :107-121); every cycle of the run (the event fires each loop: everyCycle, a page flag to build)",
+    "everyCycle": true,
+    "cues": [
+    [0.1, "sound", "step_fly1"]
+    ]
+  }
+}
