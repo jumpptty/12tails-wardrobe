@@ -59,10 +59,10 @@ export async function readSubmission(form) {
 }
 
 // the token is Cloudflare's to judge; the site key is limited to the site's hostname in the Turnstile dashboard
-async function turnstileOk(env, token, ip) {
+async function turnstileOk(secret, token, ip) {
   if (!token) return false;
   const body = new FormData();
-  body.append("secret", env.TURNSTILE_SECRET); body.append("response", String(token));
+  body.append("secret", secret); body.append("response", String(token));
   if (ip) body.append("remoteip", ip);
   const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body });
   const v = r.ok ? await r.json() : {};
@@ -105,18 +105,21 @@ export function discordBody(s, at) {
 
 export async function submit(request, env) {
   if (request.method !== "POST") return fail("method", 405);
-  if (!env.DISCORD_WEBHOOK || !env.TURNSTILE_SECRET) return fail("closed", 503);
+  // trimmed: a secret piped in from Windows PowerShell arrives with a BOM (U+FEFF, which trim() removes), and the webhook
+  // URL then failed to parse (2026-11-12, the first live sends)
+  const hook = String(env.DISCORD_WEBHOOK ?? "").trim(), secret = String(env.TURNSTILE_SECRET ?? "").trim();
+  if (!hook || !secret) return fail("closed", 503);
   const url = new URL(request.url), origin = request.headers.get("origin");
   if (origin && origin !== url.origin) return fail("origin", 403);               // only the page itself may send
   if (Number(request.headers.get("content-length") || 0) > LIMITS.bodyBytes) return fail("big", 413);
   let form;
   try { form = await request.formData(); } catch { return fail("form"); }
   const ip = request.headers.get("cf-connecting-ip") || "";
-  if (!(await turnstileOk(env, form.get("token"), ip))) return fail("bot", 403);
+  if (!(await turnstileOk(secret, form.get("token"), ip))) return fail("bot", 403);
   const s = await readSubmission(form);
   if (s.error) return fail(s.error);
   if (await overLimit(ip)) return fail("rate", 429);
-  const r = await fetch(env.DISCORD_WEBHOOK + (env.DISCORD_WEBHOOK.includes("?") ? "&" : "?") + "wait=true",
+  const r = await fetch(hook + (hook.includes("?") ? "&" : "?") + "wait=true",
     { method: "POST", body: discordBody(s, new Date().toISOString()) });
   if (!r.ok) { console.error("discord", r.status, await r.text().catch(() => "")); return fail("upstream", 502); }
   return json({ ok: true });

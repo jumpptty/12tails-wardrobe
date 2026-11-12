@@ -192,6 +192,8 @@ async def main():
         # a refused send resets the widget (a token works once): wait for a new one
         await page.wait_for_function("() => wardrobe.debug().Send.token", timeout=30000)
         await page.wait_for_timeout(300)
+        msg = await page.locator(".send-msg").inner_text()     # the live site wiped it here (2026-11-12): the new token's callback
+        check(msg == "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", f"the refusal stays after the widget passes again: {msg!r}")
         await dlg.locator('button[type="submit"]').click()
         await page.wait_for_selector(".send-back:not(.gal-back)", state="hidden", timeout=15000)
         t = await page.evaluate("() => document.getElementById('toast').textContent")

@@ -74,6 +74,13 @@ class Community(unittest.TestCase):
         self.assertIn("16x16, the original 8x8", dict(refused)["2"])
         self.assertIn("not a PNG", dict(refused)["8"])
 
+    def test_files_of_finds_the_embed_picture(self):
+        # Discord's real shape: the embed's image is not listed in attachments (2026-11-12, the first live send)
+        m = {"attachments": [{"filename": "meta.json", "url": "https://cdn.discordapp.com/attachments/1/2/meta.json?ex=a"}],
+             "embeds": [{"image": {"url": "https://cdn.discordapp.com/attachments/1/3/skin0.png?ex=b&is=c"}}]}
+        self.assertEqual(wc.files_of(m), {"meta.json": "https://cdn.discordapp.com/attachments/1/2/meta.json?ex=a",
+                                          "skin0.png": "https://cdn.discordapp.com/attachments/1/3/skin0.png?ex=b&is=c"})
+
     def test_dry_run_writes_nothing(self):
         added, _, _ = wc.apply(self.d, [self.sub("9")], dry=True)
         self.assertEqual(added, ["9"])

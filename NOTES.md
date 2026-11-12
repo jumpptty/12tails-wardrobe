@@ -1149,3 +1149,18 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   hostname 12tails-wardrobe.jumpthai.workers.dev), site key in `wardrobe/community_config.json`. Worker secrets
   TURNSTILE_SECRET and DISCORD_WEBHOOK set by piping the clipboard into `npx wrangler secret put` from an empty scratch
   folder (`wrangler secret list` shows both; the live site still 200). Not deployed yet (HANDOFF).
+- **2026-11-12, community skins: deployed and the first live send** (user: "GO"). Deploy 1 (de938b86) also put the
+  Penguin's effects online (they came with the pull; their QA is still open, HANDOFF). The first live sends failed
+  silently; three bugs, all fixed (deploy d1380e15): (1) the stored DISCORD_WEBHOOK began with a BOM (U+FEFF): Windows
+  PowerShell adds one when piping text into a program (`$u | npx wrangler secret put ...`), and `fetch` threw "Invalid
+  URL" (wrangler tail showed it). The Worker now trims both secrets (trim() removes U+FEFF); test in
+  test_site_worker.mjs. When setting a secret from Windows: Git Bash `printf %s ... |` or type it at wrangler's prompt.
+  (2) The page wiped every refusal: after a refused send it resets Turnstile, the real widget re-passes within a second,
+  and its callback ran say(""). Now the callback clears only SEND_ERR.wait; wardrobe_community_check.py asserts the
+  refusal stays. (3) The import would refuse every skin: Discord takes an embed's picture (skin0.png) out of the
+  message's attachments; `files_of` adds the embed image (test in test_wardrobe_community). Also: the Worker's 5-per-10-
+  minute limit counts before the Discord post, so failed posts used it up (429 `rate` after five tries). The public page
+  exposes wardrobe.debug() only under navigator.webdriver, so in a normal Chrome the send was tested through the UI (a
+  PNG pasted with Ctrl+V on the tile) and `pipeline/wardrobe_send_live_probe.py` (headless, reads Send's state). The
+  channel holds two test messages: "ทดสอบรูปแบบข้อความ (จากเครื่อง ไม่ผ่านเว็บ)" (the Worker's message format posted
+  from the PC with node) and "ทดสอบระบบ" (the real send from the site, a recoloured mothLatern 128x128).

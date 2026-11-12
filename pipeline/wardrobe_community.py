@@ -182,6 +182,17 @@ def http(url, token=None):
     raise SystemExit("Discord kept rate-limiting; try again later")
 
 
+def files_of(m):
+    """A message's files {name: url}: its attachments plus the embed's picture, which Discord takes out of the
+    attachments (the Worker shows skin0.png as the embed image; first live send, 2026-11-12)."""
+    att = {a["filename"]: a["url"] for a in m.get("attachments") or []}
+    for e in m.get("embeds") or []:
+        u = (e.get("image") or {}).get("url") or ""
+        if u.startswith("https://"):
+            att.setdefault(urllib.parse.urlsplit(u).path.rsplit("/", 1)[-1], u)
+    return att
+
+
 def approved_messages(token, channel):
     """Every webhook message in the channel that a person (not a bot) reacted ✅ to."""
     out, before = [], None
@@ -197,7 +208,7 @@ def approved_messages(token, channel):
             users = json.loads(http(f"{API}/channels/{channel}/messages/{m['id']}/reactions/{urllib.parse.quote(APPROVE)}?limit=100", token))
             if not any(not u.get("bot") for u in users):
                 continue
-            att = {a["filename"]: a["url"] for a in m.get("attachments") or []}
+            att = files_of(m)
             if "meta.json" not in att:
                 print(f"  {m['id']}: no meta.json (is the bot's Message Content intent on?)")
                 continue

@@ -50,6 +50,15 @@ test("a good submission reaches Discord with the skin, plain fields and no menti
   assert.equal((await body.get("files[0]").arrayBuffer()).byteLength, 33);
 });
 
+test("secrets piped in from Windows PowerShell (a BOM, a newline) still work", async () => {
+  const calls = stub();
+  const env = { DISCORD_WEBHOOK: "﻿" + ENV.DISCORD_WEBHOOK + "\r\n", TURNSTILE_SECRET: "﻿" + ENV.TURNSTILE_SECRET + "\r\n" };
+  const r = await worker.fetch(post(form()), env);
+  assert.equal(r.status, 200);
+  assert.equal(calls.find(c => c.url.startsWith("https://challenges")).init.body.get("secret"), ENV.TURNSTILE_SECRET);
+  assert.equal(calls.at(-1).url, ENV.DISCORD_WEBHOOK + "?wait=true");
+});
+
 test("closed without secrets; other paths 404; GET refused", async () => {
   stub();
   assert.equal((await worker.fetch(post(form()), {})).status, 503);

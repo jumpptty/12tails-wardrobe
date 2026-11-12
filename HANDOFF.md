@@ -8,9 +8,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 Built and tested 2026-11-11 (NOTES.md "community skins"). The one-time setup was done 2026-11-12 at the office (NOTES.md
 "community skins: setup done"): channel `#wardrobe-submissions` (id 1570242267397230764, the user's "Jump" server), its
 webhook, the bot app "12 Tails Skins" (in the server, allowed in the channel, Message Content Intent on), the Turnstile
-widget (site key in `wardrobe/community_config.json`), and both Worker secrets. Left: publish, deploy with the Worker
-script (NOTES.md "Online copy"), send one test skin, the user approves it ✅, run `py -3 -I pipeline/wardrobe_community.py`,
-publish, deploy, check it in the menu. Delete this item.
+widget (site key in `wardrobe/community_config.json`), and both Worker secrets. Deployed 2026-11-12 (d1380e15) and a
+test skin sent from the live site ("ทดสอบระบบ", the Sheep's mothLatern). Left: the user reacts ✅ to it, run
+`py -3 -I pipeline/wardrobe_community.py`, publish, deploy, check ลายจากผู้เล่น in the lantern's menu; then the user takes
+the ✅ away (or deletes the test messages) and the import + publish + deploy remove it again. Delete this item.
 
 ## Home PC: the bot's token file (once, the user)
 

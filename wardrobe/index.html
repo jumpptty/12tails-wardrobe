@@ -1663,7 +1663,7 @@ const Gallery = {
 // Discord channel the user approves from. The menu offers it only when SUBMIT_KEY is set (the published copy)
 const SEND_ERR = { closed: "ยังไม่เปิดรับลายตอนนี้", bot: "ยืนยันว่าไม่ใช่บอตไม่สำเร็จ ลองอีกครั้ง", name: "กรอกชื่อที่จะให้เครดิตก่อน",
   link: "ลิงก์ต้องขึ้นต้นด้วย https://", consent: "ติ๊กช่องยินยอมก่อนส่ง", png: "ไฟล์ลายเสีย ลองอัปโหลดลายใหม่", big: "ไฟล์ลายใหญ่เกินไป",
-  rate: "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", piece: "ส่งลายของชิ้นนี้ไม่ได้" };
+  rate: "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", piece: "ส่งลายของชิ้นนี้ไม่ได้", wait: "รอให้ช่องยืนยันว่าไม่ใช่บอตขึ้นเครื่องหมายถูกก่อน" };
 const SEND_KEY = "wardrobe_sender";          // the name and link typed last time (this browser only)
 const Send = {
   el: null, cur: null, token: "", widget: null, busy: false, script: null,
@@ -1713,7 +1713,9 @@ const Send = {
     return load.then(() => {
       if (!this.el || this.el.hidden || !box.isConnected) return;
       this.widget = window.turnstile.render(box, { sitekey: SUBMIT_KEY, language: "th", theme: "dark",
-        callback: t => { this.token = t; this.say(""); }, "expired-callback": () => { this.token = ""; }, "error-callback": () => { this.token = ""; } });
+        // a new token clears only the "wait for the check" line: after a refused send the widget re-passes within a second
+        // and used to wipe the refusal too, so the visitor saw nothing happen (2026-11-12, the live site)
+        callback: t => { this.token = t; if (this.el?.querySelector(".send-msg")?.textContent === SEND_ERR.wait) this.say(""); }, "expired-callback": () => { this.token = ""; }, "error-callback": () => { this.token = ""; } });
     });
   },
   resetTs() { this.token = ""; if (this.widget != null) try { window.turnstile.reset(this.widget); } catch (e) {} },
@@ -1724,7 +1726,7 @@ const Send = {
     if (!name) return this.say(SEND_ERR.name);
     if (link && !/^https:\/\/\S+$/i.test(link)) return this.say(SEND_ERR.link);
     if (!E.namedItem("consent").checked) return this.say(SEND_ERR.consent);
-    if (!this.token) return this.say("รอให้ช่องยืนยันว่าไม่ใช่บอตขึ้นเครื่องหมายถูกก่อน");
+    if (!this.token) return this.say(SEND_ERR.wait);
     const { kind, item, texs } = this.cur, fd = new FormData(), btn = f.querySelector('[type="submit"]');
     this.busy = true; btn.disabled = true; btn.textContent = "กำลังส่ง…"; this.say("");
     try {
