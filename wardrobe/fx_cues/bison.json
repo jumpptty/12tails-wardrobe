@@ -1,1 +1,653 @@
-{}
+{
+  "nAttack1": {
+    "why": "Bison.cs RPC_nAttack1 (:14466-15265): clip at 0 (0.2 s fade, :15128); 0.3 s (Yield(2, 0.3) :15152) voice nAttack1 (load :14629, PlayOneShot :14641); the hit at 0.5 s (Yield(3, 0.2) :15163) is melee, 5 m (FindAngleTarget :14801): nothing at the 10 m target point (nAttack_hit at the enemy :14850, the axe / hammer hit sound :7112-7138 and Over Pride's voice :14907 only on a hit, left out as the Wolf's); standby 0.7 s (Yield(4, 0.2) :15157, :15045-15068) unless stage 2 is pressed (its clip starts at 0.7 s: :15947)",
+    "cues": [
+    [0.3, "voice", "nAttack1"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Bison.cs RPC_nAttack2 (:15266-15960; its clip 0.7 s after stage 1: Yield(2, actionTime - now + 0.7) :15947, the press window 0.3-0.7 s, doNormalAttack :4874-4890): clip at 0 (cut, :15383); 0.3 s (Yield(3, 0.3) :15951) voice nAttack2 (load :15462, PlayOneShot :15474); the hit at 0.5 s (Yield(4, 0.2) :15953) is melee, 5 m (FindRecTarget :15607): nothing at the 10 m target point (nAttack_hit :15673 and Over Pride :15730 only on a hit); standby 0.8 s (Yield(5, 0.3) :15945, :15868-15891) unless stage 3 / the spin is pressed (from 1.0 s after stage 1, :4934)",
+    "cues": [
+    [0.3, "voice", "nAttack2"]
+    ]
+  },
+  "nAttack3": {
+    "why": "Bison.cs RPC_nAttack3 (:16058-16779; its clip 1.4 s after stage 1: Yield(2, actionTime - now + 1.4) :16761; started instead of the spin on 44 % of presses at max rank: Random.Range(0, 100) <= lckAdjust(25 + 5 x 3 + 15) fails, :4947-5004): clip at 0 (cut, :16175); 0.1 s (Yield(3, 0.1) :16767) voice nAttack3 (load :16261, PlayOneShot :16774); the hit at 0.6 s (Yield(4, 0.3) :16757, Yield(5, 0.2) :16769) is melee, 4 m (FindRecTarget :16418): nothing at the 10 m target point (nAttack_hit :16484, Over Pride :16541 only on a hit); standby 0.9 s (Yield(6, 0.3) :16765, :16679-16702) unless Added Swing #401 is pressed (its clip 2.2 s after stage 1, :19016)",
+    "cues": [
+    [0.1, "voice", "nAttack3"]
+    ]
+  },
+  "nAttack4": {
+    "why": "Bison.cs RPC_nAttack4 (:16850-17894; the spin, started in place of stage 3 on 56 % of presses at max rank: Combo #103 / #104 with Improved Swing 3, Random.Range(0, 100) <= lckAdjust(55) = 55 at LCK 1, :4947-4983, CharacterControl.cs:20658-20670; its clip 1.4 s after stage 1: Yield(2, actionTime - now + 1.4) :17871): clip at 0 (cut, :16983); 0.3 s (Yield(3, 0.3) :17867) voice nAttack4 (load :17049, PlayOneShot :17873); hits at 0.7 s and 1.0 s (Yield(4, 0.2) :17880, Yield(5, 0.2) :17891, Yield(6, 0.3) :17886) are 5 / 6 m circles (FindAreaTarget :17216, :17506): nothing at the 10 m target point (nAttack_hit at the enemy + 1.5 up :17272 / :17562, Over Pride :17339 / :17629 and the hammer_hit1 / axe_hit1 sound :17763-17778 only on a hit); standby 1.5 s (Yield(7, 0.5) :17863, :17787-17810) unless Added Swing #401 is pressed (its clip 2.7 s after stage 1, :19022)",
+    "cues": [
+    [0.3, "voice", "nAttack4"]
+    ]
+  },
+  "nAttack5": {
+    "why": "Bison.cs RPC_nAttack5 (:18017-19032; Added Swing #401, a passive, on; its clip 2.2 s after stage 1 after nAttack3, Yield(2, actionTime - now + 2.2) :19016, 2.7 s after the spin, Yield(3, actionTime - now + 2.7) :19022): clip at 0 (0.3 s fade, :18991); 0.3 s (Yield(4, 0.3) :19028) voice nAttack5 (load :18158, PlayOneShot :18170); hits at 0.5 s and 0.8 s (Yield(5, 0.2) :19030, Yield(6, 0.3) :19007) are 5 / 6 m circles (FindAreaTarget :18313, :18603): nothing at the 10 m target point (nAttack_hit :18369 / :18659, Over Pride :18436 / :18726 and the hammer_hit1 / axe_hit1 sound :18860-18875 only on a hit); standby 1.3 s (Yield(7, 0.5) :19014, :18884-18907)",
+    "cues": [
+    [0.3, "voice", "nAttack5"]
+    ]
+  },
+  "cAttack1": {
+    "why": "Bison.cs RPC_cAttack1 (:19151-19622): clip at 0 (cut, :19419) and the voice at 0, Hold Charge #113 on (passives rule): holdCharge1 / holdCharge2 (Random.Range(0, 2) == 1, :19457-19613; without it cAttack1 / cAttack2, :19526-19610; TTO1102 the same, pseudo/Bison.c:796); at 0.8 s (Yield(2, 0.8) :19608) it changes to the looped cAttack2 (0.2 s fade, :19284-19289), whose entry holds the dust and the ring",
+    "cues": [
+    [0, "voice", "holdCharge1|holdCharge2"]
+    ]
+  },
+  "cAttack2": {
+    "why": "Bison.cs RPC_cAttack1 cases 2-3 (the change to cAttack2, looped, 0.8 s into the charge: :19267-19289; Yield(3, 1.2) :19617): at 1.2 s, still charging, mission / arena only (mGameType > 4, :19308; the Sheep's precedent keeps them): cAttack1_dust at the hero + 0.15 up with the hero's rotation (:19320-19332; plays its own looping Sounds/cAttack1) and, Solid Hold #411 on (passives rule, getSolidChangeLv :9040-9042, :19346), solidCharge_ring at the hero (:19358-19370); both followState: they end at the release after the full 8 s charge (rank 2, clamp(t, 2, 8) :5378), when RPC_cAttack0 sets myCommand cAttack0 (:20708; RPC_cAttack2's cAttack2 without Hold Charge, :20122): cut 7.15, the page's step ends at 7.2 s",
+    "cues": [
+    [1.2, "fx", "cAttack1_dust", {"y": 0.15, "cut": 7.15}],
+    [1.2, "fx", "solidCharge_ring", {"cut": 7.15}]
+    ]
+  },
+  "@ChargeAttack:root": {
+    "why": "the release with Hold Charge #113 on (passives rule): Bison.cs doReleaseCharge (:5323-5467): after the full charge (>= 2 s, :5372; 8 hits, :5378) RPC_AddStatus(holdCharge, 1, chaAdjust(3 + ControlledSwingLv) + 0, 8) (:5400-5405) and RPC_cAttack0 (:5411) instead of the spin: myCommand cAttack0 (:20708), CrossFade(root, 0.2) (:20717), standby 0.2 s later (Yield(2, 0.2) :20731, :20672); the status's look (CharacterControl.cs:34666-34708): holdCharge_ring at the hero, Quaternion.identity (:34670; plays its own Sounds/holdCharge_ring) and holdCharge parented to the hero (:34673-34702), removed when the next attack press spends the status (doNormalAttack's holdCharge branch :5089-5120 -> RPC_cAttack2 removeStatus :20263-20269 -> CharacterControl.cs:15390-15403): kill 0.2, the press right at standby",
+    "cues": [
+    [0, "fx", "holdCharge_ring"],
+    [0, "fx", "holdCharge", {"kill": 0.2}]
+    ]
+  },
+  "cAttack6": {
+    "why": "Bison.cs RPC_cAttack2 (:19651-20474), 8 hits (the stored Hold Charge, doNormalAttack :5089-5120, or the release's count :5378-5446): at 0 voice improvedSwing (Improved Swing #232 on, :20160-20184; controlledSwing / axelSwing only without it, :20195-20250), the holdCharge status spent: removeStatus and holdCharge_fire at the hero with its rotation (:20263-20292; plays its own Sounds/holdCharge_fire; only with Hold Charge #113), clip cAttack6 by Improved Swing 3 (cut, looped: :20313-20364), cAttack2_dust at the hero + 0.15 up (:20379-20391) and, Spin Hack #432 on, spinHack_ring at the hero (:20405-20429), both followState: cut 1.766 at the standby 1.816 s (:19822-19850); each hit k = 0..7 at 0.202 k plays Sounds/cAttack2 (IL_1019 :19917-19929), waits w = 0.2 - 0.033 x 3 = 0.101 (:20464), plays it again (case 2 :19786-19798), waits w (:20468): 16 swishes 0.101 s apart; after the 8th, Yield(4, 0.2) (:20466) -> standby 1.816 s; the hits are 7 m circles (FindAreaTarget :20016-20021): nothing at the 10 m target point (nAttack_hit at the enemy + 1.5 up :20060 only on a hit)",
+    "cues": [
+    [0, "voice", "improvedSwing"],
+    [0, "fx", "holdCharge_fire"],
+    [0, "fx", "cAttack2_dust", {"y": 0.15, "cut": 1.766}],
+    [0, "fx", "spinHack_ring", {"cut": 1.766}],
+    [0, "sound", "cAttack2"],
+    [0.101, "sound", "cAttack2"],
+    [0.202, "sound", "cAttack2"],
+    [0.303, "sound", "cAttack2"],
+    [0.404, "sound", "cAttack2"],
+    [0.505, "sound", "cAttack2"],
+    [0.606, "sound", "cAttack2"],
+    [0.707, "sound", "cAttack2"],
+    [0.808, "sound", "cAttack2"],
+    [0.909, "sound", "cAttack2"],
+    [1.01, "sound", "cAttack2"],
+    [1.111, "sound", "cAttack2"],
+    [1.212, "sound", "cAttack2"],
+    [1.313, "sound", "cAttack2"],
+    [1.414, "sound", "cAttack2"],
+    [1.515, "sound", "cAttack2"]
+    ]
+  },
+  "enrage": {
+    "why": "Bison.cs RPC_enrage (:20759-21215) at max rank (sLv 4) with Rage Control #402 on (passives on: status Lv 4 + 1 = 5, chaAdjust(12 + 12) s, :20968-20973): clip (PlayAnimation(\"enrage\", 0) :21064) and voice enrage1 / enrage2 (Random.Range(0, 2) :21105-21164) at 0; Yield 0.2 (:21207): enrage_ring Instantiated at the hero, hero rotation (:20911-20923; EffectControl life 1 + afterLife 1, no followState; plays its own Sounds/enrage); Yield 0.3 (:21211): at 0.5 s the status (RPC_AddStatus :20973): the body + 0.05 x 5 = 1.25 x and every renderer's _Color (1.05, 0.55, 0.55) for the usual 0.86 grey (CharacterControl.cs:34713-34729, setColor :21702-21800; undone at its end, :15412-15425): the skin cue enrage (index.html HERO_SKINS, a part to build), cut at 10 s (the standing rule; 24 s in the game); Yield 0.3 (:21213): standby at 0.8 s (:20994); the camera's motion blur (:21179-21182) is the player's screen only",
+    "cues": [
+    [0, "voice", "enrage1|enrage2"],
+    [0.2, "fx", "enrage_ring"],
+    [0.5, "skin", "enrage", {"kill": 10}]
+    ]
+  },
+  "knockDown": {
+    "why": "Bison.cs RPC_knockDown (:22761-23470) at max rank (sLv 4) with Aftershock #422 on (passives on, hasSkill(422) :22967): clip (PlayAnimation(\"knockDown\", 0) :23278), voice knockDown1 / knockDown2 (Random.Range(0, 2) :23319-23378) and knockDown_ring created at the hero, hero rotation (createEffect :23393-23405; EffectControl life 1 + afterLife 2, followPosition, followState; plays its own Sounds/knockDown_ring) at 0; Yield 0.3 (:23460) moveSpeed 1 (:22908), Yield 0.4 (:23458) moveSpeed 4 (:22935): the game steps the Bison 1.2 m on, the wardrobe hero doesn't travel; Yield 0.2 (:23453): at 0.9 s afterShock, in place of knockDown (:22972-23039), Instantiated 2 m ahead, hero rotation (:22996; life 1; plays its own Sounds/afterShock); the hit (FindAreaTarget 2 m ahead, radius 4, :23064) can't reach the 10 m target, so no knockDown_hit (:23132, :7498-7521); Yield 0.2 (:23467): standby at 1.1 s (:23208), the ring's cut; the camera zooms (:23425-23431, :23054) are the player's screen only",
+    "cues": [
+    [0, "voice", "knockDown1|knockDown2"],
+    [0, "fx", "knockDown_ring", 0, 1.1],
+    [0.9, "fx", "afterShock", 2]
+    ]
+  },
+  "farStun": {
+    "why": "Bison.cs RPC_farStun (:23532-24091) at max rank (sLv 2) with Mass Stun #442 on (passives on, hasSkill(442) :23797): clip (PlayAnimation(\"farStun\", 0) :23947) and voice farStun1 / farStun2 (Random.Range(0, 2) :23988-24070) at 0; Yield 0.4 (:24068): farStun_ring Instantiated at the hero + TransformDirection(0.5, 0, 0.15) (0.5 m right, 0.15 m ahead), hero rotation (:23695-23707; EffectControl life 2, no followState; plays its own Sounds/farStun_ring); Yield 0.3 (:24066): at 0.7 s RPC_massStun_fire at the target's position (tPos :23763, :23820): massStun Instantiated there, LookRotation(the hero's forward) (:9096-9108; life 2, no AudioSource) at the 10 m target point; farStun (RPC_farStun_fire :7646-7658, life 3, Sounds/farStun_hit) is the version without the passive; the Bison's hit on itself (:9167) draws nothing; Yield 0.3 (:24074): standby at 1.0 s (:23877); the blur and the target's camera shake (:23814, :23783) are screen only",
+    "cues": [
+    [0, "voice", "farStun1|farStun2"],
+    [0.4, "fx", "farStun_ring", {"x": 0.5, "d": 0.15}],
+    [0.7, "fx", "massStun", 10]
+    ]
+  },
+  "instantRush": {
+    "why": "Bison.cs RPC_instantRush (:24136-24578), one rank: clip (PlayAnimation(\"instantRush\", 0) :24367), voice instantRush1 / instantRush2 (Random.Range(0, 2) :24408-24467), instantRush_ring (EffectControl life 1; plays its own Sounds/instantRush) and instantRush_dust (life 1, followPosition) created at the cast position, LookRotation(tDir) = the hero's facing (createEffect :24476-24526) at 0; Yield 0.1 (:24572): the 12 m rush (moveSpeed 24 for 0.5 s, :24271; the wardrobe hero doesn't travel; the game wants the target over 12 m away, :5752-5799); Yield 0.5 (:24570): standby at 0.6 s (:24297); no hit and no effect at the target; the motion blur (:24546-24549) is the player's screen only",
+    "cues": [
+    [0, "voice", "instantRush1|instantRush2"],
+    [0, "fx", "instantRush_ring"],
+    [0, "fx", "instantRush_dust"]
+    ]
+  },
+  "cleave": {
+    "why": "Bison.cs RPC_powerCleave (:25688-26641), the only clip call of cleave (:26252), at max rank (sLv 2) with Power Reel #403 and Power Hammer #304 on (passives on); Power Hammer counts only with a hammer in the main hand (getPowerHammerLv :8192-8236; isHammer :8284-8468, BB's 22 codes in the wardrobe's names, wardrobe/data/item_map.json, plus timeHammer w_bsn69, TTO's fix TTO1102:Bison::isHammer@0x1B4EF30: the page's item set bisonHammer, index.html ITEM_SETS, plans/fx_bison/decisions.md 25, 26): clip cut in (PlayAnimation(\"cleave\", 0)) at 0 with voice powerCleave1 / powerCleave2, or powerHammer1 / powerHammer2 with a hammer (Random.Range(0, 2) :26318-26450); powerCleave_ring created at the hero, hero rotation (createEffect :26459-26477; EffectControl life 1 + afterLife 1, followPosition, followState; plays its own Sounds/powerCleave) and, Power Reel on, powerReel_ring the same way (:26499-26525; no sound) at 0; the reel's three pull passes at 0, 0.2, 0.4 s (FindAreaTarget 8 m :26554, Yield(2, 0.2) :26628, i++ :25835, i >= 3 :26545) end at 0.6 s, the no-reel wait's time too (Yield(3, 0.6) :26619): at 0.6 s powerCleave (axe) or powerHammer (hammer) created at the hero, scaled as the hero (:26116-26204; life 0.3, followPosition, followState); Yield 0.1 (:26617): the hit at 0.7 s (FindRecTarget 1 m behind to 4 m ahead, :25893) can't reach the 10 m target, so no powerCleave_hit / powerHammer_hit (:25928, :25990); Yield 0.3 (:26608) and 0.2 (:26615): standby at 1.2 s (:26064), the cut of all three",
+    "cues": [
+    [0, "voice", "powerCleave1|powerCleave2", {"notWorn": ["R", "bisonHammer"]}],
+    [0, "voice", "powerHammer1|powerHammer2", {"worn": ["R", "bisonHammer"]}],
+    [0, "fx", "powerCleave_ring", 0, 1.2],
+    [0, "fx", "powerReel_ring", 0, 1.2],
+    [0.6, "fx", "powerCleave", {"notWorn": ["R", "bisonHammer"], "cut": 1.2}],
+    [0.6, "fx", "powerHammer", {"worn": ["R", "bisonHammer"], "cut": 1.2}]
+    ]
+  },
+  "earthRupture": {
+    "why": "Bison.cs RPC_earthRupture (:28466-28903) at max rank (sLv 2): clip (PlayAnimation(\"earthRupture\", 0) :28739), voice earthRupture1 / earthRupture2 (Random.Range(0, 2) :28780-28839) and earthRupture_ring created at the hero, hero rotation (createEffect :28848-28864; EffectControl life 2 + afterLife 2, followPosition, followState; its emitters wait 0.2 / 0.8 s; plays its own Sounds/earthRupture) at 0; Yield 0.8 (:28899): RPC_earthRupture_fire2 (sLv != 1, :28620-28634) from the hero + TransformDirection(0, 0.2, 0.4): three waves Instantiated at LookRotation(forward) x Euler(0, 25 i, 0), i = -1, 0, 1 (:8853-8877), ProjectileControl.life 2 (:8892), each moved by Bison_earthRupture at its ProjectileControl.velocity (0, 0, 12) along its own forward, set again every FixedUpdate, and Destroyed at 2 s (Bison_earthRupture.cs:96-127): 24 m, through every target (OnCollisionEnter only hits, :131-190), the 10 m target included; Yield 0.7 (:28891): standby at 1.5 s (:28669), the ring's cut",
+    "cues": [
+    [0, "voice", "earthRupture1|earthRupture2"],
+    [0, "fx", "earthRupture_ring", 0, 1.5],
+    [0.8, "fx", "earthRupture", {"y": 0.2, "d": 0.4, "rot": [0, -25, 0]}],
+    [0.8, "fx", "earthRupture", {"y": 0.2, "d": 0.4}],
+    [0.8, "fx", "earthRupture", {"y": 0.2, "d": 0.4, "rot": [0, 25, 0]}]
+    ]
+  },
+  "earthSmasher": {
+    "why": "Bison.cs RPC_earthSmasher (:28935-29585) at max rank (sLv 2): clip with the game's 0.2 s fade (PlayAnimation(\"earthSmasher\", 0.2f) :29390), voice earthSmasher1 / earthSmasher2 (Random.Range(0, 2) :29431-29490) and earthSmasher_ring created at the hero, hero rotation (createEffect :29499-29517; EffectControl life 1 + afterLife 3, followPosition, followState; plays its own Sounds/earthSmasher) at 0; Yield 0.8 (:29577): moveSpeed 2 for the leap (:29082; 1.2 m in the game, the wardrobe hero doesn't travel); Yield 0.6 (:29583): at 1.4 s earthSmasher Instantiated at the hero, hero rotation (:29126-29144; life 2; its rocks 1 m ahead in the prefab); the 7 m hit (:29193) can't reach the 10 m target, so no nAttack_hit (:29222); Yield 1.2 (:29572) and 0.6 (:29579): standby at 3.2 s (:29320), the ring's cut; the shake, blur and zooms (:29120, :29174, :29549, :29299) are the player's screen only",
+    "cues": [
+    [0, "voice", "earthSmasher1|earthSmasher2"],
+    [0, "fx", "earthSmasher_ring", 0, 3.2],
+    [1.4, "fx", "earthSmasher"]
+    ]
+  },
+  "magmaClutter": {
+    "why": "Bison.cs RPC_magmaClutter (:31242-31903), one rank: clip (PlayAnimation(\"magmaClutter\", 0) :31724) and magmaClutter_ring1 created at the hero, hero rotation (createEffect :31833-31849; EffectControl life 1 + afterLife 1, followPosition, followState; its emitters 1.5 m ahead wait 0.3 s; plays its own Sounds/magmaClutter1) at 0; BB's voice Voices/magmaClutter1 / magmaClutter2 (Random.Range(0, 2) :31765-31824) is in none of BB's files (Cannot find magmaClutter1 voice): TTO plays Sounds/magmaClutter1 / magmaClutter2 there (TTO1102 Bison.<RPC_magmaClutter>d__179::MoveNext@0x1B68900, pseudo/Bison.c:7483-7554), taken as TTO's fix (plans/fx_sheep/decisions.md 10); moveSpeed 5 (:31733), the lift at 0.3 s (Yield 0.3 :31896; FindAreaTarget 1 m ahead, radius 2, :31413); Yield 0.5 (:31882): at 0.8 s the dash (moveSpeed 5 :31495; the wardrobe hero doesn't travel) and magmaClutter_ring2 created at the hero, hero rotation (:31500-31518; life 1 + afterLife 0.5, followPosition, followState; plays its own Sounds/magmaClutter2; its Shuriken puffs, which wardrobe_fx.py cannot read in BB's file, grafted in at build time from TTO's decoded copy with BB's Bomb2 material (wardrobe_fx.py SHURIKEN_FROM_TTO; plans/fx_bison/decisions.md 40): BB's effect, the cleave swing kept); Yield 0.2 (:31880): the gore at 1.0 s (FindRecTarget to 2 m ahead, :31568) can't reach the 10 m target (and BB has no magmaClutter_hit, :9203); Yield 0.3 (:31884): standby at 1.3 s (:31654), both rings' cut; the shake (:31389) is screen only",
+    "cues": [
+    [0, "sound", "magmaClutter1|magmaClutter2"],
+    [0, "fx", "magmaClutter_ring1", 0, 1.3],
+    [0.8, "fx", "magmaClutter_ring2", 0, 1.3]
+    ]
+  },
+  "calamityHammer": {
+    "why": "Bison.cs RPC_calamityHammer (:31959-32397), one rank, a target skill: clip (PlayAnimation(\"calamityHammer\", 0) :32273), voice calamityHammer (one file, :32314-32332) and calamityHammer_ring created at the hero, hero rotation (createEffect :32343-32360; EffectControl life 3 + afterLife 1, followPosition, followState; its slam emitters 3.5 m ahead wait 2.1 s; plays its own Sounds/calamityHammer_ring) at 0; Yield 2.1 (:32387): the slam's hit 3.5 m ahead (radius 3, :32117; drawn by the ring's delayed emitters) and OnCalamityHammer (:32156): ten passes 1.5 s apart (i < 10 :32564, Yield(2, 1.5) :32635) while the hero lives and the target exists (:32574, :32593), each RPC_calamityHammer_fire at the target's position of that moment (:32601): Yield 0.3 (:32895), then calamityHammer_fire Instantiated there, Quaternion.identity (:32779-32797; EffectControl life 1 + afterLife 1; plays its own Sounds/calamityHammer_fire), so at 2.4, 3.9 ... 15.9 s on the 10 m target point, cut at 10 s (the standing rule: the six up to 9.9 s); Yield 0.2 (:32394): standby at 2.3 s (:32203), the ring's cut; the blur and the shakes (:32182, :32820) are screen only",
+    "cues": [
+    [0, "voice", "calamityHammer"],
+    [0, "fx", "calamityHammer_ring", 0, 2.3],
+    [2.4, "fx", "calamityHammer_fire", 10],
+    [3.9, "fx", "calamityHammer_fire", 10],
+    [5.4, "fx", "calamityHammer_fire", 10],
+    [6.9, "fx", "calamityHammer_fire", 10],
+    [8.4, "fx", "calamityHammer_fire", 10],
+    [9.9, "fx", "calamityHammer_fire", 10]
+    ]
+  },
+  "overPower": {
+    "why": "The overPower clip is played by two skills: Over Power (RPC_overPower, Bison.cs:24855) and Titan Form (RPC_titanForm, :29891); one tile each (poolChains); the two never meet in the game (each refuses while the other is on, :6473-6485, :6666-6678)",
+    "skills": {
+      "overPower": {
+        "why": "Bison.cs RPC_overPower (:24610-25082), max rank sLv 2 (dispatch :6681): clip cut in (PlayAnimation(overPower, 0) :24855), voice overPower1 / overPower2 (Random.Range(0, 2), :24896-24955) and Effects/overPower at the hero, hero rotation (createEffect :24985-24997; no followState; plays its own Sounds/overPower) at 0; the camera's motion blur (:25017-25020) left out; Yield 0.5 (:25043): the overPower status, sLv 2, chaAdjust(9) = 9 s (:24764): CharacterControl's addStatus Instantiates overPower_horn2 (overPower_horn + sLv) on the Head bone, localPosition 0, localRotation Euler(-90, 0, 0), localScale 1, and overPower_ring at the hero, world identity, parented (CharacterControl.cs:35003-35040), both destroyed when the status ends (:15519-15553): kill 9; Yield 0.3 (:25041): standby 0.8 s (:24785)",
+        "cues": [
+        [0, "voice", "overPower1|overPower2"],
+        [0, "fx", "overPower"],
+        [0.5, "fx", "overPower_horn2", {"bone": "Head", "rot": [-90, 0, 0], "kill": 9}],
+        [0.5, "fx", "overPower_ring", {"kill": 9}]
+        ]
+      },
+      "titanForm": {
+        "why": "Bison.cs RPC_titanForm (:29638-30085), max rank sLv 2 (dispatch :6505): clip overPower cut in (Rewind, PlayAnimation(overPower, 0) :29888-29891), voice titanForm1 / titanForm2 (Random.Range(0, 2), :29932-29991) and Effects/titanForm_ring at the hero, hero rotation (createEffect :30000-30016; no followState; plays its own Sounds/titanForm) at 0; Yield 0.3 (:30049): the titanForm status, sLv 2, chaAdjust(60) (:29792; cut at 10 s, the long-buff rule) and RPC_AddHeal (:29797, draws nothing): addStatus grows the hero by 0.3 x 2 + 0.2 = 0.8 (localScale 1.8, CharacterControl.cs:35219), tints every renderer's _Color (0.6, 0.7, 1) where the default is (0.86, 0.86, 0.86) (setColor :35222-35225, :21702-21790; back at removal :15679-15691) and Instantiates Effects/titanForm at the hero, world identity, parented with localScale 1 after the growth, so drawn 1.8 x (:35243-35267; destroyed at removal :15709): kill 10, scale 1.8; the growth and tint are the skin cue titanForm (a page part to build); Yield 0.5 (:30047): standby 0.8 s (:29818)",
+        "cues": [
+        [0, "voice", "titanForm1|titanForm2"],
+        [0, "fx", "titanForm_ring"],
+        [0.3, "skin", "titanForm", {"kill": 10}],
+        [0.3, "fx", "titanForm", {"scale": 1.8, "kill": 10}]
+        ]
+      }
+    }
+  },
+  "overSwing": {
+    "why": "Bison.cs RPC_overSwing (:25083-25687), started by the Charge Attack press while the overPower status is on, with Over Swing #273 (doBeginCharge :5169-5280, :5259): clip (PlayAnimation(overSwing, 0.2) looped, :25464-25467), voice overSwing1 / overSwing2 (Random.Range(0, 2), :25505-25564) and Effects/overSwing_ring at the hero, hero rotation (createEffect :25573-25589; no followState; plays its own Sounds/overSwing) at 0; Yield 0.5 (:25623): moveSpeed 3 (:25219; the page's hero stays in place), the camera's motion blur (:25230-25235) left out; Yield 0.2 (:25629): circles of 6 and 8 m at 0.7 and 0.9 s (:25293), each hit an nAttack_hit at the target + 1.5 m up (:25332): the 10 m target is out of reach (8.8 m away at 0.9 s even in the game, radius 0.3; FindAreaTarget Damage.cs:1074-1124): none; moveSpeed 0 and Yield 0.1 (:25439, :25625): standby 1.0 s (:25379). The Over Power status it needs is always on: overPower_horn2 on the Head bone and overPower_ring (CharacterControl.cs:35003-35040) shown for the tile's 1.2 s (kill 1.2)",
+    "cues": [
+    [0, "voice", "overSwing1|overSwing2"],
+    [0, "fx", "overSwing_ring"],
+    [0, "fx", "overPower_horn2", {"bone": "Head", "rot": [-90, 0, 0], "kill": 1.2}],
+    [0, "fx", "overPower_ring", {"kill": 1.2}]
+    ]
+  },
+  "prideCrusher": {
+    "why": "Bison.cs RPC_prideCrusher (:30710-31241), single rank (dispatch :6048): clip cut in (PlayAnimation(prideCrusher, 0) :31032), moveSpeed 1 (:31041; the hero stays in place), Effects/prideCrusher_ring at the hero, hero rotation (createEffect :31141-31157; plays its own Sounds/prideCrusher) at 0; no voice: Voices/prideCrusher1 / prideCrusher2 (:31073-31132) are in neither BB's resources (mainData's container has only voices/overpride1 / 2, checks/fx_bison_research/skills_b/voice_container.txt) nor TTO's rip, so the game logs 'Cannot find prideCrusher1 voice' and plays none; Yield 0.6 (:31184): the camera shake (:30862) left out, the 8 m box ahead (:30881) misses the 10 m target; Yield 0.2 (:31189): standby 0.8 s (:30962), which cuts prideCrusher_ring (EffectControl followState, life 2 + 1)",
+    "cues": [
+    [0, "fx", "prideCrusher_ring", 0, 0.8]
+    ]
+  },
+  "slam": {
+    "why": "Bison.cs RPC_slam (:21253-21887), max rank sLv 2 (dispatch :6873), Aspect of the Horde #412 on (passives on; getAspectOfTheHordeLv = hasSkill(412) ? 1 : 0): clip cut in (PlayAnimation(slam, 0) :21676), voice slam1 / slam2 (Random.Range(0, 2), :21720-21779) and Effects/slam_ring at the hero, hero rotation (createEffect :21788-21804) at 0; Yield 0.2 (:21835): moveSpeed 7 (:21400; the page's hero stays in place), slam_dust Instantiated at the hero, hero rotation (:21405-21423; plays its own Sounds/slam), aspect_slam at the hero (createEffect :21437-21461; followState, needs the UVScroll part); hit rounds of a 3 m box ahead at 0.2, 0.3, 0.4, 0.5 s (:21600, Yield 0.1 :21839; the 10 m target out of reach); i >= 2 + sLv: standby 0.6 s (:21516-21549), which cuts aspect_slam",
+    "cues": [
+    [0, "voice", "slam1|slam2"],
+    [0, "fx", "slam_ring"],
+    [0.2, "fx", "slam_dust"],
+    [0.2, "fx", "aspect_slam", 0, 0.6]
+    ]
+  },
+  "trample1": {
+    "why": "Bison.cs RPC_trample (:21888-22760), max rank sLv 2 (dispatch :6821), Aspect of the Horde #412 on; the Trample sequence's first step (SEQ trample1@0.9): clip cut in (PlayAnimation(trample1, 0) :22386), moveSpeed -2 (:22401; the hero stays in place), voice trample1 / trample2 (Random.Range(0, 2) :22442-22502, played :22679 / :22700) at 0; Yield 0.3 (:22696): moveSpeed 7 (:22035), Effects/trample2 (the sLv 2 one; sLv 1 = trample1, :22040-22116) at the hero, hero rotation (createEffect :22108; followState, life 4 + 1; plays its own Sounds/trample2), cut when the hero stands at 3.3 s = 2.4 s into trample2 (the page's FX.t restarts at every step, fxStart index.html:4441, so the cut is in trample2's time); phase-1 passes at 0.3, 0.5, 0.7 s (goto IL_12D6 :22133, Yield 0.2 :22703, i++ :22155), each a trample_dust Instantiated at the hero, hero rotation (:22642-22658) and a box behind-to-ahead (:22586; the 10 m target out of reach in place); at i = 3 (0.9 s) the clip changes: trample2's own entry",
+    "cues": [
+    [0, "voice", "trample1|trample2"],
+    [0.3, "fx", "trample2", 0, 2.4],
+    [0.3, "fx", "trample_dust"],
+    [0.5, "fx", "trample_dust"],
+    [0.7, "fx", "trample_dust"]
+    ]
+  },
+  "trample2": {
+    "why": "Bison.cs RPC_trample, phase 2 from 0.9 s (times from this clip's start): i >= 3 (:22511): PlayAnimation(trample2, 0) looped (:22515-22518), moveSpeed 9 (:22521), aspect_trample at the hero, hero rotation (Aspect of the Horde #412 on, createEffect :22524-22548; followState, life 3, needs the UVScroll part); 2 + 5 x sLv = 12 passes 0.2 s apart (IL_471 :22197, Yield 0.2 :22686, i++ :22182), each a trample_dust Instantiated at the hero, hero rotation (:22268-22274) and a 3 m box ahead (:22293; the hero stays in place, so the 10 m target is never met: no nAttack_hit); i = 12 at 2.4 s: moveSpeed 0, standby (:22197-22220), which cuts aspect_trample (and trample1's trample2 effect); the SEQ step should be trample2*@2.4 (now @2.6)",
+    "cues": [
+    [0, "fx", "aspect_trample", 0, 2.4],
+    [0, "fx", "trample_dust"],
+    [0.2, "fx", "trample_dust"],
+    [0.4, "fx", "trample_dust"],
+    [0.6, "fx", "trample_dust"],
+    [0.8, "fx", "trample_dust"],
+    [1.0, "fx", "trample_dust"],
+    [1.2, "fx", "trample_dust"],
+    [1.4, "fx", "trample_dust"],
+    [1.6, "fx", "trample_dust"],
+    [1.8, "fx", "trample_dust"],
+    [2.0, "fx", "trample_dust"],
+    [2.2, "fx", "trample_dust"]
+    ]
+  },
+  "warcry": {
+    "why": "The warcry clip is played by four skills: Warcry (RPC_warcry, Bison.cs:27096), Iron Shield (RPC_ironShield, :27799), Diamond Shield (RPC_diamondShield, :28389) and Onslaught (RPC_onslaught, :30615); one tile each (poolChains); the shield tiles show one shield alone (no perfectShield / perfectArmor: those need the other shield already on, CharacterControl.cs:11973-12033)",
+    "skills": {
+      "warcry": {
+        "why": "Bison.cs RPC_warcry (:26715-27286), max rank sLv 2 (dispatch :6598): clip cut in (PlayAnimation(warcry, 0) :27096), voice warcry1 / warcry2 (Random.Range(0, 2), :27137-27233) at 0; Yield 0.3 (:27221): Effects/warcry_ring at the hero, world identity (createEffect :26862-26880; plays its own Sounds/warcry), the camera's motion blur (:26910-26915) left out; Yield 0.3 (:27218): hate and fear on every enemy within 18 + 6 x 2 = 30 m (:26955-26999), the 10 m target included, but fear draws nothing (CharacterControl.cs:35312-35322: ATK / TAL only) and RPC_AddDamage(1, 0 ...) draws nothing; Yield 0.2 (:27223): standby 0.8 s (:27026)",
+        "cues": [
+        [0, "voice", "warcry1|warcry2"],
+        [0.3, "fx", "warcry_ring"]
+        ]
+      },
+      "ironShield": {
+        "why": "Bison.cs RPC_ironShield (:27287-27873), single rank (dispatch :5921), Steel Skin #433 on: clip warcry cut in (PlayAnimation(warcry, 0) :27799); Yield 0.3 (:27826): voice ironShield1 / ironShield2 (Random.Range(0, 2) :27535-27594; perfectShield1 / 2 only while diamondShield is on, :27462-27527, never on this tile), Effects/ironShield_ring at the hero, hero rotation (createEffect :27603-27621; followState, life 1 + 1; plays its own Sounds/shield_create), the camera's motion blur (:27651-27656) left out; Yield 0.3 (:27834): the ironShield status, chaAdjust(6) + 2 = 8 s with Steel Skin (:27691-27708): addStatus Instantiates Effects/ironShield at the hero, world identity, parented (CharacterControl.cs:35054-35076; its own looping Sounds/shield), destroyed at removal (:15587-15603): kill 8; Yield 0.2 (:27832): standby 0.8 s (:27729), which cuts ironShield_ring",
+        "cues": [
+        [0.3, "voice", "ironShield1|ironShield2"],
+        [0.3, "fx", "ironShield_ring", 0, 0.8],
+        [0.6, "fx", "ironShield", {"kill": 8}]
+        ]
+      },
+      "diamondShield": {
+        "why": "Bison.cs RPC_diamondShield (:27874-28465), single rank (dispatch :5947), Mythril Skin #443 on: clip warcry cut in (Rewind, PlayAnimation(warcry, 0) :28386-28389); Yield 0.3 (:28421): voice diamondShield1 / diamondShield2 (Random.Range(0, 2) :28122-28181; perfectShield1 / 2 only while ironShield is on, :28049-28114, never on this tile), Effects/diamondShield_ring at the hero, hero rotation (createEffect :28190-28208; followState, life 1 + 1; plays its own Sounds/shield_create), the camera's motion blur (:28238-28243) left out; Yield 0.3 (:28417): the diamondShield status, chaAdjust(6) + 2 = 8 s with Mythril Skin (:28278-28295): addStatus Instantiates Effects/diamondShield at the hero, world identity, parented (CharacterControl.cs:35085-35107; its own looping Sounds/shield), destroyed at removal (:15609-15625): kill 8; Yield 0.2 (:28425): standby 0.8 s (:28316), which cuts diamondShield_ring",
+        "cues": [
+        [0.3, "voice", "diamondShield1|diamondShield2"],
+        [0.3, "fx", "diamondShield_ring", 0, 0.8],
+        [0.6, "fx", "diamondShield", {"kill": 8}]
+        ]
+      },
+      "onslaught": {
+        "why": "Bison.cs RPC_onslaught (:30086-30709), single rank (dispatch :5994): clip warcry cut in (PlayAnimation(warcry, 0) :30615); Yield 0.3 (:30652): Effects/onslaught_ring at the hero, world identity (createEffect :30319-30337; plays its own Sounds/warcry), the camera shake (:30357) and motion blur (:30379-30384) left out; no voice: Voices/onslaught1 / onslaught2 (:30251-30310) are in neither BB's resources (checks/fx_bison_research/skills_b/voice_container.txt) nor TTO's rip, so the game plays none; Yield 0.3 (:30647): damage from the hate list on every enemy within 30 m (:30419-30518), RPC_AddDamage(413 ...) draws nothing; Yield 0.2 (:30640): standby 0.8 s (:30545)",
+        "cues": [
+        [0.3, "fx", "onslaught_ring"]
+        ]
+      }
+    }
+  },
+  "@BerserkerRush:root": {
+    "why": "Bison.cs getBerserkerRush (:7740-7830, run every frame from Update :277 for the owner; no clip: the Bison goes on with what she was doing; the tile plays the proc on the idle stance, every play) at max rank: on the frame after a hit took HP (myDamage == -1, :7749) it counts Berserker Rush 1-4 (#251-254, :7758-7794: 4) and rolls Random.Range(0, 100) < lckAdjust(4 x 4) = 16 % (:7812); a proc shows BerserkerRush! (:7818) and adds berserkerRush Lv 4 + Rage Control #402 (passives on) = 5 for chaAdjust(3 + 3) = 6 s (:7821-7824); the status's apply (CharacterControl.cs:34752-34942): berserkerRush_ring at the hero's position, identity, InitEffectControl(the hero) (:34876-34882; EffectControl life 1, followPosition), moveMod + 0.1 (:34885), and two Effects/berserkerRush parented to HandMount_L and HandMount_R, localPosition 0, localScale 1 (:34888-34942; no EffectControl: held until the status goes, whose removal destroys both, :15477-15508: kill 6); the game keeps their world rotation at the reparent where the bone option sets localRotation identity: camera-facing quads and round particles, the same look; no voice or sound (the method loads none, the prefabs have no AudioSource); the 10 control statuses it clears (:34752-34875) draw nothing",
+    "cues": [
+    [0, "fx", "berserkerRush_ring"],
+    [0, "fx", "berserkerRush", {"bone": "HandMount_L", "kill": 6}],
+    [0, "fx", "berserkerRush", {"bone": "HandMount_R", "kill": 6}]
+    ]
+  },
+  "@FuryTrance:root": {
+    "why": "Bison.cs getFuryTrance (:7920-8124, run every frame from Update :289 for the owner; no clip; the tile plays the proc on the idle stance, every play) at max rank (Fury Trance 3 #264: hasSkill(261 + i) for i = 3, :7954; HP under 1 - (0.2 x 3 + 0.2) = 20 %, :7960; a lower rank's look would be furyTrance1 / furyTrance2): FuryTrance Lv.3 message (:7974), the furyTrance status Lv 3 for chaAdjust(12) = 12 s (:7979; cut at 10 s, the long-buff rule), a 3 s lockout (:7984), voice furyTrance1 / furyTrance2 (Random.Range(0, 2) :8020; :8032 / :8064, PlayOneShot :8118 / :8123); the status's apply (CharacterControl.cs:34956-34992): ATK + 60 (:34960) and Effects/furyTrance + sLv = furyTrance3 (:34963) parented to the Neck bone, localPosition 0, localScale 1 (:34972-34992; no EffectControl: held until the status goes, whose removal destroys it, :15451-15467: kill 10)",
+    "cues": [
+    [0, "fx", "furyTrance3", {"bone": "Neck", "kill": 10}],
+    [0, "voice", "furyTrance1|furyTrance2"]
+    ]
+  },
+  "unchainedFury": {
+    "why": "TTO1102:Bison.<RPC_unchainedFury>d__278::MoveNext@0x1B7BFC0 (pseudo/Bison.c:17596-17876; plans/fx_bison/tto.md 2.1): at the press TTO1102:Bison::UnchainedCleanse@0x1B48570 adds the 3 s status unchained (RPC_AddStatus 213, 1, 3), whose look is CharacterControl::AddUnchainedFx@0x24AEB60 (CharacterControl.c:5541-5643, called from <addStatus>d__481::MoveNext at 0x24FD6A6): the prefab unchained at the hero, parented, world scale 1, removed with the status (RemoveUnchainedFx@0x24C2920 from removeStatus at 0x24E8CDB; kill 3); 0: Row6Begin clip unchainedFury (:17652), unchainedFury_chains owned at the hero, hero rotation (:17673; EffectControl 0.62 + 0.05, followState: cut at Row6End 1.8); Waits 0.62 (:17677): unchainedFury_break at the hero, hero rotation, not owned (:17706), camera shake (left out), RPC_AddStatus(203 berserkerRush, max(level, Rage Control + 4) = 5 at max rank, chaAdjust(12)) (:17735): the status look as BB's CharacterControl.cs:34752-34942 (TTO's addStatus loads the same literals: effects/berserkerRush_ring at 0x24EDA65, effects/berserkerRush at 0x24ED4E9, berserkerRush1Fx / 2Fx on HandMount_L / HandMount_R): berserkerRush_ring at the hero, identity, InitEffectControl (:34876), and berserkerRush on each hand mount, localPosition 0 (:34888-34942), removed with the status (:15477-15510): 12 s x CHA, cut at 10 s (kill 10); Waits 0.33 = 0.95: unchainedFury_roar owned at the hero (:17770; its own sounds enrage); Waits 0.5 = 1.45: unchainedFury_plant at the hero + 2.6 flat-forward + 2.45 right, hero rotation, not owned (:17838-17848); Waits 0.35 = 1.8: Row6End (:17870); no Row6Voice / Row6Sound (every sound is a prefab's own AudioSource); one rank, nothing rolled; left out: the camera shakes (MagmaQuakeShake). Parts: Bison_row6Fx, Bison_c6Arc + TTO/Bison/EnergyArc, AudioControl (plans/fx_bison/tto.md section 4).",
+    "cues": [
+    [0, "fx", "tto/unchained", {"kill": 3}],
+    [0, "fx", "tto/unchainedFury_chains", {"cut": 1.8}],
+    [0.62, "fx", "tto/unchainedFury_break"],
+    [0.62, "fx", "berserkerRush_ring"],
+    [0.62, "fx", "berserkerRush", {"bone": "HandMount_L", "kill": 10}],
+    [0.62, "fx", "berserkerRush", {"bone": "HandMount_R", "kill": 10}],
+    [0.95, "fx", "tto/unchainedFury_roar"],
+    [1.45, "fx", "tto/unchainedFury_plant", {"x": 2.45, "d": 2.6}]
+    ]
+  },
+  "titanDrop": {
+    "why": "TTO1102:Bison.<RPC_titanDrop>d__281::MoveNext@0x1B78BD0 (pseudo/Bison.c:15885-16338; plans/fx_bison/tto.md 2.2), the target point 10 m ahead, in place horizontally (the Penguin's decision 8 / the Wolf's Feral Strike: the page's hero does not travel) but lifted along TitanDropPath@0x1B47610's height curve, 0 / 2.8 / 3.0 / 0 m at 0.4 / 0.85 / 1.2 / 1.5 s (Bison.c:29824-30082; the lift cue, index.html LIFTS.titanDrop; plans/fx_bison/decisions.md 22): land = 0.26 m left of the line, 3.9 m short of the target (TitanDropHeadAhead / HeadRight :16024-16025), slamAt = land + 0.26 right + 3.9 ahead, so on the page the slam is 3.9 ahead, 0.26 right; 0: Row6Begin clip titanDrop (:16080); Until(start + 0.4) (capstone 0x1B79A62: f=0.4): titanDrop_takeoff at the start spot, faceRot (:16155), titanDrop_mark at slamAt, faceRot (:16160; Destroy at the landing :16204: kill 1.1), TitanDropCharge@0x1B46C50: titanDrop_charge at HandMount_R, ridden (RideWeapon@0x1B45710: parent, localPosition 0, localRotation identity, world scale 1; :30113-30147); first frame >= 1.2 s (:16245): titanDrop_dive owned at the airborne (lifted) hero, riding him down (followPosition), LookRotation(land - pos) (:16275) = 47.5 deg down, 2.4 deg left at TitanDropPath@0x1B47610's 1.2 s (height key 3.0, along key 0.55; checks/fx_bison_research/tto/calc.py); 1.5: the hero set on land, the mark destroyed, TitanDropRings@0x1B47C60 (:16210): <TitanDropRings>d__289::MoveNext@0x1BA91D0 (:18540-18664) spawns \"titanDrop_slam\" + (i + 1) at slamAt, faceRot (:18584-18593) at Until(start + TitanDropRingAt[i]) = 1.5 / 1.9 / 2.3 (.cctor :30656: [1.5, 1.9, 2.3]); Until(start + 2.0) (capstone 0x1B79292: f=2): Row6End (:16329); the cues after 2.0 s run on in the idle tail; no Row6Voice / Row6Sound (the prefabs' own AudioSources); the hits and KO waves land on foes (no prefab); left out: the camera zoom and shakes. Parts: Bison_c6Arc + TTO/Bison/EnergyArc, AudioControl, the hero's lift (tto.md B8).",
+    "cues": [
+    [0, "lift", "titanDrop"],
+    [0.4, "fx", "tto/titanDrop_takeoff"],
+    [0.4, "fx", "tto/titanDrop_mark", {"x": 0.26, "d": 3.9, "kill": 1.1}],
+    [0.4, "fx", "tto/titanDrop_charge", {"bone": "HandMount_R"}],
+    [1.2, "fx", "tto/titanDrop_dive", {"rot": [47.5, -2.4, 0]}],
+    [1.5, "fx", "tto/titanDrop_slam1", {"x": 0.26, "d": 3.9}],
+    [1.9, "fx", "tto/titanDrop_slam2", {"x": 0.26, "d": 3.9}],
+    [2.3, "fx", "tto/titanDrop_slam3", {"x": 0.26, "d": 3.9}]
+    ]
+  },
+  "magmaQuakeAxe": {
+    "why": "TTO1102:Bison.<RPC_magmaQuake>d__234::MoveNext@0x1B69E50 (pseudo/Bison.c:7634-7843; plans/fx_bison/tto.md 2.3); the weapon picks the branch: hammer = TTO1102:Bison::isHammer@0x1B4EF30's 24 codes (the item set bisonHammer: wardrobe/data/item_map.json's props for them), else the axe; 0: Row6Begin clip magmaQuakeAxe for both (:7688), Row6Voice@0x1B467B0 (:7702; voices/): axe calamityHammer, hammer earthSmasher1|earthSmasher2 (Random.Range(0, 2)), Row6Spawn owned at the hero, hero rotation (:7720): axe calamityHammer_ring, hammer earthSmasher_ring (BB's prefabs; followState: cut at Row6End 2.2); Waits 0.43 (:7724): the tick look (axe magmaQuake_magmaTick, hammer magmaQuake_quakeTick) at MagmaQuakeAt(MagmaButt) = the hero + 0.8 right + 1.3 flat-forward, on the ground (.cctor :30656: (0.8, 0, 1.3); MagmaQuakeAt@0x1B41160), identity (:7746-7759); Waits 0.47 = 0.9 (:7770): centre = MagmaQuakeAt(MagmaCenter (-0.45, 0, 0)) = 0.45 left (:7787), MagmaQuakeImpact@0x1B41710 (:7792): axe magmaQuake_magmaSlam at the centre, identity (:28777) + sounds/ magmaClutter1|magmaClutter2 (Random.Range(0, 2) == 0 = 1, :28778) at PlayOneShot volume 1.2 (:28797), hammer magmaQuake_quakeSlam at the centre (:28815); the field at the centre, identity (:7807): axe magmaQuake_magmaField (EffectControl 6 + 1.5), hammer magmaQuake_quakeField (5 + 2); MagmaQuakeTicks@0x1B41CB0 (:7816) = <MagmaQuakeTicks>d__239::MoveNext@0x1B5C3A0 (:1-139): Waits 0.5 before each tick, RoundToInt(2 x life) = 12 (axe) / 10 (hammer) ticks at 1.4 ... 6.9 / 5.9 s, each 12 tick looks at the ground at centre + (cos a, 0, sin a) x sqrt(u1) x 30, a = u2 x 2 pi (:38-113; FUN_180308640 = cosf, FUN_180308bd0 = sinf, checks/fx_bison_research/tto/trig.py) from System.Random(RoundToInt(z x 50) x 0x127409f ^ RoundToInt(x x 50) x 0x466f45d) of the cast position (:7813) = Random(0) for a Bison at the origin (calc.py: the game's own spots for that cast); Waits 1.3 = 2.2: Row6End (:7837); the cues after 2.2 s run on in the idle tail; left out: the camera shakes (MagmaQuakeShake, QuakeRumbling@0x1B42370: 1 every 0.1 s for 5 s), the hits (MagmaQuakeHit: no prefab). Parts: GroundConformParticles (a no-op on a flat floor), Bison_c6Arc + TTO/Bison/EnergyArc, TTO/Bison/MoltenCrust, AudioControl (the two looping beds MagmaPit / titanQuake_ring fade out), cue option worn / notWorn with an item set (tto.md section 4).",
+    "cues": [
+    [0, "voice", "calamityHammer", {"notWorn": ["R", "bisonHammer"]}],
+    [0, "fx", "calamityHammer_ring", {"cut": 2.2, "notWorn": ["R", "bisonHammer"]}],
+    [0.43, "fx", "tto/magmaQuake_magmaTick", {"x": 0.8, "d": 1.3, "notWorn": ["R", "bisonHammer"]}],
+    [0.9, "fx", "tto/magmaQuake_magmaSlam", {"x": -0.45, "notWorn": ["R", "bisonHammer"]}],
+    [0.9, "sound", "magmaClutter1|magmaClutter2", {"vol": 1.2, "notWorn": ["R", "bisonHammer"]}],
+    [0.9, "fx", "tto/magmaQuake_magmaField", {"x": -0.45, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": 10.05, "d": -23.31, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -25.01, "d": -9.4, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -13.15, "d": -4.92, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -27.14, "d": 10.15, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -4.85, "d": 29.33, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -16.32, "d": 3.31, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -23.88, "d": 4.54, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": 28.74, "d": 5.64, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": 27.4, "d": -0.81, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": -10.2, "d": 22.68, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": 15.22, "d": -22.13, "notWorn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_magmaTick", {"x": 28.8, "d": 6.08, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -25.21, "d": -4.13, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -11.53, "d": -26.79, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": 18.92, "d": 10.82, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -12.87, "d": 3.75, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": 15.86, "d": -1.18, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": 1.51, "d": -23.97, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -4.29, "d": 3.56, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": 16.5, "d": -4.64, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -4.97, "d": -20.84, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -1.97, "d": 10.23, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": 7.48, "d": -27.45, "notWorn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_magmaTick", {"x": -17.24, "d": 4.63, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 1.61, "d": 11.31, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -4.2, "d": -18.84, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -24.0, "d": 1.78, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 9.1, "d": -9.18, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -2.95, "d": -27.14, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -12.32, "d": -25.13, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 4.23, "d": 23.25, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 22.14, "d": -17.2, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 4.21, "d": -7.5, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -8.09, "d": -9.74, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": 4.8, "d": 26.77, "notWorn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_magmaTick", {"x": -30.24, "d": 3.5, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -5.03, "d": -23.79, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": 21.29, "d": 15.99, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -5.49, "d": -25.11, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": 8.35, "d": -5.96, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -13.36, "d": 1.89, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -10.53, "d": 19.63, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -24.54, "d": 4.85, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": 9.5, "d": -25.52, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": 1.98, "d": -26.61, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -8.55, "d": 27.89, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -11.68, "d": -18.56, "notWorn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_magmaTick", {"x": -4.41, "d": 16.84, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 4.22, "d": 26.77, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 11.34, "d": 5.41, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": -8.75, "d": -22.21, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 20.95, "d": -10.46, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 12.27, "d": -6.11, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 5.81, "d": -4.54, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 20.08, "d": 13.76, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 8.61, "d": 7.21, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 21.97, "d": -6.81, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": 12.11, "d": 16.85, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": -22.8, "d": -10.5, "notWorn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_magmaTick", {"x": -10.94, "d": -9.63, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -1.82, "d": 1.64, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": 25.12, "d": 10.56, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -4.89, "d": -15.29, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": 28.85, "d": -2.06, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -18.93, "d": -2.66, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -16.32, "d": -0.66, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": 20.03, "d": 7.67, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -16.34, "d": 0.39, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -21.36, "d": -18.01, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -0.92, "d": -9.67, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": 16.93, "d": -7.73, "notWorn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_magmaTick", {"x": -3.82, "d": -10.31, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": 10.96, "d": -20.58, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -22.94, "d": -10.54, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": 4.54, "d": 11.43, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -0.56, "d": 23.41, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -27.66, "d": -12.53, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -1.1, "d": 7.53, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -25.51, "d": -11.42, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -24.43, "d": -2.48, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": 25.65, "d": 13.86, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": 11.54, "d": 17.83, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -17.37, "d": -21.12, "notWorn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_magmaTick", {"x": -21.96, "d": -7.42, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 24.14, "d": -0.84, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 14.69, "d": 6.49, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": -20.81, "d": 2.17, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 12.11, "d": 6.07, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 7.95, "d": 11.69, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": -19.57, "d": 6.07, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": -3.69, "d": 2.72, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 7.5, "d": 25.91, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 27.73, "d": 5.3, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 20.38, "d": -4.95, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": 29.29, "d": 3.16, "notWorn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_magmaTick", {"x": -4.74, "d": 23.87, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -25.58, "d": -15.46, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -12.3, "d": 23.55, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 18.76, "d": -3.05, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 27.38, "d": -4.79, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 9.77, "d": 11.19, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 11.94, "d": 25.58, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -27.54, "d": -7.81, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -26.93, "d": -2.34, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 17.33, "d": -0.92, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -2.41, "d": -5.12, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": 3.09, "d": 9.82, "notWorn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_magmaTick", {"x": -18.89, "d": -10.33, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -6.13, "d": 14.26, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": 2.69, "d": -14.43, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -8.77, "d": -7.11, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -12.99, "d": -18.61, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": 16.88, "d": 2.56, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": 6.29, "d": -6.49, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": 19.25, "d": -15.86, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -1.26, "d": 24.2, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -15.68, "d": 2.51, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": 9.65, "d": -8.62, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -14.08, "d": -16.02, "notWorn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_magmaTick", {"x": -11.98, "d": 12.44, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 14.38, "d": -0.43, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 22.99, "d": 0.27, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 28.45, "d": -7.07, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 1.21, "d": -11.78, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 2.84, "d": 8.45, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 5.33, "d": 4.78, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 20.14, "d": 15.34, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": -17.62, "d": -21.47, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 0.74, "d": 22.68, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 16.99, "d": -21.2, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": 16.3, "d": -11.06, "notWorn": ["R", "bisonHammer"]}],
+    [6.4, "fx", "tto/magmaQuake_magmaTick", {"x": -26.5, "d": 6.65, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": 2.63, "d": -17.23, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -12.25, "d": -15.65, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -23.68, "d": -18.96, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -6.85, "d": -6.31, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": 20.42, "d": -21.36, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": 13.85, "d": 16.77, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -1.7, "d": -0.47, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -18.3, "d": 16.92, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -13.13, "d": 24.87, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -26.85, "d": -3.33, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": -26.86, "d": -7.0, "notWorn": ["R", "bisonHammer"]}],
+    [6.9, "fx", "tto/magmaQuake_magmaTick", {"x": 10.83, "d": 18.52, "notWorn": ["R", "bisonHammer"]}],
+    [0, "voice", "earthSmasher1|earthSmasher2", {"worn": ["R", "bisonHammer"]}],
+    [0, "fx", "earthSmasher_ring", {"cut": 2.2, "worn": ["R", "bisonHammer"]}],
+    [0.43, "fx", "tto/magmaQuake_quakeTick", {"x": 0.8, "d": 1.3, "worn": ["R", "bisonHammer"]}],
+    [0.9, "fx", "tto/magmaQuake_quakeSlam", {"x": -0.45, "worn": ["R", "bisonHammer"]}],
+    [0.9, "fx", "tto/magmaQuake_quakeField", {"x": -0.45, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": 10.05, "d": -23.31, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -25.01, "d": -9.4, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -13.15, "d": -4.92, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -27.14, "d": 10.15, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -4.85, "d": 29.33, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -16.32, "d": 3.31, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -23.88, "d": 4.54, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": 28.74, "d": 5.64, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": 27.4, "d": -0.81, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": -10.2, "d": 22.68, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": 15.22, "d": -22.13, "worn": ["R", "bisonHammer"]}],
+    [1.4, "fx", "tto/magmaQuake_quakeTick", {"x": 28.8, "d": 6.08, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -25.21, "d": -4.13, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -11.53, "d": -26.79, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": 18.92, "d": 10.82, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -12.87, "d": 3.75, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": 15.86, "d": -1.18, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": 1.51, "d": -23.97, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -4.29, "d": 3.56, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": 16.5, "d": -4.64, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -4.97, "d": -20.84, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -1.97, "d": 10.23, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": 7.48, "d": -27.45, "worn": ["R", "bisonHammer"]}],
+    [1.9, "fx", "tto/magmaQuake_quakeTick", {"x": -17.24, "d": 4.63, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 1.61, "d": 11.31, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -4.2, "d": -18.84, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -24.0, "d": 1.78, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 9.1, "d": -9.18, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -2.95, "d": -27.14, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -12.32, "d": -25.13, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 4.23, "d": 23.25, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 22.14, "d": -17.2, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 4.21, "d": -7.5, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -8.09, "d": -9.74, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": 4.8, "d": 26.77, "worn": ["R", "bisonHammer"]}],
+    [2.4, "fx", "tto/magmaQuake_quakeTick", {"x": -30.24, "d": 3.5, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -5.03, "d": -23.79, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": 21.29, "d": 15.99, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -5.49, "d": -25.11, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": 8.35, "d": -5.96, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -13.36, "d": 1.89, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -10.53, "d": 19.63, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -24.54, "d": 4.85, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": 9.5, "d": -25.52, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": 1.98, "d": -26.61, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -8.55, "d": 27.89, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -11.68, "d": -18.56, "worn": ["R", "bisonHammer"]}],
+    [2.9, "fx", "tto/magmaQuake_quakeTick", {"x": -4.41, "d": 16.84, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 4.22, "d": 26.77, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 11.34, "d": 5.41, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": -8.75, "d": -22.21, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 20.95, "d": -10.46, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 12.27, "d": -6.11, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 5.81, "d": -4.54, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 20.08, "d": 13.76, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 8.61, "d": 7.21, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 21.97, "d": -6.81, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": 12.11, "d": 16.85, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": -22.8, "d": -10.5, "worn": ["R", "bisonHammer"]}],
+    [3.4, "fx", "tto/magmaQuake_quakeTick", {"x": -10.94, "d": -9.63, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -1.82, "d": 1.64, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": 25.12, "d": 10.56, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -4.89, "d": -15.29, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": 28.85, "d": -2.06, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -18.93, "d": -2.66, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -16.32, "d": -0.66, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": 20.03, "d": 7.67, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -16.34, "d": 0.39, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -21.36, "d": -18.01, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -0.92, "d": -9.67, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": 16.93, "d": -7.73, "worn": ["R", "bisonHammer"]}],
+    [3.9, "fx", "tto/magmaQuake_quakeTick", {"x": -3.82, "d": -10.31, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": 10.96, "d": -20.58, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -22.94, "d": -10.54, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": 4.54, "d": 11.43, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -0.56, "d": 23.41, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -27.66, "d": -12.53, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -1.1, "d": 7.53, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -25.51, "d": -11.42, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -24.43, "d": -2.48, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": 25.65, "d": 13.86, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": 11.54, "d": 17.83, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -17.37, "d": -21.12, "worn": ["R", "bisonHammer"]}],
+    [4.4, "fx", "tto/magmaQuake_quakeTick", {"x": -21.96, "d": -7.42, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 24.14, "d": -0.84, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 14.69, "d": 6.49, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": -20.81, "d": 2.17, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 12.11, "d": 6.07, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 7.95, "d": 11.69, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": -19.57, "d": 6.07, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": -3.69, "d": 2.72, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 7.5, "d": 25.91, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 27.73, "d": 5.3, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 20.38, "d": -4.95, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": 29.29, "d": 3.16, "worn": ["R", "bisonHammer"]}],
+    [4.9, "fx", "tto/magmaQuake_quakeTick", {"x": -4.74, "d": 23.87, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -25.58, "d": -15.46, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -12.3, "d": 23.55, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 18.76, "d": -3.05, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 27.38, "d": -4.79, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 9.77, "d": 11.19, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 11.94, "d": 25.58, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -27.54, "d": -7.81, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -26.93, "d": -2.34, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 17.33, "d": -0.92, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -2.41, "d": -5.12, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": 3.09, "d": 9.82, "worn": ["R", "bisonHammer"]}],
+    [5.4, "fx", "tto/magmaQuake_quakeTick", {"x": -18.89, "d": -10.33, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -6.13, "d": 14.26, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": 2.69, "d": -14.43, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -8.77, "d": -7.11, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -12.99, "d": -18.61, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": 16.88, "d": 2.56, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": 6.29, "d": -6.49, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": 19.25, "d": -15.86, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -1.26, "d": 24.2, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -15.68, "d": 2.51, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": 9.65, "d": -8.62, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -14.08, "d": -16.02, "worn": ["R", "bisonHammer"]}],
+    [5.9, "fx", "tto/magmaQuake_quakeTick", {"x": -11.98, "d": 12.44, "worn": ["R", "bisonHammer"]}]
+    ]
+  },
+  "wave": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_hi (:34871) and emo_wave (:34878) both play the wave clip (:35312): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_ty (:34887) and emo_bow (:34894) both play the bow clip (:35305): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "sleep": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_sleep (:34933-34939)",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_cheer (:34945-34951)",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_beg (:34957-34963)",
+    "cues": [
+    [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_cry (:34969-34975)",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_chat (:34990) plays the talk clip (:35283) with chat1-5 at random (Random.Range(1, 6), :34797); emo_talk (:34983) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Bison.cs RPC_emotion (:34554): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:34805, PlayOneShot :34817; the rip has hi, wave, ty, bow, sleep, cheer, beg, cry, battle, chat1-5, no laugh); no effect, no sound; emo_battle (:35253-35259): voice battle; the fight stance and RPC_activateIcon1 (:40354) play the clip without it: the tile takes the emote's voice",
+    "cues": [
+    [0, "voice", "battle"]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvents playLeftFootEvent at 0.1 s and playRightFootEvent at 0.6 s (checks/fx_bison_research/attacks_emotes/probe_events.txt) -> Bison.cs playLeftFootEvent / playRightFootEvent (:124-178): the hero's audio.PlayOneShot(footStep_left / footStep_right) = step_heavy1 / step_heavy2 (the prefab's fields, probe_fields.txt; Resources/sound/fx/step_heavy1.wav, step_heavy2.wav), own hero or anyone in a mission (mGameType > 4, :131-139, :160-168); every cycle of the run (the event fires each loop: everyCycle, the Bat's page flag)",
+    "everyCycle": true,
+    "cues": [
+    [0.1, "sound", "step_heavy1"],
+    [0.6, "sound", "step_heavy2"]
+    ]
+  },
+  "ko": {
+    "why": "Bison.cs RPC_ko (:40519): clip (PlayAnimation :40733) and voice ko1 or ko2 at 0 (Random.Range(0, 2) :40768, :40778-40859), getUp after 3 s (:40847, :40635), no effect; RPC_dead (:40895) plays the same clip (:41092) with dead1 or dead2 at 0 (:41127-41182) and always puts deadEffect 1 m behind the hero with its rotation (Instantiate at position - forward :41213; EffectControl life 3); Resting Glory's heal goes to the teammates only (:41233-41248, :7841-7902): one of the two at random, even chance (the Sheep's decision 11, as wolf.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+    [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+    [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+    [0, "fx", "deadEffect", {"d": -1, "p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

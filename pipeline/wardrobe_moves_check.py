@@ -62,7 +62,7 @@ async def main():
             await tab("skill"); sk = await tiles()
             await tab("base"); bs = await tiles()
             report[cls] = {"skill": sk, "base": bs}
-            seqs[cls] = await page.evaluate("() => (wardrobe.debug().C.chains || []).map(c => c.name + ': ' + c.steps.map(s => s.clip + (s.hold ? '*' : '') + (s.t != null ? '@' + s.t : '')).join(' '))")
+            seqs[cls] = await page.evaluate("() => (wardrobe.debug().C.chains || []).map(c => c.name + ': ' + c.steps.map(s => (s.alts || [s]).map(a => a.clip + (a.hold ? '*' : '') + (a.t != null ? '@' + a.t : '')).join('|')).join(' '))")
         (OUT / "tiles.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
         (OUT / "chains.json").write_text(json.dumps(seqs, ensure_ascii=False, indent=1), encoding="utf-8")
         async def run(g, m, secs):

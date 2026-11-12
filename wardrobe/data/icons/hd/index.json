@@ -205,6 +205,12 @@
   }
  },
  "bison": {
+  "berserkerRush": {
+   "icon": "icons/hd/bison/berserkerRush.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "cAttack": {
    "icon": "icons/hd/bison/cAttack.webp",
    "clips": [
@@ -220,6 +226,12 @@
    "icon": "icons/hd/bison/calamityHammer.webp",
    "clips": [
     "calamityHammer"
+   ]
+  },
+  "diamondShield": {
+   "icon": "icons/hd/bison/diamondShield.webp",
+   "clips": [
+    "warcry"
    ]
   },
   "earthRupture": {
@@ -246,10 +258,22 @@
     "farStun"
    ]
   },
+  "furyTrance": {
+   "icon": "icons/hd/bison/furyTrance.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "instantRush": {
    "icon": "icons/hd/bison/instantRush.webp",
    "clips": [
     "instantRush"
+   ]
+  },
+  "ironShield": {
+   "icon": "icons/hd/bison/ironShield.webp",
+   "clips": [
+    "warcry"
    ]
   },
   "knockDown": {
@@ -274,6 +298,12 @@
     "nAttack5"
    ]
   },
+  "onslaught": {
+   "icon": "icons/hd/bison/onslaught.webp",
+   "clips": [
+    "warcry"
+   ]
+  },
   "overPower": {
    "icon": "icons/hd/bison/overPower.webp",
    "clips": [
@@ -284,6 +314,12 @@
    "icon": "icons/hd/bison/overSwing.webp",
    "clips": [
     "overSwing"
+   ]
+  },
+  "powerCleave": {
+   "icon": "icons/hd/bison/powerCleave.webp",
+   "clips": [
+    "cleave"
    ]
   },
   "prideCrusher": {
@@ -302,6 +338,12 @@
    "icon": "icons/hd/bison/titanDrop.webp",
    "clips": [
     "titanDrop"
+   ]
+  },
+  "titanForm": {
+   "icon": "icons/hd/bison/titanForm.webp",
+   "clips": [
+    "overPower"
    ]
   },
   "trample": {

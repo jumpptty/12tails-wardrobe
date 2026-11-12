@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, ImageEmitter, Light, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, VortexEmitter) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, GroundConformParticles, ImageEmitter, Light, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -12,16 +12,16 @@ like a Sheep's heal): counted apart, never this class's skills.
 | class | own effects | ready | not ready | parts missing (own effects needing it) | others' loaded |
 |---|---|---|---|---|---|
 | bat | 26 | 26 | 0 |  | 29 |
-| bison | 46 | 42 | 4 | UVScroll 2, Bison_earthRupture 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
-| cat | 67 | 60 | 7 | WorldParticleCollider 2, StatusControl 1, UVScroll 1, Cat_grandCasinoArcade 1, Cat_supportFire 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| bison | 46 | 45 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| cat | 67 | 61 | 6 | WorldParticleCollider 2, StatusControl 1, Cat_grandCasinoArcade 1, Cat_supportFire 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | chameleon | 57 | 52 | 5 | Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2, WorldParticleCollider 1 | 28 |
-| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, CharacterControl 1, Mole_warCapital 1, Mole_warMissile 1 | 28 |
+| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, Mole_warCapital 1, CharacterControl 1, Mole_warMissile 1 | 28 |
 | monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, Monkey_lavu 1, rotationControl 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | panda | 71 | 70 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | penguin | 48 | 48 | 0 |  | 28 |
 | rabbit | 84 | 64 | 20 | Rabbit_potion 13, WorldParticleCollider 2, Rabbit_acidicField 1, ParticleSystem 1, ParticleSystemRenderer 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
-| whale | 51 | 44 | 7 | whale_kingdomKnight 2, UVScroll 1, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
+| whale | 51 | 45 | 6 | whale_kingdomKnight 2, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
 | wolf | 69 | 69 | 0 |  | 28 |
 
 ## Per missing part
@@ -33,7 +33,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 |---|---|---|---|
 | Rabbit_potion | 13 | 13 | rabbit |
 | WorldParticleCollider | 5 | 5 | cat, chameleon, rabbit |
-| UVScroll | 4 | 4 | bison, cat, whale |
 | Monkey_fireBall | 4 | 4 | monkey |
 | Mole_mine | 4 | 4 | mole |
 | whale_kingdomKnight | 2 | 2 | whale |
@@ -62,7 +61,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Mole_bazooka | 1 | 1 | mole |
 | Cat_supportFire | 1 | 1 | cat |
 | Cat_grandCasinoArcade | 1 | 1 | cat |
-| Bison_earthRupture | 1 | 1 | bison |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | Monkey_lavu | 1 | 0 | monkey |
@@ -76,44 +74,42 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 626 | 626 / 699 |
-| 1 | Rabbit_potion | 13 | 639 / 699 |
-| 2 | WorldParticleCollider | 5 | 644 / 699 |
-| 3 | UVScroll | 4 | 648 / 699 |
-| 4 | Monkey_fireBall | 4 | 652 / 699 |
-| 5 | Mole_mine | 4 | 656 / 699 |
-| 6 | whale_kingdomKnight | 2 | 658 / 699 |
-| 7 | Mole_timeNuke | 2 | 660 / 699 |
-| 8 | Mole_stunMine | 2 | 662 / 699 |
-| 9 | Chameleon_nAttack | 2 | 664 / 699 |
-| 10 | rotationControl | 1 | 665 / 699 |
-| 11 | Whale_javelin | 1 | 666 / 699 |
-| 12 | Whale_homingShield | 1 | 667 / 699 |
-| 13 | Whale_flyingShield | 1 | 668 / 699 |
-| 14 | StatusControl | 1 | 669 / 699 |
-| 15 | Rabbit_stickyGum | 1 | 670 / 699 |
-| 16 | Rabbit_sniperCamera | 1 | 671 / 699 |
-| 17 | Rabbit_healingField | 1 | 672 / 699 |
-| 18 | Rabbit_acidicField | 1 | 673 / 699 |
-| 19 | Monkey_runicSand | 1 | 674 / 699 |
-| 20 | Monkey_runicFlame | 1 | 675 / 699 |
-| 21 | Monkey_lavu | 1 | 676 / 699 |
-| 22 | Monkey_earthPulse | 1 | 677 / 699 |
-| 23 | Mole_warMissile | 1 | 678 / 699 |
-| 24 | Mole_stunGrenade | 1 | 679 / 699 |
-| 25 | Mole_napalm | 1 | 680 / 699 |
-| 26 | Mole_mortarShot | 1 | 681 / 699 |
-| 27 | Mole_grenadeCluster | 1 | 682 / 699 |
-| 28 | Mole_flameCarnival | 1 | 683 / 699 |
-| 29 | Mole_cartBomb | 1 | 684 / 699 |
-| 30 | Mole_bazooka | 1 | 685 / 699 |
-| 31 | Cat_supportFire | 1 | 686 / 699 |
-| 32 | Cat_grandCasinoArcade | 1 | 687 / 699 |
-| 33 | Bison_earthRupture | 1 | 688 / 699 |
-| 34 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 35 | ParticleSystem | 10 | 698 / 699 |
-| 36 | Mole_warCapital | 0 | 698 / 699 |
-| 37 | CharacterControl | 1 | 699 / 699 |
+| 0 | (built today) | 631 | 631 / 699 |
+| 1 | Rabbit_potion | 13 | 644 / 699 |
+| 2 | WorldParticleCollider | 5 | 649 / 699 |
+| 3 | Monkey_fireBall | 4 | 653 / 699 |
+| 4 | Mole_mine | 4 | 657 / 699 |
+| 5 | whale_kingdomKnight | 2 | 659 / 699 |
+| 6 | Mole_timeNuke | 2 | 661 / 699 |
+| 7 | Mole_stunMine | 2 | 663 / 699 |
+| 8 | Chameleon_nAttack | 2 | 665 / 699 |
+| 9 | rotationControl | 1 | 666 / 699 |
+| 10 | Whale_javelin | 1 | 667 / 699 |
+| 11 | Whale_homingShield | 1 | 668 / 699 |
+| 12 | Whale_flyingShield | 1 | 669 / 699 |
+| 13 | StatusControl | 1 | 670 / 699 |
+| 14 | Rabbit_stickyGum | 1 | 671 / 699 |
+| 15 | Rabbit_sniperCamera | 1 | 672 / 699 |
+| 16 | Rabbit_healingField | 1 | 673 / 699 |
+| 17 | Rabbit_acidicField | 1 | 674 / 699 |
+| 18 | Monkey_runicSand | 1 | 675 / 699 |
+| 19 | Monkey_runicFlame | 1 | 676 / 699 |
+| 20 | Monkey_lavu | 1 | 677 / 699 |
+| 21 | Monkey_earthPulse | 1 | 678 / 699 |
+| 22 | Mole_warMissile | 1 | 679 / 699 |
+| 23 | Mole_stunGrenade | 1 | 680 / 699 |
+| 24 | Mole_napalm | 1 | 681 / 699 |
+| 25 | Mole_mortarShot | 1 | 682 / 699 |
+| 26 | Mole_grenadeCluster | 1 | 683 / 699 |
+| 27 | Mole_flameCarnival | 1 | 684 / 699 |
+| 28 | Mole_cartBomb | 1 | 685 / 699 |
+| 29 | Mole_bazooka | 1 | 686 / 699 |
+| 30 | Cat_supportFire | 1 | 687 / 699 |
+| 31 | Cat_grandCasinoArcade | 1 | 688 / 699 |
+| 32 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 33 | ParticleSystem | 10 | 698 / 699 |
+| 34 | Mole_warCapital | 0 | 698 / 699 |
+| 35 | CharacterControl | 1 | 699 / 699 |
 
 ## Per effect
 
@@ -148,16 +144,18 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 ### bison
 
+Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so not scanned above; every one ready): holdCharge_ring + holdCharge (:34670, :34673), berserkerRush_ring + berserkerRush (:34876, :34888), furyTrance1-3 (:34963), overPower_horn1-2 (:35010, on Head with localRotation Euler(-90, 0, 0): the cue's bone + rot) + overPower_ring (:35028), ironShield (:35064), diamondShield (:35095), perfectShield (:35129), perfectArmor (:35164; its Velvet shader not built: unreachable, no BB or TTO code adds the perfectShield / perfectArmor status), titanForm (:35243); the hero prefab's nAttack_hit / cAttack_hit and overLord (plans/fx_bison/parts.md "Read this first" 2).
+
 - `afterShock` (Bison.cs:22984): ready
-- `aspect_slam` (Bison.cs:21449): needs UVScroll
-- `aspect_trample` (Bison.cs:22536): needs UVScroll
+- `aspect_slam` (Bison.cs:21449): ready
+- `aspect_trample` (Bison.cs:22536): ready
 - `calamityHammer_fire` (Bison.cs:32785): ready
 - `calamityHammer_ring` (Bison.cs:32350): ready
 - `cAttack1_dust` (Bison.cs:19320): ready
 - `cAttack2_dust` (Bison.cs:20379): ready
 - `deadEffect` (Bison.cs:41201): ready
 - `diamondShield_ring` (Bison.cs:28196): ready
-- `earthRupture` (Bison.cs:8775): needs Bison_earthRupture
+- `earthRupture` (Bison.cs:8775): ready
 - `earthRupture_ring` (Bison.cs:28854): ready
 - `earthSmasher` (Bison.cs:29132): ready
 - `earthSmasher_ring` (Bison.cs:29505): ready
@@ -172,7 +170,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `knockDown_hit` (Bison.cs:7511): ready
 - `knockDown_ring` (Bison.cs:23393): ready
 - `magmaClutter_ring1` (Bison.cs:31839): ready
-- `magmaClutter_ring2` (Bison.cs:31506): needs ParticleSystem, ParticleSystemRenderer
+- `magmaClutter_ring2` (Bison.cs:31506): needs ParticleSystem, ParticleSystemRenderer (its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn)
 - `massStun` (Bison.cs:9096): ready
 - `onslaught_ring` (Bison.cs:30325): ready
 - `overPower` (Bison.cs:24985): ready
@@ -209,7 +207,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 - `damagePlus` (Cat.cs:19749): needs StatusControl
 - `damagePlus_ring` (Cat.cs:19987): ready
 - `damageRoulette_ring` (Cat.cs:27080): ready
-- `deltaStrike` (Cat.cs:37470): needs UVScroll
+- `deltaStrike` (Cat.cs:37470): ready
 - `deltaStrike_cat` (Cat.cs:37305): ready
 - `deltaStrike_ring` (Cat.cs:37105): ready
 - `disarm` (Cat.cs:34055): ready
@@ -730,7 +728,7 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 - `asunderImpale` (Whale.cs:27157): ready
 - `asunderRound` (Whale.cs:28013): ready
-- `bowlingWhale` (Whale.cs:36680): needs UVScroll
+- `bowlingWhale` (Whale.cs:36680): ready
 - `bowlingWhale_ring` (Whale.cs:37128): ready
 - `bubbleBurst` (Whale.cs:35943): ready
 - `bubbleBurst_ring` (Whale.cs:35768): ready

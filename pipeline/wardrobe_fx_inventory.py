@@ -41,7 +41,33 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # (TTO's BatSwarmFlap); fxparts/particles.js's MultiplyOffset / AlphaOffset / AdditiveOffset / 205 shaders and
          # mesh.js's Opaque1 with both passes are shaders, not parts (this table doesn't see them)
          "Bat_echoes", "Bat_guardianOfTheNight", "Bat_illusion", "Bat_illusionFire", "Bat_mirageOrb", "Bat_nAttack",
-         "AudioControl", "Light", "BatSwarmFlap"}
+         "AudioControl", "Light", "BatSwarmFlap",
+         # 2026-11-13, the Bison (plans/fx_bison/parts.md "Who builds what", decisions.md 36-46): fxparts/uvscroll.js,
+         # fxparts/bison.js (Bison_earthRupture's mover); Bison_overLord draws nothing (an aura trigger, never cued);
+         # fxparts/tto_bison.js (TTO's Bison_c6Arc, Bison_row6Fx, GroundConformParticles: a no-op on the flat floor;
+         # its EnergyArc / MoltenCrust are shaders). magmaClutter_ring2's ParticleSystem is not decoded from BB: wardrobe_fx.py
+         # grafts it from TTO's copy (SHURIKEN_FROM_TTO), so the effect still lists ParticleSystem below (NOTES); perfectArmor's
+         # Velvet is not built: no code adds its status (unreachable, decision 45)
+         "UVScroll", "Bison_earthRupture", "Bison_overLord", "Bison_c6Arc", "Bison_row6Fx", "GroundConformParticles"}
+# a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
+# decisions.md 40, 45, 46): what this scan cannot see
+NOTES = {
+    "bison": {
+        "magmaClutter_ring2": "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are "
+                              "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn",
+        "perfectArmor": "Velvet (its shader) not built: no BB or TTO code adds the perfectArmor status (unreachable)",
+        "perfectShield": "no BB or TTO code adds the perfectShield status (unreachable; never cued)",
+    },
+}
+CLASS_NOTES = {
+    "bison": ["Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so not scanned above; every one "
+              "ready): holdCharge_ring + holdCharge (:34670, :34673), berserkerRush_ring + berserkerRush (:34876, :34888), "
+              "furyTrance1-3 (:34963), overPower_horn1-2 (:35010, on Head with localRotation Euler(-90, 0, 0): the cue's bone "
+              "+ rot) + overPower_ring (:35028), ironShield (:35064), diamondShield (:35095), perfectShield (:35129), "
+              "perfectArmor (:35164; its Velvet shader not built: unreachable, no BB or TTO code adds the perfectShield / "
+              "perfectArmor status), titanForm (:35243); the hero prefab's nAttack_hit / cAttack_hit and overLord "
+              "(plans/fx_bison/parts.md \"Read this first\" 2)."],
+}
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it
 # for hits, which the wardrobe has no targets for)
@@ -169,11 +195,12 @@ def write_md(inv):
         ready = new_ready
     lines += ["", "## Per effect", ""]
     for cls, e in inv.items():
-        lines += [f"### {cls}", ""]
+        lines += [f"### {cls}", ""] + [x for n in CLASS_NOTES.get(cls, []) for x in (n, "")]
         for k, v in e["own"].items():
             miss = sorted(set(v["parts"]) - BUILT)
             lines.append(f"- `{k}` ({cls.capitalize()}.cs:{v['line']}): " + ("ready" if not miss else "needs " + ", ".join(miss))
-                         + (f" **extract fails: {v['extract_error']}**" if "extract_error" in v else ""))
+                         + (f" **extract fails: {v['extract_error']}**" if "extract_error" in v else "")
+                         + (f" ({NOTES[cls][k]})" if k in NOTES.get(cls, {}) else ""))
         lines.append("")
     open(os.path.join(ROOT, "plans", "fx_inventory.md"), "w", encoding="utf-8", newline="\n").write("\n".join(lines) + "\n")
 

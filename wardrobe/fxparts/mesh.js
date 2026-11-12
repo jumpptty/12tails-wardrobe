@@ -120,7 +120,8 @@ export default function register(api) {
   // game culls (the mirror group's flipped winding makes three's front faces Unity's).
   // APPROXIMATED: the game's own ambient and light colours (the page's hemisphere + sun instead); the game clamps the lit
   // colour at 1 before the doubling. A part that animates an Opaque2 _Color.a across 0.95 would need its pass 1 too: none
-  // does yet (alphatimer.js does not drive these shaders)
+  // does yet (alphatimer.js drives Opaque1 / Opaque2's opacity on every pass it finds, 2026-11-13, plans/fx_bison/parts.md
+  // part 2; an Opaque2 saved under 0.95 has pass 2 alone, which discards alpha >= 0.95)
   const lit = (d, map, o) => {
     const c = d.color || [1, 1, 1, 1];
     const m = new THREE.MeshLambertMaterial({ transparent: true, opacity: c[3], ...o });

@@ -1523,7 +1523,7 @@ run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, M
   the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
   it in another session, re-create it from this description (the research of one class overlaps the build of the one
   before; builds never overlap, they share index.html).
-- Progress (updated as it goes): Penguin DONE + deployed; Bat DONE (32 cue keys, 55 effects, 118 sounds; gates bat / wolf / sheep / penguin pass), committed + deployed below; Bison research DONE, its build next; Cat research running. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
+- Progress (updated as it goes): Penguin, Bat DONE + deployed; Bison DONE (40 cue keys, 67 effects, 98 sounds; gates bison + bat / wolf / sheep / penguin pass), committed + deployed below; Cat research DONE, its build next; Chameleon research running. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
 - **Bat build, page_pipeline builder (2026-11-13):** the game's Particles/MultiplyOffset, AlphaOffset and AdditiveOffset
   shaders (fxparts/particles.js) and built-in 205 = Particles/Multiply (`BUILTIN_BLEND[205] = "multiply"`) are now built for
   every class. That changes the look of effects already cued and published: the Wolf's Double Art banner (doubleArt),
@@ -1648,3 +1648,95 @@ user's review). One editor after four builders (page_pipeline, bat_parts, shared
     fall near the target when the 10 s cut lands mid-attack); the Mirage Orb's brightness (two double-sided additive shells
     at the game's opacity); the light's intensity (drainLife, mindControl_ring); decisions 8, 9, 13, 22, 23 and 44 (what is
     left out).
+
+## 2026-11-13 (overnight, home), the Bison's effects: built and cued
+
+From plans/fx_bison/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after three builders (page_pipeline, bison_parts, tto_bison).
+- **Parts (new):** page (index.html): SEQ steps with alternatives `a|b` (`%p` = a chance, drawn per round, test hook
+  `window.__seqAlt`) and crossfades of any length (`~0.3`); a cue's `bone` + `rot` = Unity's localRotation under the bone
+  (Over Power's horn on Head, Euler(-90, 0, 0)); HERO_SKINS body looks `enrage` (x 1.25, tint (1.22, 0.64, 0.64)) and
+  `titanForm` (x 1.8, (0.70, 0.81, 1.16)), the hero's own materials tinted in place and restored; the `lift` cue kind
+  (LIFTS.titanDrop = TitanDropPath's height keys, Hermite, the hero raised in place; followPosition effects ride it);
+  ITEM_SETS.bisonHammer (BB's 22 isHammer codes + timeHammer = 21 names) with `wearing()` for worn / notWorn (an item, a
+  list or a set name); NEVER_PLAYED.bison volcanicRam; FX_PART_FILES += bison, uvscroll, tto_bison. fxparts: bison.js
+  (Bison_earthRupture mover 12 m/s for 2 s; Bison_overLord null), uvscroll.js (UVScroll by the page's absolute clock, its
+  map cloned once the picture is in), alphatimer.js (Opaque1 / Opaque2 on both passes; the per-renderer copy shared via
+  mesh.userData.fxOwn), tto_bison.js (Bison_c6Arc with repeat + ground drape, Bison_row6Fx with bob, the EnergyArc and
+  MoltenCrust shaders, GroundConformParticles a no-op). wardrobe_fx.py: LAYOUTS UVScroll / Bison_earthRupture /
+  Bison_overLord; SHURIKEN_FROM_TTO: magmaClutter_ring2's Shuriken puffs grafted from TTO's decoded copy onto BB's effect
+  with BB's Bomb2 material (decision 40: BB content, the `cleave` swing kept). wardrobe_fx_tto.py SKILL_FX bison (17 + the
+  status look `unchained`). wardrobe_fx_check.py: alternatives played once each, `lift`. wardrobe_moves_check.py's
+  chains.json lists alternatives; mesh.js' Opaque comment updated; wardrobe_fx_inventory.py BUILT / notes, rerun.
+- **Cues** (wardrobe/fx_cues/bison.json, 40 keys, 420 cues, 67 effects (18 TTO), assembled from the reports' corrected
+  blocks by checks/fx_bison_build/editor/assemble.py, git-ignored, with decisions 22 / 25-26 / 40 applied): Normal Attack
+  `nAttack1@0.7 nAttack2@0.7 nAttack4@1.3%56|nAttack3@0.8 nAttack5~0.3` (voices only: melee hits never reach 10 m),
+  Charge Attack with Hold Charge (`@ChargeAttack:root`: holdCharge_ring + the holdCharge glow, the stored spin's
+  holdCharge_fire, 16 swish sounds), nine skills_a clips (Power Cleave's axe / hammer sets by `["R", "bisonHammer"]`,
+  Earth Rupture's three waves, Mass Stun and six Calamity strikes at 10 m, Magma Clutter's TTO-fix start sound), the
+  overPower pool (Over Power, Titan Form with its body look and ring scale 1.8) and the warcry pool (Warcry, Iron / Diamond
+  Shield 8 s, Onslaught silent), Over Swing wearing the horn and ring for 1.2 s, Pride Crusher silent, Slam, Trample
+  (trample2*@2.4, cuts 2.4), effect-only `@BerserkerRush:root` (6 s) and `@FuryTrance:root` (furyTrance3, cut 10), the
+  three released TTO skills (Unchained Fury with `tto/unchained`; Titan Drop with `[0, "lift", "titanDrop"]`, the slam
+  3.9 m ahead / 0.26 m right; Magma Quake by the worn weapon, the game's 144 / 120 seed-0 tick spots), emotes (laugh
+  silent: no voice in the rip), run (step_heavy1 / 2 every cycle), ko (dead: deadEffect 1 m behind, d -1).
+- **Tiles / icons:** SEQ / SEQ_SKILL bison as the merged blocks (the page_pipeline builder pasted them); wardrobe_skill_icons.py
+  CLIP_SKILLS bison {cleave: powerCleave}, EFFECT_ONLY bison; rerun: bison 25 HD icons (7 new webp: berserkerRush,
+  diamondShield, furyTrance, ironShield, onslaught, powerCleave, titanForm; index.json bison only).
+- **Data:** `wardrobe_fx.py bison`: 49 effects, 41 materials, 42 textures, 88 sounds (the graft line printed);
+  `wardrobe_fx_tto.py bison`: 18 TTO effects, 23 materials, 13 textures, 15 sounds (6 TTO's own: MagmaPit, break,
+  earthSmasher_ring, gadina_planetBreaker, titanQuake_hit, titanQuake_ring). data/bison/fx.json 67 effects (4.2 MB), sfx/
+  98 files, 35 new textures in data/fx/tex (all to commit with the run; the other PC pulls).
+- **Judgement calls (mine):** the hammer branches (powerHammer, Magma Quake's earthSmasher_ring / quakeTick / quakeSlam /
+  quakeField) are `worn` cues, which the gate doesn't expect, so checks/fx_bison_build/editor/hammer_probe.py played
+  cleave and magmaQuakeAxe with royalHammer worn: all spawned (121 quake ticks), errors []. The Titan Form look at 1.8x
+  leaves the default camera frame (head and shoulders off the top; the camera doesn't refit for a skin): left for the QA /
+  the user's eye, not changed. Target-point effects (Titan Drop's slams 3.9 m ahead, Mass Stun, the strikes) sit toward
+  the camera outside the default frame, as for the other classes.
+- **Gate:** files-only (bat, bison, penguin, sheep, wolf) "no problems"; `wardrobe_fx_check.py ... checks/fx_bison dark
+  --cls bison` exit 0, errors [], 37 tile plays (Normal Attack twice: nAttack4, then nAttack3), every cued effect spawned
+  (lift:titanDrop, skin:enrage / skin:titanForm included); unit tests 65 OK. The builders changed shared page / fxparts
+  code, so also `--cls bat,wolf,sheep,penguin` in one run: it found a page bug (below), then exit 0, errors [] (174 tile
+  plays); the Bison gate re-run after the fix: exit 0, errors []. Not committed.
+- **Fix found by the regression gate:** a class change kept the old move's cues still to come (FX.cues, FX.cycle): the
+  Bat's run (everyCycle) re-armed step_fly1 and fired it once the Wolf was in, asking for data/wolf/sfx/step_fly1.mp3
+  (404). loadClass now drops them with the old class (index.html, beside its fxClear()); the same held for any pending
+  cue (a Calamity strike due at 9.9 s) when the class is switched mid-skill.
+- **Open:** the user's review of decisions.md (Titan Drop in place with the lift, Magma Quake's fixed seed-0 spots and its
+  far ticks' cost, Hold Charge on the Charge Attack tile, volcanicRam hidden); the Bible offers at the end of
+  plans/fx_bison/decisions.md; the QA pass (wardrobe_fx_shots.py) for the looks (EnergyArc / MoltenCrust shaders compiled
+  only in the gate's headless run, the 1.8x framing, UVScroll's hordes).
+- **QA pass (2026-11-13, the run's Bison QA step).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_bison_qa/jobs.json, 40 jobs, every Bison tile: Normal Attack, Charge Attack to 10.2 s, the nine skills_a clips
+  (Power Cleave also with royalHammer worn), both pools' six members, Over Swing, Pride Crusher, Slam, Trample, the two
+  effect-only tiles, the three TTO tiles (Magma Quake also with royalHammer), KO (dead forced, and as rolled), run, the
+  emotes with voices, laugh) on the dark and the white stage, side + front / behind / top: 366 shots each. Sheets:
+  checks/fx_bison_qa/sheets_dark, sheets_white (git-ignored; shots and logs under run/). Boxes in the hero's frame
+  (+x = the hero's left, so the cues' Unity x shows negative) match the reports: farStun_ring centred (-0.42, 0.19)
+  (x 0.5, d 0.15); massStun round the 10 m point (z 5.8-16.2); afterShock centred 2 m ahead; Earth Rupture's three
+  waves fan out at +-25 deg and their front passes 12 m at 0.97 s; Calamity's strikes at z ~10 at 2.4 / 3.9 ... 9.9 s,
+  the last gone by 11.5 s; the Over Power horns on the head (upright, both sides) to 9.5 s, the ring with them; Titan
+  Form's growth from 0.3 s, its ring at 1.8x (r 1.47-1.74), both gone at 10.3 s; Enrage x 1.25 and red from 0.5 s to
+  10.5 s; the shields orbit from 0.6 s to 8.6 s; Berserker Rush on both hands to 6 s; Fury Trance at the neck to 10 s;
+  Hold Charge's glow gone by the spin (0.2 s), spinHack_ring cut at 1.766 s; Trample's trample2 lives from 0.3 s to the
+  cut at 3.3 s (trample2's 2.4) and the two hordes run 2.5 m left and right, in step; Unchained Fury's plant centred
+  (-2.45, 2.6), its Berserker Rush look to 10.6 s; Titan Drop's mark and three slams centred (-0.26, 3.9) on the floor
+  while the hero rises 3 m (the shots' camera rides the hero, so the floor drops away there), the dive from above
+  ahead; Magma Quake's ticks 1 + 12 a burst from 1.4 s (the axe's field's pool fades from 6 s by its own PoolFade
+  particles, gone by 7 s; the hammer's to 7.9 s); KO's deadEffect 1 m behind. No page error, no stalled render loop,
+  no failed job (the only console lines: swiftshader's glBlitFramebuffer feedback warning). checks/fx_bison_qa/
+  body_probe.py: Titan Form / Enrage / the lift end cleanly on the next pick, mid-air, with VFX off and on a class
+  change (scale 1, y 0, colours back), errors [].
+  - **No bug found; no file changed by the QA** (except this paragraph).
+  - Gates: `wardrobe_fx_check.py ... checks/fx_bison_qa/gate_bison dark --cls bison` exit 0, errors [] (37 tile plays);
+    the builders changed shared page / fxparts code, so also `--cls wolf,sheep,penguin,bat` (every other class with
+    cues): exit 0, errors [] (174 tile plays); unit tests 65 OK, node 8 pass, test_adopt_from_video.ps1 fails 0;
+    `wardrobe_weapon_fx_check.py` OK.
+  - Looked into, not bugs: the magma field's MoltenCrust looks blocky up close (its value noise at 3.1 / m, the TTO
+    shader's own arithmetic); cut rings jump to their life's end (prideCrusher_ring age 2.12 at 0.95 s, as the Bat's
+    QA).
+  - For the user's eye: the default camera (a close fit of the standing hero) shows only Titan Form's legs and loses the
+    Bison entirely at the top of Titan Drop's leap (checks/fx_bison_qa/frame/TitanForm.png, titanDrop_top.png; a zoom
+    out shows both whole); every target-point effect sits outside that frame too, as for the other classes. Also the
+    white stage's faint additive glows, the EnergyArc crescents and the MoltenCrust pool (the shaders draw, their look
+    is unjudged), Magma Quake's 144 ticks' cost on a slow PC.

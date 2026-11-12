@@ -721,6 +721,9 @@ async function loadClass(cls) {
   for (const s of ["R", "L", "Head", "Back"]) if (L0[s]) fetchProps(cls, SLOTS[s]);
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
   if (C) { scene.remove(C.root); C.mixer.stopAllAction(); fxClear(); }     // the old class stays on stage until the new one has loaded
+  // and the old move's cues still to come go with it (2026-11-13, the Bison's regression gate: the Bat's run, an
+  // "everyCycle" entry, re-armed its step_fly1 and fired it once the Wolf was in, asking for data/wolf/sfx/step_fly1.mp3)
+  if (C) { FX.cues = []; FX.cycle = null; }
   fxData(cls);                              // its skill effects, if it has any yet
   const root = new THREE.Group();
   const tri = new THREE.Object3D();
@@ -1180,8 +1183,26 @@ const SEQ = {
     // :11281, RPC_switch :13272, RPC_shadowSacrifice :14100 call no PlayAnimation): their effects on the idle stance,
     // each step one effect's life (+ afterLife), at least its longest voice (plans/fx_penguin/effect_only.md)
     "Mass Cast: root@1", "Shadow Gaze: root@2", "Switch: root@1", "Shadow Sacrifice: root@2"],
-  bison: ["Normal Attack: nAttack1@0.7 nAttack2@0.7 nAttack3@0.8 nAttack4@0.8 nAttack5", "Charge Attack: cAttack1 cAttack2*~@7 cAttack6*@1.6",
-    "Trample: trample1@0.9 trample2*@2.6"],
+  // the Bison (plans/fx_bison, 2026-11-13, decisions.md 1-6): actionTime is set by stage 1 only, so stage 2 starts 0.7 s
+  // after it (RPC_nAttack2's Yield(2, actionTime - Time.time + 0.7) Bison.cs:15947) and the third stage at 1.4 s
+  // (RPC_nAttack3 / RPC_nAttack4 + 1.4, :16761, :17871): the spin nAttack4 when Random.Range(0, 100) <= lckAdjust(55)
+  // (:4977; 56 % at max rank with Improved Swing 3 and #104), else nAttack3, the roll drawn when the sequence starts;
+  // Added Swing #401 (a passive, on) 2.7 s after stage 1 behind the spin (:19022), 2.2 s behind stage 3 (:19016), its
+  // CrossFade 0.3 (:18991); stages 2-4 cut in (decisions.md 1, 2). Charge Attack with Hold Charge on (decision 3):
+  // cAttack1 0.8 s, then cAttack2 looped with a 0.2 s fade (:19608), the full 8 s charge (clamp(t, 2, 8) :5378); the
+  // release with Hold Charge stores it (RPC_AddStatus holdCharge + RPC_cAttack0 :5388-5411: CrossFade("root", 0.2), 0.2
+  // s to standby, :20717-20731), then the stored spin on the next press, cAttack6 cut in and looped for 8 hits x 2 x
+  // (0.2 - 0.033 x 3) + 0.2 = 1.816 s (:20464-20468); the first step keeps the page's fade (decision 4). Trample's
+  // trample2 from 0.9 s, its 12 passes 0.2 s apart to 2.4 s (:22197-22220; decision 5)
+  bison: ["Normal Attack: nAttack1@0.7 nAttack2@0.7 nAttack4@1.3%56|nAttack3@0.8 nAttack5~0.3",
+    "Charge Attack: cAttack1@0.8 cAttack2*~@7.2 root~@0.2 cAttack6*@1.816",
+    "Trample: trample1@0.9 trample2*@2.4",
+    // Berserker Rush and Fury Trance (passives) play no animation: Update runs their procs (Bison.cs:277, :289), which only
+    // add a status (:7824, :7979) whose look hangs on the hero's bones (CharacterControl.cs:34876-34942 HandMount_L / _R,
+    // :34963-34992 Neck): their effects on the idle stance, each step the status's time (Berserker Rush 6 s with Rage
+    // Control, Fury Trance cut at 10 s) (2026-11-13, plans/fx_bison/effect_only.md; the user 2026-11-10: effect-only tiles;
+    // decisions.md 6, 7)
+    "Berserker Rush: root@6", "Fury Trance: root@10"],
   cat: ["Normal Attack: nAttack1 nAttack2^ nAttack3 nAttack4", "Charge Attack: cAttack1 cAttack2*@3.4",
     "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2*@13.5 grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*@3",
     "Heart Ripper: heartRipper1 heartRipper2", "Finishing Blow: finishingBlow1 finishingBlow2", "Crescent Eclipse: crescentEclipse1 crescentEclipse2"],
@@ -1246,21 +1267,55 @@ const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chamel
   monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
 const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"] };
 // clips the class's code never plays, left out of the list (2026-11-09: no Wolf skill plays cast1-3, the Cast tile was
-// copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile")
-const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"] };
+// copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile"); the Bison's volcanicRam: no code in BB
+// or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent)
+const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
+// A step's alternatives (2026-11-13, the Bison's Normal Attack: its third stage is the game's roll, RPC_nAttack4 the spin
+// when Random.Range(0, 100) <= lckAdjust(55), else RPC_nAttack3, Bison.cs:4977; plans/fx_bison/decisions.md 1, 2,
+// attacks_emotes.md P1, P2): a token "a|b", each alternative clip["*"][fade]["@t"]["%p"] with its own hold, fade and time;
+// fade "~" = a 0.2 s crossfade, "~0.3" = one of that length (RPC_nAttack5's CrossFade 0.3, :18991), "^" = 0.1 s ("^t" too),
+// "!" = a cut; "%p" = that alternative's chance in percent (the rest share what is left evenly; none given: even). The
+// step keeps its first alternative's fields (clip, hold, fade, cut, t) beside alts / p, so code reading a step's clip
+// still works; every clip a step may play is stepClips(step). The pick is drawn when the sequence starts (step 0, a
+// new round too) and kept for that play (C.seq.alt[step index]: drawAlts); startStep plays it (stepAt).
+// Test hook (the checks, pipeline/wardrobe_fx_check.py): window.__seqAlt = { <step index>: <alternative index> } forces
+// those picks on every draw while it is set (delete it, or set null, to go back to the roll)
+const SEQ_ALT = /^(\w+)(\*)?(?:([~^!])([\d.]+)?)?(?:@([\d.]+))?(?:%([\d.]+))?$/;
+function seqStep(tok) {
+  const alts = tok.split("|").map(a => {
+    const m = a.match(SEQ_ALT);
+    if (!m) throw new Error("SEQ token " + tok);
+    const fade = m[3] === "~" ? (m[4] ? +m[4] : 0.2) : m[3] === "^" ? (m[4] ? +m[4] : 0.1) : 0;
+    return { clip: m[1], hold: !!m[2], fade, cut: m[3] === "!", t: m[5] ? +m[5] : null, p: m[6] ? +m[6] / 100 : null };
+  });
+  return { ...alts[0], alts, p: alts[0].p };
+}
+const stepClips = s => (s.alts || [s]).map(a => a.clip);
+// one alternative index per step: the forced one (window.__seqAlt), else drawn by the chances
+function drawAlts(steps) {
+  const force = typeof window !== "undefined" ? window.__seqAlt : null;
+  return steps.map((s, i) => {
+    const as = s.alts || [s];
+    if (as.length < 2) return 0;
+    if (force && force[i] != null) return Math.max(0, Math.min(as.length - 1, force[i] | 0));
+    const given = as.reduce((t, a) => t + (a.p ?? 0), 0), free = as.filter(a => a.p == null).length;
+    const w = as.map(a => a.p ?? (free ? Math.max(0, 1 - given) / free : 0));
+    let r = Math.random() * w.reduce((t, x) => t + x, 0);
+    for (let k = 0; k < as.length; k++) if ((r -= w[k]) < 0) return k;
+    return as.length - 1;
+  });
+}
+const stepAt = (S, i) => { const s = S.steps[i]; return s.alts ? s.alts[S.alt?.[i] || 0] || s : s; };
 // the class's sequences whose clips are all in this copy (the online copy has no TTO clips), parsed once per class
 function chains() {
   if (C.chains) return C.chains;
   const base = (SEQ[C.cls] || []).map(line => {
     const [name, body] = line.split(": ");
-    const steps = body.split(" ").map(tok => {
-      const m = tok.match(/^(\w+)(\*)?([~^!])?(?:@([\d.]+))?$/);
-      return { clip: m[1], hold: !!m[2], fade: m[3] === "~" ? 0.2 : m[3] === "^" ? 0.1 : 0, cut: m[3] === "!", t: m[4] ? +m[4] : null };
-    });
-    return { id: "@" + name.replace(/\s+/g, ""), name, steps, tto: steps.some(s => C.clipsData[s.clip]?.tto) };
-  }).filter(ch => ch.steps.every(s => C.clipsData[s.clip]));
+    const steps = body.split(" ").map(seqStep);
+    return { id: "@" + name.replace(/\s+/g, ""), name, steps, tto: steps.some(s => stepClips(s).some(c => C.clipsData[c]?.tto)) };
+  }).filter(ch => ch.steps.every(s => stepClips(s).every(c => C.clipsData[c])));
   const tab = FX.cueTab[C.cls];
   if (FX_ON && !tab) return base;                     // the cue file is still loading: the per-skill tiles come with it (not cached)
   return (C.chains = base.concat(poolChains(base, tab || {})));
@@ -1277,7 +1332,7 @@ function poolChains(base, tab) {
   const own = (ch, clip) => tab[ch.id + ":" + clip] || tab["@" + ch.name + ":" + clip];
   for (const [key, e] of Object.entries(tab)) {
     if (key.startsWith("@") || !e?.skills || !C.clipsData[key]) continue;
-    const hosts = base.filter(ch => ch.steps.some(s => s.clip === key) && !own(ch, key));
+    const hosts = base.filter(ch => ch.steps.some(s => stepClips(s).includes(key)) && !own(ch, key));
     const host = hosts.find(ch => ch.name === "Cast") || hosts[0];
     const steps = host ? host.steps : [{ clip: key, hold: playMode(key) === "loop", fade: 0.2, cut: false, t: null }];
     for (const m of Object.keys(e.skills)) {
@@ -1352,14 +1407,14 @@ function play(name, tail = false) {
     if (mode === "loop") steps = [{ ...steps[0], hold: true }];   // a looped channel: held for HOLD_SECS, then idle
     mode = "back";
   }
-  C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail, round: 0 };
+  C.seq = { steps, mode, i: 0, t: 0, dur: Infinity, tail, round: 0, alt: drawAlts(steps) };   // alt: the steps' picks (drawAlts)
   C.cur = name;
   if (!tail) fxClear();                      // a new pick: the last move's effects go with it (not the way back to idle)
-  startStep(0, steps[0].cut ? 0 : 0.2);
+  startStep(0, stepAt(C.seq, 0).cut ? 0 : 0.2);
   renderMovesUI();
 }
 function startStep(i, fade) {
-  const S = C.seq, st = S.steps[i], clip = buildClip(st.clip);
+  const S = C.seq, st = stepAt(S, i), clip = buildClip(st.clip);   // st: the step's alternative picked for this play
   let act = C.mixer.clipAction(clip);
   if (act === C.action) act = C.mixer.clipAction(twinClip(st.clip));
   const loop = st.hold || S.mode === "loop";
@@ -1383,12 +1438,14 @@ function seqTick(dt) {
   if (S.mode === "back" && S.i + 1 >= S.steps.length) { play(idleName(), true); if (openTopic === "move") syncPressed(); return; }
   if (!S.tail) fxDue(S.dur, false);          // the step's own cues it has not reached yet (fxDue); the idle tail's cues are the skill's
   const n = S.i + 1 < S.steps.length ? S.i + 1 : 0;
-  if (!n) S.round++;
-  startStep(n, n || S.steps[0].cut ? S.steps[n].fade : 0.2);
+  if (!n) { S.round++; S.alt = drawAlts(S.steps); }   // the sequence again: a new roll for its alternatives
+  const st = stepAt(S, n);
+  startStep(n, n || st.cut ? st.fade : 0.2);
 }
 // a tile's name, icon and tooltip; a sequence's icon is the skill's own (by its name), else its first clip's that has one
 const moveName = n => chainOf(n)?.name || label(n);
-function moveText(n) { const ch = chainOf(n); return ch ? `${ch.name} (${ch.steps.map(s => s.clip + (s.hold && s.t !== 0 ? " วน" : "")).join(" > ")})` : n; }
+// (a step with alternatives reads "nAttack4 / nAttack3")
+function moveText(n) { const ch = chainOf(n); return ch ? `${ch.name} (${ch.steps.map(s => (s.alts || [s]).map(a => a.clip + (a.hold && a.t !== 0 ? " วน" : "")).join(" / ")).join(" > ")})` : n; }
 
 // ---------- UI: topic rows (name + the current choice's icon in a ring) and a picker over the stage ----------
 const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
@@ -3209,7 +3266,7 @@ const EMO = { wave: "wave", bow: "bow", cheer: "cheer", cry: "cry", laugh: "laug
 function moveIcon(name) {
   if (!name) return null;
   const ch = chainOf(name);
-  if (ch) { for (const k of [ch.name.replace(/\s+/g, ""), ...ch.steps.map(s => s.clip)]) { const s = moveIcon(k); if (s) return s; } return null; }
+  if (ch) { for (const k of [ch.name.replace(/\s+/g, ""), ...ch.steps.flatMap(stepClips)]) { const s = moveIcon(k); if (s) return s; } return null; }
   const l = name.toLowerCase(), e = EMO[l] || (l.startsWith("pose") ? "pose" : null);
   if (e && UI.emotion?.includes(e)) return `icons/skills/emotion/${e}.webp`;
   const sk = UI.skills?.[C.cls] || [];
@@ -3235,7 +3292,9 @@ const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.
 // icons of the skills its clip belongs to (Normal Attack's)
 // (also the sequences on a pool's clip, 2026-11-10: the Sheep's seals and Eden Sanctuary on cast3, the Penguin's Cosmic
 // Friday, which would otherwise show the pool's skills)
-const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday", "@ManaArc": "manaArc", "@Dispell": "dispell",
+// (the Bison's effect-only tiles, 2026-11-13, plans/fx_bison/decisions.md 6)
+const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "furyTrance" },
+  penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday", "@ManaArc": "manaArc", "@Dispell": "dispell",
     "@DoubleCast": "doubleCast", "@TripleCast": "tripleCast", "@FrostSpike": "frostSpike" },
   sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" },
   bat: { "@Nightmare": "nightmare", "@MindControl": "mindControl", "@MassCast": "massCast", "@ShadowGaze": "shadowGaze",
@@ -3246,7 +3305,7 @@ function moveSkillIcons(name) {
     const hd = HDI[C.cls]?.[own]?.icon, sk = (UI.skills?.[C.cls] || []).filter(s => s.replace(/\d+$/, "") === own.toLowerCase()).sort(numSort);
     return hd ? [hd] : sk.length ? [`icons/skills/${C.cls}/${sk[sk.length - 1]}.webp`] : [];
   }
-  const ch = chainOf(name), clips = ch ? ch.steps.map(s => s.clip) : [name];
+  const ch = chainOf(name), clips = ch ? ch.steps.flatMap(stepClips) : [name];
   const pooled = new Set(chains().filter(c => c.skill).map(c => c.skill));   // a pool member shows on its own tile only
   const hd = Object.entries(HDI[C?.cls] || {}).filter(([s, v]) => !pooled.has(s) && v.clips.some(c => clips.includes(c))).map(([, v]) => v.icon);
   return (hd.length ? hd : [moveIcon(name)].filter(Boolean)).slice(0, 5);
@@ -3481,7 +3540,7 @@ async function openPicker(t, opts = {}) {
     // numeric order (F10): pose, pose5, pose15 ... and the poses' shared icon carries their number. ท่าสกิล: one tile per
     // sequence (SEQ, first), then the clips no sequence uses; BB's before a local copy's TTO moves
     const seqs = moveTab === "skill" ? chains().filter(ch => !ch.hidden) : [];
-    const used = new Set([...seqs.flatMap(ch => ch.steps.map(s => s.clip)), ...(C.poolClips || []), ...(LOWER_RANK[C.cls] || []), ...(NEVER_PLAYED[C.cls] || [])]);
+    const used = new Set([...seqs.flatMap(ch => ch.steps.flatMap(stepClips)), ...(C.poolClips || []), ...(LOWER_RANK[C.cls] || []), ...(NEVER_PLAYED[C.cls] || [])]);
     const names = Object.keys(C.clipsData).filter(k => moveGroup(k) === moveTab && !used.has(k)).sort(moveSort);
     const tiles = [...seqs.map(ch => ({ id: ch.id, tto: ch.tto, title: esc(moveText(ch.id)) })), ...names.map(n => ({ id: n, tto: C.clipsData[n].tto }))]
       .sort((a, b) => a.tto - b.tto);
@@ -3793,7 +3852,11 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // the falloff is Unity's, the patch above the floor). A boltEmitter with no TargetNode aims at the cue's `to`
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
-  "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat"];
+  "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
+  // the Bison's (2026-11-13, plans/fx_bison/parts.md "Who builds what"): Bison_earthRupture; UVScroll (it shares a node's
+  // material copy with alphatimer.js through mesh.userData.fxOwn, whichever is built first: no load order); TTO's
+  // Bison_c6Arc, Bison_row6Fx, EnergyArc, MoltenCrust, GroundConformParticles
+  "bison", "uvscroll", "tto_bison"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
@@ -3976,6 +4039,14 @@ class Fx {
     });
     this.root = this.nodes[0];
     this.bone = at.bone || null;
+    // a cue with both bone and rot: rot is the localRotation under the bone (2026-11-13, the Bison's Over Power horn on
+    // Head, localRotation Euler(-90, 0, 0), CharacterControl.cs:35010-35022; plans/fx_bison/decisions.md 33, parts.md
+    // part 6, Interfaces 1): kept here (the root's quaternion from rot, set above) and put on after the bone's each frame
+    this.boneRot = this.bone && at.rot ? this.root.quaternion.clone() : null;
+    // a hero lifted off the floor (a "lift" cue, HeroLift): an effect with EffectControl's followPosition rides it in its
+    // live phase (EffectControl.cs:98 keeps the offset to the owner, the live branch puts it back each frame, :311-412;
+    // Titan Drop's dive, decisions.md 22); liftY = the hero's lift when it was made
+    this.liftY = C.root.position.y;
     // the hero's own code acting on this effect once it is made (a part registered as "fx:<effect name>", built like a
     // component's on the root: Sheep.cs's charge ball growth, Holy Light's ring clip; fxparts/sheep.js)
     const hook = FXPARTS["fx:" + name];
@@ -4050,7 +4121,12 @@ class Fx {
       // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
       // as the effect, wardrobe_data.py); the scale stays the spawned one (Unity keeps the world scale on a reparent)
       if (b) { b.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
-        this.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, V()); }
+        this.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, V());
+        if (this.boneRot) this.root.quaternion.multiply(this.boneRot); }   // Unity's localRotation under the bone
+    }
+    else if (ec?.followPosition && !this.follow && !this.followNode && C && this.age < ec.life) {   // rides a lifted hero
+      const y = C.root.position.y;
+      if (y !== this.liftY) { this.group.position.y += y - this.liftY; this.liftY = y; }
     }
     this.group.updateMatrixWorld(true);
     this.mirrorInv = this.mirror.matrixWorld.clone().invert();
@@ -4396,6 +4472,11 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         Friday's FX/CosmicRift, decisions.md 16)
 //   kind  "clone" (2026-11-13, the Bat's Shadow Illusion: HeroClone): name = the hero clip the copy plays, looped (the
 //         illusion's root); options x, y, d (the copy's spot, as an effect's), kill (its end: RPC_disappear)
+// 2026-11-13, the Bison (plans/fx_bison/decisions.md 22, 26, 31, 33): worn / notWorn's item may be a list of items or a
+//         set name ([slot, [items]], [slot, "bisonHammer"]: ITEM_SETS); a "skin" may be a body look (HERO_SKINS enrage /
+//         titanForm: the hero grown and tinted, HeroSkin.body); bone with rot = rot is the localRotation under the bone
+//   kind  "lift" (the hero raised in place along a height curve, LIFTS: Titan Drop's, HeroLift): [0, "lift", "titanDrop"]
+//         (the curve's times count from the cue); followPosition effects ride the lifted hero
 // An entry may also carry "builds": [names] (effects a part spawns, api.spawn, and "sound:<name>" / "voice:<name>" for
 // what it plays, that no cue names: wardrobe_fx.py builds them; the guardian's blade, hits and swing) and
 // "everyCycle": true (a looped clip's cues again on each cycle, against the clip's own time: the run's wing flap, fxTick)
@@ -4424,18 +4505,20 @@ const cueOf = c => {
 // on): the parts' hook (api.heroHide). A skin cue: the original meshes off the layers, a copy of each drawn instead (same
 // geometry and skeleton, a child of it, so it moves and goes with it; never hit by the ray). VFX off: neither applies
 // (an original under a skin goes on LOOK_LAYER alone: no camera draws it, the piece menu's ray still finds it, pieceAt)
-const LOOK = { hides: new Set(), skin: null, off: new Map() }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;
+const LOOK = { hides: new Set(), skin: null, off: new Map(), lift: null }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;   // lift: HeroLift
 function heroHide(key, on) { if (on) LOOK.hides.add(key); else LOOK.hides.delete(key); lookSync(); }
 function lookSync() {
   const live = LOOK.skin?.alive ? LOOK.skin : null, hide = vfxOn && LOOK.hides.size > 0, sk = vfxOn ? live : null, off = new Map(), add = [];
+  const shell = sk && !sk.body ? sk : null;    // a body look (grow + tint, HeroSkin.body) keeps the hero's own meshes drawn
   if (C && (LOOK.hides.size || live)) C.root.traverse(o => {
     if (!o.isMesh) return;
-    if (o.userData.lookCopy) { if (hide || !sk) off.set(o, 0); return; }   // a skin's copy: not while hidden or VFX off
+    if (o.userData.lookCopy) { if (hide || !shell) off.set(o, 0); return; }   // a skin's copy: not while hidden or VFX off
     if (o.userData.hoverOverlay) { if (hide) off.set(o, 0); return; }
     if (hide) off.set(o, 0);
-    else if (sk) { off.set(o, LOOK_LAYER_MASK); add.push(o); }             // under a skin: its copy drawn, itself still clicked
+    else if (shell) { off.set(o, LOOK_LAYER_MASK); add.push(o); }          // under a skin: its copy drawn, itself still clicked
   });
-  if (add.length) sk.sync(add);
+  if (add.length) shell.sync(add);
+  if (live?.body) live.bodySync(!!sk);         // grown and tinted while VFX is on (pieces put on meanwhile too), else as it was
   for (const [o] of LOOK.off) if (!off.has(o)) o.layers.mask = o.userData.lookMask ?? 1;
   for (const [o, m] of off) { if (!LOOK.off.has(o)) o.userData.lookMask = o.layers.mask; o.layers.mask = m; }
   LOOK.off = off;
@@ -4478,15 +4561,60 @@ const HERO_SKINS = {
       return g;
     } };
   },
+  // a second kind of look, the hero's own body changed (no shell, no copies; 2026-11-13, the Bison, plans/fx_bison/
+  // decisions.md 31, parts.md part 6, Interfaces 2): { grow, tint }: the hero's root scaled by grow at once (the game's
+  // localScale += n x one on the Bison's scale-1 root) and every hero mesh material's colour times tint as gamma values
+  // (setColor writes _Color.rgb on every renderer under the character, CharacterControl.cs:21702-21800, whose normal
+  // value is 0.86, :15153: the page's hero stands for 0.86, so tint = the status colour / 0.86, as the Bat's CLONE_TINT).
+  // Enrage at sLv 5 (Enrage 4 + Rage Control #402, decision 24): localScale + 0.05 x 5, setColor(0.8 + 0.05 x 5,
+  // 0.8 - 0.05 x 5, 0.8 - 0.05 x 5) (:34713-34729); Titan Form 2: + (0.3 x 2 + 0.2), setColor(0.6, 0.7, 1) (:35209-35225)
+  "enrage": () => ({ grow: 1.25, tint: [1.05 / 0.86, 0.55 / 0.86, 0.55 / 0.86] }),
+  "titanForm": () => ({ grow: 1.8, tint: [0.6 / 0.86, 0.7 / 0.86, 1 / 0.86] }),
 };
 // a "skin" cue's look, kept with the effects (FX.live: a new pick or a class change ends it, its kill too; Fx's shape for
 // the checks: name, emitters, attached, group, loops); a newer skin replaces it (the game's status refreshed)
+// A body look (HERO_SKINS' { grow, tint }, 2026-11-13, the Bison's Enrage / Titan Form: decisions.md 31): this.body; the
+// hero's root scaled (its scale before kept), each hero material's colour (outfit, props; not the hover's overlays or a
+// skin's copies) multiplied in place, its own colour remembered and put back at the end (dispose, VFX off). The hover's
+// colour looks save and restore those same materials (hoverClear puts back what it saved): it is cleared at each switch,
+// so it never saves a tinted colour and restores it later; it paints again on the next pointer move
 class HeroSkin {
   constructor(name, make) {
     this.name = "skin:" + name; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
     this.look = make(); this.ghosts = new Map(); this.copies = new Map();     // original material -> its pass 2; mesh -> its two copies
+    this.body = !this.look.shell && (this.look.grow != null || this.look.tint) ? this.look : null;
+    this.bodyOn = false; this.tinted = new Map(); this.bodyRoot = null;       // material -> its own colour
     if (LOOK.skin?.alive) LOOK.skin.dispose();
     LOOK.skin = this; lookSync();
+  }
+  bodySync(on) {
+    const b = this.body;
+    if (!b) return;
+    if (on && C && (!this.bodyOn || this.bodyRoot !== C.root)) {
+      if (this.bodyOn) this.bodySync(false);    // another class's root (never kept: a class change ends the look)
+      hoverClear();
+      this.bodyOn = true; this.bodyRoot = C.root; this.scale0 = C.root.scale.clone();
+      if (b.grow != null) C.root.scale.copy(this.scale0).multiplyScalar(b.grow);
+    }
+    else if (!on && this.bodyOn) {
+      hoverClear();
+      this.bodyOn = false;
+      this.bodyRoot.scale.copy(this.scale0);
+      for (const [m, c] of this.tinted) m.color.copy(c);
+      this.tinted.clear();
+      return;
+    }
+    if (!on || !b.tint) return;
+    const t = b.tint, s = { r: 1, g: 1, b: 1 };
+    C.root.traverse(o => {
+      if (!o.isMesh || o.userData.hoverOverlay || o.userData.lookCopy) return;
+      for (const m of [].concat(o.material)) {
+        if (!m?.color || this.tinted.has(m)) continue;
+        this.tinted.set(m, m.color.clone());
+        m.color.getRGB(s, THREE.SRGBColorSpace);
+        m.color.setRGB(s.r * t[0], s.g * t[1], s.b * t[2], THREE.SRGBColorSpace);
+      }
+    });
   }
   attached() { return false; }
   sync(meshes) {                               // a copy for every original mesh shown now (an outfit or a prop put on meanwhile too)
@@ -4508,9 +4636,53 @@ class HeroSkin {
     this.alive = false;
     for (const xs of this.copies.values()) for (const x of xs) x.removeFromParent();
     for (const g of this.ghosts.values()) g.dispose();
-    this.look.shell.dispose(); this.copies.clear(); this.ghosts.clear();
+    this.look.shell?.dispose(); this.copies.clear(); this.ghosts.clear();
+    this.bodySync(false);                        // the body look: its scale and colours back
     if (LOOK.skin === this) LOOK.skin = null;
     lookSync();
+  }
+}
+// A "lift" cue's height curve (2026-11-13, the Bison's Titan Drop: plans/fx_bison/decisions.md 22, tto.md B8): the hero
+// raised off the floor in place (never moved along the ground), by name: Unity AnimationCurve keys [time, value,
+// inTangent, outTangent], evaluated as Unity does (cubic Hermite between keys, the end values held outside them). Times
+// are against the cue: a cue at t 0 of the clip uses the keys' own times (Titan Drop's path is timed from its start,
+// Time.time - start: [0, "lift", "titanDrop"]); a cue at t s shifts them all t s later. Titan Drop: TitanDropPath's
+// height, TTO1102:Bison::TitanDropPath@0x1B47610 (Bison.c:29824-30082): 0 m at 0.4 s rising (out 13.68889), 2.8 m at
+// 0.85 s, 3 m at 1.2 s, down to 0 at 1.5 s (in -20); its ground track (forward 6.1 m) left out, the page's hero stays put
+const LIFTS = {
+  titanDrop: [[0.4, 0, 0, 13.68889], [0.85, 2.8, 0.5142857, 0.5142857], [1.2, 3, 0, 0], [1.5, 0, -20, 0]],
+};
+function liftAt(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) {
+    const [t0, v0, , m0] = keys[i - 1], [t1, v1, m1] = keys[i];
+    if (t > t1) continue;
+    const d = t1 - t0, s = d > 0 ? (t - t0) / d : 1, s2 = s * s, s3 = s2 * s;
+    return (2 * s3 - 3 * s2 + 1) * v0 + (s3 - 2 * s2 + s) * d * m0 + (-2 * s3 + 3 * s2) * v1 + (s3 - s2) * d * m1;
+  }
+  return keys[keys.length - 1][1];
+}
+// the lift itself, kept with the effects (FX.live: a new pick, a class change or the curve's end puts the hero back on
+// the floor; Fx's shape for the checks: name, emitters, attached, group, loops); a newer lift replaces it. Each frame the
+// hero's root y = its height before + the curve at this cue's age (effects riding it: Fx's followPosition, above)
+class HeroLift {
+  constructor(name, keys) {
+    this.name = "lift:" + name; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
+    if (LOOK.lift?.alive) LOOK.lift.dispose();
+    LOOK.lift = this; this.keys = keys; this.root = C.root; this.y0 = C.root.position.y;
+    this.end = keys[keys.length - 1][0];
+    this.root.position.y = this.y0 + liftAt(keys, 0);
+  }
+  attached() { return false; }
+  update(dt) {
+    this.age += dt;
+    if (this.age >= this.end || this.root !== C?.root) return this.dispose();
+    this.root.position.y = this.y0 + liftAt(this.keys, this.age);
+  }
+  dispose() {
+    if (!this.alive) return;
+    this.alive = false; this.root.position.y = this.y0;
+    if (LOOK.lift === this) LOOK.lift = null;
   }
 }
 // a "clone" cue's copy of the hero (2026-11-13, the Bat's Shadow Illusion: plans/fx_bat/parts.md part 6, decisions.md
@@ -4601,6 +4773,21 @@ function fxSpawn(name, at = {}, opts = {}) {
   return f;
 }
 const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
+// item sets a cue's worn / notWorn may name ([slot, "<set>"]; 2026-11-13, plans/fx_bison/decisions.md 25, 26, tto.md
+// B7): bisonHammer = the props of BB's isHammer, Bison.cs:8284-8468 (22 codes; Power Cleave's hammer, Power Hammer), plus
+// TTO's two more, TTO1102:Bison::isHammer@0x1B4EF30's w_bsn68 / w_bsn69 (24 exact codes: Magma Quake's hammer branch),
+// through wardrobe/data/item_map.json's bison.weapon (w_bsn50 / 51 are both royalHammer, w_bsn60 / 61 legendHammer,
+// w_bsn62 legendHammerR has no prop, w_bsn68 none mapped; w_bsn69 = timeHammer)
+const ITEM_SETS = { bisonHammer: ["stoneClub", "toyHammer", "bdWeapon", "defenderHammer", "defenderHammerR", "barbell", "warlordHammer",
+  "warlordHammerR", "hallowLance", "havocHammer", "havocHammerR", "havocHammerV", "superStarBass", "mummyMace", "goldenHammer",
+  "royalHammer", "royalHammerR", "specialHammer", "legendHammer", "legendHammerR", "timeHammer"] };
+// [slot, item | [items] | "<set>"]: whether the hero wears one of them there (a set name first, else the one item)
+function wearing(w) {
+  const it = C?.state?.[w[0]];
+  if (!it) return false;
+  const v = w[1], items = Array.isArray(v) ? v : Object.hasOwn(ITEM_SETS, v) ? ITEM_SETS[v] : [v];
+  return items.includes(it);
+}
 function fxStart(clip, step = 0) {
   FX.t = 0;
   const tab = FX.cueTab[C?.cls] || {}, ch = chainOf(C?.cur);
@@ -4625,15 +4812,15 @@ function fxStart(clip, step = 0) {
   // ground, Penguin_nAttack.cs:115-145, :196-202, so its landing hits at the 10 m point don't come)
   // worn [slot, item]: only while that item is worn there (2026-11-13, the Bat's Homing Wand, w_bat59 = "specialWand":
   // the Normal Attack bolts home on the target and hit it, Bat.cs:10765-10788, plans/fx_bat/decisions.md 15)
-  const worn = c => !(Array.isArray(c.notWorn) && C?.state?.[c.notWorn[0]] === c.notWorn[1])
-    && !(Array.isArray(c.worn) && C?.state?.[c.worn[0]] !== c.worn[1]);
+  // (2026-11-13, the Bison: either one's item may be a list of items or a set name in ITEM_SETS, decisions.md 25, 26)
+  const worn = c => !(Array.isArray(c.notWorn) && wearing(c.notWorn)) && !(Array.isArray(c.worn) && !wearing(c.worn));
   FX.cues = cues.map(cueOf).filter(c => worn(c) && rolled(c));
   // "everyCycle": the cues again on every cycle of the looped clip, against its own time (fxTick; the run's wing flap)
   const own = e?.skills ? e.skills[FX.pick] : e;
   FX.cycle = (own?.everyCycle || e?.everyCycle) && C.action ? { act: C.action, last: C.action.time } : null;
   for (const c of FX.cues) {
     if (c.kind === "clone") skeletonUtils().catch(() => {});   // the copy's module, ahead of its time
-    else if (c.kind !== "fx" && c.kind !== "skin" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
   }
 }
 // (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
@@ -4687,6 +4874,12 @@ function fxDue(t, inclusive) {
       const make = HERO_SKINS[c.name];
       if (!make) { FX.missing["skin:" + c.name] = 1; continue; }
       const f = new HeroSkin(c.name, make); f.killAt = c.kill; FX.live.push(f);
+      FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
+    }
+    else if (c.kind === "lift") {               // the hero raised off the floor along a curve (LIFTS, HeroLift)
+      const keys = LIFTS[c.name];
+      if (!keys) { FX.missing["lift:" + c.name] = 1; continue; }
+      const f = new HeroLift(c.name, keys); FX.live.push(f);
       FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
     }
     else if (c.kind === "clone") {              // a copy of the dressed hero (HeroClone), not an effect file

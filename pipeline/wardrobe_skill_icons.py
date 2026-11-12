@@ -31,12 +31,16 @@ CLIP_SKILLS = {
         "resurrection": ["massResurrection"],                                        # RPC_massResurrection
         "mirrorCounter1": ["mirrorBlade"], "mirrorCounter2": ["mirrorBlade"],        # Mirror Blade
     },
+    # the cleave tile is Power Cleave (2026-11-13, plans/fx_bison/decisions.md 10, skills_a.md Q8: Power Hammer, a passive,
+    # gets no icon)
+    "bison": {"cleave": ["powerCleave"]},
 }
 
 
 # skills the game plays with no body animation, shown as idle-stance tiles (index.html SEQ "<Name>: root@<t>", 2026-11-10;
 # found by listing each class's RPC_* that calls no clip, NOTES.md that day; the Bat's 2026-11-13, plans/fx_bat/effect_only.md)
-EFFECT_ONLY = {"sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast", "frostSpike"],
+# (the Bison's Berserker Rush and Fury Trance, passives' procs: plans/fx_bison/effect_only.md, decisions.md 6)
+EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast", "frostSpike"],
                "bat": ["massCast", "shadowGaze", "switch", "shadowSacrifice"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip (the Bat's
 # Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3)

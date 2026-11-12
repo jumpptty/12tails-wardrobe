@@ -146,6 +146,23 @@ LAYOUTS.update({
     "AudioControl": [("minVolume", "f"), ("maxVolume", "f"), ("delay", "f"), ("fadein", "f"), ("middle", "f"),
                      ("fadeout", "f")],
 })
+# the Bison's parts (plans/fx_bison/parts.md, 2026-11-13, decisions.md 36, 39; checks/fx_bison_research/parts/probe.txt:
+# UVScroll's three instances are its two floats exactly, (0.2, -0.2); Bison_earthRupture / Bison_overLord keep every
+# field private)
+LAYOUTS.update({
+    "UVScroll": [("scroll_x", "f"), ("scroll_y", "f")],   # UVScroll.cs:67, :70 (8 bytes; Bison 2, Cat 1, Whale 1)
+    "Bison_earthRupture": [],                             # Bison_earthRupture.cs:218-228: all private (the mover, fxparts/bison.js)
+    "Bison_overLord": [],                                 # Bison_overLord.cs:206-215: all private (an aura trigger: draws nothing)
+})
+# BB effects whose Unity 3.5 Shuriken (ParticleSystem + ParticleSystemRenderer) this file does not decode, grafted from
+# TTO's client copy of the same prefab (2026-11-13, plans/fx_bison/decisions.md 40, parts.md part 5): magmaClutter_ring2's
+# TrailEmitter node carries the swing's puffs; TTO's copy has them decoded but loses the node's Animation `cleave` (the
+# swing), so BB's effect stays (its TrailEmitter keeps ["ExplosionRay"] and the swing) and TTO's two components go on a new
+# child of that node at local identity. Their material: SHURIKEN_MAT, BB's own of the same shader (TTO's tto_Bomb2 is
+# Legacy Shaders/Particles/Multiply (Double); BB's Bomb2 is built-in 206 = multiply2, read from the BB effect named
+# beside it), so no TTO texture ships and fxparts/shuriken.js reads it as any node's mats[0]
+SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"]}
+SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1")}   # (BB material, a BB effect of the class that has it)
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
 # state, nothing an effect draws)
 NOT_DRAWN = {"CharacterControl"}
@@ -365,6 +382,62 @@ def effect(game, cls, name, mats, texs, sounds):
     return {"nodes": nodes}
 
 
+def node_paths(nodes):
+    """Each node's name path below the root ("" for the root, "magmaClutter_cleave/TrailEmitter" ...)."""
+    out = []
+    for n in nodes:
+        out.append("" if n["parent"] < 0 else (out[n["parent"]] + "/" if out[n["parent"]] else "") + n["name"])
+    return out
+
+
+def graft_shuriken(game, cls, effects, mats, texs):
+    """SHURIKEN_FROM_TTO (decisions.md 40): for each listed effect built here, TTO's copy read through
+    pipeline/wardrobe_fx_tto.py (Tto / Build / effect, as wardrobe_weapon_fx.tto_weapons does), and under every BB node
+    whose name path matches a TTO node carrying a ParticleSystem, a new child node at local identity (pos 0, rot identity,
+    scale 1) holding that node's ParticleSystem and ParticleSystemRenderer dicts, its mats (and the renderer's
+    m_Materials) = SHURIKEN_MAT's BB material, added to mats. Only where TTO's bundles are (home): elsewhere a warning, and
+    BB's effect stays as it is (no puffs)."""
+    names = [n for n in SHURIKEN_FROM_TTO.get(cls, []) if n in effects]
+    if not names:
+        return
+    import importlib.util
+    import sys
+    try:
+        spec = importlib.util.spec_from_file_location("wardrobe_fx_tto", os.path.join(HERE, "wardrobe_fx_tto.py"))
+        T = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(T)
+        if not os.path.exists(os.path.join(T.ASSETS, "catalog.bin")) or not os.path.exists(T.AA_CATALOG):
+            raise FileNotFoundError(f"TTO's bundles ({T.ASSETS}) or the catalog reader ({T.AA_CATALOG})")
+        tto = T.Tto(cls, names)
+        b = T.Build(tto)
+        got = {n: T.effect(tto, b, n) for n in names}
+    except (Exception, SystemExit) as ex:             # noqa: BLE001 (the office without TTO's bundles: BB's version stays)
+        print(f"warning: {cls}: no Shuriken graft for {names} ({type(ex).__name__}: {ex}); BB's version kept", file=sys.stderr)
+        return
+    mat, src = SHURIKEN_MAT[cls]
+    if mat not in mats:                               # BB's material of the same shader, read from a BB effect that has it
+        tmp_m, tmp_t = {}, {}
+        effect(game, cls, src, tmp_m, tmp_t, set())
+        mats[mat] = tmp_m[mat]
+        if tmp_m[mat].get("tex") in tmp_t:
+            texs.setdefault(tmp_m[mat]["tex"], tmp_t[tmp_m[mat]["tex"]])
+    for n in names:
+        bb_nodes, tto_nodes = effects[n]["nodes"], got[n]["nodes"]
+        tto_at = dict(zip(node_paths(tto_nodes), tto_nodes))
+        for i, (path, node) in enumerate(list(zip(node_paths(bb_nodes), bb_nodes))):
+            t = tto_at.get(path)
+            comps = [c for c in (t or {}).get("comps", []) if c["type"] in ("ParticleSystem", "ParticleSystemRenderer")]
+            if not any(c["type"] == "ParticleSystem" for c in comps):
+                continue
+            comps = json.loads(json.dumps(comps))
+            for c in comps:
+                if c["type"] == "ParticleSystemRenderer":
+                    c["m_Materials"] = [mat]
+            bb_nodes.append({"name": node["name"] + "_shuriken", "parent": i, "pos": [0, 0, 0], "rot": [0, 0, 0, 1],
+                             "scale": [1, 1, 1], "comps": comps, "mats": [mat]})
+            print(f"{cls}: {n}/{path}: TTO's ParticleSystem grafted (node {len(bb_nodes) - 1}, material {mat})", file=sys.stderr)
+
+
 def rip_wav(cls, name, folder=None):
     """The rip's WAV: from the class's voices/ or sounds/ when the cue says which (they share names: crusader1, nAttack1
     ... are different recordings in each, 2026-11-09), else sounds/ then voices/ then anywhere (an effect's own sound).
@@ -457,7 +530,10 @@ def main():
         game = Game()
         for n in a.probe.split(","):
             try:
-                print(json.dumps({n: effect(game, a.cls, n, {}, {}, set())}, indent=1))
+                pm = {}
+                one = {n: effect(game, a.cls, n, pm, {}, set())}
+                graft_shuriken(game, a.cls, one, pm, {})      # (SHURIKEN_FROM_TTO: TTO's Shuriken read too, in memory)
+                print(json.dumps(one, indent=1))
             except Exception as e:      # noqa: BLE001 (a script with no layout yet: say so, go on)
                 print(json.dumps({n: f"{type(e).__name__}: {e}"}))
         return
@@ -472,7 +548,8 @@ def main():
     spell = {n.lower(): n for n in cue_names(a.cls)[0].split(",") if n} if os.path.exists(os.path.join(os.path.dirname(DATA), "fx_cues", a.cls + ".json")) else {}
     for n in [n for n in a.fx.split(",") if n]:
         effects[spell.get(n.lower(), n)] = effect(game, a.cls, n, mats, texs, sounds)
-    voices = [v for v in a.voices.split(",") if v]
+    graft_shuriken(game, a.cls, effects, mats, texs)   # TTO's decoded Shuriken onto BB's effect (decisions.md 40)
+    voices =[v for v in a.voices.split(",") if v]
     hero_sounds = [v for v in a.sounds.split(",") if v]
     # textures -> data/fx/tex (shared by every class), sounds -> data/<cls>/sfx
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)

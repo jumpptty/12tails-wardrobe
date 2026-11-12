@@ -14,7 +14,12 @@ the Penguin's Cosmic Rift / Cosmic Friday: the hero's own look, index.html HERO_
 the page it must take hold (FX.spawned "skin:<name>") like an effect. 2026-11-13, the Bat: a "clone" cue (a copy of the
 dressed hero, index.html HeroClone) names a clip of the class and must appear (FX.spawned "clone:<clip>"); an entry's
 "builds" (what a page part spawns, api.spawn, or plays: "sound:<name>" / "voice:<name>") must be in the data too, and
-its effects must spawn (the page counts them in FX.spawned); "everyCycle": true is a flag (the run's wing flap)."""
+its effects must spawn (the page counts them in FX.spawned); "everyCycle": true is a flag (the run's wing flap).
+2026-11-13, the Bison (plans/fx_bison/decisions.md 1, 2, 22): a SEQ step may hold alternatives "a|b" (each with its own
+fade / @t / %p, index.html seqStep): every alternative's clip belongs to the sequence, and a sequence tile with
+alternatives is played once per alternative (the page's test hook window.__seqAlt forces the pick), so each one's cues
+are checked; a "lift" cue (the hero raised along a curve, index.html LIFTS / HeroLift) names one of the page's LIFTS and
+must take hold (FX.spawned "lift:<name>")."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
@@ -33,7 +38,8 @@ CLASSES = A.cls.split(",") if A.cls else [c for c, t in CUES.items() if t]
 
 
 def seqs():
-    """index.html's SEQ: {cls: {sequence id (its name without spaces): [step clips]}}."""
+    """index.html's SEQ: {cls: {sequence id (its name without spaces): [[each step's alternative clips]]}} (a step "a|b"
+    lists both, index.html seqStep: the clip name before *, ~t, ^, !, @t, %p)."""
     html = (ROOT / "wardrobe" / "index.html").read_text(encoding="utf-8")
     block = re.sub(r"//[^\n]*", "", re.search(r"\nconst SEQ = \{(.*?)\n\};", html, re.S).group(1))
     out, cls = {}, None
@@ -42,11 +48,25 @@ def seqs():
             cls = m.group(1); out[cls] = {}
         else:
             name, body = m.group(2).split(": ", 1)
-            out[cls][name.replace(" ", "")] = [re.match(r"\w+", t).group(0) for t in body.split()]
+            out[cls][name.replace(" ", "")] = [[re.match(r"\w+", a).group(0) for a in t.split("|")] for t in body.split()]
     return out
 
 
 SEQS = seqs()
+
+
+def seq_clips(cls, sq):
+    """Every clip sequence sq of the class may play (each step's alternatives)."""
+    return [c for alts in SEQS.get(cls, {}).get(sq, []) for c in alts]
+
+
+def seq_plays(cls, sq):
+    """The plays that show every alternative once: for k = 0 .. the most alternatives a step has - 1, ({step index:
+    k for each step with alternatives}, the clip each step then plays); one play ({}, the clips) when none has any."""
+    steps = SEQS[cls][sq]
+    n = max([len(a) for a in steps] or [1])
+    return [({i: min(k, len(a) - 1) for i, a in enumerate(steps) if len(a) > 1}, [a[min(k, len(a) - 1)] for a in steps])
+            for k in range(n)]
 
 
 def hero_skins():
@@ -57,6 +77,16 @@ def hero_skins():
 
 
 SKINS = hero_skins()
+
+
+def lifts():
+    """index.html's LIFTS: the names a "lift" cue may give (2026-11-13, the Bison's Titan Drop)."""
+    html = (ROOT / "wardrobe" / "index.html").read_text(encoding="utf-8")
+    block = re.search(r"\nconst LIFTS = \{(.*?)\n\};", html, re.S)
+    return set(re.findall(r'^  "?(\w+)"?:', block.group(1), re.M)) if block else set()
+
+
+LIFT_NAMES = lifts()
 
 
 def split_key(key):
@@ -112,8 +142,9 @@ def expected(entries):
     """The effects every play of these entries must show, as the page tallies them (FX.spawned): fx cues, "skin:<name>",
     "clone:<clip>" (their "a|b" picks and rolled procs vary: not expected; nor a "worn" cue's, which needs an item the
     check's default dress lacks: the Bat's Homing Wand hits), and the effects their "builds" names."""
-    out = {("skin:" if cue[1] == "skin" else "clone:" if cue[1] == "clone" else "") + cue[2] for e in entries for cue in e.get("cues", [])
-           if cue[1] in ("fx", "skin", "clone") and "|" not in cue[2]
+    out = {("skin:" if cue[1] == "skin" else "clone:" if cue[1] == "clone" else "lift:" if cue[1] == "lift" else "") + cue[2]
+           for e in entries for cue in e.get("cues", [])
+           if cue[1] in ("fx", "skin", "clone", "lift") and "|" not in cue[2]
            and not (len(cue) > 3 and isinstance(cue[3], dict) and ("p" in cue[3] or "worn" in cue[3]))}
     return sorted(out | {n for e in entries for k, n in builds({"builds": e.get("builds", [])}) if k == "fx" and "|" not in n})
 
@@ -124,7 +155,7 @@ def expected(entries):
 # y, d, kill)
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
         "worn", "end"}
-KINDS = ("fx", "voice", "sound", "skin", "clone")
+KINDS = ("fx", "voice", "sound", "skin", "clone", "lift")      # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS)
 ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle"}, {"why", "cues", "builds", "everyCycle"}
 
 
@@ -141,7 +172,7 @@ def file_errors(cls):
         sq, clip = split_key(key)
         if clip not in clips:
             errs.append(f"{cls}: cue key {key} is not a clip of the class")
-        elif sq and clip not in SEQS.get(cls, {}).get(sq, []):
+        elif sq and clip not in seq_clips(cls, sq):
             errs.append(f"{cls}: cue key {key}: no sequence {sq} in index.html's SEQ that plays {clip}")
         if not isinstance(e.get("why"), str) or ("cues" in e) == ("skills" in e):
             errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
@@ -164,6 +195,9 @@ def file_errors(cls):
                              for n in c[2].split("|") if n not in SKINS]
                 elif c[1] == "clone":                       # a copy of the hero playing one of her clips (HeroClone)
                     errs += [f"{cls}: {key}: clone {n} is not a clip of the class" for n in c[2].split("|") if n not in clips]
+                elif c[1] == "lift":                        # the hero raised along a curve (index.html LIFTS, HeroLift)
+                    errs += [f"{cls}: {key}: lift {n} is not one of index.html's LIFTS {sorted(LIFT_NAMES)}"
+                             for n in c[2].split("|") if LIFT_NAMES and n not in LIFT_NAMES]
     return errs
 
 
@@ -186,7 +220,7 @@ LIVE = """() => { const { FX } = wardrobe.debug();
 TILES = """clips => { const { chains, C } = wardrobe.debug(), ch = chains();
   return clips.map(c => { const k = c.match(/^@([^:]+):(.+)$/);
     if (k) { const s = ch.find(s => s.id === "@" + k[1].replace(/\\s+/g, "")); return s ? [s.id, "skill"] : [c, "skill"]; }
-    const s = ch.find(s => s.steps.some(st => st.clip === c));
+    const s = ch.find(s => s.steps.some(st => (st.alts || [st]).some(a => a.clip === c)));
     return s ? [s.id, "skill"] : [c, /^walk$/i.test(c) ? "base" : C.clipsData[c]?.group || "skill"]; }); }"""
 
 
@@ -195,8 +229,11 @@ def safe(n):
     return re.sub(r"[^\w.-]", "_", n)
 
 
-async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
+async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP, force=None):
+    """force: {step index: alternative index} for a sequence with alternatives (index.html's window.__seqAlt test hook),
+    kept while the tile plays; the shots' names then carry "~<alternative>"."""
     await page.evaluate("() => { const { FX } = wardrobe.debug(); FX.spawned = {}; FX.missing = {}; }")
+    await page.evaluate("f => { window.__seqAlt = f; }", {str(k): v for k, v in force.items()} if force else None)
     if await page.locator('#picker').is_hidden():                      # reopen the move picker
         await page.click('button.topic[data-t="move"]')
     await page.click(f'.pk-tab[data-g="{group}"]')
@@ -205,7 +242,7 @@ async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
     await page.click(f'#pkBody .pk-item[data-m="{tile}"]')
     await page.click('#pkClose') if await page.locator('#pkClose').count() else None
     t0 = await page.evaluate("() => performance.now()")
-    samples, first, shot, peak, key = [], {}, set(), 0, tile.lstrip("@")
+    samples, first, shot, peak, key = [], {}, set(), 0, tile.lstrip("@") + (f"~{max(force.values())}" if force else "")
     while True:
         now = (await page.evaluate("() => performance.now()") - t0) / 1000
         live = await page.evaluate(LIVE)
@@ -225,8 +262,9 @@ async def play_tile(page, var, cls, tile, group, expect, shots, cap=CAP):
         if (done and now > last + SETTLE) or now > cap:
             break
         await page.wait_for_timeout(30)
-    print(f"== {var} {cls} {tile}: " + " | ".join(samples[::3]))
-    return [f"{cls} {tile}: cued effect {n} " + ("is not in fx.json" if n in tally["m"] else "never spawned")
+    await page.evaluate("() => { window.__seqAlt = null; }")
+    print(f"== {var} {cls} {tile}" + (f" (alternatives {force})" if force else "") + ": " + " | ".join(samples[::3]))
+    return [f"{cls} {tile}" + (f" (alternatives {force})" if force else "") + f": cued effect {n} " + ("is not in fx.json" if n in tally["m"] else "never spawned")
             for n in expect if n not in tally["s"]]
 
 
@@ -256,7 +294,7 @@ async def main():
                 # one tile per pool member (index.html poolChains, 2026-11-10): a pool's clip is played through each
                 # member's own tile, which expects that member's cues; its host tile (the Cast sequence) is not listed
                 pools = {p[0]: p for p in await page.evaluate(
-                    "() => wardrobe.debug().chains().filter(c => c.pick).map(c => [c.id, c.pick, c.steps.map(s => s.clip)])")}
+                    "() => wardrobe.debug().chains().filter(c => c.pick).map(c => [c.id, c.pick, c.steps.flatMap(s => (s.alts || [s]).map(a => a.clip))])")}
                 pooled = {clip for _, pick, steps in pools.values() for clip in steps if CUES[cls].get(clip, {}).get("skills", {}).get(pick)}
                 hidden = set(await page.evaluate("() => wardrobe.debug().chains().filter(c => c.hidden).map(c => c.id)"))
                 order = [t for c in clips if tile_of[c][0] not in hidden or c in pooled for t in ([tuple(tile_of[c])] if c not in pooled else
@@ -274,13 +312,16 @@ async def main():
                     # a shared clip's skills are picked at random, so none of theirs is expected either
                     # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)
                     sq = tile[1:] if tile.startswith("@") and tile[1:] in SEQS.get(cls, {}) else None
-                    entries = [entry_for(cls, sq, c) for c in SEQS[cls][sq]] if sq else [CUES[cls].get(tile, {})]
-                    # (a skin cue's look: "skin:<name>", a clone "clone:<clip>", as the page tallies them; a part's spawns too)
-                    expect = expected(entries)
-                    # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
-                    cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
-                    errs = await play_tile(page, var, cls, tile, group, expect, shots, cap)
-                    errors += [e for e in errs if e not in errors]
+                    # a sequence with alternatives (the Bison's Normal Attack, nAttack4 | nAttack3): once per alternative
+                    for force, step_clips in (seq_plays(cls, sq) if sq else [({}, None)]):
+                        entries = [entry_for(cls, sq, c) for c in step_clips] if sq else [CUES[cls].get(tile, {})]
+                        # (a skin cue's look: "skin:<name>", a clone "clone:<clip>", a lift "lift:<name>", as the page
+                        # tallies them; a part's spawns too)
+                        expect = expected(entries)
+                        # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
+                        cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
+                        errs = await play_tile(page, var, cls, tile, group, expect, shots, cap, force)
+                        errors += [e for e in errs if e not in errors]
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")
         print("sound:", snd)
         await b.close()

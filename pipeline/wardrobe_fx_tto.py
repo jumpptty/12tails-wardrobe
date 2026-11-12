@@ -123,6 +123,19 @@ SKILL_FX = {
     # her chest at 0.4 s (:18882-18895), the 28 bats (:19013), the hits on the foes passed (:19082-19214), the reform at the
     # landing (:19433)
     "bat": ["nightfallSwarm_wrap", "nightfallSwarm_burst", "nightfallSwarm_bat", "nightfallSwarm_hit", "nightfallSwarm_reform"],
+    # plans/fx_bison/parts.md part 10 as its Verification corrects it (2026-11-13, decisions.md 42): the three released
+    # skills' 17 prefabs and the status look unchained (TTO1102: addresses; titanDrop_slam is "titanDrop_slam" + (i + 1))
+    "bison": [
+        # Magma Quake: TTO1102:Bison.<RPC_magmaQuake>d__234::MoveNext@0x1B69E50, <MagmaQuakeTicks>d__239@0x1B5C3A0,
+        # Bison::MagmaQuakeImpact@0x1B41710
+        "magmaQuake_magmaField", "magmaQuake_quakeField", "magmaQuake_magmaTick", "magmaQuake_quakeTick",
+        "magmaQuake_magmaSlam", "magmaQuake_quakeSlam",
+        # Titan Drop: <RPC_titanDrop>d__281::MoveNext@0x1B78BD0, Bison::TitanDropCharge@0x1B46C50, <TitanDropRings>d__289@0x1BA91D0
+        "titanDrop_takeoff", "titanDrop_mark", "titanDrop_charge", "titanDrop_dive",
+        "titanDrop_slam1", "titanDrop_slam2", "titanDrop_slam3",
+        # Unchained Fury: <RPC_unchainedFury>d__278::MoveNext@0x1B7BFC0 (+ CharacterControl::AddUnchainedFx@0x24AEB60, the status look)
+        "unchainedFury_chains", "unchainedFury_break", "unchainedFury_roar", "unchainedFury_plant", "unchained",
+    ],
 }
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
