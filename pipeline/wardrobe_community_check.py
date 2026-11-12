@@ -262,6 +262,17 @@ async def main():
         await page.click("#undo"); await page.wait_for_timeout(800)
         check(await page.evaluate(STATE) == before, f"one undo step takes the whole look off: {await page.evaluate(STATE)}")
         await page.click("#redo"); await page.wait_for_timeout(800)
+        # a part of the set swapped for another piece: the card offers ลองทั้งชุด again (user 2026-11-12)
+        WEAR = "() => document.querySelector('.sets .gal-card[data-set=\"900010\"] [data-a=\"wear\"]').innerText"
+        await page.click("#cm"); await page.wait_for_selector(".sets .gal-card")
+        w1 = await page.evaluate(WEAR)
+        await page.keyboard.press("Escape")
+        await page.evaluate("() => wardrobe.show('sheep', { R: 'halloweenLantern' })"); await page.wait_for_timeout(500)
+        await page.click("#cm"); await page.wait_for_selector(".sets .gal-card")
+        w2 = await page.evaluate(WEAR)
+        await page.keyboard.press("Escape")
+        check((w1, w2) == ("ใส่อยู่", "ลองทั้งชุด"), f"worn while every piece is on; another weapon makes it wearable again: {w1!r} -> {w2!r}")
+        await page.evaluate("() => wardrobe.show('sheep', { R: 'mothLatern' })"); await page.wait_for_timeout(500)
         await page.evaluate("() => wardrobe.debug().setCommunity({ skins: [{ id: '1', cls: 'sheep', kind: 'weapons', item: 'mothLatern', name: 'x', link: '', at: '1', tex: {} }] })")
         legacy = await page.evaluate("() => wardrobe.debug().SETS.map(s => [s.id, s.pieces[0].slot, s.pieces.length])")
         check(legacy[0] == ["1", "R", 1] and {s[0] for s in legacy[1:]} == {t["id"] for t in json.loads((DATA / "team_sets.json").read_text("utf-8"))["sets"]},

@@ -1346,4 +1346,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   send: always shown online (SUBMIT_KEY), it collects every worn piece wearing the visitor's own skin (ownPieces: not the
   game's texture, not a community skin, never TTO's) into one submission; with none it says how to put one on. Gone: the
   piece menu's ส่งลายนี้ให้ทีมงาน and the gallery's ส่งลายของคุณ. Phone (<= 480 px): tighter toolbar buttons so the bar
-  clears the logo chip (measured: 360 / 390 / 430 px all clear). Checks: community all ok, menu 35 ok.
+  clears the logo chip (measured: 360 / 390 / 430 px all clear). Checks: community all ok, menu 35 ok.  Deployed cde7de25. Then (user, with the Whale card saying ใส่อยู่ after a part was changed: "you should detect whether
+  the user changed any part that replaced the community skins, if yes the try this skin set should be available
+  again"): a skin stays in SKINS on a piece taken off, so its presence alone said ใส่อยู่. Now `setWorn2`: worn = every
+  piece this copy can wear is on in its slot and all its textures wear this set's skin; the piece pop-up's ใส่อยู่ also
+  needs the piece on. Check: wear the look, swap the weapon, the card says ลองทั้งชุด again.

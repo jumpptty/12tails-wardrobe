@@ -1710,7 +1710,7 @@ const Gallery = {
   async open(slot, item) {
     const kind = kindOf(slot), cs = communityOf(kind, item);
     if (!cs.length) return;
-    const on = skinBy(kind, item)?.id;
+    const on = pieceOnNow(slot, item) ? skinBy(kind, item)?.id : null;   // the skin counts only while the piece is on
     this.cur = { slot, item, back: document.activeElement };
     const el = this.el ||= Object.assign(document.createElement("div"), { className: "send-back gal-back" });
     const x = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
@@ -1804,6 +1804,15 @@ async function downloadSet(set) {
     if (recOf(slot, p.item).name) await communityDownload(slot, p.item, `${set.id}#${i}`);
   }
 }
+// a set is worn while every piece of it this copy can wear is on in its slot with this set's skin on all its textures
+// (user 2026-11-12: changing a part that replaced the set's skin makes ลองทั้งชุด available again: the skin stays in
+// SKINS on a piece taken off, so its presence alone said ใส่อยู่)
+const pieceOnNow = (slot, item) => (slot === "outfit" ? C.state.outfit === item : C.state[slot] === item);
+function setWorn2(set) {
+  const ps = set.pieces.map((p, i) => ({ ...p, i, slot: lookSlot(p) })).filter(p => p.slot && pieceOk(p));
+  return ps.length > 0 && ps.every(p => pieceOnNow(p.slot, p.item) && Object.keys(p.tex).filter(t => texsOf(p.kind, p.item).includes(t))
+    .every(t => SKINS.get(skinKey(p.kind, p.item, t))?.by?.setId === set.id));
+}
 const GAL_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 const linkHTML = s => (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "");
 const SetGallery = {
@@ -1818,8 +1827,7 @@ const SetGallery = {
     const sets = setsHere(), cls = CLASS_TH[C.cls] || C.cls;
     this.back = document.activeElement;
     const el = this.el ||= Object.assign(document.createElement("div"), { className: "send-back gal-back" });
-    const on = new Set([...SKINS.values()].map(v => v.by?.id).filter(Boolean));
-    const worn = s => s.pieces.every((p, i) => on.has(`${s.id}#${i}`));
+    const worn = setWorn2;
     const card = s => {
       const w = worn(s), n = s.pieces.length;
       return `<div class="gal-card${w ? " on" : ""}" data-set="${esc(s.id)}"><div class="gal-pic tall"><img alt="ชุดลายโดย ${esc(s.name)}">`
