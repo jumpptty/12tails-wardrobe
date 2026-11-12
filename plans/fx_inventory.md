@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, GroundConformParticles, ImageEmitter, Light, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Cat_grandCasinoArcade, Cat_supportFire, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, GroundConformParticles, ImageEmitter, Light, LineEmitter, ManaVortex, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -13,13 +13,13 @@ like a Sheep's heal): counted apart, never this class's skills.
 |---|---|---|---|---|---|
 | bat | 26 | 26 | 0 |  | 29 |
 | bison | 46 | 45 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
-| cat | 67 | 61 | 6 | WorldParticleCollider 2, StatusControl 1, Cat_grandCasinoArcade 1, Cat_supportFire 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
-| chameleon | 57 | 52 | 5 | Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2, WorldParticleCollider 1 | 28 |
-| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, Mole_warCapital 1, CharacterControl 1, Mole_warMissile 1 | 28 |
+| cat | 67 | 66 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
+| chameleon | 57 | 53 | 4 | Chameleon_nAttack 2, ParticleSystem 2, ParticleSystemRenderer 2 | 28 |
+| mole | 78 | 58 | 20 | Mole_mine 4, ParticleSystem 3, ParticleSystemRenderer 3, Mole_stunMine 2, Mole_timeNuke 2, Mole_bazooka 1, Mole_cartBomb 1, Mole_flameCarnival 1, rotationControl 1, Mole_grenadeCluster 1, Mole_mortarShot 1, Mole_napalm 1, Mole_stunGrenade 1, CharacterControl 1, Mole_warCapital 1, Mole_warMissile 1 | 28 |
 | monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, Monkey_lavu 1, rotationControl 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | panda | 71 | 70 | 1 | ParticleSystem 1, ParticleSystemRenderer 1 | 28 |
 | penguin | 48 | 48 | 0 |  | 28 |
-| rabbit | 84 | 64 | 20 | Rabbit_potion 13, WorldParticleCollider 2, Rabbit_acidicField 1, ParticleSystem 1, ParticleSystemRenderer 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
+| rabbit | 84 | 66 | 18 | Rabbit_potion 13, Rabbit_acidicField 1, ParticleSystem 1, ParticleSystemRenderer 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
 | whale | 51 | 45 | 6 | whale_kingdomKnight 2, Whale_flyingShield 1, ParticleSystem 1, ParticleSystemRenderer 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
 | wolf | 69 | 69 | 0 |  | 28 |
@@ -32,7 +32,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | part | effects | blocks alone | classes |
 |---|---|---|---|
 | Rabbit_potion | 13 | 13 | rabbit |
-| WorldParticleCollider | 5 | 5 | cat, chameleon, rabbit |
 | Monkey_fireBall | 4 | 4 | monkey |
 | Mole_mine | 4 | 4 | mole |
 | whale_kingdomKnight | 2 | 2 | whale |
@@ -43,7 +42,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Whale_javelin | 1 | 1 | whale |
 | Whale_homingShield | 1 | 1 | whale |
 | Whale_flyingShield | 1 | 1 | whale |
-| StatusControl | 1 | 1 | cat |
 | Rabbit_stickyGum | 1 | 1 | rabbit |
 | Rabbit_sniperCamera | 1 | 1 | rabbit |
 | Rabbit_healingField | 1 | 1 | rabbit |
@@ -59,8 +57,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Mole_flameCarnival | 1 | 1 | mole |
 | Mole_cartBomb | 1 | 1 | mole |
 | Mole_bazooka | 1 | 1 | mole |
-| Cat_supportFire | 1 | 1 | cat |
-| Cat_grandCasinoArcade | 1 | 1 | cat |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | Monkey_lavu | 1 | 0 | monkey |
@@ -74,42 +70,38 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 631 | 631 / 699 |
-| 1 | Rabbit_potion | 13 | 644 / 699 |
-| 2 | WorldParticleCollider | 5 | 649 / 699 |
-| 3 | Monkey_fireBall | 4 | 653 / 699 |
-| 4 | Mole_mine | 4 | 657 / 699 |
-| 5 | whale_kingdomKnight | 2 | 659 / 699 |
-| 6 | Mole_timeNuke | 2 | 661 / 699 |
-| 7 | Mole_stunMine | 2 | 663 / 699 |
-| 8 | Chameleon_nAttack | 2 | 665 / 699 |
-| 9 | rotationControl | 1 | 666 / 699 |
-| 10 | Whale_javelin | 1 | 667 / 699 |
-| 11 | Whale_homingShield | 1 | 668 / 699 |
-| 12 | Whale_flyingShield | 1 | 669 / 699 |
-| 13 | StatusControl | 1 | 670 / 699 |
-| 14 | Rabbit_stickyGum | 1 | 671 / 699 |
-| 15 | Rabbit_sniperCamera | 1 | 672 / 699 |
-| 16 | Rabbit_healingField | 1 | 673 / 699 |
-| 17 | Rabbit_acidicField | 1 | 674 / 699 |
-| 18 | Monkey_runicSand | 1 | 675 / 699 |
-| 19 | Monkey_runicFlame | 1 | 676 / 699 |
-| 20 | Monkey_lavu | 1 | 677 / 699 |
-| 21 | Monkey_earthPulse | 1 | 678 / 699 |
-| 22 | Mole_warMissile | 1 | 679 / 699 |
-| 23 | Mole_stunGrenade | 1 | 680 / 699 |
-| 24 | Mole_napalm | 1 | 681 / 699 |
-| 25 | Mole_mortarShot | 1 | 682 / 699 |
-| 26 | Mole_grenadeCluster | 1 | 683 / 699 |
-| 27 | Mole_flameCarnival | 1 | 684 / 699 |
-| 28 | Mole_cartBomb | 1 | 685 / 699 |
-| 29 | Mole_bazooka | 1 | 686 / 699 |
-| 30 | Cat_supportFire | 1 | 687 / 699 |
-| 31 | Cat_grandCasinoArcade | 1 | 688 / 699 |
-| 32 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 33 | ParticleSystem | 10 | 698 / 699 |
-| 34 | Mole_warCapital | 0 | 698 / 699 |
-| 35 | CharacterControl | 1 | 699 / 699 |
+| 0 | (built today) | 639 | 639 / 699 |
+| 1 | Rabbit_potion | 13 | 652 / 699 |
+| 2 | Monkey_fireBall | 4 | 656 / 699 |
+| 3 | Mole_mine | 4 | 660 / 699 |
+| 4 | whale_kingdomKnight | 2 | 662 / 699 |
+| 5 | Mole_timeNuke | 2 | 664 / 699 |
+| 6 | Mole_stunMine | 2 | 666 / 699 |
+| 7 | Chameleon_nAttack | 2 | 668 / 699 |
+| 8 | rotationControl | 1 | 669 / 699 |
+| 9 | Whale_javelin | 1 | 670 / 699 |
+| 10 | Whale_homingShield | 1 | 671 / 699 |
+| 11 | Whale_flyingShield | 1 | 672 / 699 |
+| 12 | Rabbit_stickyGum | 1 | 673 / 699 |
+| 13 | Rabbit_sniperCamera | 1 | 674 / 699 |
+| 14 | Rabbit_healingField | 1 | 675 / 699 |
+| 15 | Rabbit_acidicField | 1 | 676 / 699 |
+| 16 | Monkey_runicSand | 1 | 677 / 699 |
+| 17 | Monkey_runicFlame | 1 | 678 / 699 |
+| 18 | Monkey_lavu | 1 | 679 / 699 |
+| 19 | Monkey_earthPulse | 1 | 680 / 699 |
+| 20 | Mole_warMissile | 1 | 681 / 699 |
+| 21 | Mole_stunGrenade | 1 | 682 / 699 |
+| 22 | Mole_napalm | 1 | 683 / 699 |
+| 23 | Mole_mortarShot | 1 | 684 / 699 |
+| 24 | Mole_grenadeCluster | 1 | 685 / 699 |
+| 25 | Mole_flameCarnival | 1 | 686 / 699 |
+| 26 | Mole_cartBomb | 1 | 687 / 699 |
+| 27 | Mole_bazooka | 1 | 688 / 699 |
+| 28 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 29 | ParticleSystem | 10 | 698 / 699 |
+| 30 | Mole_warCapital | 0 | 698 / 699 |
+| 31 | CharacterControl | 1 | 699 / 699 |
 
 ## Per effect
 
@@ -204,7 +196,7 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `bleed_ring` (Cat.cs:35207): ready
 - `copycat_hit` (Cat.cs:9541): ready
 - `copycat_ring` (Cat.cs:26750): ready
-- `damagePlus` (Cat.cs:19749): needs StatusControl
+- `damagePlus` (Cat.cs:19749): ready
 - `damagePlus_ring` (Cat.cs:19987): ready
 - `damageRoulette_ring` (Cat.cs:27080): ready
 - `deltaStrike` (Cat.cs:37470): ready
@@ -224,7 +216,7 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `flyingDagger_fire` (Cat.cs:29156): ready
 - `flyingDagger_hit` (Cat.cs:9838): ready
 - `forwardLunge_hit` (Cat.cs:9888): ready
-- `grandCasinoArcade` (Cat.cs:27826): needs Cat_grandCasinoArcade
+- `grandCasinoArcade` (Cat.cs:27826): ready
 - `grandCasinoArcade_hit1` (Cat.cs:9669): ready
 - `grandCasinoArcade_hit2` (Cat.cs:9706): ready
 - `grandCasinoArcade_hit3` (Cat.cs:9743): ready
@@ -237,7 +229,7 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `lifeGamble_hit` (Cat.cs:9212): ready
 - `lifeGamble_ring` (Cat.cs:22967): ready
 - `luckyCard_fire` (Cat.cs:20626): ready
-- `luckyDice` (Cat.cs:23872): needs WorldParticleCollider
+- `luckyDice` (Cat.cs:23872): ready
 - `moonBlade` (Cat.cs:35984): ready
 - `moonStorm` (Cat.cs:36726): ready
 - `nAttack_dust` (Cat.cs:16320): ready
@@ -253,13 +245,13 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `skillGamble_hit` (Cat.cs:9305): ready
 - `skillGamble_ring` (Cat.cs:23499): ready
 - `supportFire_cannon` (Cat.cs:41072): ready
-- `supportFire_fire` (Cat.cs:10731): needs Cat_supportFire
-- `supportFire_hit` (Cat.cs:10790): needs ParticleSystem, ParticleSystemRenderer
+- `supportFire_fire` (Cat.cs:10731): ready
+- `supportFire_hit` (Cat.cs:10790): needs ParticleSystem, ParticleSystemRenderer (its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn)
 - `supportFire_ring` (Cat.cs:40920): ready
 - `supportFire_smoke` (Cat.cs:10699): ready
 - `swiftPace_ring1` (Cat.cs:39733): ready
 - `swiftPace_ring2` (Cat.cs:39608): ready
-- `treasureHunt` (Cat.cs:9091): needs WorldParticleCollider
+- `treasureHunt` (Cat.cs:9091): ready
 - `twoPair_hit` (Cat.cs:9477): ready
 - `twoPair_ring` (Cat.cs:26195): ready
 
@@ -317,7 +309,7 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `tent_ring` (Chameleon.cs:36079): ready
 - `thunderDragon_ring1` (Chameleon.cs:38276): ready
 - `thunderDragon_ring2` (Chameleon.cs:37992): needs ParticleSystem, ParticleSystemRenderer
-- `tormentRain_fire` (Chameleon.cs:25996): needs WorldParticleCollider
+- `tormentRain_fire` (Chameleon.cs:25996): ready
 - `tormentRain_ring` (Chameleon.cs:25411): ready
 - `venomShock_ring` (Chameleon.cs:24213): ready
 - `zephyrLore_ring` (Chameleon.cs:10848): ready
@@ -633,8 +625,8 @@ Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so no
 - `maimShot_hit` (Rabbit.cs:9639): ready
 - `medicalShot_fire` (Rabbit.cs:27821): ready
 - `medicalShot_ring` (Rabbit.cs:27591): ready
-- `millionaire1` (Rabbit.cs:37116): needs WorldParticleCollider
-- `millionaire2` (Rabbit.cs:37153): needs WorldParticleCollider
+- `millionaire1` (Rabbit.cs:37116): ready
+- `millionaire2` (Rabbit.cs:37153): ready
 - `millionaire_peppon` (Rabbit.cs:37473): ready
 - `millionaire_ring` (Rabbit.cs:36909): ready
 - `mpPot_hit` (Rabbit.cs:9880): ready

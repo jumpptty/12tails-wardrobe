@@ -57,6 +57,18 @@ export default function register(api) {
   //   base = _MainTex x _Color x lerp(_LowColor x _LowIntensity, _HighColor x _HighIntensity, band) x 0.5;
   //   colour = base x scene + fresnel (10 _FresnelBrightness (1 - N.V)^(10 (1 - _FresnelPower)) x _FresnelColor x ...)
   //   and a hard rim where N.V <= _RimPower mixed by _RimAlpha; then lerp to _EmmisTex by its brightest channel.
+  //   Drawn since 2026-11-13 (the Cat's Royal Flush cards / sword and Crescent Eclipse blade carry _FresnelBrightness
+  //   0.1-0.4: plans/fx_cat/tto.md P7, decisions.md 57), read off program 33 (dxbc_cel.txt, the ps_4_0 at DXBC 98198):
+  //   V = normalize(_WorldSpaceCameraPos - world position), nv = dot(N, V);
+  //   fres = 10 _FresnelBrightness min((max(1 - nv, 0))^(10 (1 - _FresnelPower)), 1) x _FresnelColor.rgb
+  //          x (1 - (1 - band)(1 - _FresnelShadowDropoff))            (a shadowed side keeps _FresnelShadowDropoff of it)
+  //          x sat(dot(scene, (0.22, 0.707, 0.071)))                  (the scene factor's luminance);
+  //   colour = base x scene + fres; then, where _RimPower >= nv: lerp(colour, _RimColor.rgb x that luminance, r),
+  //   r = _RimAlpha (1 - (1 - band)(1 - _RimDropOff)); every product in gamma (the TTO convention above: the fresnel and
+  //   the rim are added in gamma, so the page takes the linear base back to gamma, adds, and makes the sum linear again;
+  //   a material with neither, as the Penguin's ice penguins and the Bat's swarm, draws exactly as before). Sure: high for
+  //   the instructions (read op by op); medium for the look, as the rest of this shader (the page's lights and N.V in view
+  //   space stand in for the map's). _EmmisTex is still not drawn (no Cat, Penguin or Bat material has one).
   // tto_SmallIcePenguin: _RampLevels 2, _LightScalar 1, _HighIntensity 1.5, _LowIntensity 1, white colours,
   // _FresnelBrightness 0, _RimAlpha 0 (no fresnel, no rim), no _EmmisTex (default black: no emission), _SceneLighting 1,
   // _TTOCelSceneLightCut unset (a global, 0). So: texture x 0.75 lit, x 0.5 unlit, times the scene factor; opaque.
@@ -70,7 +82,7 @@ export default function register(api) {
     #include <common>
     #include <skinning_pars_vertex>
     uniform vec4 uST;
-    varying vec2 vUv; varying vec3 vN;
+    varying vec2 vUv; varying vec3 vN; varying vec3 vV;
     void main() {
       vUv = uv * uST.xy + uST.zw;
       #include <beginnormal_vertex>
@@ -81,6 +93,7 @@ export default function register(api) {
       #include <begin_vertex>
       #include <skinning_vertex>
       #include <project_vertex>
+      vV = -mvPosition.xyz;                      // to the eye, view space (as vN)
     }`;
   const CEL_FRAG = `
     #include <common>
@@ -88,8 +101,10 @@ export default function register(api) {
     uniform sampler2D map; uniform float uHasMap;
     uniform vec4 uColor, uHigh, uLow;
     uniform float uRamp, uLightScalar, uHI, uLI, uScene, uCut;
-    varying vec2 vUv; varying vec3 vN;
+    uniform vec4 uFresC, uRimC; uniform float uFresB, uFresP, uFresSD, uRimP, uRimA, uRimD;
+    varying vec2 vUv; varying vec3 vN; varying vec3 vV;
     vec3 lin3(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c)); }
+    vec3 gam3(vec3 c) { return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(vec3(0.0031308), c)); }
     void main() {
       vec3 N = normalize(vN);
       float ndl = 0.0; vec3 lc = vec3(0.0);
@@ -106,7 +121,17 @@ export default function register(api) {
       vec3 scene = 1.0 + uScene * (1.0 - uCut) * (min((lc * band + sh) / (band * 0.65 + 0.42), vec3(1.8)) - 1.0);
       vec3 k = uColor.rgb * mix(uLow.rgb * uLI, uHigh.rgb * uHI, band) * 0.5 * scene;
       vec3 tex = uHasMap > 0.5 ? texture2D(map, vUv).rgb : vec3(1.0);
-      gl_FragColor = linearToOutputTexel(vec4(tex * lin3(max(k, 0.0)), 1.0));
+      vec3 col = tex * lin3(max(k, 0.0));
+      if (uFresB > 0.0 || uRimA > 0.0) {         // dxbc_cel.txt program 33 (the comment above): added in gamma
+        float nv = dot(N, normalize(vV)), lum = clamp(dot(scene, vec3(0.22, 0.707, 0.071)), 0.0, 1.0);
+        vec3 fres = 10.0 * uFresB * min(pow(max(1.0 - nv, 1e-6), 10.0 * (1.0 - uFresP)), 1.0) * uFresC.rgb
+                    * (1.0 - (1.0 - band) * (1.0 - uFresSD)) * lum;
+        vec3 g = gam3(col) + fres;
+        float r = uRimA * (1.0 - (1.0 - band) * (1.0 - uRimD));
+        if (uRimP >= nv) g = mix(g, uRimC.rgb * lum, r);
+        col = lin3(max(g, 0.0));
+      }
+      gl_FragColor = linearToOutputTexel(vec4(col, 1.0));
     }`;
   api.shader?.("shader:FlexibleCelShader/Cel No Outline", d => {
     const p = d.props || {}, c4 = x => new THREE.Vector4(...(x || [1, 1, 1, 1]));
@@ -115,14 +140,16 @@ export default function register(api) {
       uColor: { value: c4(p._Color || d.color) }, uHigh: { value: c4(p._HighColor) }, uLow: { value: c4(p._LowColor) },
       uRamp: { value: p._RampLevels ?? 2 }, uLightScalar: { value: p._LightScalar ?? 1 }, uHI: { value: p._HighIntensity ?? 1.5 },
       uLI: { value: p._LowIntensity ?? 1 }, uScene: { value: p._SceneLighting ?? 1 }, uCut: { value: p._TTOCelSceneLightCut ?? 0 },
+      // the fresnel and rim (2026-11-13; the shader's defaults, cel_parsed.json: colours white, the rest 0)
+      uFresB: { value: p._FresnelBrightness ?? 0 }, uFresP: { value: p._FresnelPower ?? 0 }, uFresC: { value: c4(p._FresnelColor) },
+      uFresSD: { value: p._FresnelShadowDropoff ?? 0 }, uRimP: { value: p._RimPower ?? 0 }, uRimA: { value: p._RimAlpha ?? 0 },
+      uRimC: { value: c4(p._RimColor) }, uRimD: { value: p._RimDropOff ?? 0 },
     }]);
     if (d.tex) {
       const t = api.texLoader.load(`${api.DATA}fx/tex/${d.tex}.webp`);
       t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
       u.map.value = t; u.uHasMap.value = 1;
     }
-    if ((p._FresnelBrightness || 0) > 0 || (p._RimAlpha || 0) > 0)
-      console.warn("tto_penguin: the cel shader's fresnel / rim are not drawn", d);
     // Cull Back: inside the mirror group three turns the front face round with the negative determinant, so its
     // front faces are Unity's (as mesh.js's FX/Phoenix)
     return new THREE.ShaderMaterial({ vertexShader: CEL_VERT, fragmentShader: CEL_FRAG, uniforms: u, lights: true, side: THREE.FrontSide });

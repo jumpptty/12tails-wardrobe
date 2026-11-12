@@ -42,7 +42,11 @@ RIP = os.path.join(BIBLE, r"RippedAssets\ExportedProject\Assets\Resources\gameas
 # fxMaterial (wardrobe/index.html: "multiply2", "premul"). 205 = "multiply" since 2026-11-13 (the Bat's shadow effects:
 # ShadowRay, ShadowLine1 / 3, Smoke4_multiply, nightmare_bolt, darkStalker ...; plans/fx_bat/decisions.md 40, parts.md
 # part 9: drawn by wardrobe/fxparts/particles.js through api.shader; before, they fell back to "add" and glowed where the
-# game darkens). An unknown id still falls back to "add"
+# game darkens). An unknown id still falls back to "add". 205 / 206 / 207 are CERTAIN since 2026-11-13 (plans/fx_cat/
+# parts.md "Read this first" 4, decisions.md 56): TTO re-serialised BB's prefabs with Unity's own shader names
+# (checks/fx_cat_research/parts/tto_bbcopies.json, tto_probe.json): ShadowLine2 (205) = Legacy Shaders/Particles/Multiply,
+# Bomb2 (206; rip Material/Bomb2_0.mat m_Shader fileID 206) = Legacy Shaders/Particles/Multiply (Double), cat_dead (207) =
+# Legacy Shaders/Particles/Alpha Blended Premultiply
 BUILTIN_BLEND = {200: "add", 202: "addsoft", 203: "alpha", 7: "opaque", 205: "multiply", 206: "multiply2", 207: "premul"}
 
 # serialized fields of the game's scripts, in declaration order: (name, type); f float, i int, b bool (1 byte, then
@@ -154,6 +158,13 @@ LAYOUTS.update({
     "Bison_earthRupture": [],                             # Bison_earthRupture.cs:218-228: all private (the mover, fxparts/bison.js)
     "Bison_overLord": [],                                 # Bison_overLord.cs:206-215: all private (an aura trigger: draws nothing)
 })
+# the Cat's parts (plans/fx_cat/parts.md, 2026-11-13, decisions.md 49, 50; checks/fx_cat_research/parts/probe.txt: each
+# instance's bytes are the listed fields exactly; UVScroll is the Bison's line above, deltaStrike_tri's (1, 1); StatusControl
+# keeps every field private, 0 bytes, so it needs no entry)
+LAYOUTS.update({
+    "Cat_grandCasinoArcade": [("mRenderer", "r")],        # Cat_grandCasinoArcade.cs:144 (8 bytes: its own SMR; fxparts/cat.js)
+    "Cat_supportFire": [("mVelocity", "v3")],             # Cat_supportFire.cs:240 (12 bytes; (0, 0, 30): fxparts/cat.js)
+})
 # BB effects whose Unity 3.5 Shuriken (ParticleSystem + ParticleSystemRenderer) this file does not decode, grafted from
 # TTO's client copy of the same prefab (2026-11-13, plans/fx_bison/decisions.md 40, parts.md part 5): magmaClutter_ring2's
 # TrailEmitter node carries the swing's puffs; TTO's copy has them decoded but loses the node's Animation `cleave` (the
@@ -161,8 +172,13 @@ LAYOUTS.update({
 # child of that node at local identity. Their material: SHURIKEN_MAT, BB's own of the same shader (TTO's tto_Bomb2 is
 # Legacy Shaders/Particles/Multiply (Double); BB's Bomb2 is built-in 206 = multiply2, read from the BB effect named
 # beside it), so no TTO texture ships and fxparts/shuriken.js reads it as any node's mats[0]
-SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"]}
-SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1")}   # (BB material, a BB effect of the class that has it)
+# The Cat's supportFire_hit (2026-11-13, plans/fx_cat/decisions.md 54, parts.md part 6): its node "ParticleSystem" is a
+# Unity 3.5 Shuriken only (12 puffs at 0 in a 25 deg cone); TTO's re-serialised copy matches BB's values field for field
+# (checks/fx_cat_research/parts/tto_probe.json, ps_sum.txt), so it is grafted the same way, its material BB's Bomb2 (206,
+# multiply2) read from supportFire_hit's own Shuriken renderer (bb_material: effect() skips a ParticleSystemRenderer)
+SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]}
+SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
+                "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
 # state, nothing an effect draws)
 NOT_DRAWN = {"CharacterControl"}
@@ -173,7 +189,10 @@ EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effect
 # an effect the page names otherwise than its prefab, because the class's own folder has a prefab of that name too: the
 # name -> its Resources container path, tried before the class's folder (2026-11-13, plans/fx_bat/parts.md Interfaces 6:
 # Guardian of the Night's hits are Shade4's Effects/nAttack_hit, Bat.cs:12606-12619, not the Bat's own nAttack_hit)
-ALIASES = {"bat": {"guardian_hit": "gameassets/characters/elementals/shade4/effects/nattack_hit"}}
+# (2026-11-13, plans/fx_cat/decisions.md 55, skills_a.md part 3: Casino Doom's doom is the Bat's effect, the status look
+# CharacterControl.cs:40491 loads from heroes/bat/effects whoever holds it; one effect, not the whole Bat folder)
+ALIASES = {"bat": {"guardian_hit": "gameassets/characters/elementals/shade4/effects/nattack_hit"},
+           "cat": {"doom": "gameassets/characters/heroes/bat/effects/doom"}}
 # the same for a sound (rip_wav): the name -> its WAV under the rip's gameassets, without ".wav" (the guardian's swing is
 # Shade4's Sounds/nAttack, Bat_guardianOfTheNight.cs:1047; the Bat's own sounds/nAttack.wav would win by name)
 SOUND_ALIASES = {"bat": {"guardian_nAttack": "characters/elementals/shade4/sounds/nAttack"}}
@@ -292,6 +311,13 @@ def material(game, pptr, base, mats, texs):
     # (no other material has it: the other materials' data stays as it was)
     if colors.get("_Ambient") is not None:
         mats[name]["ambient"] = colors["_Ambient"]
+    # Transparent/AdditiveAlpha's _AdditiveRange (2026-11-13, plans/fx_cat/parts.md part 3, decisions.md 52; rip
+    # shader/AdditiveAlpha.shader:1-34: pass 1 lit with alpha test >= it, pass 2 additive with <= it; default 0.9) as
+    # "cut", as wardrobe_data.py:281-297 does for the props (the Cat's supportFire_fire ball, PirateCannon_Fire 0.9; the
+    # Mole's napalm / nAttack later; wardrobe/fxparts/additivealpha.js)
+    if blend == "shader:Transparent/AdditiveAlpha":
+        floats = {key(k): v for k, v in props.get("m_Floats", [])}
+        mats[name]["cut"] = round(float(floats.get("_AdditiveRange", 0.9)), 4)
     return name
 
 
@@ -347,7 +373,11 @@ def effect(game, cls, name, mats, texs, sounds):
                 node["mats"] = [material(game, m, c.assets_file, mats, texs) for m in t["m_Materials"]]
                 if ty == "ParticleRenderer":
                     node["comps"].append({"type": ty, **{k: v for k, v in t.items() if not k.startswith("m_") or k in ("m_StretchParticles", "m_LengthScale", "m_VelocityScale", "m_MaxParticleSize", "m_CameraVelocityScale", "UV Animation")}})
-            elif ty in ("TrailRenderer", "Light"):      # Unity built-ins: their fields as stored (+ a trail's materials)
+            # Unity built-ins: their fields as stored (+ a trail's materials); WorldParticleCollider since 2026-11-13
+            # (plans/fx_cat/parts.md part 5, decisions.md 53: the Cat's luckyDice / treasureHunt legacy particles bounce on
+            # the floor: m_BounceFactor, m_CollisionEnergyLoss, m_CollidesWith {m_Bits}, m_SendCollisionMessage,
+            # m_MinKillVelocity; wardrobe/fxparts/worldcollider.js)
+            elif ty in ("TrailRenderer", "Light", "WorldParticleCollider"):
                 t = c.read_typetree()
                 entry = {"type": ty, **{k: v for k, v in t.items() if k not in ("m_GameObject", "m_Materials")}}
                 if "m_Materials" in t:
@@ -390,6 +420,31 @@ def node_paths(nodes):
     return out
 
 
+def bb_material(game, cls, name, want, mats, texs):
+    """BB's material `want` from any renderer under the BB effect `name` whose m_Materials lists it, a Unity 3.5
+    ParticleSystemRenderer too (effect() skips that component; 2026-11-13, the Cat's supportFire_hit, whose only renderer
+    is its Shuriken's, material Bomb2), through material() into mats / texs; nothing when no renderer has it."""
+    key = ALIASES.get(cls, {}).get(name, f"gameassets/characters/heroes/{cls}/effects/{name.lower()}")
+    todo = [game.obj(game.container[key], game.files["mainData"])]
+    while todo:
+        go_obj = todo.pop()
+        for comp in go_obj.read_typetree()["m_Component"]:
+            c = game.obj(comp[1] if isinstance(comp, (list, tuple)) else comp.get("second", comp.get("component")), go_obj.assets_file)
+            if c is None:
+                continue
+            if c.type.name == "Transform":
+                for ch in c.read_typetree()["m_Children"]:
+                    tro = game.obj(ch, go_obj.assets_file)
+                    if tro is not None:
+                        todo.append(game.obj(tro.read_typetree()["m_GameObject"], tro.assets_file))
+            elif c.type.name.endswith("Renderer"):
+                for m in c.read_typetree().get("m_Materials", []):
+                    o = game.obj(m, c.assets_file)
+                    if o is not None and o.read_typetree()["m_Name"] == want:
+                        material(game, m, c.assets_file, mats, texs)
+                        return
+
+
 def graft_shuriken(game, cls, effects, mats, texs):
     """SHURIKEN_FROM_TTO (decisions.md 40): for each listed effect built here, TTO's copy read through
     pipeline/wardrobe_fx_tto.py (Tto / Build / effect, as wardrobe_weapon_fx.tto_weapons does), and under every BB node
@@ -418,6 +473,8 @@ def graft_shuriken(game, cls, effects, mats, texs):
     if mat not in mats:                               # BB's material of the same shader, read from a BB effect that has it
         tmp_m, tmp_t = {}, {}
         effect(game, cls, src, tmp_m, tmp_t, set())
+        if mat not in tmp_m:                          # only on its Unity 3.5 Shuriken renderer (the Cat's supportFire_hit)
+            bb_material(game, cls, src, mat, tmp_m, tmp_t)
         mats[mat] = tmp_m[mat]
         if tmp_m[mat].get("tex") in tmp_t:
             texs.setdefault(tmp_m[mat]["tex"], tmp_t[tmp_m[mat]["tex"]])

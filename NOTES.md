@@ -1523,7 +1523,7 @@ run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, M
   the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
   it in another session, re-create it from this description (the research of one class overlaps the build of the one
   before; builds never overlap, they share index.html).
-- Progress (updated as it goes): Penguin, Bat DONE + deployed; Bison DONE (40 cue keys, 67 effects, 98 sounds; gates bison + bat / wolf / sheep / penguin pass), committed + deployed below; Cat research DONE, its build next; Chameleon research running. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
+- Progress (updated as it goes): Penguin, Bat, Bison DONE + deployed; Cat DONE (49 cue keys, 91 effects, 129 sounds; gates cat + the other five pass), committed + deployed below; Chameleon research DONE, its build next; Mole research running (started at 61 %: usage rose only 1 % an hour during the Cat's build). (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
 - **Bat build, page_pipeline builder (2026-11-13):** the game's Particles/MultiplyOffset, AlphaOffset and AdditiveOffset
   shaders (fxparts/particles.js) and built-in 205 = Particles/Multiply (`BUILTIN_BLEND[205] = "multiply"`) are now built for
   every class. That changes the look of effects already cued and published: the Wolf's Double Art banner (doubleArt),
@@ -1740,3 +1740,107 @@ user's review). One editor after three builders (page_pipeline, bison_parts, tto
     out shows both whole); every target-point effect sits outside that frame too, as for the other classes. Also the
     white stage's faint additive glows, the EnergyArc crescents and the MoltenCrust pool (the shaders draw, their look
     is unjudged), Magma Quake's 144 ticks' cost on a slow PC.
+
+## 2026-11-13 (overnight, home), the Cat's effects: built and cued
+
+From plans/fx_cat/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after four builders (cat, generic = worldcollider + additivealpha, tto_cat, page_pipeline).
+- **Parts (new):** fxparts/cat.js (Cat_grandCasinoArcade: materials [1] / [2] blink 0.15 sin(4 T) in counter-phase;
+  fx:grandCasinoArcade plays the cue's `anims` on the machine node and sets cutAt -Infinity at age 15.5 (the standby);
+  Cat_supportFire: 30 m/s along its spawn rotation, gravity on the 0.02 s step, supportFire_hit spawned on the floor;
+  fx:supportFire_cannon: the six cannons of one play keyed by FX.gen, the first living one owns the barrage clock, from
+  age 1.25 every 0.24-0.35 s a random cannon rewinds + plays `fire` and spawns supportFire_smoke / supportFire_fire at
+  getTrajectoryVector's pitch for 24-47 m, at the cut every cannon fadeOut(0.5)); fxparts/worldcollider.js
+  (WorldParticleCollider: legacy particles bounce off y 0 with the whole velocity x bounceFactor, via the new
+  legacyParticles `collide` hook); fxparts/additivealpha.js (shader Transparent/AdditiveAlpha, two passes, the material's
+  `cut` = _AdditiveRange); fxparts/tto_cat.js (Cat_royalCard, Cat_royalHandBanner, Cat_eclipseFx moon + blade with
+  HoldWeapon copying the worn R prop, the movers Cat.RoyalSwordFall / Cat.DropAnchorFlight holding the Leash rings back
+  to the landing, shaders Unlit/Color, Unlit/Texture). mesh.js: an Animation with play off is built (idle until play()),
+  rewind(); alphatimer.js: fadeOut(sec); tto_penguin.js: the cel shader draws _FresnelBrightness / _RimAlpha (other
+  classes' cel materials carry 0 / 0, so they look as before). index.html: SEQ cat (13 sequences), SEQ_SKILL cat,
+  NEVER_PLAYED.cat shikifujin, FX_PART_FILES += cat, worldcollider, additivealpha, tto_cat; cue option `single` (a live
+  copy's kill renewed instead of a second spawn); cue kind `hideProp` [t, "hideProp", "R", {kill}] (the worn prop's
+  meshes off the layers, VFX on only; weapon_fx keeps drawing). wardrobe_fx.py: LAYOUTS Cat_grandCasinoArcade /
+  Cat_supportFire, WorldParticleCollider stored, AdditiveAlpha's cut, SHURIKEN_FROM_TTO.cat supportFire_hit with BB's
+  Bomb2 (new bb_material()), ALIASES.cat.doom = the Bat's doom, BUILTIN_BLEND 205-207 certain. wardrobe_fx_tto.py:
+  SKILL_FX.cat (28), CODE_MOVERS, SHADER_BLEND += Multiply / Multiply (Double) / Alpha Blended Premultiply (the Cat's
+  weapon_fx moroccoLamp tto_Smoke4 turns multiply2 at the next wardrobe_weapon_fx.py run). wardrobe_fx_check.py: KINDS
+  hideProp, 10 new OPTS. wardrobe_fx_inventory.py BUILT += StatusControl, Cat_grandCasinoArcade, Cat_supportFire,
+  WorldParticleCollider (rerun: the Cat 66 / 67 ready). Nothing the video repo reads was renamed.
+- **Cues** (wardrobe/fx_cues/cat.json, 49 keys, 218 cues (149 fx, 51 voice, 13 sound, 5 hideProp), 87 effect names (24
+  TTO), assembled from the reports' corrected blocks by checks/fx_cat_build/editor/assemble.py + fmt.py, git-ignored):
+  the combo (dust, swing sounds, voices; melee hits draw nothing), the charge (damagePlus_ring each tick, the damagePlus
+  glow on mount_Hand_R, kill 10, single), the instantCast / gamble / pointTarget / throw1 / throw2 pools (one tile per
+  member: Fate Draw with Lady Luck, Double Down's eight coin-flip strikes target / Cat, Life / Skill Gamble with Even
+  Odds catching a loss, the ray skills' hits at {d 9.7, y 0.62}, the five throws hiding the R prop), Grand Casino Arcade
+  (5 spins at LCK 255, 9 : 8 : 6 : 27 hit pick, Casino Doom's doom at y 0.89), Forward Lunge, Backflip, Heart Ripper /
+  Finishing Blow (hits at the standing hero; TTO's finisingBlow1|2 voice), Delta Strike, Moon Blade / Storm, Pillage
+  Plunge, Reverse Thrust, Swift Pace, Support Fire (ring + six cannons cut 2.95, builds fire / smoke / hit), the
+  effect-only tiles @Awareness:root, @DamageRoulette:root, @TreasureHunt:root (coins 1 m ahead), @EvenOdds:gamble (a
+  pool of the two hosts), @NineLives:ko / :getUp (ninelife1|2), emotes, ko (dead roll), getUp (revive at p 0.5), and the
+  released TTO tiles royalFlush1 (hand 9, one random suit), crescentEclipse1 / 2 (in place; the dive from {d -5, y
+  5.447}), dropAnchor + anchorYank (shrapnel p 0.25). Decisions applied on top of the blocks: 48 (Support Fire's cue
+  shapes, no volley / i / fadeOut), 26 (doom y 0.89, not 0.6), 50 (anims, no cut on the machine).
+- **Tiles / icons:** wardrobe_skill_icons.py rerun: cat 34 HD icons for 45 clips (18 new webp; index.json cat only).
+- **Data:** `wardrobe_fx.py cat`: 63 effects, 71 materials, 78 textures, 126 sounds (the supportFire_hit graft line
+  printed); `wardrobe_fx_tto.py cat`: 28 TTO effects, 49 materials, 41 textures, 18 sounds. data/cat/fx.json 91 effects
+  (1.4 MB), sfx/ 129 files, 87 new textures in data/fx/tex (one named "deltaStrike _shatter.webp", with the rip's space),
+  all new files, to commit with the run; the other PC pulls.
+- **Judgement calls (mine):** none beyond decisions.md; where a report's first block and its verification differed, the
+  verification's block was taken (crescentEclipse2's dive, supportFire1's 2.95).
+- **Gate:** files-only cat (and bat, bison, penguin, sheep, wolf) "no problems"; `wardrobe_fx_check.py ... checks/fx_cat
+  dark --cls cat` exit 0, errors [], 43 tile plays, every expected effect spawned; the builders changed shared page /
+  fxparts code (mesh.js, alphatimer.js, tto_penguin.js's cel shader, legacyParticles), so also `--cls
+  wolf,sheep,penguin,bat,bison` in one run (checks/fx_cat_regress): exit 0, errors [], 211 tile plays; unit tests 65 OK,
+  node 8 pass. Not committed.
+- **For the QA pass:** in the headless run some tiles' first frame stalls (Crescent Eclipse's first sample after 0 s is
+  at 2.69 s, so the takeoff, blades, dive and click were never sampled though they spawned; Royal Flush 1.2 s, Support
+  Fire 1.1 s): shader / texture first use under swiftshader, to be looked at with wardrobe_fx_shots.py's virtual clock
+  (the blades' HoldWeapon copy with and without a worn weapon, the cards' flip, the shells' arcs and the cannons' fade).
+  Doom (p 0.0196 a spin) and the shrapnel (p 0.25) are rolled procs the gate does not expect.
+- **QA pass (2026-11-13, the run's Cat QA step).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_cat_qa/jobs.json, 51 jobs, every Cat tile: Normal Attack, Charge Attack to 11.2 s, Grand Casino Arcade to
+  16.6 s (and with Casino Doom forced, `grandCasinoArcade2!casino1`), Support Fire to 5.5 s, Heart Ripper, Finishing Blow,
+  the five effect-only / passive tiles (Even Odds with each host), all twelve pool members (Double Down with all eight
+  strikes forced on the target, and as rolled; Life / Skill Gamble won and as rolled), backflip, Delta Strike, Forward
+  Lunge, Moon Blade, Moon Storm, Pillage Plunge, Reverse Thrust, Swift Pace, the three TTO tiles (Crescent Eclipse also
+  with royalDagger worn; Drop Anchor with the shrapnel forced), KO (dead forced, and as rolled), getUp and the emotes with
+  voices; the throws with royalDagger worn) on the dark and the white stage, side + front / behind / top: 484 shots
+  each. Sheets: checks/fx_cat_qa/sheets_dark, sheets_white (git-ignored; shots and logs under run/). The editor's
+  headless stalls are not on the virtual clock: every sample landed at its time, the takeoff, blades, dive and click
+  included. Boxes in the hero's frame (+x = her left) match the reports: the combo's dust at 0.1 / 0.7 / 1.7 s (each
+  step's cues one frame early, the known seqTick order); the charge's rings at 1.0 / 2.0 / 3.0 s and one glow on her
+  hand from 1.0 s to 11.0 s (kill 10); the machine rises at 0.4 s with her on its pedestal, a hit over her head 2.0 s
+  into each spin (3.7 ... 14.5 s; Doom forced: the Bat's doom on her at 3.7 s), destroy and sinking from 14.9 s, ring2
+  (r 13 m) at 15.2 s; Support Fire's six cannons in their row 2 m behind (x +-7.5), the first shell at 1.23 s, shells
+  landing 18-33 m ahead (their hit's extent), the ring and cannons cut at 3.95 s and faded by 4.6 s, shells in flight
+  flying on; Heart Ripper's sparks at the hero 1 m up (0.6 / 1.0 s); Finishing Blow's three hits at the hero; the Insight
+  mark at 2.04-2.34 m for 3 s; the roulette at 0.63-1.15 m to 10.2 s; Treasure Hunt's coins 1 m ahead, bouncing, gone
+  at 1 s; the ray skills' hits round (0, 0.62, 9.7); Two Pair / Copycat at both the Cat and the 10 m point; Double Down's
+  strikes at the target or at her; the throws hide the worn dagger 0.4-0.8 s / 0.5-0.95 s and give it back; Delta
+  Strike's triangle from 0.5 m ahead with its cats at its far corners (+-4.5, 8); Crescent Eclipse's moon rising, the
+  eight blades flung to the 5 m ring, planted, recalled to her at 2.0-2.3 s (the prefab's crescent with no weapon, the
+  worn dagger's copy with one), the dive from behind and above at 1.1 s, the land, click and burst; Drop Anchor's anchor
+  flying to the 10 m point (slam 0.75 s), the Leash rings (r 7 m) from the landing, the heave at 7.0 s and the smash,
+  sink and forced shrapnel at 7.45 s, the anchor gone with them; Royal Flush's five cards dealt, flipped (one suit) and
+  gathered over the table at 10 m, the banner, bursts, sword and its hit, all gone by 5 s; KO's deadEffect. No page
+  error, no stalled render loop, no failed job in either run (the only console lines: swiftshader's glBlitFramebuffer
+  feedback warning). checks/fx_cat_qa/state_probe.py: the charge tile plays once and keeps one glow; Support Fire cut
+  by another pick at 2.0 s leaves nothing and fires no more shells; Grand Casino Arcade, Drop Anchor and Support Fire cut
+  by a class change leave nothing; errors [].
+  - **No bug found in the page, the parts, the cues or the data; no page file changed by the QA.** One tool change:
+    `wardrobe_fx_shots.py` gains the force `<cue key>%<effect>` (that effect's chance cues, a `p` with no roll, always
+    fire: the shrapnel has no roll name for `!`), and a forced name's `/` is kept out of the shot file name.
+  - Looked into, not bugs: the machine's and Double Down's skinned meshes report bind-pose boxes (the machine's y -5.4 ..
+    -0.1, the green strike 10 m to her left) while they draw in place; Reverse Thrust's trail lives 0.3 s (its
+    EffectControl), so its cut 1.0 never acts; the fortune emblem is a GUI picture (not in the boxes; it shows over her
+    head in the shots); Royal Flush's and the burst's Shuriken debris falls through the floor (no collision module).
+  - Gates: `wardrobe_fx_check.py ... checks/fx_cat_qa/gate_cat dark --cls cat` exit 0, errors [] (43 tile plays); the
+    builders changed shared page / fxparts code, so also `--cls wolf,sheep,penguin,bat,bison` (every other class with
+    cues; the other cue files are empty): exit 0, errors [] (211 tile plays); unit tests 65 OK, node 8 pass,
+    test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK.
+  - For the user's eye: the Insight mark floats about 0.6 m over her ears (the game's own height, decision 27: y 1.3 if
+    it reads too high); the target-point effects and Support Fire's far landings sit outside the default camera's
+    frame, as for the other classes (not shot with the default camera here); the white stage's faint additive glows;
+    the Royal Flush cards' left-to-right order as dealt (Q J 10 K A in the shots); decisions.md's overnight calls
+    (listed in the editor's paragraph above).

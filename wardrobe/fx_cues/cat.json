@@ -1,1 +1,536 @@
-{}
+{
+  "nAttack1": {
+    "why": "Cat.cs RPC_nAttack1 (:16186-16955): clip at 0 (cut, PlayAnimation(nAttack1, 0) :16857), moveSpeed 3; 0.1 s (Yield(2, 0.1) :16903) nAttack_dust at position + TransformDirection(-0.1, 0, -0.25) with the hero's rotation (:16320-16332; EffectControl life 1); 0.2 s (Yield(3, 0.1) :16888) the swing Sounds/nAttack1 at full volume (PlayOneShot(clip) :16399) and the voice nAttack1 (:16451, PlayOneShot :16900); the hit at 0.4 s (Yield(4, 0.2) :16884) is melee, a 3 m box from 1 m behind (FindRecTarget :16520): nothing at the 10 m target point (nAttack_hit :8253-8282, Hidden Blade's hiddenBlade_hit :10059-10089 and onNormalAttackHit :15560 only on a hit, left out as the Wolf's / Bison's); standby 0.6 s (Yield(5, 0.2) :16882, :16787) unless stage 2 is pressed (its clip at 0.6 s: Yield(2, actionTime - now + 0.6) :17609); the hero stays in place (the game's 2.4 m lunge is not moved)",
+    "cues": [
+      [0.1, "fx", "nAttack_dust", {"d": -0.25, "x": -0.1}],
+      [0.2, "sound", "nAttack1"],
+      [0.2, "voice", "nAttack1"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Cat.cs RPC_nAttack2 (:16959-17670; its clip 0.6 s after stage 1: Yield(2, actionTime - now + 0.6) :17609, the press window 0.3-0.6 s, doNormalAttack :8038-8054): clip (0.1 s fade, :17076), moveSpeed 0, the voice nAttack2 at 0 (:17150, PlayOneShot :17621); 0.1 s (Yield(3, 0.1) :17613) moveSpeed 7, nAttack_dust at position + TransformDirection(-0.4, 0, 0) with the hero's rotation (:17197-17209) and the swing Sounds/nAttack2 at full volume (:17244-17256); the hit at 0.4 s (Yield(4, 0.3) :17611) is melee (FindRecTarget :17318): nothing at the 10 m target point (nAttack_hit / hiddenBlade_hit only on a hit); standby 0.6 s (Yield(5, 0.2) :17605, :17540) unless stage 3 is pressed (its clip at stage 1 + 1.2 s, :18538)",
+    "cues": [
+      [0, "voice", "nAttack2"],
+      [0.1, "fx", "nAttack_dust", {"x": -0.4}],
+      [0.1, "sound", "nAttack2"]
+    ]
+  },
+  "nAttack3": {
+    "why": "Cat.cs RPC_nAttack3 (:17674-18609; its clip 1.2 s after stage 1: Yield(2, actionTime - now + 1.2) :18538, the press window 0.9-1.2 s, doNormalAttack :8098-8114): clip (cut, :17791) and the voice nAttack3 at 0 (:17860, PlayOneShot :18544); 0.1 s (Yield(3, 0.1) :18534) moveSpeed 4 and the swing Sounds/nAttack3 at full volume (:17922-17934); hits at 0.3 s and 0.5 s (Yield(4, 0.2) :18554, Yield(5, 0.2) :18549) are melee (FindRecTarget :18001, :18244): nothing at the 10 m target point; no dust in this stage; standby 0.7 s (Yield(6, 0.2) :18536, :18471) unless stage 4 is pressed (from 1.7 s after stage 1, :8162)",
+    "cues": [
+      [0, "voice", "nAttack3"],
+      [0.1, "sound", "nAttack3"]
+    ]
+  },
+  "nAttack4": {
+    "why": "Cat.cs RPC_nAttack4 (:18613-19578; its clip 1.7 s after stage 1 at the earliest: Yield(2, actionTime - now + 1.7) :19511, the press from 1.7 s, doNormalAttack :8162-8170): clip (animation.Play, a cut, :18730), nAttack_dust at the hero's position and rotation (:18768-18780) and the voice nAttack4 at 0 (:18831, PlayOneShot :19520); 0.1 s (Yield(3, 0.1) :19507) moveSpeed 6 and the swing Sounds/nAttack4 at full volume (:18893-18905); hits at 0.3 s and 0.5 s (Yield(4, 0.2) :19516, Yield(5, 0.2) :19523) are melee, a 4 m wide box (FindRecTarget :18972, :19213): nothing at the 10 m target point; standby 0.9 s (Yield(6, 0.4) :19513, :19438)",
+    "cues": [
+      [0, "fx", "nAttack_dust"],
+      [0, "voice", "nAttack4"],
+      [0.1, "sound", "nAttack4"]
+    ]
+  },
+  "cAttack1": {
+    "why": "Cat.cs RPC_cAttack1 (:19582-20170): clip at 0 (cut, PlayAnimation(cAttack1, 0) :19807) and the voice at 0: cAttack1 or cAttack2 (Random.Range(0, 2) :19871, loads :19883 / :19915, PlayOneShot :20111 / :20119; at most every 2 s, :19858-19866); at 0.5 s (Yield(2, 0.5) :20121) it cuts to the looped cAttack2 (:19711-19716), whose cue holds the charge",
+    "cues": [
+      [0, "voice", "cAttack1|cAttack2"]
+    ]
+  },
+  "cAttack2": {
+    "why": "Cat.cs RPC_cAttack1 case 2 (the cut to the looped cAttack2 0.5 s in, :19711-19716): Charge Attack 3 + Double Focus #411 on (passives rule): damagePlus 5 (getChargeLv 3 + 2, :19733, :8505-8544); a charge tick 1.0 s after the press and every 1 s after (mChargeTimer :19728, :19963-19971, FixedUpdate :20123) = 0.5, 1.5, 2.5 s into this clip, mission / arena only (mGameType > 4, :19955): each tick damagePlus_ring at the hero's position and rotation (createEffect :19987-19998; EffectControl life 1, plays its own Sounds/cAttack_ring; every tick, the count <= lv + 1 test :19981 is always true after the clamp :19976), +2 stacks (RPC_AddStatus :20031, full 6 / 6 on the third tick); on the first tick, while none exists (:20045), the damagePlus glow on mount_Hand_R (Instantiate :20053, parent and localPosition 0 :20077-20082) whose StatusControl keeps it while the status lasts (StatusControl.cs:66-110; chaAdjust(12) = 12 s, CharacterControl.cs:20593-20618; no hit spends it here): kill 10 (the long-buff rule), single (one glow at a time, the game's guard :20045); the release RPC_cAttack0 (myCommand cAttack0 :20339, root crossfade 0.2 s :20348, standby 0.2 s later :20367) plays nothing",
+    "cues": [
+      [0.5, "fx", "damagePlus_ring"],
+      [0.5, "fx", "damagePlus", {"bone": "mount_Hand_R", "kill": 10, "single": true}],
+      [1.5, "fx", "damagePlus_ring"],
+      [2.5, "fx", "damagePlus_ring"]
+    ]
+  },
+  "wave": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:43353) and emo_wave (:43361) both play the wave clip (:43803): voice hi or wave",
+    "cues": [
+      [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_ty (:43371) and emo_bow (:43378) both play the bow clip (:43789): voice ty or bow",
+    "cues": [
+      [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_laugh (:43385-43391)",
+    "cues": [
+      [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_sleep (:43417-43423)",
+    "cues": [
+      [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cheer (:43429-43435)",
+    "cues": [
+      [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_beg (:43441-43447)",
+    "cues": [
+      [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_cry (:43453-43459)",
+    "cues": [
+      [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_chat (:43474) plays the talk clip (:43767) with chat1-5 at random (Random.Range(1, 6), :43297); emo_talk (:43467) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+      [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Cat.cs RPC_emotion (:43007): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:43305, PlayOneShot :43317; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_battle (:43737-43743): voice battle; the mission's RPC_activateIcon1 also loops this clip (:48622, voice activate1 :48677; no tile, Penguin decision 19): the tile takes the emote's voice",
+    "cues": [
+      [0, "voice", "battle"]
+    ]
+  },
+  "ko": {
+    "why": "Cat.cs RPC_ko (:48844): clip (animation.Play :49058) and voice ko1 or ko2 at 0 (Random.Range(0, 2) :49093, :49103-49183), getUp after 3 s (:49176, :48960), no effect; RPC_dead (:49218) plays the same clip (:49415, :49521) with dead1 or dead2 at 0 (:49450-49505) and always puts deadEffect at the hero's position and rotation (:49527; the Cat prefab's deadEffect field, EffectControl life 3): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / penguin.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+      [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+      [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+      [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  },
+  "getUp": {
+    "why": "Cat.cs RPC_revive (:49588-49870): voice revive at 0 (load :49817, PlayOneShot :49829), then the getUp clip (animation.Play :49841), standby after 1 s (:49863, :49704), no effect; RPC_ko's getUp 3 s into a KO (:48960) is silent: one of the two at random, even chance (decision 11's shape)",
+    "cues": [
+      [0, "voice", "revive", {"p": 0.5}]
+    ]
+  },
+  "instantCast": {
+    "why": "instantCast is played by two Cat skills, Fate Draw (Cat.cs:21563) and Double Down (:24693), both instant and both in one build: each play shows one, even chance (the pool rule); no other BB or TTO coroutine plays it (TTO pseudo/Cat.c: only RPC_fateDraw and RPC_doubleDown name it)",
+    "skills": {
+      "fateDraw": {
+        "why": "Cat.cs RPC_fateDraw (:21254-21917; rank 4, Lady Luck #412 on: the passives rule): at 0 clip (cut, :21563); hasSkill(412) (:21575) picks ladyLuck_ring at the hero, hero rotation (createEffect :21585-21597; EffectControl life 1 + 1, followPosition, plays its own Sounds/fateDraw) and voice ladyLuck1 / ladyLuck2 (Random.Range(0, 2) :21640-21681, PlayOneShot :21853 / :21856) in place of fateDraw_ring + fateDraw1 / fateDraw2 (:21706-21863); Yield 0.4 (:21865): fortune on everyone of the Cat's layer within 15 m, the Cat included (FindAreaTarget :21414; fortune sLv + 1, chaAdjust(30) :21447-21453): the status puts the fortune emblem 2 m above each (Instantiate(fortune, position + 2 x up, identity), CharacterControl.cs:36235-36247; an EmblemEmitter alone, as the Wolf's valor_emblem): the hero's own; Yield 0.3 (:21849): standby 0.7 s (:21493)",
+        "cues": [
+          [0, "fx", "ladyLuck_ring"],
+          [0, "voice", "ladyLuck1|ladyLuck2"],
+          [0.4, "fx", "fortune", {"y": 2}]
+        ]
+      },
+      "doubleDown": {
+        "why": "Cat.cs RPC_doubleDown (:24447-24886; rank 2, Roll the Dice #432 on): at 0 clip (cut, :24693), doubleDown_ring at the hero (createEffect :24711-24723) and voice doubleDown1 / doubleDown2 (Random.Range(0, 2) :24766-24852); Yield 0.3 (:24846): doubleDown_fire (:24599); standby 0.4 s (Yield 0.1 :24843, :24623). doubleDown_fire (:24887-25205): sLv x 3 + 2 = 8 strikes (:25027), one every 0.4 s from 0.3 s (Yield :25155), each on a random on-screen character within 24 m in layer mask 130816 (FindAreaTarget :25047, isOnScreen :25075, Random.Range :25106), which scans the Enemy and Player tags (Damage.cs:963-1120): the Cat is a candidate too, so with one target each strike falls on the target (10 m) or on the Cat, even chance; RPC_doubleDown_hit at that one's feet (:25124): doubleDown2_hit (hasSkill(432) :25392-25415; else doubleDown1_hit :25441-25451), Instantiate(hitPos, identity: drawn in the hero's facing, APPROXIMATED; plays its own Sounds/doubleDown2); the damage 0.4 s later (:25358)",
+        "cues": [
+          [0, "fx", "doubleDown_ring"],
+          [0, "voice", "doubleDown1|doubleDown2"],
+          [0.3, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd1"}],
+          [0.3, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd1"}],
+          [0.7, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd2"}],
+          [0.7, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd2"}],
+          [1.1, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd3"}],
+          [1.1, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd3"}],
+          [1.5, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd4"}],
+          [1.5, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd4"}],
+          [1.9, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd5"}],
+          [1.9, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd5"}],
+          [2.3, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd6"}],
+          [2.3, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd6"}],
+          [2.7, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd7"}],
+          [2.7, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd7"}],
+          [3.1, "fx", "doubleDown2_hit", {"d": 10, "p": 0.5, "roll": "dd8"}],
+          [3.1, "fx", "doubleDown2_hit", {"p": 0.5, "roll": "!dd8"}]
+        ]
+      }
+    }
+  },
+  "gamble": {
+    "why": "gamble is played by three Cat skills, Power Shuffle (Cat.cs:22403), Life Gamble (:22949) and Skill Gamble (:23481), all instant: each play shows one, even chance (the pool rule); no other BB or TTO coroutine plays it",
+    "skills": {
+      "powerShuffle": {
+        "why": "Cat.cs RPC_powerShuffle (:21918-22624; rank 2; Even Odds #422's sLv + 1 :22087-22093 changes numbers only): at 0 clip (cut, :22403), removePowerStatus (:22415), powerShuffle_ring at the hero (createEffect :22424-22436; life 1, plays its own Sounds/powerShuffle) and voice powerShuffle1 / powerShuffle2 (Random.Range(0, 2) :22479-22520); Yield 0.4 (:22564): one stat up, another down (:22072-22306; the xUp / xDown statuses draw nothing, CharacterControl.cs:33176-33296); Yield 0.3 (:22576): standby 0.7 s (:22333)",
+        "cues": [
+          [0, "fx", "powerShuffle_ring"],
+          [0, "voice", "powerShuffle1|powerShuffle2"]
+        ]
+      },
+      "lifeGamble": {
+        "why": "Cat.cs RPC_lifeGamble (:22625-23146; Even Odds #422 on): at 0 clip (cut, :22949), lifeGamble_ring at the hero (createEffect :22967-22979; followState: cut at standby 0.7 s; plays its own Sounds/gamble_ring) and voice lifeGamble1 / lifeGamble2 (Random.Range(0, 2) :23022-23063); Yield 0.4 (:23111): the roll lckAdjust(50) > Random.Range(0, 100) (:22768; 50 % at LCK 1, as the Wolf's Double Art 24 %): won: RPC_lifeGamble_heal (:22779) = lifeGamble_heal at the hero (:9156-9180; plays Sounds/gamble_heal); lost: Even Odds takes the loss (hasSkill(422) :22801 with its 90 s timer free :22807; the wardrobe keeps no timers): RPC_evenOdds (:22813) = evenOdds_hit at the hero (:9335-9360; plays Sounds/evenOdds), no lifeGamble_hit (:22834-22839 skipped, :22829); Yield 0.3 (:23100): standby 0.7 s (:22879)",
+        "cues": [
+          [0, "fx", "lifeGamble_ring", {"cut": 0.7}],
+          [0, "voice", "lifeGamble1|lifeGamble2"],
+          [0.4, "fx", "lifeGamble_heal", {"p": 0.5, "roll": "gamble"}],
+          [0.4, "fx", "evenOdds_hit", {"p": 0.5, "roll": "!gamble"}]
+        ]
+      },
+      "skillGamble": {
+        "why": "Cat.cs RPC_skillGamble (:23147-23681; Even Odds #422 on): at 0 clip (cut, :23481), skillGamble_ring at the hero (createEffect :23499-23511; followState: cut at standby 0.7 s; plays its own Sounds/gamble_ring) and voice skillGamble1 / skillGamble2 (Random.Range(0, 2) :23554-23595); Yield 0.4 (:23630): the roll Random.Range(0, 100) < lckAdjust(50) (:23290; 50 % at LCK 1): won: RPC_skillGamble_heal (:23306) = skillGamble_heal at the hero (:9249-9275; plays Sounds/gamble_success); lost: Even Odds (:23328-23340) = evenOdds_hit at the hero (RPC_evenOdds :9335-9360), no skillGamble_hit (:23361-23371 skipped); Yield 0.3 (:23636): standby 0.7 s (:23411)",
+        "cues": [
+          [0, "fx", "skillGamble_ring", {"cut": 0.7}],
+          [0, "voice", "skillGamble1|skillGamble2"],
+          [0.4, "fx", "skillGamble_heal", {"p": 0.5, "roll": "gamble"}],
+          [0.4, "fx", "evenOdds_hit", {"p": 0.5, "roll": "!gamble"}]
+        ]
+      }
+    }
+  },
+  "grandCasinoArcade1": {
+    "why": "Cat.cs RPC_grandCasinoArcade (:27674-28900; rank 2): at 0 the Cat turns to face the camera (LookAt(mPos - flat(camera forward)) :28618), clip (cut, :28621), noDamage / noForce 17 s (:28633-28636, draw nothing), grandCasinoArcade_ring1 at the hero, hero rotation (Instantiate :28645-28657; life 3, plays its own Sounds/grandCasino1) and voice grandCasinoArcade1 / grandCasinoArcade2 (Random.Range(0, 2) :28700-28777); Yield 0.4 (:28796): the machine grandCasinoArcade at the hero (createEffect :27826-27838; life 16 + 1, followState; its Animation plays create, Cat_grandCasinoArcade blinks its lights); its child grandCasinoArcade (Find :27858) plays fire at each spin, 1.7 / 4.4 / 7.1 / 9.8 / 12.5 s (:28554), and destroy at 14.9 s (:28531): anims = those times after the spawn (part Cat_grandCasinoArcade); no cut: standby is at 15.9 s, in grandCasinoArcade3's step, and destroy has sunk the machine by then (its root to -5); left out: the camera zoom, shake and blur (:27887-27919)",
+    "cues": [
+      [0, "fx", "grandCasinoArcade_ring1"],
+      [0, "voice", "grandCasinoArcade1|grandCasinoArcade2"],
+      [0.4, "fx", "grandCasinoArcade", {"anims": [[1.3, "fire"], [4.0, "fire"], [6.7, "fire"], [9.4, "fire"], [12.1, "fire"], [14.5, "destroy"]]}]
+    ]
+  },
+  "grandCasinoArcade2": {
+    "why": "Cat.cs RPC_grandCasinoArcade from 1.7 s (Yield 1.3 :28782; clip looped :27946-27951; times from this step's start, the sequence's grandCasinoArcade2*@13.2): sLv x 2 + 1 = 5 spins (:28507), each Sounds/grandCasino2 at volume 2 (PlayOneShot(clip, 2) :28566-28578), Yield 2 (:28784) to its result, then 0.7 s (:28780; 0.4 after the last, :28809): spins at 0 / 2.7 / 5.4 / 8.1 / 10.8, results at 2.0 / 4.7 / 7.4 / 10.1 / 12.8. A result: Random.Range(0, clamp(LCK, 0, 255)) (:27993), at the 255 cap: < 5 Casino Doom (5 / 255: doom on the Cat's layer within 24 m, the Cat included, :27998-28048; the doom status draws the Bat's doom at the collider centre, 0.89 m up (Cat.prefab CharacterController m_Center y 0.89, decision 26), identity, CharacterControl.cs:40487-40504; RPC_grandCasinoArcade_hit(0) draws nothing, :9648-9800), < 50 hit1 (45), < 90 hit2 (40), < 120 hit3 (30), else hit7 (135): grandCasinoArcade_hit<n> at the hero + 4.5 m up, hero rotation (:9669-9794; each plays its own grandCasino_hit1 / _hit7); the 50 names = 9 : 8 : 6 : 27; left out: the damage and the camera blur (:28283-28295)",
+    "cues": [
+      [0.0, "sound", "grandCasino2", {"vol": 2}],
+      [2.0, "fx", "doom", {"y": 0.89, "p": 0.0196, "roll": "casino1"}],
+      [2.0, "fx", "grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7", {"y": 4.5, "p": 0.0196, "roll": "!casino1"}],
+      [2.7, "sound", "grandCasino2", {"vol": 2}],
+      [4.7, "fx", "doom", {"y": 0.89, "p": 0.0196, "roll": "casino2"}],
+      [4.7, "fx", "grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7", {"y": 4.5, "p": 0.0196, "roll": "!casino2"}],
+      [5.4, "sound", "grandCasino2", {"vol": 2}],
+      [7.4, "fx", "doom", {"y": 0.89, "p": 0.0196, "roll": "casino3"}],
+      [7.4, "fx", "grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7", {"y": 4.5, "p": 0.0196, "roll": "!casino3"}],
+      [8.1, "sound", "grandCasino2", {"vol": 2}],
+      [10.1, "fx", "doom", {"y": 0.89, "p": 0.0196, "roll": "casino4"}],
+      [10.1, "fx", "grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7", {"y": 4.5, "p": 0.0196, "roll": "!casino4"}],
+      [10.8, "sound", "grandCasino2", {"vol": 2}],
+      [12.8, "fx", "doom", {"y": 0.89, "p": 0.0196, "roll": "casino5"}],
+      [12.8, "fx", "grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit1|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit2|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit3|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7|grandCasinoArcade_hit7", {"y": 4.5, "p": 0.0196, "roll": "!casino5"}]
+    ]
+  },
+  "grandCasinoArcade3": {
+    "why": "Cat.cs RPC_grandCasinoArcade from 14.9 s (the sixth IL_9BB, i = 5 :28507): clip grandCasinoArcade3 (cut, :28513), the machine's destroy (:28531; its anims); Yield 0.3 (:28786): grandCasinoArcade_ring2 at the hero, hero rotation (Instantiate :28406-28418; life 3, plays its own Sounds/grandCasino1); Yield 0.7 (:28793): standby at 1.0 s (:28454); left out: the camera shake and zoom back (:28369-28392)",
+    "cues": [
+      [0.3, "fx", "grandCasinoArcade_ring2"]
+    ]
+  },
+  "forwardLunge": {
+    "why": "Cat.cs RPC_forwardLunge (:29924-31010; rank 2): at 0 clip (cut, :30796) and voice forwardLunge1 / forwardLunge2 (Random.Range(0, 2) :30837-30924); Yield 0.3 (:30941): the dash (moveSpeed 9 :30071), i = 0 to 3 every 0.1 s (Yield :30930, i++ :30132): forwardLunge_dust at the hero (the prefab field forwardLunge_dust, Cat.cs:15857 = Resources cat/effects/forwardLunge_dust; Instantiate :30721) and nAttack_dust 0.2 m left (i even) or right (i odd) (isOdd :30744, TransformDirection(+-0.2, 0, 0) :30750 / :30759); i = 4 at 0.7 s: moveSpeed 12 (:30260), nAttack_dust at the hero (:30480-30492); Yield 0.1 (:30915): moveSpeed 6 (:30158); Yield 0.2 (:30935): standby 1.0 s (:30184). The hero stays in place (the Feral Assault / Blink convention). Left out: the hits (FindRecTarget 3 / 4 m ahead :30518, :30271: the 10 m target is out of reach) and forwardLunge_hit / backStab_hit at it",
+    "cues": [
+      [0, "voice", "forwardLunge1|forwardLunge2"],
+      [0.3, "fx", "forwardLunge_dust"],
+      [0.3, "fx", "nAttack_dust", {"x": -0.2}],
+      [0.4, "fx", "forwardLunge_dust"],
+      [0.4, "fx", "nAttack_dust", {"x": 0.2}],
+      [0.5, "fx", "forwardLunge_dust"],
+      [0.5, "fx", "nAttack_dust", {"x": -0.2}],
+      [0.6, "fx", "forwardLunge_dust"],
+      [0.6, "fx", "nAttack_dust", {"x": 0.2}],
+      [0.7, "fx", "nAttack_dust"]
+    ]
+  },
+  "backflip": {
+    "why": "Cat.cs RPC_backflip (:32024-32651; rank 2): at 0 the Cat turns her back to the target (LookAt(mPos - flat(tDir)) :32417), clip (cut, :32420), Sounds/backflip (owner only, :32435-32459; the rip's sounds/backFlip.wav) and voice backflip1 / backflip2 (Random.Range(0, 2) :32503-32592; the rip's backFlip1 / 2); moveSpeed 4 at 0.15 s, 6 + 4 x 2 = 14 at 0.4 s, 0 at 0.8 s (:32171, :32198, :32329; the hero stays in place), standby 0.9 s (:32350). No effect prefab",
+    "cues": [
+      [0, "sound", "backflip"],
+      [0, "voice", "backflip1|backflip2"]
+    ]
+  },
+  "heartRipper1": {
+    "why": "Cat.cs RPC_heartRipper1 (:32652-33168; rank 2, on a knocked-out target :7359): at 0 clip (cut, :32995) and voice heartRipper1 / heartRipper2 (Random.Range(0, 2) :33036-33128); Yield 0.2 (:33126): moveSpeed 5 (:32809); Yield 0.2 (:33124): at 0.4 s the Cat is put at the target (target - forward x its extents.x, :32868-32873) and RPC_heartRipper2 starts (:32891): the sequence's heartRipper2 at 0.4 s (heartRipper1@0.4). No effect prefab",
+    "cues": [
+      [0, "voice", "heartRipper1|heartRipper2"]
+    ]
+  },
+  "heartRipper2": {
+    "why": "Cat.cs RPC_heartRipper2 (:33169-33799), the Cat at the target (the wardrobe hero stays put: the target comes to her): at 0 clip (cut, :33675), moveSpeed 2 (:33684); Yield 0.2 (:33733): stop (:33327) and the stab: enemies within 1 m (FindAreaTarget :33355), RPC_nAttack_hit at ClosestPointOnBounds(Cat + 1 up) (:33384-33394); she is 0.1 m past the target's centre, inside its 0.3 m box, so the point is her own, 1 m up: nAttack_hit there, hero rotation (:8253-8280) and Sounds/nAttack_hit (:8307); Yield 0.4 (:33737): at 0.6 s the second stab (:33467-33506) as she springs back (moveSpeed -8 :33454); Yield 0.2 (:33739): stop (:33566); Yield 0.2 (:33731): standby 1.0 s (:33608)",
+    "cues": [
+      [0.2, "fx", "nAttack_hit", {"y": 1}],
+      [0.2, "sound", "nAttack_hit"],
+      [0.6, "fx", "nAttack_hit", {"y": 1}],
+      [0.6, "sound", "nAttack_hit"]
+    ]
+  },
+  "deltaStrike": {
+    "why": "Cat.cs RPC_deltaStrike (:36952-38094; rank 2): the Cat stays where she is (mPos = her own position, the dispatcher :7078; :37720): at 0 clip (cut, :37730), noForce 3 s (:37750) and voice deltaStrike1 / deltaStrike2 (Random.Range(0, 2) :37803-37996); Yield 0.3 (:37963): deltaStrike_ring at the hero (createEffect :37105-37117; life 3 + 2, followState: cut at standby 3.0 s; plays its own Sounds/deltaStrike); Yield 0.5 + 0.5 (:37969, :37954): at 1.3 s deltaStrike_cat twice at (+-4.5, 0, 8) on the ground, each facing away from (0, 0, 4.5): yaw +-52.1 (cPos = mPos + TransformDirection(+-(1.5 sLv + 1.5), 0, 2 sLv + 4), raycast down :37322-37371); Yield 0.2 (:37986): at 1.5 s deltaStrike 0.5 m ahead, hero rotation, scale 1.5 at rank 2 (:37470-37495; needs UVScroll); then six ticks 0.1 s apart from 2.1 s and the finisher at 2.9 s (:37872-37927, :37574-37603: damage only); standby 3.0 s (Yield 0.1 :37992, :37648); left out: the lock status (draws nothing), the camera colour ramp and blur (:37766, :37627)",
+    "cues": [
+      [0, "voice", "deltaStrike1|deltaStrike2"],
+      [0.3, "fx", "deltaStrike_ring", {"cut": 3.0}],
+      [1.3, "fx", "deltaStrike_cat", {"x": 4.5, "d": 8, "rot": [0, 52.1, 0]}],
+      [1.3, "fx", "deltaStrike_cat", {"x": -4.5, "d": 8, "rot": [0, -52.1, 0]}],
+      [1.5, "fx", "deltaStrike", {"d": 0.5, "scale": 1.5}]
+    ]
+  },
+  "finishingBlow1": {
+    "why": "Cat.cs RPC_finishingBlow1 (:38095-38530; Finishing Blow #423, on a knocked-out target :6448-6495): at 0 clip (cut, :38427) and finishingBlow_ring1 at the hero, hero rotation (Instantiate :38445-38455; life 1, plays its own aura1); Yield 0.2 (:38494): moveSpeed 5 (:38241); Yield 0.2 (:38485): at 0.4 s the Cat is put at the target (:38300-38305) and RPC_finishingBlow2 starts (:38323): the sequence's finishingBlow2 at 0.4 s (finishingBlow1@0.4). No voice here",
+    "cues": [
+      [0, "fx", "finishingBlow_ring1"]
+    ]
+  },
+  "finishingBlow2": {
+    "why": "Cat.cs RPC_finishingBlow2 (:38531-39461): at 0 clip (cut, :39177), finishingBlow_ring2 at the hero (createEffect :39223-39235; life 3 + 1, plays its own Sounds/finishingBlow) and the voice: BB loads Voices/finishingBlow1 / finishingBlow2 (:39278-39319), which BB's data lacks (it has voices/finisingBlow1 / 2), so BB is silent; TTO's fix (TTO1102 pseudo/Cat.c:8376-8388 loads finisingBlow1 / 2) is taken, as the Sheep's decision 10; Yield 0.3 (:39388): the first blow, finishingBlow_hit at the Cat herself, identity (drawn in the hero's facing, APPROXIMATED; Instantiate(position, identity) :38739-38751, hit or not; plays its own Sounds/finishingBlow_hit), again at 0.6 s (Yield 0.3 :39381, :38851) and 1.1 s (Yield 0.5 :39354, :38958); Yield 0.3 (:39373): at 1.4 s the spring back (moveSpeed -8 :38995; the last hit, 199, draws nothing); stop 1.6 s (:39068), standby 1.8 s (:39110)",
+    "cues": [
+      [0, "fx", "finishingBlow_ring2"],
+      [0, "voice", "finisingBlow1|finisingBlow2"],
+      [0.3, "fx", "finishingBlow_hit"],
+      [0.6, "fx", "finishingBlow_hit"],
+      [1.1, "fx", "finishingBlow_hit"]
+    ]
+  },
+  "moonBlade": {
+    "why": "Cat.cs RPC_moonBlade (:35464-36202), max rank sLv 2 (dispatch :6387; the effect does not change by rank): clip cut in (PlayAnimation(moonBlade, 0) :35966), Effects/moonBlade created at the hero, hero rotation (createEffect :35984-35996; EffectControl life 1 + afterLife 1, followPosition, no followState; plays its own Sounds/moonBlade) and voice moonBlade1 / moonBlade2 (Random.Range(0, 2) :36039-36095, PlayOneShot :36138 / :36123) at 0; Yield 0.2 (:36128): moveSpeed 2 and the player's motion blur (:35611-35629, screen only); Yield 0.1 (:36141): at 0.3 s the 3 m circle (:35679), Yield 0.1 (:36119): at 0.4 s the 4 m circle (:35781): hit() and the cut status draw nothing, and the 10 m target is out of reach; Yield 0.1 (:36115): moveSpeed 0 (:35875); Yield 0.3 (:36134): standby at 0.8 s (:35896); the hero doesn't travel (0.1 + 0.2 + 0.1 m in the game)",
+    "cues": [
+      [0, "fx", "moonBlade"],
+      [0, "voice", "moonBlade1|moonBlade2"]
+    ]
+  },
+  "moonStorm": {
+    "why": "Cat.cs RPC_moonStorm (:36203-36951), max rank sLv 2 (dispatch :6408): clip cut in (PlayAnimation(moonStorm, 0) :36708), Effects/moonStorm created at the hero, hero rotation (createEffect :36720-36738; EffectControl life 2, no followState; its own Line / Ring emitters draw the 12 m path, delays 0.3-0.95 s; plays its own Sounds/moonStorm) and voice moonStorm1 / moonStorm2 (Random.Range(0, 2) :36781-36840, PlayOneShot :36805 / :36836) at 0; the motion blur (:36855-36858) is screen only; Yield 0.2 (:36879): moveSpeed 3 (:36350); six rings of 2 m at cast + 1.5 i m, i = 0..5, 0.3-0.8 s (Yield 0.1 :36882, :36415; moveSpeed 0 at i = 2, :36403), then two blasts of 3 m at cast + 12 m at 0.9 and 1.0 s (Yield 0.1 :36887, :36521, j < 2 :36609): hit() and the cut status draw nothing at the 10 m target; standby at 1.0 s (:36629)",
+    "cues": [
+      [0, "fx", "moonStorm"],
+      [0, "voice", "moonStorm1|moonStorm2"]
+    ]
+  },
+  "pillage": {
+    "why": "Cat.cs RPC_pillagePlunge (:39906-40695), Pillage Plunge #434, one rank (dispatch :6621): clip cut in (PlayAnimation(pillage, 0) :40453), Effects/pillagePlunge_ring1 Instantiated at the hero, hero rotation (:40465-40483; EffectControl life 1 + afterLife 1; plays its own Sounds/pillage) and voice pillagePlunge1 / pillagePlunge2 (Random.Range(0, 2) :40526-40585, PlayOneShot :40617 / :40627) at 0; Yield 0.7 (:40623): the dash, moveSpeed 24 (:40042; the hero doesn't travel, 4.8 m by 0.9 s in the game), and pillagePlunge_ring2 created at the hero (:40104-40122; Animation Base Stack, life 0.4, followPosition, followState: the action changes at standby, 1.2 s); Yield 0.1 (:40612): at 0.8 s the hit box 2 m behind to 2 m ahead of her (:40172): pillagePlunge_hit at the foe (:40233, :10497-10520) is out of reach of the 10 m target, none; Yield 0.1 (:40602): moveSpeed 0 and pillagePlunge_ring3 created at the hero (:40278-40301; life 1 + afterLife 1); Yield 0.3 (:40604): standby at 1.2 s (:40383)",
+    "cues": [
+      [0, "fx", "pillagePlunge_ring1"],
+      [0, "voice", "pillagePlunge1|pillagePlunge2"],
+      [0.7, "fx", "pillagePlunge_ring2", {"cut": 1.2}],
+      [0.9, "fx", "pillagePlunge_ring3"]
+    ]
+  },
+  "reverseThrust": {
+    "why": "Cat.cs RPC_reverseThrust (:31011-32023), max rank sLv 2 (dispatch :6324): she turns her back on the target (LookAt(mPos + vFlat(-tDir)) :31902) and the clip cuts in (PlayAnimation(reverseThrust, 0) :31905); Yield 0.1 (:31935): moveSpeed -10 (backwards, :31158), Effects/reverseThrust created at the hero, hero rotation x Euler(270, 90, 0) (:31163-31181; Animation root, life 0.3, followPosition, followState: the action changes at standby, 1.0 s; plays its own Sounds/reverseTrust1) and voice reverseThrust1 / reverseThrust2 (Random.Range(0, 2) :31226-31291, PlayOneShot :31952 / :31939) at 0.1 s; Yield 0.2 (:31937): at 0.3 s moveSpeed 0 and the 3 m box behind her (:31353), Yield 0.4 (:31946): at 0.7 s moveSpeed 1 and the box again (:31590): each hit a reverseThrust_hit (or, with Backstab #413 on a foe facing away, :31386-31455, a backStab_hit) at the foe (:31475-31527, :9925-9948, :10340-10363): the target 10 m off is out of reach, none; Yield 0.2 (:31944): moveSpeed 0; Yield 0.1 (:31960): standby at 1.0 s (:31835)",
+    "cues": [
+      [0.1, "fx", "reverseThrust", {"rot": [270, 90, 0], "cut": 1.0}],
+      [0.1, "voice", "reverseThrust1|reverseThrust2"]
+    ]
+  },
+  "swiftPace": {
+    "why": "Cat.cs RPC_swiftPace (:39462-39905), Swift Pace #431, one rank (dispatch :6528-6600: mPos = Math.getSpawnPos(target - (extents.x + 0.5) x target.forward), behind the target, tDir = vFlat(target - target) = zero, so the LookAt :39715 leaves her facing): clip cut in (PlayAnimation(swiftPace, 0) :39718), Effects/swiftPace_ring1 Instantiated at the hero, hero rotation (:39727-39745; life 1 + afterLife 1; plays its own Sounds/swiftPace1) and voice swiftPace1 / swiftPace2 (Random.Range(0, 2) :39788-39847, PlayOneShot :39866 / :39874) at 0; Yield 0.3 (:39868): she is put at mPos + 0.1 up (:39597) and swiftPace_ring2 Instantiated there, her rotation (:39602-39620; life 1 + afterLife 1; plays its own Sounds/swiftPace2): at the hero, 0.1 m up (the hero doesn't travel: the Penguin's Blink); Yield 0.2 (:39872): standby at 0.5 s (:39651)",
+    "cues": [
+      [0, "fx", "swiftPace_ring1"],
+      [0, "voice", "swiftPace1|swiftPace2"],
+      [0.3, "fx", "swiftPace_ring2", {"y": 0.1}]
+    ]
+  },
+  "supportFire1": {
+    "why": "Cat.cs RPC_supportFire (:40696-41391), Support Fire #444, one rank (dispatch :6675), the SEQ Support Fire's first step: clip cut in (PlayAnimation(supportFire1, 0) :40894), Effects/supportFire_ring created at the hero, hero rotation (:40914-40932; life 99, followPosition, followState: ends when the channel does; its emblem and looping ring; plays its own Sounds/supportFire_ring) and voice supportFire1 / supportFire2 (Random.Range(0, 2) :40975-41034) at 0; six supportFire_cannon created where a 4 m ray down from TransformDirection(3i - 10.5, 2, -2), i = 1..6, meets the floor, hero rotation (:41043-41099: x -7.5 ... 7.5, 2 m behind; life 99 + afterLife 0.5, followState; AlphaTimer fades each in to 0.8 over 1 s); Yield 1 (:41332): supportFire2 looped from 1.0 s (:40832); the channel ends when the player moves (RPC_supportFire0 :10547-10624: standby, then every cannon's AlphaTimerFadeOut(0.5) :10603): cut 2.95, just inside the SEQ's supportFire2*@3 hold, read on supportFire2's own clock (FX.t restarts each step; seqTick runs before fxTick, so a cut of exactly 3 never fires when the tile loops; the Penguin's manaField_ring precedent); the shells: fxparts/cat.js fx:supportFire_cannon (decisions 48-49: the six cannons of one play, the first owns the clock): from 1.25 s after the ring (mUpdateTime = Time.time + 0.25 at supportFire2's start :40842), every 0.01 x Random.Range(24, 36) = 0.24-0.35 s (:41174), a cannon at random (Random.Range(0, 6) :41185) plays its fire clip (Rewind + Play :10672-10677), supportFire_smoke and supportFire_fire are Instantiated at that cannon + TransformDirection(0, 1, 3), LookRotation(getTrajectoryVector(that point, 24 + Random.Range(0, 24) m ahead, 30)) (:41207-41217, :10693-10753); Cat_supportFire flies at 30 m/s with gravity 9.8 and lands 19-27 m ahead after 0.60-0.88 s (checks/fx_cat_research/skills_b/shells.txt), supportFire_hit at the floor, identity (Cat_supportFire.cs:163-190, Cat.cs:10776-10802); the shake (:41261) is screen only",
+    "builds": ["supportFire_fire", "supportFire_smoke", "supportFire_hit"],
+    "cues": [
+      [0, "fx", "supportFire_ring", {"cut": 2.95}],
+      [0, "voice", "supportFire1|supportFire2"],
+      [0, "fx", "supportFire_cannon", {"x": -7.5, "d": -2, "cut": 2.95}],
+      [0, "fx", "supportFire_cannon", {"x": -4.5, "d": -2, "cut": 2.95}],
+      [0, "fx", "supportFire_cannon", {"x": -1.5, "d": -2, "cut": 2.95}],
+      [0, "fx", "supportFire_cannon", {"x": 1.5, "d": -2, "cut": 2.95}],
+      [0, "fx", "supportFire_cannon", {"x": 4.5, "d": -2, "cut": 2.95}],
+      [0, "fx", "supportFire_cannon", {"x": 7.5, "d": -2, "cut": 2.95}]
+    ]
+  },
+  "pointTarget": {
+    "why": "The pointTarget clip is played by two skills: Two Pair (RPC_twoPair, Cat.cs:26177) and Copycat (RPC_copycat, :26732); one tile each (poolChains)",
+    "skills": {
+      "twoPair": {
+        "why": "Cat.cs RPC_twoPair (:25518-26412), max rank sLv 2 (dispatch :6123): clip cut in (PlayAnimation(pointTarget, 0) :26177), Effects/twoPair_ring created at the hero, hero rotation (:26189-26207; life 1, followPosition; plays its own Sounds/twoPair) and voice twoPair1 / twoPair2 (Random.Range(0, 2) :26250-26309, PlayOneShot :26333 / :26339) at 0; Yield 0.4 (:26331): the statuses swapped (:25716-26038) and RPC_twoPair_hit (:26068, :9464-9510): twoPair_hit Instantiated at the hero + 0.5 up and at the target's feet + 0.5 up, identity (:9489, :9507): the 10 m target point; Yield 0.4 (:26328): standby at 0.8 s (:26107)",
+        "cues": [
+          [0, "fx", "twoPair_ring"],
+          [0, "voice", "twoPair1|twoPair2"],
+          [0.4, "fx", "twoPair_hit", {"y": 0.5}],
+          [0.4, "fx", "twoPair_hit", {"d": 10, "y": 0.5}]
+        ]
+      },
+      "copycat": {
+        "why": "Cat.cs RPC_copycat (:26413-26939), max rank sLv 2 (dispatch :6144): clip cut in (PlayAnimation(pointTarget, 0) :26732), Effects/copycat_ring created at the hero, hero rotation (:26744-26762; life 1 + afterLife 1, followPosition; plays its own Sounds/copyCat) and voice copycat1 / copycat2 (Random.Range(0, 2) :26805-26864, PlayOneShot :26883 / :26891) at 0; Yield 0.4 (:26897): with the target hurt before (mLastDamage > 0, :26602; else 'Copycat fail', no effect :26635) RPC_copycat_hit (:26613, :9528-9574): copycat_hit Instantiated at the hero + 1 up and at the target's feet + 1 up, identity (:9553, :9571): the 10 m target point; Yield 0.3 (:26881): standby at 0.7 s (:26662)",
+        "cues": [
+          [0, "fx", "copycat_ring"],
+          [0, "voice", "copycat1|copycat2"],
+          [0.4, "fx", "copycat_hit", {"y": 1}],
+          [0.4, "fx", "copycat_hit", {"d": 10, "y": 1}]
+        ]
+      }
+    }
+  },
+  "throw1": {
+    "why": "The throw1 clip is played by two skills: Lucky Card (RPC_luckyCard, Cat.cs:21102) and Lucky Dice (RPC_luckyDice, :24174); one tile each (poolChains)",
+    "skills": {
+      "luckyCard": {
+        "why": "Cat.cs RPC_luckyCard (:20398-21253), max rank sLv 4 (dispatch :5933), Joker #402 on (passives on: damage and a 6 % Doom roll on the foe, :20850-20893, nothing drawn): clip restarted (Rewind, PlayAnimation(throw1, 0) :21099-21102); Yield 0.4 (:21151): the main weapon's renderers off (mWep1 = the right-hand weapon, CatEquipment.cs:949-1025; :20556-20583) until 0.8 s (case 6 :21020-21048 after standby; the 0.6 s branch :20909-20955 only runs if the skill was broken off), Effects/luckyCard_fire Instantiated at the cast spot + 1.2 up, FromToRotation(forward, the target's collider centre - that point) (:20593-20638): 3.43 deg down to the 0.6 m body centre at 10 m (life 1; plays its own Sounds/throw), voice luckyCard1 / luckyCard2 (Random.Range(0, 2) :20683-20746, PlayOneShot :21137 / :21129; the Bible's 'two card effect variants' at :20683 is this voice pick); Yield 0.1 (:21139): at 0.5 s the 20 m ray (:20790) and RPC_luckyCard_hit at its point (:20798, :9128-9130): the prefab field luckyCard_hit (the Cat prefab, checks/fx_cat_research/skills_b/probe_fields.txt) Instantiated there, hero rotation: the ray meets the 0.3 m body's front, 9.7 m ahead, 0.62 m up (legacy one-shot, autodestruct; plays its own Sounds/throw_hit); standby at 0.7 s (:20980)",
+        "cues": [
+          [0.4, "hideProp", "R", {"kill": 0.4}],
+          [0.4, "fx", "luckyCard_fire", {"y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.4, "voice", "luckyCard1|luckyCard2"],
+          [0.5, "fx", "luckyCard_hit", {"d": 9.7, "y": 0.62}]
+        ]
+      },
+      "luckyDice": {
+        "why": "Cat.cs RPC_luckyDice (:23682-24446), max rank sLv 2 (dispatch :6008), Roll the Dice #432 on (damage only in BB, :23939; TTO1102 plays rollTheDice1 / 2 instead of the voice with it, pseudo/Cat.c:15333-15345, report question 3): clip restarted (Rewind, PlayAnimation(throw1, 0) :24171-24174), Sounds/luckyDice (PlayOneShot :24186-24204, volume 1) and voice luckyDice1 / luckyDice2 (Random.Range(0, 2) :24247-24306, PlayOneShot :24358 / :24327) at 0; Yield 0.4 (:24349): the main weapon's renderers off (:23829-23856) until 0.8 s (:24101-24129), Effects/luckyDice Instantiated at the hero, identity (:23866-23884; life 2; its dice bounce on the floor: WorldParticleCollider, a part to build); Yield 0.1 (:24339): at 0.5 s the 6 m circle (:23934): hit() draws nothing (RPC_luckyDice_hit :9389 is never called); standby at 0.7 s (:24061)",
+        "cues": [
+          [0, "sound", "luckyDice"],
+          [0, "voice", "luckyDice1|luckyDice2"],
+          [0.4, "hideProp", "R", {"kill": 0.4}],
+          [0.4, "fx", "luckyDice"]
+        ]
+      }
+    }
+  },
+  "throw2": {
+    "why": "The throw2 clip is played by three skills: Flying Dagger (RPC_flyingDagger, Cat.cs:29762), Disarm (RPC_disarm, :34357) and Bleed (RPC_bleed, :35189); one tile each (poolChains)",
+    "skills": {
+      "flyingDagger": {
+        "why": "Cat.cs RPC_flyingDagger (:28901-29923), max rank sLv 4 (dispatch :6207), Three Knives #403 on (passives on, hasSkill(403) :29168): clip restarted (Rewind, PlayAnimation(throw2, 0) :29759-29762), moveSpeed 2; Yield 0.2 (:29817): moveSpeed 6; Yield 0.3 (:29800): at 0.5 s the main weapon's renderers off (:29086-29113) until 0.95 s (:29668-29696 after Yield 0.15 :29833), three Effects/flyingDagger_fire Instantiated at the cast spot + 1.2 up and at TransformDirection(-+0.6, 0, -0.3) from it, each FromToRotation(forward, the target's collider centre - the middle point) (:29123-29184): 3.43 deg down (life 1; each plays its own Sounds/throw), voice threeKnives1 / threeKnives2 (Random.Range(0, 2) :29220-29285, PlayOneShot :29821 / :29802; without #403 one knife and flyingDagger1 / 2, :29291-29390); Yield 0.1 (:29804): at 0.6 s moveSpeed 0 and three parallel 20 m rays (:29455-29555): the middle one meets the 0.3 m body's front, flyingDagger_hit there, hero rotation (:29461, :9825-9848; plays its own Sounds/throw_hit); the side rays pass 0.6 m off the body and end 2 mm above the floor (1.2 - 0.06 x 19.96), no hit; standby at 0.8 s (:29628); the hero doesn't travel (2.2 m in the game)",
+        "cues": [
+          [0.5, "hideProp", "R", {"kill": 0.45}],
+          [0.5, "fx", "flyingDagger_fire", {"y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.5, "fx", "flyingDagger_fire", {"x": -0.6, "d": -0.3, "y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.5, "fx", "flyingDagger_fire", {"x": 0.6, "d": -0.3, "y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.5, "voice", "threeKnives1|threeKnives2"],
+          [0.6, "fx", "flyingDagger_hit", {"d": 9.7, "y": 0.62}]
+        ]
+      },
+      "disarm": {
+        "why": "Cat.cs RPC_disarm (:33800-34631), max rank sLv 2 (dispatch :6345): clip restarted (Rewind, PlayAnimation(throw2, 0) :34354-34357), moveSpeed 2, Effects/disarm_ring created at the hero, identity (:34369-34387; life 1, followPosition; plays its own Sounds/aura1) and voice disarm1 / disarm2 (Random.Range(0, 2) :34430-34489, PlayOneShot :34518 / :34532) at 0; Yield 0.2 (:34527): moveSpeed 6; Yield 0.3 (:34512): at 0.5 s the main weapon's renderers off (:33985-34012) until 0.95 s (:34263-34291 after Yield 0.15 :34536), Effects/disarm Instantiated at the cast spot + 1.2 up, FromToRotation(forward, the target's collider centre - that point) (:34022-34067): 3.43 deg down (life 1; plays its own Sounds/throw); Yield 0.1 (:34523): at 0.6 s the 20 m ray (:34127): RPC_disarm_hit at its point (:34135, :10219-10242): disarm_hit there, identity, on the 0.3 m body's front (plays its own Sounds/disarm_hit); the disarm status on the foe draws nothing here; standby at 0.8 s (:34223)",
+        "cues": [
+          [0, "fx", "disarm_ring"],
+          [0, "voice", "disarm1|disarm2"],
+          [0.5, "hideProp", "R", {"kill": 0.45}],
+          [0.5, "fx", "disarm", {"y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.6, "fx", "disarm_hit", {"d": 9.7, "y": 0.62}]
+        ]
+      },
+      "bleed": {
+        "why": "Cat.cs RPC_bleed (:34632-35463), max rank sLv 2 (dispatch :6366): clip restarted (Rewind, PlayAnimation(throw2, 0) :35186-35189), moveSpeed 2, Effects/bleed_ring created at the hero, identity (:35201-35219; life 1, followPosition; plays its own Sounds/aura1) and voice bleed1 / bleed2 (Random.Range(0, 2) :35262-35321, PlayOneShot :35352 / :35341) at 0; Yield 0.2 (:35362): moveSpeed 6; Yield 0.3 (:35350): at 0.5 s the main weapon's renderers off (:34817-34839) until 0.95 s (:35095-35118 after Yield 0.15 :35348), Effects/bleed_fire Instantiated at the cast spot + 1.2 up, FromToRotation(forward, the target's collider centre - that point) (:34854-34899): 3.43 deg down (life 1; plays its own Sounds/throw); Yield 0.1 (:35370): at 0.6 s the 20 m ray (:34959): RPC_bleed_hit at its point (:34967, :10269-10292): bleed_hit there, identity, on the 0.3 m body's front (plays its own Sounds/bleed_hit); the bleed status on the foe draws nothing here; standby at 0.8 s (:35055)",
+        "cues": [
+          [0, "fx", "bleed_ring"],
+          [0, "voice", "bleed1|bleed2"],
+          [0.5, "hideProp", "R", {"kill": 0.45}],
+          [0.5, "fx", "bleed_fire", {"y": 1.2, "rot": [3.43, 0, 0]}],
+          [0.6, "fx", "bleed_hit", {"d": 9.7, "y": 0.62}]
+        ]
+      }
+    }
+  },
+  "@Awareness:root": {
+    "why": "Cat.cs RPC_awareness (:8563-9075, a plain method: no clip, no wait; cat_awareness2 :5912-5918 gives sLv 2, the dispatcher calls it straight :7846, ActionEvent :7855; the tile plays it on the idle stance), all at 0: addTimeOut 1 s (:8574); sLv 2: Effects/awareness2 at the hero's position, Quaternion.identity (Instantiate :8630-8642; sLv 1 would be awareness1 :8591-8603; EffectControl life 1 + afterLife 1, no followPosition, no followState; its ring 0 -> 8 m; plays its own Sounds/awareness); the local player's camera screen warp barrierMask (AddScreenWarp :8668) left out (the page has no camera effects); voice awareness1 / awareness2 (Random.Range(0, 2) :8717, :8729-8772; the game skips it within 3 s of the last, :8706-8712); the awareness status (Lv 2, 1 s) on every unit within 12 x sLv = 24 m (FindAreaTarget :8797, RPC_AddStatus :8837) only strips blend / invisible and draws nothing (CharacterControl.cs:36204-36227); Insight #421 on (passives on, hasSkill(421) :8848): insight Lv 1 for chaAdjust(3) = 3 s (:8854), whose apply puts Effects/insight at the CharacterController's bounds centre + 0.5 x height up = 0.89 + 0.8 = 1.69 m (Cat.prefab m_Center y 0.89, m_Height 1.6), identity, parented (CharacterControl.cs:36402-36431), destroyed with the status (:16256-16269; no EffectControl: kill 3); Treasure Hunt #123's minimap list (displayTreasure :8916) and the boxes and hidden items it reveals (:8922-9041) draw nothing on the Cat",
+    "cues": [
+      [0, "fx", "awareness2"],
+      [0, "voice", "awareness1|awareness2"],
+      [0, "fx", "insight", {"y": 1.69, "kill": 3}]
+    ]
+  },
+  "@DamageRoulette:root": {
+    "why": "Cat.cs RPC_damageRoulette (:9585, coroutine :26940-27237) at max rank (sLv 2, cat_damageRoulette2 :6165-6171; the dispatcher starts it with no clip, :7582-7595; the tile plays it on the idle stance): at 0 addTimeOut agiAdjust(60) (:27071), Effects/damageRoulette_ring at the hero's position, Quaternion.identity (createEffect :27080-27092; EffectControl life 1, followPosition; plays its own Sounds/damageRoulette), voice damageRoulette1 / damageRoulette2 (Random.Range(0, 2) :27135, :27145-27207; no voice timer); Yield 0.2 (:27209): the damageRoulette status Lv 2 for chaAdjust(12) s on herself (:27052), whose apply Instantiates Effects/damageRoulette (the roulette: a looped 1 s Animation turning a StaticMesh) at her collider's bounds centre (Cat.prefab CharacterController m_Center y 0.89), identity, parented, scale Clamp(2 x radius 0.2 + 0.4, 1, 1.5) = 1 (CharacterControl.cs:36254-36273), destroyed with the status (:16223-16236; no EffectControl): cut at 10 s (kill 10, the 10 s rule); the hits it turns onto a random unit within 24 m (CharacterControl.cs:4832-4890) draw nothing",
+    "cues": [
+      [0, "fx", "damageRoulette_ring"],
+      [0, "voice", "damageRoulette1|damageRoulette2"],
+      [0.2, "fx", "damageRoulette", {"y": 0.89, "kill": 10}]
+    ]
+  },
+  "@TreasureHunt:root": {
+    "why": "Cat.cs RPC_treasureHunt (:9078-9116, a plain method, no clip; the tile plays it on the idle stance, every play): TreasureBox.cs OnGUI: a box Awareness has found (TreasureFound :402-465, sent within 24 m, Cat.cs:8927-8945) shows a button while the player stands within 2 m ((int)sqrMagnitude <= 3, :239-242); a Cat clicking it (:267-273, else 'Only for cat!' :369; Treasure Hunt #123 is not checked) calls cat.RPC_treasureHunt(the box's position, its forward, 0, box level) (:286-334, ActionEvent :343), the box plays open (:349) and goes 3 s later (:355); RPC_treasureHunt Instantiates Effects/treasureHunt there, Quaternion.identity (:9091-9101; the level unused; EffectControl life 1: 12-36 coins thrown up 3 m/s +- (4, 2, 4), gravity -9, bouncing 0.5 on the ground: WorldParticleCollider, treasureHunt.prefab:176-187; no voice, no sound); the box itself (a world object) is not drawn: the burst 1 m ahead (any spot within 2 m)",
+    "cues": [
+      [0, "fx", "treasureHunt", 1]
+    ]
+  },
+  "@EvenOdds:gamble": {
+    "why": "Even Odds #422 (passive, CD agiAdjust(90), Cat.cs:9342) has no press of its own: a Life Gamble or Skill Gamble roll lost with #422 learned and evenOdds off cooldown calls RPC_evenOdds in place of the loss (Cat.cs:22801-22826, :23328-23353), 0.4 s into the gamble clip; its own tile on that clip, the host skill picked at random each play (the members below keep each skill's ring and voice together), the proc every play",
+    "skills": {
+      "lifeGamble": {
+        "why": "Cat.cs RPC_lifeGamble (coroutine :22625-23125): at 0 addTimeOut agiAdjust(30) (:22940), clip gamble cut (:22949), Effects/lifeGamble_ring at the hero's position and rotation (createEffect :22967-22979; EffectControl life 1, followPosition, followState: cut at standby 0.7 s; plays its own Sounds/gamble_ring), voice lifeGamble1 / lifeGamble2 (Random.Range(0, 2) :23022, :23032-23102; no voice timer); Yield 0.4 (:23111): the roll lckAdjust(50) > Random.Range(0, 100) (:22768) lost (a win heals, :22774-22779), Even Odds #422 on and off cooldown (hasSkill(422) :22801, isTimeOut :22807): RPC_evenOdds (:22813) in place of the 50 % HP loss and lifeGamble_hit (:22834-22839): Effects/evenOdds_hit at the hero's position and rotation (createEffect :9351-9361; EffectControl life 2, followPosition; plays its own Sounds/evenOdds); Yield 0.3 (:23100): standby at 0.7 s (:22879)",
+        "cues": [
+          [0, "fx", "lifeGamble_ring", {"cut": 0.7}],
+          [0, "voice", "lifeGamble1|lifeGamble2"],
+          [0.4, "fx", "evenOdds_hit"]
+        ]
+      },
+      "skillGamble": {
+        "why": "Cat.cs RPC_skillGamble (coroutine :23147-23655): at 0 addTimeOut agiAdjust(30) (:23472), clip gamble cut (:23481), Effects/skillGamble_ring at the hero's position and rotation (createEffect :23499-23511; EffectControl life 1, followPosition, followState: cut at standby 0.7 s; plays its own Sounds/gamble_ring), voice skillGamble1 / skillGamble2 (Random.Range(0, 2) :23554, :23564-23649; no voice timer); Yield 0.4 (:23630): the roll Random.Range(0, 100) < lckAdjust(50) (:23290) lost (a win multiplies MP / SP by 1.5, RPC_skillGamble_heal :23306), Even Odds #422 on and off cooldown (hasSkill(422) :23328, isTimeOut :23334): RPC_evenOdds (:23340) in place of halving MP / SP and skillGamble_hit (:23361-23371): Effects/evenOdds_hit at the hero's position and rotation (createEffect :9351-9361; EffectControl life 2, followPosition; plays its own Sounds/evenOdds); Yield 0.3 (:23636): standby at 0.7 s (:23411)",
+        "cues": [
+          [0, "fx", "skillGamble_ring", {"cut": 0.7}],
+          [0, "voice", "skillGamble1|skillGamble2"],
+          [0.4, "fx", "evenOdds_hit"]
+        ]
+      }
+    }
+  },
+  "@NineLives:ko": {
+    "why": "Cat.cs RPC_nineLives (:9634, coroutine :27238-27660), Nine Lives #264's proc (max rank: getNineLivesLv 2, :9591-9630; the tile plays the proc every play): when her HP is gone (Update, after autoLife :245-272 and the Small Anubi pet :291-303), Random.Range(0, 100) < lckAdjust(2 x 6) (:334) with no death status (:340) starts it (:346, ActionEvent :359) in place of RPC_dead (:367); at 0: hp 0, actionState dead (:27581-27584), Rewind + animation.Play(ko) (a cut, :27608), deadEffect (the Cat prefab's field, Effects/deadEffect) at her position and rotation (Instantiate :27614; EffectControl life 3); no voice (RPC_ko's ko1 / ko2 and RPC_dead's dead1 / dead2 are not played); Yield 3 (:27638): getUp",
+    "cues": [
+      [0, "fx", "deadEffect"]
+    ]
+  },
+  "@NineLives:getUp": {
+    "why": "Cat.cs RPC_nineLives case 2, 3 s after the ko: hp 99, ko refilled, actionState attack (:27365-27375), addTimeOut agiAdjust(60) (:27390, never read), noDamage 3 s (:27395; draws nothing, CharacterControl.cs:32931-32935), animation.Play(getUp) (a cut, :27400), voice Random.Range(0, 2) (:27441): BB asks for Voices/nineLives1 / nineLives2 (:27453, :27485), which BB's data lacks (the rip has ninelife1 / ninelife2: silent in BB); TTO's fix loads voices/ninelife1 / ninelife2 (pseudo/Cat.c:20332-20344; taken as the Bat's decision 18); Yield 1 (:27632): standby (:27529)",
+    "cues": [
+      [0, "voice", "ninelife1|ninelife2"]
+    ]
+  },
+  "royalFlush1": {
+    "why": "TTO1102:Cat.<RPC_royalFlush>d__306::MoveNext@0x1BC7700 (Cat.c:23015-23490; plans/fx_cat/tto.md 2.1; hand 9 = Royal Flush, the target 10 m ahead = the centre): 0: Row6Begin(royalFlush, clip royalFlush1) cut in (:23108, Row6Begin@0x1B8B8B0 PlayAnimation(clip, 0)), Row6Voice(jokerCard1, jokerCard2) = a 50 % pick (:23141, Row6Voice@0x1B8CB50 :38662), royalFlush_shuffle owned at the hero (:23154; EffectControl 0.6 followPosition, own powerShuffle); card i at RoyalFlushThrowAt 0.52 + 0.06 i (Cat::.cctor :43037; capstone 0x1BC7E72): royalFlush_card at hero + 0.45 face + 1.3 up (:23215-23226), LookRotation(FlatFace(mPos, slot)) (:23228-23234), SetCard + Deal(slot, 0.35 s, arc 1.6) (:23262-23264) to RoyalFlushSlot@0x1B8DA00 = centre + AngleAxis((i-2) 37.5 deg) face x 3.2 (:39978; calc.txt); Until 1: Row6End (:23314); Until ThrowAt[4] + 0.35 = 1.11: royalFlush_table at the centre, LookRotation(face) (:23352); card i flips at 1.2 + 0.12 i, 0.18 s (:23371-23394); Until 1.95 (capstone 0x1BC81BF): royalFlush_bang at centre + 2.4 up (:23431), royalFlush_hand at centre + 3.4 up, Show(9) (:23450-23466), Row6Voice(cheer) since hand > 5 (:23468-23469); RoyalFlushBursts@0x1BF3F60 (:25791-26085): 5 bursts 0.16 s apart (Waits.Get(0.16), capstone 0x1BF446E), the last royalFlush_burstBig, every card GlowPulse(1, 0.3) (last 1.6) (:25896-25935); then (hand 9) Row6Voice(finalMove1, finalMove2) (:25950), royalFlush_sword at centre + 5 up (:25981), the cards Gather to centre + 7.5 up in 0.35 s (:26004), RoyalSwordFall@0x1BF4840 (:26104-26412: rise 1.2 m, fall to centre - 1.1 up by 0.8 s, hold 0.6, sink 0.5, Destroy); Waits.Get(0.8) (capstone 0x1BF4794): royalFlush_swordHit at the centre (:26044); the cues after 1.0 s run on in the idle tail; left out: the hits, the clubs' paralysis on the foe (a status look on its body, Sheep decision 4), Row6Shake and the redRamp grade (camera only, :25923, :26046-26069)",
+    "cues": [
+      [0, "voice", "jokerCard1|jokerCard2"],
+      [0, "fx", "tto/royalFlush_shuffle"],
+      [0.52, "fx", "tto/royalFlush_card", {"d": 0.45, "y": 1.3, "rot": [0, -15.932, 0], "i": 0, "to": [-3.091, 0, 10.828], "flip": 0.68, "pulse": 1.43, "gather": 2.23, "gatherTo": [0, 7.5, 10]}],
+      [0.58, "fx", "tto/royalFlush_card", {"d": 0.45, "y": 1.3, "rot": [0, -8.831, 0], "i": 1, "to": [-1.948, 0, 12.539], "flip": 0.74, "pulse": 1.37, "gather": 2.17, "gatherTo": [0, 7.5, 10]}],
+      [0.64, "fx", "tto/royalFlush_card", {"d": 0.45, "y": 1.3, "i": 2, "to": [0, 0, 13.2], "flip": 0.8, "pulse": 1.31, "gather": 2.11, "gatherTo": [0, 7.5, 10]}],
+      [0.7, "fx", "tto/royalFlush_card", {"d": 0.45, "y": 1.3, "rot": [0, 8.831, 0], "i": 3, "to": [1.948, 0, 12.539], "flip": 0.86, "pulse": 1.25, "gather": 2.05, "gatherTo": [0, 7.5, 10]}],
+      [0.76, "fx", "tto/royalFlush_card", {"d": 0.45, "y": 1.3, "rot": [0, 15.932, 0], "i": 4, "to": [3.091, 0, 10.828], "flip": 0.92, "pulse": 1.19, "gather": 1.99, "gatherTo": [0, 7.5, 10]}],
+      [1.11, "fx", "tto/royalFlush_table", {"d": 10}],
+      [1.95, "fx", "tto/royalFlush_bang", {"d": 10, "y": 2.4}],
+      [1.95, "fx", "tto/royalFlush_hand", {"d": 10, "y": 3.4, "hand": 9}],
+      [1.95, "voice", "cheer"],
+      [1.95, "fx", "tto/royalFlush_burst", {"d": 10}],
+      [2.11, "fx", "tto/royalFlush_burst", {"d": 10}],
+      [2.27, "fx", "tto/royalFlush_burst", {"d": 10}],
+      [2.43, "fx", "tto/royalFlush_burst", {"d": 10}],
+      [2.59, "fx", "tto/royalFlush_burstBig", {"d": 10}],
+      [2.75, "voice", "finalMove1|finalMove2"],
+      [2.75, "fx", "tto/royalFlush_sword", {"d": 10, "y": 5, "to": [0, 0, 10]}],
+      [3.55, "fx", "tto/royalFlush_swordHit", {"d": 10}]
+    ]
+  },
+  "crescentEclipse1": {
+    "why": "TTO1102:Cat.<RPC_crescentEclipse>d__345::MoveNext@0x1BA3320 (Cat.c:3404-4266; plans/fx_cat/tto.md 2.2; in place: the centre at the hero, Penguin decision 8 / Bat decision 10): 0: Row6Begin(crescentEclipse, clip crescentEclipse1) cut in (:3560); crescentEclipse_moon at centre + 3 face + 8.5 up, identity (:3571-3595; Cat_eclipseFx mode 0: Rise 0.6 s from 2.5 m below, faces the camera, Eclipse() at 1.75 :4048, then gone); crescentEclipse_ring at the centre, faceRot (:3610); Until 0.22 (:3619): crescentEclipse_takeoff at mPos, faceRot (:3639; own backFlip), crescentEclipse_trail owned at the hero (:3648; EffectControl 1.35 followPosition); blade k at EclipseThrowAt 0.52 + 0.04 k (Cat::.cctor :43034): crescentEclipse_blade at hero + 0.3 face + 1 up, faceRot (:3790-3810), HoldWeapon(the worn main-hand weapon, :3827), Fling to EclipseSlot@0x1B83AC0 = centre + AngleAxis(22.5 + 45 k) face x 5 in 0.22 s (:3835, :40819), recalled 1.85 + 0.04 k = 1.33 s after its spawn to the hero + 1 up in 0.14 s, then destroyed (:4081-4162); crescentEclipse2 at 1.0 (Row6PlayClip, :4259); no voice; the leap (rise to 5.5 m, dive) is the game's transform, not the clip's: left out (hero in place)",
+    "cues": [
+      [0, "fx", "tto/crescentEclipse_moon", {"d": 3, "y": 8.5, "eclipse": 1.75}],
+      [0, "fx", "tto/crescentEclipse_ring"],
+      [0.22, "fx", "tto/crescentEclipse_takeoff"],
+      [0.22, "fx", "tto/crescentEclipse_trail"],
+      [0.52, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 0, "to": [1.913, 0, 4.619], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.56, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 1, "to": [4.619, 0, 1.913], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.6, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 2, "to": [4.619, 0, -1.913], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.64, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 3, "to": [1.913, 0, -4.619], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.68, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 4, "to": [-1.913, 0, -4.619], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.72, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 5, "to": [-4.619, 0, -1.913], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.76, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 6, "to": [-4.619, 0, 1.913], "recall": 1.33, "home": [0, 1, 0]}],
+      [0.8, "fx", "tto/crescentEclipse_blade", {"d": 0.3, "y": 1, "i": 7, "to": [-1.913, 0, 4.619], "recall": 1.33, "home": [0, 1, 0]}]
+    ]
+  },
+  "crescentEclipse2": {
+    "why": "TTO1102:Cat.<RPC_crescentEclipse>d__345::MoveNext@0x1BA3320 (Cat.c:3404-4266; plans/fx_cat/tto.md 2.2 and Verification 1; this clip starts at 1.0 s, Row6PlayClip(crescentEclipse2) 0.08 s fade :4259; times from its start; in place, the centre at the hero): 1.1 (0.1): the dive, crescentEclipse_dive at the hero's transform = the apex (5.447 m up: 5.5 + 0.12 sin(6 x 0.6), 5 m short of the centre = d -5 in place), LookRotation(centre - apex) = 47.45 deg down (:3906-3918; own moonStorm; its Streak node 3 m along that, so it lies on the path and the path meets the floor at the hero); 1.3 (0.3): crescentEclipse_land at the centre, faceRot (:3946; own finishingBlow_hit); Until 1 + 0.75 (capstone 0x1BA4627): crescentEclipse_click at hero + 0.3 forward + 0.7 up (:4021-4039; own cAttack_ring) and moon.Eclipse() (:4048); Waits.Get(0.1); the blades come back 1.85 + 0.04 k (cued on crescentEclipse1); 2.27 (1.27), the 8th home: crescentEclipse_burst at the centre, faceRot (:4096; own assassinate); Until 1 + 1.3 = 2.3: Row6End (:4134, :4210) = this clip's end; left out: the hits, cut / eclipsed on the foes (eclipsed's look on the body, Sheep decision 4), the death rupture (crescentEclipse_rupture, RPC_eclipseRupture@0x1B87160 :42051: only when an eclipsed foe dies), Row6Shake 0.4 / 0.7 and the redRamp grade (camera)",
+    "cues": [
+      [0.1, "fx", "tto/crescentEclipse_dive", {"d": -5, "y": 5.447, "rot": [47.45, 0, 0]}],
+      [0.3, "fx", "tto/crescentEclipse_land"],
+      [0.75, "fx", "tto/crescentEclipse_click", {"d": 0.3, "y": 0.7}],
+      [1.27, "fx", "tto/crescentEclipse_burst"]
+    ]
+  },
+  "dropAnchor": {
+    "why": "TTO1102:Cat.<RPC_dropAnchor>d__388::MoveNext@0x1BAA670 (Cat.c:7137-7303; plans/fx_cat/tto.md 2.3; the target spot 10 m ahead): 0: Row6Begin(dropAnchor) cut in (:7212), Row6Voice(battle, follow) = a 50 % pick (:7219, Row6Voice@0x1B8CB50); Waits.Get(0.4) (:7223): dropAnchor_anchor at hero + 0.4 face + 1.6 up, LookRotation(face) (:7246-7273), DropAnchorFlightAndLand@0x1B9D6C0 (:138-384): 0.35 s to the spot on a 3 m arc (12u(1-u), :336-343) with one 360 deg flip about its right axis (:354-368), then upright at the spot, its Leash rings switched on (:251-260); 0.75: dropAnchor_slam at the spot, identity (:281; own supportFire_hit); Waits.Get(0.7): Row6End at 1.1 (:7299); AnchorHold@0x1B9D460 (:37-121) polls every 0.1 s and yanks at landing + 6 = 6.75 with the pull pose (she stands, :101-103): the anchorYank step; the anchor is destroyed by ClearAnchor at the smash, 6.75 + 0.7 = 7.45 (kill 7.05 after its spawn; RPC_anchorYank :808, ClearAnchor@0x1B80290 :42586-42591); left out: the slam's hits, the anchored chain on the foes (dropAnchor_chain, Cat_anchorChain.Bind from <addStatus>d__481 at 0x24FD823: a status look on the foe, Sheep decision 4), the owner's camera shake (:282-299)",
+    "cues": [
+      [0, "voice", "battle|follow"],
+      [0.4, "fx", "tto/dropAnchor_anchor", {"d": 0.4, "y": 1.6, "to": [0, 0, 10], "kill": 7.05}],
+      [0.75, "fx", "tto/dropAnchor_slam", {"d": 10}]
+    ]
+  },
+  "anchorYank": {
+    "why": "TTO1102:Cat.<RPC_anchorYank>d__394::MoveNext@0x1B9E500 (Cat.c:660-866; plans/fx_cat/tto.md 2.3; the Drop Anchor tile's last step, 6.75 s after the throw: AnchorHold's yank at landing + 6 with the pose; times from this clip's start; the anchor 10 m ahead): 0: Row6Begin(anchorYank) cut in (:728), Row6Voice(battle) (:729); Waits.Get(0.25) (:734): dropAnchor_heave at the anchor, identity (:846; own throw_hit), the haul; Waits.Get(0.45) (:856): dropAnchor_smash at the anchor, identity (:761; own supportFire_hit), on a chain break (AnchorYank@0x1B7FDA0 :38134-38139: Random.Range(0, 100) < lckAdjust(25) = 25 % at LCK 1) dropAnchor_shrapnel at the anchor + 1 up, identity (:762-782; own throw_hit), ClearAnchor@0x1B80290: dropAnchor_sink at the anchor, identity, Destroy(anchor) (:808, :42586-42591); Waits.Get(0.3): Row6End at 1.0 (:813-824); left out: the smash's hits, the bleed on a chain break (a status look on the foe), the owner's camera shake (:784-801)",
+    "cues": [
+      [0, "voice", "battle"],
+      [0.25, "fx", "tto/dropAnchor_heave", {"d": 10}],
+      [0.7, "fx", "tto/dropAnchor_smash", {"d": 10}],
+      [0.7, "fx", "tto/dropAnchor_shrapnel", {"d": 10, "y": 1, "p": 0.25}],
+      [0.7, "fx", "tto/dropAnchor_sink", {"d": 10}]
+    ]
+  }
+}

@@ -6,14 +6,16 @@
 //   SkinnedMeshRenderer  a mesh skinned to the effect's own nodes (bladeFang / bloodFang's fan)
 //   Animation            the Animation component's default clip, played on the effect's nodes (Blade Fang, Crusader,
 //                        Dual Brand 1 / 2 / 4 swing their slash nodes with it); node.userData.fxAnim.play(name, fade,
-//                        wrap) switches the clip (Eden Sanctuary's destroy; the Penguin's tornado / typhoon / cosmicFriday)
+//                        wrap) switches the clip (Eden Sanctuary's destroy; the Penguin's tornado / typhoon / cosmicFriday);
+//                        one that does not play by itself stands idle until a part plays it; fxAnim.rewind() (the Cat)
 //   ShatterMesh          ShatterMesh.cs: the StaticMesh breaks into its triangles, which fly apart (Mirror Blade)
 // Wolf: bladefang_underslash / upperslash, bloodfang_underslash / upperslash (Animation + SkinnedMeshRenderer), crusader,
 // lawbringer, dualbrand_slash1 / 2 / 4 (Animation; their trails are trail.js), mirrorblade_mirror (StaticMesh +
 // ShatterMesh). Sheep (2026-11-10): the FX/Phoenix material (Soul of Arms, Divinity Spear / Sword), faded by
 // alphatimer.js. Penguin (2026-11-10, plans/fx_penguin/parts.md "Who builds what" row A, Interfaces 1 and 5): the
 // materials Transparent/AdditiveSaturate (two passes: material() returns a list for one name), Transparent/Opaque1,
-// Transparent/Opaque2 and DiffuseAmbient; Animation's play(name, fade, wrap).
+// Transparent/Opaque2 and DiffuseAmbient; Animation's play(name, fade, wrap). Cat (2026-11-13, plans/fx_cat/parts.md
+// part 4, Interfaces 1, decisions.md 51): the Animation part built also when its play is off, and rewind().
 
 export default function register(api) {
   const { THREE, hermite, rnd, clamp01, fxMaterial, texLoader, DATA } = api;
@@ -281,12 +283,22 @@ export default function register(api) {
   // The pose is set at once (Unity samples the animation after Update, in the same frame). Returns false for a clip the
   // component lacks. APPROXIMATED in the cross-fade: the outgoing side is the pose at the moment of the call, held (a
   // clip that is still playing would run on in Unity while it fades out), and rotations blend by slerp; Eden's two clips
-  // meet at the same pose (plans/fx_sheep/parts.md), so there the result is the game's. No part calls it for an
-  // Animation that does not play by itself, so those stay unbuilt. Medium sure: that the wrapMode setter reaches every
-  // state (and so later clips); every Penguin script sets it again right after each Play, so there it cannot matter
+  // meet at the same pose (plans/fx_sheep/parts.md), so there the result is the game's. Medium sure: that the wrapMode
+  // setter reaches every state (and so later clips); every Penguin script sets it again right after each Play, so there it
+  // cannot matter.
+  // 2026-11-13, the Cat (plans/fx_cat/parts.md part 4, Interfaces 1, decisions.md 51): an Animation whose play
+  // (m_PlayAutomatically) is off is built too, idle: nothing is posed (Unity: the prefab's pose stands, the nodes as the
+  // data places them) until a part calls play(name), from then on as any other (Support Fire's cannons: play off, the
+  // hero's RPC_supportFire_fire plays "fire", Cat.cs:10672-10677; Grand Casino Arcade's machine plays by itself, its
+  // "fire" / "destroy" played by fxparts/cat.js). Before 2026-11-13 such a component built nothing.
+  //   rewind()          Animation.Rewind: the current clip's time back to 0 (posed so at once), so a play() of the same
+  //                     clip right after restarts it (a clip still playing is not rewound by play() alone: the same cannon
+  //                     picked twice within its 0.5 s "fire"); nothing before the first play(). APPROXIMATED: a Once
+  //                     clip that had ended runs again from the rewind on (Unity keeps a stopped state stopped until
+  //                     Play); the game's only caller plays it right after (Rewind(); Play("fire"))
   api.part("Animation", (fx, node, c) => {
-    if (!c.play || !c.clips?.[c.clip]) return null;
-    let cur, wrap, len, tracks, t = 0, fade = 0, from = null, forced = 0;   // forced: animation.wrapMode set by a part
+    if (!c.clips || !(c.play ? c.clips[c.clip] : Object.keys(c.clips).length)) return null;
+    let cur = null, wrap, len, tracks = [], t = 0, fade = 0, from = null, forced = 0;   // forced: animation.wrapMode set by a part; cur null: idle (play off)
     const use = name => {
       const clip = c.clips[name];
       cur = name; wrap = forced || clip.wrap || c.wrap || 1; len = clip.len;
@@ -313,8 +325,9 @@ export default function register(api) {
       if (w >= 1) from = null;
       node.updateMatrixWorld(true);              // the parts after this one this frame (trails) read the new pose
     };
-    use(c.clip);                                 // fxTick updates a new Fx before its first frame is drawn
-    const em = { node, update(dt) { t += dt; pose(); },
+    if (c.play) use(c.clip);                     // fxTick updates a new Fx before its first frame is drawn; play off: idle
+    const em = { node, update(dt) { if (cur == null) return; t += dt; pose(); },
+      rewind() { if (cur == null) return; t = 0; from = null; pose(); },
       play(name, fadeLen = 0, wrapMode) {
         if (!c.clips[name]) return false;
         const setWrap = () => {                  // animation.wrapMode = wrapMode, after the Play (see above)

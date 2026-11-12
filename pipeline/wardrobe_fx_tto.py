@@ -136,6 +136,30 @@ SKILL_FX = {
         # Unchained Fury: <RPC_unchainedFury>d__278::MoveNext@0x1B7BFC0 (+ CharacterControl::AddUnchainedFx@0x24AEB60, the status look)
         "unchainedFury_chains", "unchainedFury_break", "unchainedFury_roar", "unchainedFury_plant", "unchained",
     ],
+    # plans/fx_cat/tto.md sections 2 and 5, parts.md "TTO" (2026-11-13, decisions.md 57): the 26 prefabs the released skills
+    # spawn (checks/fx_cat_research/parts/catalog_keys.txt, tto_released.json; 24 cued, the two left out below them) and
+    # the two status looks unchained (no arcana style: the catalog has no heroes/cat/arcana/)
+    "cat": [
+        # Royal Flush: TTO1102:Cat.<RPC_royalFlush>d__306::MoveNext@0x1BC7700 (pseudo/Cat.c), Cat::DealHand@0x1B805E0,
+        # <RoyalFlushBursts>d__307::MoveNext@0x1BF3F60, <RoyalSwordFall>d__308::MoveNext@0x1BF4840
+        "royalFlush_shuffle", "royalFlush_table", "royalFlush_card", "royalFlush_bang", "royalFlush_hand",
+        "royalFlush_burst", "royalFlush_burstBig", "royalFlush_sword", "royalFlush_swordHit",
+        # Crescent Eclipse: <RPC_crescentEclipse>d__345::MoveNext@0x1BA3320 (Cat.c:3404-4266); the death rupture
+        # (left out, decisions.md 44): Cat::RPC_eclipseRupture@0x1B87160 (:42051-42080), only when an eclipsed foe dies
+        "crescentEclipse_takeoff", "crescentEclipse_trail", "crescentEclipse_moon", "crescentEclipse_blade",
+        "crescentEclipse_ring", "crescentEclipse_dive", "crescentEclipse_land", "crescentEclipse_click",
+        "crescentEclipse_burst", "crescentEclipse_rupture",
+        # Drop Anchor: <RPC_dropAnchor>d__388::MoveNext@0x1BAA670 (:7137-7303), <DropAnchorFlightAndLand>d__389
+        # ::MoveNext@0x1B9D6C0 (:138-384), <AnchorHold>d__391::MoveNext@0x1B9D460; the yank: <RPC_anchorYank>d__394
+        # ::MoveNext@0x1B9E500 (:660-856); the anchored foe's chain (left out): Cat_anchorChain.Bind from
+        # CharacterControl.<addStatus>d__481::MoveNext (0x24FD823)
+        "dropAnchor_anchor", "dropAnchor_slam", "dropAnchor_heave", "dropAnchor_smash", "dropAnchor_shrapnel",
+        "dropAnchor_sink", "dropAnchor_chain",
+        # the status looks (left out, decisions.md 44): CharacterControl::AddCatRow6Fx@0x24ABBB0 (CharacterControl.c:5791,
+        # Cat_row6StatusFx.Init: eclipsed, Crescent Eclipse's burst), CharacterControl::AddCatRow6Status@0x24ABF90
+        # (dealersMark: none of the released skills applies it)
+        "eclipsed", "dealersMark",
+    ],
 }
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
@@ -151,8 +175,14 @@ SKILL_SOUNDS = {
 }
 # Unity's built-in legacy particle shaders by name, to wardrobe_fx.BUILTIN_BLEND's words (the page's fxMaterial knows
 # these); any other shader -> "shader:<name>"
+# (2026-11-13, plans/fx_cat/tto.md P8, decisions.md 56, 57: the three names TTO's re-serialised copies give BB's built-ins
+# 205 / 206 / 207, wardrobe_fx.BUILTIN_BLEND: the Cat's dropAnchor_smash / royalFlush_swordHit tto_Bomb2 = Multiply
+# (Double), dropAnchor_shrapnel tto_Default-Particle = Alpha Blended Premultiply; before, they came out "shader:<name>"
+# and fell to the page's alpha-blend default)
 SHADER_BLEND = {"Legacy Shaders/Particles/Additive": "add", "Legacy Shaders/Particles/Additive (Soft)": "addsoft",
-                "Legacy Shaders/Particles/Alpha Blended": "alpha", "Legacy Shaders/Diffuse": "opaque"}
+                "Legacy Shaders/Particles/Alpha Blended": "alpha", "Legacy Shaders/Diffuse": "opaque",
+                "Legacy Shaders/Particles/Multiply": "multiply", "Legacy Shaders/Particles/Multiply (Double)": "multiply2",
+                "Legacy Shaders/Particles/Alpha Blended Premultiply": "premul"}
 DROP = {"m_GameObject"}                          # dropped from every Unity component's dict
 MESH_RENDERER_KEEP = {"type", "m_Enabled", "m_Materials", "m_SortingLayerID", "m_SortingLayer", "m_SortingOrder",
                       "m_RendererPriority"}
@@ -182,6 +212,14 @@ CODE_MOVERS = {
     # hidden from HideBody at 0.4 s to ShowBody at 0.9 s) + <Regather>d__337::MoveNext@0x1B25130 (:25281-25507: back to her
     # chest, Row6Chest, shrinking, Destroy after 0.25 s) (plans/fx_bat/tto.md 6 P1; wardrobe/fxparts/tto_bat.js)
     "nightfallSwarm_bat": "Bat.NightfallSwarm",
+    # TTO1102:Cat.<RoyalSwordFall>d__308::MoveNext@0x1BF4840 (Cat.c:26104-26412; plans/fx_cat/tto.md 2.1, P3): spun in and
+    # grown over 0.35 s, risen 1.2 m, fallen to its `to` - 1.1 up by 0.8 s, held 0.6, sunk and shrunk 0.5, Destroy
+    # (wardrobe/fxparts/tto_cat.js)
+    "royalFlush_sword": "Cat.RoyalSwordFall",
+    # TTO1102:Cat.<DropAnchorFlightAndLand>d__389::MoveNext@0x1B9D6C0 (Cat.c:138-384; tto.md 2.3, P5 and Verification 3):
+    # 0.35 s to its `to` on a 12u(1 - u) (3 m) arc with one 360 deg flip about its right axis, then upright there, the
+    # inactive Leash node's Edge / Pull RingEmitters held back until that landing (wardrobe/fxparts/tto_cat.js)
+    "dropAnchor_anchor": "Cat.DropAnchorFlight",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,

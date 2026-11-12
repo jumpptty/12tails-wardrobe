@@ -13,7 +13,11 @@
 //   the node (:201-207), else MinAlpha (:215). Strict tests: an empty phase is skipped, nothing divides by 0. Then
 //   color.a = alpha into renderer.material's _Color or _TintColor (:276-321).
 // - eraseShadow (:222-275) only switches shadow casting: the page casts none. AlphaTimerFadeOut (:328-357) is called
-//   only by Cat (Cat.cs:10603).
+//   only by Cat (Cat.cs:10603: Support Fire's end, BroadcastMessage("AlphaTimerFadeOut", 0.5) to every cannon): the
+//   emitter's fadeOut(sec) (2026-11-13, plans/fx_cat/parts.md part 4, Interfaces 2, decisions.md 51). It zeroes the delay
+//   / ease-in / middle ends and sets the middle end = now, the out end = now + sec (Time.time; the clock is not touched),
+//   so from now the alpha lerps MaxAlpha -> MinAlpha over sec (Update's fourth phase, :151-157), then MinAlpha (or the
+//   repeat / endDestroy ends). On the page the phase ends count from the timer's start: d = i = 0, m = t, o = t + sec.
 // On the page, by the material's shader (mesh.js tags each material with userData.fxBlend = its data blend):
 //   add / alpha (Particles/Additive, Alpha Blended: _TintColor, no _Color): opacity = min(1, 2 x alpha), fxMaterial's
 //     own rule for a saved tint (index.html fxMaterial);
@@ -74,7 +78,7 @@ export default function register(api) {
   api.part("AlphaTimer", (fx, node, a, mat, nodeDef) => {
     if (a.enabled === false || nodeDef.active === false) return null;
     owned = owned.filter(([f, m]) => f.alive || (m.dispose(), false));
-    const d = a.FadeDelay, i = d + a.FadeEaseIn, m = i + a.FadeMiddle, o = m + a.FadeEaseOut;
+    let d = a.FadeDelay, i = d + a.FadeEaseIn, m = i + a.FadeMiddle, o = m + a.FadeEaseOut;   // let: fadeOut moves them
     const lerp = (x, y, u) => x + (y - x) * Math.min(1, Math.max(0, u));   // Mathf.Lerp clamps u
     let t = 0, target;                           // target: undefined until the first update, then [materials, opacity, mine] or null
     const em = { node, update(dt) {
@@ -97,7 +101,9 @@ export default function register(api) {
       }
       const op = target[1](alpha);
       for (const c of target[0]) c.opacity = op;
-    } };
+    },
+    // AlphaTimer.AlphaTimerFadeOut(sec) (AlphaTimer.cs:328-357, the header above): Max -> Min over sec from now
+    fadeOut(sec) { d = 0; i = 0; m = t; o = t + Math.max(0, +sec || 0); } };
     return em;
   });
 }

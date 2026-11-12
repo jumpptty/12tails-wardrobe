@@ -19,7 +19,10 @@ its effects must spawn (the page counts them in FX.spawned); "everyCycle": true 
 fade / @t / %p, index.html seqStep): every alternative's clip belongs to the sequence, and a sequence tile with
 alternatives is played once per alternative (the page's test hook window.__seqAlt forces the pick), so each one's cues
 are checked; a "lift" cue (the hero raised along a curve, index.html LIFTS / HeroLift) names one of the page's LIFTS and
-must take hold (FX.spawned "lift:<name>")."""
+must take hold (FX.spawned "lift:<name>"). 2026-11-13, the Cat (plans/fx_cat/decisions.md 47, 58): a "hideProp" cue
+names a prop slot (R, L, Head, Back) and carries a kill; it is not expected in the tally (it takes hold only while a prop
+is worn there: FX.spawned "hideProp:<slot>"); SEQ tokens such as root*~@5.65, dropAnchor! and crescentEclipse2^ give their
+clip names (seqs)."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
@@ -153,9 +156,16 @@ def expected(entries):
 # hideHero for penguin.js's snowman; notWorn [slot, item], fxStart: the Staff of Time's missing landings; 2026-11-13, the
 # Bat: worn [slot, item] (the Homing Wand's hits), end (the guardian's unsummon, fxparts/bat.js); a "clone" cue takes x,
 # y, d, kill)
+# 2026-11-13, the Cat (plans/fx_cat/decisions.md 37, 50, 58): single (no second copy while one lives: its kill renewed,
+# index.html fxDue), anims (fx:grandCasinoArcade's clip schedule, fxparts/cat.js); the TTO parts' (fxparts/tto_cat.js,
+# plans/fx_cat/tto.md 2.1-2.3): flip, pulse, gather, gatherTo, hand (Royal Flush's cards and banner), eclipse, recall,
+# home (Crescent Eclipse's moon and blades)
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
-        "worn", "end"}
-KINDS = ("fx", "voice", "sound", "skin", "clone", "lift")      # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS)
+        "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home"}
+# lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
+# ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47)
+KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp")
+PROP_SLOTS = ("R", "L", "Head", "Back")                          # index.html C.props' keys
 ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle"}, {"why", "cues", "builds", "everyCycle"}
 
 
@@ -198,6 +208,11 @@ def file_errors(cls):
                 elif c[1] == "lift":                        # the hero raised along a curve (index.html LIFTS, HeroLift)
                     errs += [f"{cls}: {key}: lift {n} is not one of index.html's LIFTS {sorted(LIFT_NAMES)}"
                              for n in c[2].split("|") if LIFT_NAMES and n not in LIFT_NAMES]
+                elif c[1] == "hideProp":                    # the worn prop's meshes hidden (index.html HeroPropHide)
+                    errs += [f"{cls}: {key}: hideProp {n} is not a prop slot (R, L, Head, Back)" for n in c[2].split("|")
+                             if n not in PROP_SLOTS]
+                    if not (len(c) > 3 and isinstance(c[3], dict) and isinstance(c[3].get("kill"), (int, float))):
+                        errs.append(f"{cls}: {key}: hideProp {c[2]} needs a kill (the seconds the prop stays hidden)")
     return errs
 
 

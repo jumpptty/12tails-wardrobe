@@ -48,7 +48,14 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # its EnergyArc / MoltenCrust are shaders). magmaClutter_ring2's ParticleSystem is not decoded from BB: wardrobe_fx.py
          # grafts it from TTO's copy (SHURIKEN_FROM_TTO), so the effect still lists ParticleSystem below (NOTES); perfectArmor's
          # Velvet is not built: no code adds its status (unreachable, decision 45)
-         "UVScroll", "Bison_earthRupture", "Bison_overLord", "Bison_c6Arc", "Bison_row6Fx", "GroundConformParticles"}
+         "UVScroll", "Bison_earthRupture", "Bison_overLord", "Bison_c6Arc", "Bison_row6Fx", "GroundConformParticles",
+         # 2026-11-13, the Cat (plans/fx_cat/parts.md "Who builds what", decisions.md 46-53, 59): StatusControl draws
+         # nothing (data only: the cue's kill is damagePlus' life); fxparts/cat.js (Cat_grandCasinoArcade's sign flicker
+         # and the machine's clips, Cat_supportFire's cannonball); fxparts/worldcollider.js (Unity 3.5's
+         # WorldParticleCollider: luckyDice's / treasureHunt's dice and coins bounce on the floor); fxparts/additivealpha.js
+         # (Transparent/AdditiveAlpha, a shader: this table doesn't see it). supportFire_hit's ParticleSystem is grafted
+         # from TTO's copy as magmaClutter_ring2's (NOTES below)
+         "StatusControl", "Cat_grandCasinoArcade", "Cat_supportFire", "WorldParticleCollider"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -57,6 +64,10 @@ NOTES = {
                               "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn",
         "perfectArmor": "Velvet (its shader) not built: no BB or TTO code adds the perfectArmor status (unreachable)",
         "perfectShield": "no BB or TTO code adds the perfectShield status (unreachable; never cued)",
+    },
+    "cat": {
+        "supportFire_hit": "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are "
+                           "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn",
     },
 }
 CLASS_NOTES = {

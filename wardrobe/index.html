@@ -1203,9 +1203,29 @@ const SEQ = {
     // Control, Fury Trance cut at 10 s) (2026-11-13, plans/fx_bison/effect_only.md; the user 2026-11-10: effect-only tiles;
     // decisions.md 6, 7)
     "Berserker Rush: root@6", "Fury Trance: root@10"],
-  cat: ["Normal Attack: nAttack1 nAttack2^ nAttack3 nAttack4", "Charge Attack: cAttack1 cAttack2*@3.4",
-    "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2*@13.5 grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*@3",
-    "Heart Ripper: heartRipper1 heartRipper2", "Finishing Blow: finishingBlow1 finishingBlow2", "Crescent Eclipse: crescentEclipse1 crescentEclipse2"],
+  // the Cat (plans/fx_cat, 2026-11-13, decisions.md 1-13): Normal Attack's stages at 0.6 / 1.2 / 1.7 s after stage 1
+  // (actionTime is set by stage 1 only: RPC_nAttack2's Yield(2, actionTime - Time.time + 0.6) Cat.cs:17609, RPC_nAttack3's
+  // + 1.2 :18538, RPC_nAttack4's + 1.7 :19511; stage 2 cut in as the Sheep's; the first step keeps the page's fade);
+  // Charge Attack's cAttack1 for 0.5 s (Yield(2, 0.5) :20121), then the looped cAttack2 cut in to the third tick at 3.0 s,
+  // full with Double Focus #411 (:19963-20031; passives on); Grand Casino Arcade at max rank, five spins: the machine at
+  // 0.4 s, the first spin at 1.7, each 2.0 + 0.7 (the last 2.0 + 0.4), so grandCasinoArcade3 at 14.9 s (:28782, :28784,
+  // :28780, :28809, :28513; plans/fx_cat/skills_a.md); Support Fire's channel runs until the player moves: three hits,
+  // 3 s (skills_b.md Q6); Heart Ripper's and Finishing Blow's second clip at 0.4 s (Yield 0.2 + 0.2, :33124-33126,
+  // :38485-38494); the TTO skills (TTO1102:Cat::Row6Begin@0x1B8B8B0 cuts the clip in, Row6PlayClip@0x1B8BD00 changes it
+  // with a 0.08 s fade, plans/fx_cat/tto.md Read this first 4): Crescent Eclipse's crescentEclipse2 at the first clip's
+  // end; Drop Anchor's throw, the idle stance held to the automatic yank at landing + 6 = 6.75 s, then anchorYank cut in
+  // (<AnchorHold>d__391@0x1B9D460, tto.md 2.3); Royal Flush stays a single clip. Awareness and Damage Roulette play no
+  // animation (the dispatcher calls RPC_awareness straight, Cat.cs:7846, and starts RPC_damageRoulette, :7582; neither
+  // calls PlayAnimation, :8563-9075, :26940-27237); Treasure Hunt is the coin burst of a found box a Cat opens
+  // (TreasureBox.cs:334, RPC_treasureHunt :9078): their effects on the idle stance, held (*) as long as the longest
+  // effect, the roulette status cut at 10 s; Even Odds (passive #422) fires 0.4 s into Life / Skill Gamble's gamble clip
+  // in place of a lost roll (:22813, :23340): its own tile on that clip; Nine Lives (passive #263-264) replaces the death:
+  // ko held 3 s, then getUp (RPC_nineLives :27608, :27638, :27400) (plans/fx_cat/effect_only.md)
+  cat: ["Normal Attack: nAttack1@0.6 nAttack2^@0.6 nAttack3@0.5 nAttack4", "Charge Attack: cAttack1@0.5 cAttack2*@2.6",
+    "Grand Casino Arcade: grandCasinoArcade1 grandCasinoArcade2*@13.2 grandCasinoArcade3", "Support Fire: supportFire1 supportFire2*@3",
+    "Heart Ripper: heartRipper1@0.4 heartRipper2", "Finishing Blow: finishingBlow1@0.4 finishingBlow2",
+    "Crescent Eclipse: crescentEclipse1! crescentEclipse2^", "Drop Anchor: dropAnchor! root*~@5.65 anchorYank",
+    "Awareness: root*@3", "Damage Roulette: root*@10.2", "Treasure Hunt: root*@1", "Even Odds: gamble", "Nine Lives: ko@3 getUp"],
   chameleon: ["Charge Attack: cAttack1 cAttack2*@9 cAttack3*@3.6 cAttack4", "Cast: cast1 cast2*@0 cast3~",
     "Quick Fire: quickFire1@0.4 quickFire2*@1.7 quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
     "Thunder Dragon: thunderDragon1@0.8 thunderDragon2*@3", "Focus Fire: focusFire1 focusFire2", "Venom Phantom: venomPhantom1 venomPhantom2 venomPhantom3"],
@@ -1268,8 +1288,10 @@ const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chamel
 const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"] };
 // clips the class's code never plays, left out of the list (2026-11-09: no Wolf skill plays cast1-3, the Cast tile was
 // copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile"); the Bison's volcanicRam: no code in BB
-// or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent)
-const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"] };
+// or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent); the Cat's
+// shikifujin: no TTO or BB code plays it (the string is in neither TTO1102's GameAssembly.dll nor BB's Cat.cs;
+// 2026-11-13, plans/fx_cat/decisions.md 14, tto.md 2.4)
+const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // A step's alternatives (2026-11-13, the Bison's Normal Attack: its third stage is the game's roll, RPC_nAttack4 the spin
@@ -3292,8 +3314,11 @@ const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.
 // icons of the skills its clip belongs to (Normal Attack's)
 // (also the sequences on a pool's clip, 2026-11-10: the Sheep's seals and Eden Sanctuary on cast3, the Penguin's Cosmic
 // Friday, which would otherwise show the pool's skills)
-// (the Bison's effect-only tiles, 2026-11-13, plans/fx_bison/decisions.md 6)
+// (the Bison's effect-only tiles, 2026-11-13, plans/fx_bison/decisions.md 6; the Cat's effect-only tiles, Even Odds on
+// the gamble clip and Nine Lives on ko / getUp, plans/fx_cat/decisions.md 8)
 const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "furyTrance" },
+  cat: { "@Awareness": "awareness", "@DamageRoulette": "damageRoulette", "@TreasureHunt": "treasureHunt",
+    "@EvenOdds": "evenOdds", "@NineLives": "nineLives" },
   penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday", "@ManaArc": "manaArc", "@Dispell": "dispell",
     "@DoubleCast": "doubleCast", "@TripleCast": "tripleCast", "@FrostSpike": "frostSpike" },
   sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" },
@@ -3850,13 +3875,29 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // api.pointLight() lends one of the scene's two pooled point lights, dark (null when both are out: the part sets its
 // colour, distance, intensity and world position each frame), api.releaseLight(l) gives it back dark (fxparts/light.js;
 // the falloff is Unity's, the patch above the floor). A boltEmitter with no TargetNode aims at the cue's `to`
+// 2026-11-13, the Cat (plans/fx_cat/parts.md "Interfaces", decisions.md 51, 53): an Animation component whose play
+// (m_PlayAutomatically) is off is built too, idle: no pose until a part calls its node.userData.fxAnim.play(name)
+// (Unity: the prefab's pose stands), and fxAnim.rewind() is Animation.Rewind (the current clip's time back to 0, so a
+// play() of the same clip that follows restarts it: Support Fire's cannons, Cat.cs:10672-10677; fxparts/mesh.js); an
+// AlphaTimer's emitter (in fx.emitters, its node's) has fadeOut(sec) = AlphaTimer.AlphaTimerFadeOut (MaxAlpha -> MinAlpha
+// over sec from now, AlphaTimer.cs:328-357; a part reaches every node's as BroadcastMessage does: for (const e of
+// fx.emitters) e.fadeOut?.(sec); fxparts/alphatimer.js); a legacy emitter (legacyParticles, in fx.emitters before its
+// node's scripts) carries collide = null: a part may set e.collide = (p, world) => ..., called for every particle after
+// its move each frame, p = { p (position: the effect's Unity world when world, else the node's local space), v
+// (velocity, the same space), age, energy (its life), size, ... }, return false to remove it (Unity 3.5's
+// WorldParticleCollider: fxparts/worldcollider.js)
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
   // the Bison's (2026-11-13, plans/fx_bison/parts.md "Who builds what"): Bison_earthRupture; UVScroll (it shares a node's
   // material copy with alphatimer.js through mesh.userData.fxOwn, whichever is built first: no load order); TTO's
   // Bison_c6Arc, Bison_row6Fx, EnergyArc, MoltenCrust, GroundConformParticles
-  "bison", "uvscroll", "tto_bison"];
+  "bison", "uvscroll", "tto_bison",
+  // the Cat's (2026-11-13, plans/fx_cat/parts.md "Who builds what", decisions.md 48-53, 57): Cat_grandCasinoArcade,
+  // fx:grandCasinoArcade, Cat_supportFire, fx:supportFire_cannon; WorldParticleCollider (the collide hook above);
+  // Transparent/AdditiveAlpha (api.shader); TTO's Cat_royalCard, Cat_royalHandBanner, Cat_eclipseFx, Cat.RoyalSwordFall,
+  // Cat.DropAnchorFlight, Unlit/Color, Unlit/Texture
+  "cat", "worldcollider", "additivealpha", "tto_cat"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
@@ -4388,6 +4429,7 @@ function legacyParticles(fx, node, em, an, rd, mat) {
     emitted = true;
   };
   return { node, worldMesh: world ? m : null, stop() { emit = false; }, setEmit(on) { emit = on; }, addSize(a) { sizeAdd += a; }, setSize(a, b) { minS = a; maxS = b; },   // worldMesh: Fx.update hides it once the node is destroyed; setEmit: fxparts/control.js's EmitterControl; setSize: the hero's code rewriting particleEmitter.minSize / maxSize (fxparts/sheep.js, the charge ball)
+    collide: null,                               // (p, world) => false removes p: a part's hook after each move (fxparts/worldcollider.js; the comment above FX_PART_FILES)
     update(dt, cam) {
     for (let i = parts.length - 1; i >= 0; i--) if ((parts[i].age += dt) >= parts[i].energy) parts.splice(i, 1);
     if (an?.autodestruct && emitted && !parts.length) return "destroy";
@@ -4397,10 +4439,16 @@ function legacyParticles(fx, node, em, an, rd, mat) {
     }
     const damp = an ? Math.pow(an.damping, dt) : 1, grow = an ? Math.pow(Math.max(0, 1 + an.sizeGrow), dt) : 1;
     const force = an ? vv(an.force) : V();
+    // collide (2026-11-13, the Cat's luckyDice / treasureHunt: Unity 3.5's WorldParticleCollider, plans/fx_cat/parts.md
+    // part 5): a part's test of each particle after its move, in the emitter's space; false = the particle dies there
+    const hit = this.collide;
+    let gone = false;
     for (const p of parts) {
       if (an) p.v.addScaledVector(force.clone().add(rv(an.rndForce)), dt).multiplyScalar(damp);
       p.p.addScaledVector(p.v, dt); p.size *= grow; p.rot += p.spin * dt;
+      if (hit && hit(p, world) === false) { p.gone = true; gone = true; }
     }
+    if (gone) for (let i = parts.length - 1; i >= 0; i--) if (parts[i].gone) parts.splice(i, 1);
     const mode = rd ? rd.m_StretchParticles : 0, qi = world ? null : fx.uQuat(node).invert(), toL = v => (qi ? v.clone().applyQuaternion(qi) : v.clone());
     const N = Math.max(1, uv0["x Tile"] * uv0["y Tile"]);
     const pos = [], col = [], uv = [], idx = [];
@@ -4468,6 +4516,15 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         worn [slot, item] (2026-11-13, the Bat's Homing Wand, plans/fx_bat/decisions.md 15): played only while that
 //         item is worn there; end (seconds after the spawn: the guardian's unsummon, fxparts/bat.js) and the others are
 //         the parts' (fx.at)
+// 2026-11-13, the Cat (plans/fx_cat/decisions.md 37, 50, 57, 58): single (true: while a copy of this effect lives,
+//         from an earlier play, no second one is spawned and that copy's kill is renewed, its end = its age + this
+//         cue's kill: the charge's one hand glow damagePlus, kept alive by every charge, Cat.cs:20045 and the status's
+//         refresh, CharacterControl.cs:14035; fxDue), anims ([[seconds after the spawn, clip], ...]: the clips the hero's
+//         code plays on the effect's Animation, fx:grandCasinoArcade in fxparts/cat.js); the TTO parts' (fxparts/tto_cat.js,
+//         plans/fx_cat/tto.md 2.1-2.3): flip, pulse, gather (seconds after a Royal Flush card's spawn when it flips, starts
+//         its glow pulses, gathers), gatherTo ([x, y, d]: where it gathers), hand (the banner's hand, 0-9), eclipse (the
+//         moon: seconds after its spawn when it is eclipsed), recall (a Crescent Eclipse blade: seconds after its spawn
+//         when it flies back), home ([x, y, d]: where it flies back to)
 //   kind  "skin" (the hero's own look for kill seconds, else until the next pick: HERO_SKINS; Cosmic Rift / Cosmic
 //         Friday's FX/CosmicRift, decisions.md 16)
 //   kind  "clone" (2026-11-13, the Bat's Shadow Illusion: HeroClone): name = the hero clip the copy plays, looped (the
@@ -4477,6 +4534,11 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         titanForm: the hero grown and tinted, HeroSkin.body); bone with rot = rot is the localRotation under the bone
 //   kind  "lift" (the hero raised in place along a height curve, LIFTS: Titan Drop's, HeroLift): [0, "lift", "titanDrop"]
 //         (the curve's times count from the cue); followPosition effects ride the lifted hero
+//   kind  "hideProp" (2026-11-13, the Cat's throws, plans/fx_cat/decisions.md 47, skills_b.md Q7: the game disables the
+//         worn weapon's MeshRenderers while the card / dice / dagger flies): [t, "hideProp", slot ("R" the main hand, "L",
+//         "Head", "Back"), {"kill": s}]: that prop's meshes off the camera's layers from t for s seconds (its weapon_fx
+//         particles keep drawing, as in the game), back at the end, on a new pick or a class change; nothing when no prop
+//         is worn there (HeroPropHide, lookSync)
 // An entry may also carry "builds": [names] (effects a part spawns, api.spawn, and "sound:<name>" / "voice:<name>" for
 // what it plays, that no cue names: wardrobe_fx.py builds them; the guardian's blade, hits and swing) and
 // "everyCycle": true (a looped clip's cues again on each cycle, against the clip's own time: the run's wing flap, fxTick)
@@ -4505,13 +4567,19 @@ const cueOf = c => {
 // on): the parts' hook (api.heroHide). A skin cue: the original meshes off the layers, a copy of each drawn instead (same
 // geometry and skeleton, a child of it, so it moves and goes with it; never hit by the ray). VFX off: neither applies
 // (an original under a skin goes on LOOK_LAYER alone: no camera draws it, the piece menu's ray still finds it, pieceAt)
-const LOOK = { hides: new Set(), skin: null, off: new Map(), lift: null }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;   // lift: HeroLift
+// LOOK.props (2026-11-13, the Cat's throws: a "hideProp" cue, HeroPropHide): while one holds a slot, the meshes under
+// that worn prop (C.props[slot], a weapon put on meanwhile too) are off the layers the same way (VFX on only, as a
+// hiding); the prop's weapon_fx particles are another Fx, not under the hero, so they keep drawing
+const LOOK = { hides: new Set(), skin: null, off: new Map(), lift: null, props: new Set() }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;   // lift: HeroLift
 function heroHide(key, on) { if (on) LOOK.hides.add(key); else LOOK.hides.delete(key); lookSync(); }
 function lookSync() {
   const live = LOOK.skin?.alive ? LOOK.skin : null, hide = vfxOn && LOOK.hides.size > 0, sk = vfxOn ? live : null, off = new Map(), add = [];
   const shell = sk && !sk.body ? sk : null;    // a body look (grow + tint, HeroSkin.body) keeps the hero's own meshes drawn
-  if (C && (LOOK.hides.size || live)) C.root.traverse(o => {
+  const propRoots = new Set(vfxOn && C ? [...LOOK.props].map(h => C.props[h.slot]).filter(Boolean) : []);
+  const inProp = o => { for (; o && o !== C.root; o = o.parent) if (propRoots.has(o)) return true; return false; };
+  if (C && (LOOK.hides.size || live || propRoots.size)) C.root.traverse(o => {
     if (!o.isMesh) return;
+    if (propRoots.size && inProp(o)) { off.set(o, 0); return; }            // a hideProp cue's prop: its copies and overlays too
     if (o.userData.lookCopy) { if (hide || !shell) off.set(o, 0); return; }   // a skin's copy: not while hidden or VFX off
     if (o.userData.hoverOverlay) { if (hide) off.set(o, 0); return; }
     if (hide) off.set(o, 0);
@@ -4685,6 +4753,24 @@ class HeroLift {
     if (LOOK.lift === this) LOOK.lift = null;
   }
 }
+// a "hideProp" cue's hold (2026-11-13, the Cat's Lucky Card / Lucky Dice / Flying Dagger / Disarm / Bleed throws: the game
+// disables the worn weapon's MeshRenderers while the throw flies, plans/fx_cat/decisions.md 47, skills_b.md Q7 and
+// Verification 2): while it lives, LOOK.props holds it and lookSync takes the meshes under C.props[slot] off the camera's
+// layers; kill seconds after the cue (none: until the next pick). Kept with the effects (FX.live: a new pick, a class
+// change or its kill ends it; Fx's shape for the checks: name, emitters, attached, group, loops)
+class HeroPropHide {
+  constructor(slot, kill) {
+    this.name = "hideProp:" + slot; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
+    this.slot = slot; this.killAt = kill;
+    LOOK.props.add(this); lookSync();
+  }
+  attached() { return false; }
+  update(dt) { this.age += dt; if (this.killAt != null && this.age >= this.killAt) this.dispose(); }
+  dispose() {
+    if (!this.alive) return;
+    this.alive = false; LOOK.props.delete(this); lookSync();
+  }
+}
 // a "clone" cue's copy of the hero (2026-11-13, the Bat's Shadow Illusion: plans/fx_bat/parts.md part 6, decisions.md
 // 21, 22). Bat_illusion.summon (Bat_illusion.cs:60-410) dresses the clone as the Bat is (her weapon, accessory and trinket
 // on its bones, her body's sharedMesh and material, :157-351) and tints it setColor(0.3, 0.2, 0.5) for her own side
@@ -4820,11 +4906,11 @@ function fxStart(clip, step = 0) {
   FX.cycle = (own?.everyCycle || e?.everyCycle) && C.action ? { act: C.action, last: C.action.time } : null;
   for (const c of FX.cues) {
     if (c.kind === "clone") skeletonUtils().catch(() => {});   // the copy's module, ahead of its time
-    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && c.kind !== "hideProp" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
   }
 }
 // (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
-function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; FX.gen++; LOOK.hides.clear(); lookSync(); }
+function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; FX.gen++; LOOK.hides.clear(); LOOK.props.clear(); lookSync(); }
 // A weapon's own effects (user 2026-11-12: "Can you add particle effects for weapons too?"): the flames, sparkles and
 // trails its BB prefab carries (pipeline/wardrobe_weapon_fx.py -> data/<cls>/weapon_fx.json, effects by the weapon's
 // name). Built as a skill effect is (Fx), its root following the worn prop's root every frame; kept apart from FX.live,
@@ -4891,10 +4977,25 @@ function fxDue(t, inclusive) {
         FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
       }).catch(x => { FX.missing["clone:" + c.name] = 1; console.error(x); });
     }
+    else if (c.kind === "hideProp") {           // the worn prop's meshes hidden for kill seconds (HeroPropHide); none worn: nothing
+      if (!C.props[c.name]) continue;
+      const f = new HeroPropHide(c.name, c.kill); FX.live.push(f);
+      FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
+    }
     else if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else fxData(cls).then(d => {
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
+      // single (2026-11-13, the Cat's damagePlus, plans/fx_cat/decisions.md 37: the game makes the hand glow only when none
+      // stands, Cat.cs:20045, and every charge refreshes its status, CharacterControl.cs:14035): a live copy of this
+      // effect from an earlier play gets this cue's kill from now (its killAt = its age + kill), and nothing is spawned;
+      // tallied as a spawn for the checks (the cue took hold)
+      const own = c.single ? FX.live.find(x => x.alive && x instanceof Fx && x.name === c.name) : null;
+      if (own) {
+        if (c.kill != null) own.killAt = own.age + c.kill;
+        FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
+        return;
+      }
       const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error);
@@ -4919,7 +5020,7 @@ function fxTick(dt) {
   FX.live = FX.live.filter(f => f.alive);
   for (const f of WFX.live) { if (onStage(f.follow)) f.update(dt); else f.dispose(); }   // its weapon taken off or the class changed
   WFX.live = WFX.live.filter(f => f.alive);
-  if (LOOK.hides.size || LOOK.skin || LOOK.off.size) lookSync();   // the hero hidden / re-skinned: pieces put on meanwhile too
+  if (LOOK.hides.size || LOOK.skin || LOOK.off.size || LOOK.props.size) lookSync();   // the hero hidden / re-skinned: pieces put on meanwhile too
   // back in the idle stance after a skill: once its last cue has fired and its last effect gone, the move is over
   if (C.seq?.tail && FX.cues.length && FX.cues.every(c => c.done) && !FX.live.length) FX.cues = [];
   // the whole move, no flicker between loops; not with VFX off (2026-11-10 QA: hidden effects now live their full time,

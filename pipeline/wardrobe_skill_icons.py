@@ -34,6 +34,9 @@ CLIP_SKILLS = {
     # the cleave tile is Power Cleave (2026-11-13, plans/fx_bison/decisions.md 10, skills_a.md Q8: Power Hammer, a passive,
     # gets no icon)
     "bison": {"cleave": ["powerCleave"]},
+    # the Cat's pillagePlunge clip is Pillage Plunge, card pillage (2026-11-13, plans/fx_cat/decisions.md 15, skills_b.md
+    # item 3, Q10: the tile had no icon)
+    "cat": {"pillage": ["pillagePlunge"]},
 }
 
 
@@ -41,11 +44,16 @@ CLIP_SKILLS = {
 # found by listing each class's RPC_* that calls no clip, NOTES.md that day; the Bat's 2026-11-13, plans/fx_bat/effect_only.md)
 # (the Bison's Berserker Rush and Fury Trance, passives' procs: plans/fx_bison/effect_only.md, decisions.md 6)
 EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast", "frostSpike"],
-               "bat": ["massCast", "shadowGaze", "switch", "shadowSacrifice"]}
+               "bat": ["massCast", "shadowGaze", "switch", "shadowSacrifice"],
+               # the Cat's Awareness, Damage Roulette and Treasure Hunt (2026-11-13, plans/fx_cat/effect_only.md block 4,
+               # decisions.md 8, 10)
+               "cat": ["awareness", "damageRoulette", "treasureHunt"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip (the Bat's
-# Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3)
+# Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3; the Cat's Even Odds on the
+# gamble clip and Nine Lives' ko then getUp, plans/fx_cat/effect_only.md block 4, decisions.md 8, 11, 12)
 OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "edenSanctuary": ["cast3"]},
-            "bat": {"nightmare": ["cast3", "channel"], "mindControl": ["cast3", "channel"]}}
+            "bat": {"nightmare": ["cast3", "channel"], "mindControl": ["cast3", "channel"]},
+            "cat": {"evenOdds": ["gamble"], "nineLives": ["ko", "getUp"]}}
 
 
 def bible_icons():

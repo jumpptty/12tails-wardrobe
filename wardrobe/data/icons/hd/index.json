@@ -367,10 +367,22 @@
   }
  },
  "cat": {
+  "awareness": {
+   "icon": "icons/hd/cat/awareness.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "backflip": {
    "icon": "icons/hd/cat/backflip.webp",
    "clips": [
     "backflip"
+   ]
+  },
+  "bleed": {
+   "icon": "icons/hd/cat/bleed.webp",
+   "clips": [
+    "throw2"
    ]
   },
   "cAttack": {
@@ -380,11 +392,23 @@
     "cAttack2"
    ]
   },
+  "copycat": {
+   "icon": "icons/hd/cat/copycat.webp",
+   "clips": [
+    "pointTarget"
+   ]
+  },
   "crescentEclipse": {
    "icon": "icons/hd/cat/crescentEclipse.webp",
    "clips": [
     "crescentEclipse1",
     "crescentEclipse2"
+   ]
+  },
+  "damageRoulette": {
+   "icon": "icons/hd/cat/damageRoulette.webp",
+   "clips": [
+    "root"
    ]
   },
   "deltaStrike": {
@@ -393,10 +417,34 @@
     "deltaStrike"
    ]
   },
+  "disarm": {
+   "icon": "icons/hd/cat/disarm.webp",
+   "clips": [
+    "throw2"
+   ]
+  },
+  "doubleDown": {
+   "icon": "icons/hd/cat/doubleDown.webp",
+   "clips": [
+    "instantCast"
+   ]
+  },
   "dropAnchor": {
    "icon": "icons/hd/cat/dropAnchor.webp",
    "clips": [
     "dropAnchor"
+   ]
+  },
+  "evenOdds": {
+   "icon": "icons/hd/cat/evenOdds.webp",
+   "clips": [
+    "gamble"
+   ]
+  },
+  "fateDraw": {
+   "icon": "icons/hd/cat/fateDraw.webp",
+   "clips": [
+    "instantCast"
    ]
   },
   "finishingBlow": {
@@ -404,6 +452,12 @@
    "clips": [
     "finishingBlow1",
     "finishingBlow2"
+   ]
+  },
+  "flyingDagger": {
+   "icon": "icons/hd/cat/flyingDagger.webp",
+   "clips": [
+    "throw2"
    ]
   },
   "forwardLunge": {
@@ -427,6 +481,24 @@
     "heartRipper2"
    ]
   },
+  "lifeGamble": {
+   "icon": "icons/hd/cat/lifeGamble.webp",
+   "clips": [
+    "gamble"
+   ]
+  },
+  "luckyCard": {
+   "icon": "icons/hd/cat/luckyCard.webp",
+   "clips": [
+    "throw1"
+   ]
+  },
+  "luckyDice": {
+   "icon": "icons/hd/cat/luckyDice.webp",
+   "clips": [
+    "throw1"
+   ]
+  },
   "moonBlade": {
    "icon": "icons/hd/cat/moonBlade.webp",
    "clips": [
@@ -448,6 +520,25 @@
     "nAttack4"
    ]
   },
+  "nineLives": {
+   "icon": "icons/hd/cat/nineLives.webp",
+   "clips": [
+    "ko",
+    "getUp"
+   ]
+  },
+  "pillagePlunge": {
+   "icon": "icons/hd/cat/pillagePlunge.webp",
+   "clips": [
+    "pillage"
+   ]
+  },
+  "powerShuffle": {
+   "icon": "icons/hd/cat/powerShuffle.webp",
+   "clips": [
+    "gamble"
+   ]
+  },
   "reverseThrust": {
    "icon": "icons/hd/cat/reverseThrust.webp",
    "clips": [
@@ -458,6 +549,12 @@
    "icon": "icons/hd/cat/royalFlush.webp",
    "clips": [
     "royalFlush1"
+   ]
+  },
+  "skillGamble": {
+   "icon": "icons/hd/cat/skillGamble.webp",
+   "clips": [
+    "gamble"
    ]
   },
   "supportFire": {
@@ -471,6 +568,18 @@
    "icon": "icons/hd/cat/swiftPace.webp",
    "clips": [
     "swiftPace"
+   ]
+  },
+  "treasureHunt": {
+   "icon": "icons/hd/cat/treasureHunt.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "twoPair": {
+   "icon": "icons/hd/cat/twoPair.webp",
+   "clips": [
+    "pointTarget"
    ]
   }
  },
