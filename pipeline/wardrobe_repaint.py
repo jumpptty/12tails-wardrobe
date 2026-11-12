@@ -89,6 +89,8 @@ def ramp(t, cols):
 
 def tone(L, ref, lo=3, hi=99.5):
     """The area's luminance as 0..1: its median = 0.5 (the base colour), so the painted folds and rims keep their place."""
+    if not ref.any():
+        return np.full(L.shape, 0.5)
     a, m, b = np.percentile(L[ref], [lo, 50, hi])
     span = 0.12                                  # a floor: a nearly flat area is not stretched into noise
     return np.clip(np.where(L < m, 0.5 * (L - a) / max(m - a, span), 0.5 + 0.5 * (L - m) / max(b - m, span)), 0, 1)
@@ -219,7 +221,8 @@ def uniform(variant):
 
 
 # ---------- on the hero ----------
-async def shots(variants, out, yaws=((20, "front"), (110, "left"), (200, "back"), (290, "right"))):
+async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), (200, "back"), (290, "right")), size=640, dpr=1):
+    """variants: (name, {skin key: png}, {slot: prop}) -> out/shots/<name>_<side>.png, the hero cut out on a light backdrop."""
     from playwright.async_api import async_playwright
     Q = type("Q", (http.server.SimpleHTTPRequestHandler,), {"log_message": lambda *a: None})
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Q, directory=str(ROOT)))
@@ -227,14 +230,14 @@ async def shots(variants, out, yaws=((20, "front"), (110, "left"), (200, "back")
     (out / "shots").mkdir(parents=True, exist_ok=True)
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
-        page = await (await b.new_context(viewport={"width": 1400, "height": 1100})).new_page()
+        page = await (await b.new_context(viewport={"width": 1400, "height": 1100}, device_scale_factor=dpr)).new_page()
         page.on("pageerror", lambda e: print("pageerror:", e))
         await page.goto(f"http://127.0.0.1:{srv.server_port}/wardrobe/")
         await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
         await page.add_style_tag(content="*{visibility:hidden!important} canvas{visibility:visible!important}")
-        for name, files, hat in variants:
+        for name, files, props in variants:
             skins = {k: "/" + f.relative_to(ROOT).as_posix() for k, f in files.items()}
-            await page.evaluate("""async ([skins, hat]) => {
+            await page.evaluate("""async ([cls, outfit, skins, props]) => {
               const { SKINS, scene, THREE } = wardrobe.debug(); SKINS.clear();
               scene.background = new THREE.Color(0xe6e1d8);
               for (const [k, url] of Object.entries(skins)) {
@@ -242,15 +245,15 @@ async def shots(variants, out, yaws=((20, "front"), (110, "left"), (200, "back")
                 const g = c.getContext("2d"); g.drawImage(img, 0, 0);
                 SKINS.set(k, { w: img.width, h: img.height, data: g.getImageData(0, 0, img.width, img.height).data });
               }
-              await wardrobe.show("rabbit", {}); await wardrobe.setOutfit("summer", 1);
-              for (const s of ["Head", "R", "L", "Back"]) await wardrobe.show("rabbit", { [s]: s === "Head" && hat ? "summerHat" : null });
-            }""", [skins, hat])
+              await wardrobe.show(cls, {}); await wardrobe.setOutfit(outfit, 1);
+              for (const s of ["Head", "R", "L", "Back"]) await wardrobe.show(cls, { [s]: props[s] || null });
+            }""", [cls, outfit, skins, props])
             for yaw, side in yaws:
-                await page.evaluate("y => wardrobe.show('rabbit', {}, y)", yaw)
+                await page.evaluate("([c, y]) => wardrobe.show(c, {}, y)", [cls, yaw])
                 await page.wait_for_timeout(350)
                 f = out / "shots" / f"{name}_{side}.png"
                 await page.locator("canvas").first.screenshot(path=str(f))
-                crop(f)
+                crop(f, size=size)
             print("shot", name)
         await b.close()
     srv.shutdown()
@@ -274,7 +277,7 @@ def main():
     ap.add_argument("--preview", action="store_true")
     a = ap.parse_args()
     out = ROOT / "plans" / "reskins" / "rabbit"
-    variants = [("original", {}, True)]
+    variants = [("original", {}, {"Head": "summerHat"})]
     for v in ("A", "B"):
         d = out / f"summer_uniform_{v}"
         d.mkdir(parents=True, exist_ok=True)
@@ -286,11 +289,11 @@ def main():
         Image.fromarray(outfit, "RGBA").save(d / "summer.png")
         Image.fromarray(hat, "RGBA").save(d / "Rabbit_summerHat.png")
         files = {"rabbit|outfits|summer|": d / "summer.png", "rabbit|accessories|summerHat|Rabbit_summerHat.png": d / "Rabbit_summerHat.png"}
-        variants += [(f"uniform_{v}", files, False), (f"uniform_{v}_hat", files, True)]
+        variants += [(f"uniform_{v}", files, {}), (f"uniform_{v}_hat", files, {"Head": "summerHat"})]
         print("painted", d.relative_to(ROOT))
     if a.preview:
         import asyncio
-        asyncio.run(shots(variants, out))
+        asyncio.run(shots("rabbit", "summer", variants, out))
         label = {"original": "ของเดิม", "uniform_A": "A · ชุดนักเรียน บนกระต่ายสีชมพูเดิม", "uniform_A_hat": "A + หมวก",
                  "uniform_B": "B · ผมและหูดำ ผิวขาว", "uniform_B_hat": "B + หมวก"}
         cells = "".join(f'<figure>{"".join(f"<img src=shots/{n}_{s}.png>" for s in ("front", "left", "back", "right"))}<figcaption>{label[n]}</figcaption></figure>'

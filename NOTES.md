@@ -1218,3 +1218,19 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   is sleeveless: the bare shoulder tops (|y| 0.04-0.09, z 0.83-0.90) are fur on two islands (the pink "V" at the dress
   island's top edge is the shoulders, not a neckline; and the strip at sheet x 330-391, y 244-261). Both black now in A
   and B (B had them as skin); B's skin is the thighs only. Checked front, side, back.
+- **2026-11-12, the Cat as the reference's knight: picking the base** (user: a reference picture, a red bodysuit, silver
+  armour with gold trim, a white tabard with a gold border; "find the best cat outfit that can best represent this
+  reference image", "I don't want a simple recolor, I need the outlines to have a high matching percentage against the
+  reference image too. This is a detailed work"). `pipeline/wardrobe_outfit_sheet.py cat <png> [names]` shoots every
+  outfit front and back (22 for the Cat). Shortlist by parts: champion, legend, pvpArmor, royal; then champion vs
+  legend close up and `pipeline/wardrobe_knight.py --blockout` (both roughly in the reference's colours, plans/reskins/
+  cat/blockout.html). Pick: **champion**: white plate with gold trim (pauldron, gauntlets, greaves with pointed knees),
+  a white hip cloth with a gold border (the tabard), crossed waist straps (black, they read as the reference's frog
+  fasteners), and its torso and thighs are the bare body mesh (islands 3 front / 4 back, thighs 23), a free canvas for
+  the red suit's lines. Its shield (left arm; islands at sheet 180,135 and 497,30) hides cleanly with alpha 0 (the
+  material's alphaTest 0.5); the arm under it has its own bracer. Legend (symmetric, fully covered, side tassets, dark
+  gloves, pointed sabatons) lost: no white cloth, no plate, and its tassets read as wide red hips. The user's question
+  "does the original texture matter": so far yes (the uniform reused the original's shading and colour classes, so its
+  trims carried over); the knight is to be painted from the mesh (bone, position, island), the original's paint
+  optional. `wardrobe_repaint.shots(cls, outfit, variants, out, yaws, size, dpr)` is general now (skins must sit under
+  the repo: the page fetches them). Next: the detailed paint on champion, waiting for the user's go.
