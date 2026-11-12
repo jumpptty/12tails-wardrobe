@@ -1186,3 +1186,13 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (the two tests) still use their meta.json. meta.json stays (the PC import reads it). node 6/6; deployed c4362bde;
   the live list lists both test messages (the user had ✅'d the format test too). Keep the channel tidy: every message
   costs a little (1 call per 100), so delete rejected submissions now and then.
+- **2026-11-12, Rabbit set reskins** (user: "reskin the textures, 3 varaints each for Rabbit, legend, summer set, royal
+  and Ant"; then "Whole set", "Themed recolours", "Preview page first"). `pipeline/wardrobe_reskin.py rabbit --preview`:
+  per set 3 named themes (legend เพลิงนิล / อเมทิสต์ / มรกต; summer ซันเซ็ต / พาสเทล / ราตรี; royal ไพลิน / มรกตทอง /
+  ทับทิมดำ; ant แตนทอง / ด้วงเขียว / โคบอลต์), outfit colour 1 + every set piece, hue bands moved (split by value for
+  a dark base vs a glowing trim; a neutral rule tints whites). The outfit's body is kept: equal to the median of the
+  Rabbit's 21 outfits, or changed by a colour option (those recolour the fur; 68 % of legend1 vs legend2's differences
+  are body). Royal's purple band had to reach hue ~285 (the gun's background). Outputs plans/reskins/rabbit/<set>_<n>/
+  (not committed until the user picks) + shots (the local page headless, the canvas only, cropped) + preview.html.
+  Known: ant's red emblem on the boots' back stays red (shared with other outfits, so counted as body). Community skins
+  of an outfit replace the whole texture, so a reskin fixes the fur at colour 1 (pink) whatever colour the visitor picked.
