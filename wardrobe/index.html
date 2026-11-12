@@ -1076,6 +1076,7 @@ async function setProp(slot, name) {
       finishProp(o);
       skinProp(o, SLOTS[slot], p.name);
       C.props[slot] = o;
+      if (SLOTS[slot] === "weapons") weaponFx(o, p.name);
     }
   }
   persist(); renderPropUI(slot);
@@ -3965,6 +3966,15 @@ class Fx {
         for (const e of this.emitters) for (let o = e.node; o && o !== this.mirror; o = o.parent) if (o === s.node) { e.stop?.(); break; }
       }
     }
+    // a weapon's own effect (weaponFx): its root is the worn prop's root, in Unity's space as the bone below, scale too
+    // (a placement's); shown while the prop is (a hidden hero, a piece's preview)
+    if (this.follow) {
+      const f = this.follow;
+      let shown = vfxOn; for (let o = f; o && shown; o = o.parent) shown = o.visible;
+      this.group.visible = shown;
+      f.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
+      this.mirror.matrixWorld.clone().invert().multiply(f.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, this.root.scale);
+    }
     if (this.bone) {                             // a cue's bone: parented to it, localPosition 0, localRotation identity
       const b = C?.byName?.[this.bone];
       // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
@@ -4190,7 +4200,7 @@ FXPARTS.ManaVortex = (fx, node) => {
 
 // Unity 3.5's legacy particles (EllipsoidParticleEmitter + ParticleAnimator + ParticleRenderer; spec 2026-11-09 from the
 // 3.5 manual and scripting pages and Unity's legacy-to-Shuriken converter): spawned inside the ellipsoid (semi-axes, shell
-// from m_MinEmitterRange), velocity = world + local (emitter's rotation) + random per axis; lifetime min..maxEnergy;
+// from m_MinEmitterRange), velocity = world + local (emitter's rotation) + random per axis + tangent (outward, per axis); lifetime min..maxEnergy;
 // colour through colorAnimation[0..4] at life 0 / .25 / .5 / .75 / 1; size x (1 + sizeGrow) a second; velocity x damping
 // a second; a one-shot bursts min..maxEmission and again once they have all died, unless it autodestructs (gone when all
 // are dead). Quads: 0 / 2 billboard, 3 stretched along the motion (lengthScale x size + velocityScale x speed, negative
@@ -4207,12 +4217,18 @@ function legacyParticles(fx, node, em, an, rd, mat) {
   const uv0 = rd?.["UV Animation"] || { "x Tile": 1, "y Tile": 1, cycles: 1 };
   const spawn = () => {
     let d; do { d = V(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)); } while (d.lengthSq() > 1 || d.lengthSq() < 1e-6);
+    const out = d.clone().normalize().multiply(vv(em.tangentVelocity || { x: 0, y: 0, z: 0 }));   // tangentVelocity (below)
     const p = d.normalize().multiplyScalar(em.m_MinEmitterRange + (1 - em.m_MinEmitterRange) * Math.random()).multiply(vv(em.m_Ellipsoid));
     // the random part turns with the emitter, like localVelocity (2026-11-09; user: Cross Break's slashes "should form a
     // cross pattern on the ground ... the app vfx direction is all over the place"): Cross Break's four arms (emitters
     // turned 0 / 90 / 180 / -90) all have rndVelocity on x only, as large as their speed along x, so it is along each
     // arm; added in world axes it splayed the turned arms by up to 45 degrees. Grand Cross is built the same way
-    const q = fx.uQuat(node), vel = vv(em.localVelocity).add(rv(em.rndVelocity)).applyQuaternion(q).add(vv(em.worldVelocity));
+    // tangentVelocity: a speed outward from the emitter's surface, per axis (the spawn's direction from the centre x it:
+    // Unity's "starting speed across the emitter's surface", the legacy recipe for flames and sparks bursting out), turned
+    // with the emitter as localVelocity. Missing before 2026-11-12: the flaming weapons' flames (all their speed is this)
+    // spawned standing still, and a stretched quad with no speed draws nothing (the Sheep's Flaming Book showed no fire);
+    // the Sheep's lullaby_ring is the one skill effect with it
+    const q = fx.uQuat(node), vel = vv(em.localVelocity).add(rv(em.rndVelocity)).add(out).applyQuaternion(q).add(vv(em.worldVelocity));
     const e = rnd(em.minEnergy, em.maxEnergy);
     parts.push({ p: world ? p.applyMatrix4(fx.uMatrix(node)) : p, v: world ? vel : vel.applyQuaternion(q.clone().invert()), age: 0, energy: e,
                  size: rnd(minS, maxS) + sizeAdd + (node === fx.nodes[0] ? fx.addSize || 0 : 0), rot: em.rndRotation ? rnd(0, 2 * Math.PI) : 0,
@@ -4434,6 +4450,24 @@ function fxStart(clip, step = 0) {
 }
 // (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
 function fxClear() { for (const f of FX.live) f.dispose(); FX.live = []; LOOK.hides.clear(); lookSync(); }
+// A weapon's own effects (user 2026-11-12: "Can you add particle effects for weapons too?"): the flames, sparkles and
+// trails its BB prefab carries (pipeline/wardrobe_weapon_fx.py -> data/<cls>/weapon_fx.json, effects by the weapon's
+// name). Built as a skill effect is (Fx), its root following the worn prop's root every frame; kept apart from FX.live,
+// which a new pick clears (fxClear) and a move's end waits on: these last as long as the weapon is worn. Unity 3.5's
+// legacy emitters run for ever (m_Emit, not one-shot); a TrailEmitter draws only while the weapon moves (the game's
+// own: no code turns it on or off), so at rest it barely shows and a skill's swing streaks it
+const WFX = { data: {}, live: [] };
+const weaponFxData = cls => WFX.data[cls] ||= !FX_ON ? Promise.resolve(null)
+  : loadFxParts().then(() => getJSON(`${DATA}${cls}/weapon_fx.json`)).catch(() => null);
+const onStage = o => { for (; o; o = o.parent) if (o === scene) return true; return false; };
+function weaponFx(root, name) {
+  const cls = C.cls;
+  weaponFxData(cls).then(d => {
+    const key = d && Object.keys(d.effects).find(k => k.toLowerCase() === name.toLowerCase());
+    if (!key || C?.cls !== cls || !onStage(root)) return;
+    const f = new Fx(cls, key, d); f.follow = root; WFX.live.push(f);
+  }).catch(console.error);
+}
 // the SFX and VFX buttons: on by default, remembered in this browser; the first click or key press starts the audio.
 // VFX off: no effect is drawn (the live ones are hidden at once), but each still runs unseen, so its own sounds play
 // with SFX on for as long as the effect lives (a looping one too, 2026-11-10); SFX off also stops the loops playing
@@ -4483,6 +4517,8 @@ function fxTick(dt) {
   fxDue(FX.t, true);
   for (const f of FX.live) f.update(dt);
   FX.live = FX.live.filter(f => f.alive);
+  for (const f of WFX.live) { if (onStage(f.follow)) f.update(dt); else f.dispose(); }   // its weapon taken off or the class changed
+  WFX.live = WFX.live.filter(f => f.alive);
   if (LOOK.hides.size || LOOK.skin || LOOK.off.size) lookSync();   // the hero hidden / re-skinned: pieces put on meanwhile too
   // back in the idle stance after a skill: once its last cue has fired and its last effect gone, the move is over
   if (C.seq?.tail && FX.cues.length && FX.cues.every(c => c.done) && !FX.live.length) FX.cues = [];
@@ -4536,7 +4572,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, get SETS() { return SETS; } }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, get SETS() { return SETS; } }),   // scripted checks only
 };
 </script>
 </body>

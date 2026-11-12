@@ -1443,3 +1443,29 @@ blades along the edges of the blade"; "fix Bat Japanese Umbrella non-stop animat
   w_bat65 under "emo_battle"). finishProp now plays a clip that ends away from its start (0.1 in position / scale, 14
   degrees) once and holds its end: the wagasa, and the Mole's barrel and legend cannons' "fire" (a handle / a drum
   turned one step; they snapped back every 0.2 s). Every wing and other loop drifts at most 0.04 and still loops.
+
+## 2026-11-12/13 (home), weapons' own effects
+
+User: "Can you add particle effects for weapons too?" `pipeline/wardrobe_weapon_fx.py [cls ...]` -> `data/<cls>/weapon_fx.json`
+(a file of its own: wardrobe_fx.py rewrites fx.json's effects and materials only) + `data/fx/tex/`. 310 BB weapons:
+61 with Unity 3.5 legacy particles (flaming, mummy, pvp, butterfly, candles, lanterns ...), 230 with the game's
+TrailEmitter (no code switches it: it draws whenever the weapon moves, so at rest it barely shows, a skill's swing streaks
+it), 5 TrailRenderer, 4 ImageEmitter, 1 BoltEmitter, 15 Shuriken (the time weapons + moroccoLamp, russiaMatryoshka).
+- Read with wardrobe_fx.py's own Game / effect (the prefab by its Resources path heroes/<cls>/weapons/<name>), the
+  weapon's mesh, material and Animation dropped (the prop draws and plays them). wardrobe_fx.py does not decode BB's
+  Shuriken, so those 15 are read whole from **TTO's client copy** (wardrobe_fx_tto.py's Tto now takes folder="weapons";
+  its materials / textures tto_*, published scrambled as every TTO texture). Which ones: the rip's prefab has class 198.
+- Page: `weaponFx(root, name)` from setProp (weapon slots): an Fx whose root follows the worn prop's root every frame
+  (`fx.follow`: mirror^-1 x root.matrixWorld x mirror, scale too), shown while the prop is; its own list `WFX.live`
+  (FX.live is cleared by every new pick and a move's end waits on it), disposed once its prop leaves the stage.
+- **tangentVelocity was missing from legacyParticles**: the speed outward from the emitter's surface, per axis (added to
+  the local velocity, turned with the emitter). All of the flaming weapons' flames' speed is this: they spawned still, and
+  a stretched quad with no speed draws nothing (the Sheep's Flaming Book showed no fire). The one skill effect with it is
+  the Sheep's lullaby_ring. MEDIUM SURE (Unity's legacy source is not available; the 3.5 manual's "starting speed of
+  particles along X, Y, and Z, across the Emitter's surface" and the common use): the user to compare with the game.
+- Not done: Sheep mothLatern (its particle material is a null reference in the game files: nothing to draw), Monkey
+  spiderMike / R (UVScroll) and Penguin hallowLattern (simplePendulum): scripts with no byte layout in wardrobe_fx.py
+  LAYOUTS (not particles; the builder skips the whole weapon); TTO-only weapons.
+- Online: wardrobe_publish.py publish_weapon_fx copies weapon_fx.json and its textures. Check:
+  `pipeline/wardrobe_weapon_fx_check.py [out.png] [cls:item ...]` (headless; fails on a weapon with particles drawing
+  nothing, an effect outliving its weapon, a page error).

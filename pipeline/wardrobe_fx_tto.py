@@ -212,10 +212,11 @@ class Tto:
     change every TTO build, so never by file name); each bundle's own AssetBundle m_Container is keyed by the internal id
     (env.container is empty for these, tto.md 4.1)."""
 
-    def __init__(self, cls, names, assets=ASSETS, style=""):
+    def __init__(self, cls, names, assets=ASSETS, style="", folder=None):
         self.cls = cls
         cat = load_path("aa_catalog", AA_CATALOG).Catalog(os.path.join(assets, "catalog.bin"))
-        base = f"gameassets/characters/heroes/{cls}/{style}effects/"
+        # folder: another folder of the class's (pipeline/wardrobe_weapon_fx.py: "weapons", BB's weapons in TTO's client)
+        base = f"gameassets/characters/heroes/{cls}/{folder or style + 'effects'}/"
         want = {base + n.lower(): n for n in names}
         self.iid, deps = {}, set()                  # internal id -> prefab name
         for addr, loc in cat.entries():

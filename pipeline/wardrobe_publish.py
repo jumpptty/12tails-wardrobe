@@ -1066,6 +1066,24 @@ def publish_fx(run, classes):
     return done
 
 
+def publish_weapon_fx(run, classes):
+    """The weapons' own effects (pipeline/wardrobe_weapon_fx.py, user 2026-11-12): <cls>/weapon_fx.json, BB's weapon
+    prefabs' particles and trails, and the textures its materials name (fx/tex/, shared with the skill effects). The
+    file names no mesh (the prop draws the weapon), so it is never scrambled. An
+    entry for a weapon that is not published is never looked up (the page asks by the worn weapon's name)."""
+    for cls in classes:
+        f = run.data / cls / "weapon_fx.json"
+        if not f.is_file():
+            continue
+        d = json.loads(f.read_text(encoding="utf-8"))
+        texs = {m.get("tex") for m in d.get("materials", {}).values()}
+        # the time weapons' Shuriken are read from TTO's copy (tto_* textures): scrambled as publish_fx's TTO textures
+        missing = [t for t in sorted(t for t in texs if t) if not run.local_copy(f"fx/tex/{t}.webp", scrambled=t.startswith("tto_"))]
+        if missing:
+            run.warnings.append(f"{cls}: weapon effect textures not in the data: {missing}")
+        run.copy(f"{cls}/weapon_fx.json")
+
+
 def publish_hd_icons(run, pub_clips):
     """icons/hd/: the Bible's upscaled skill icons (pipeline/wardrobe_skill_icons.py; the user 2026-11-09: "borrow
     upscaled skill icon from the bible"): only the skills whose clips are published (BB's, released TTO ones), and the
@@ -1112,6 +1130,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
     publish_ui(run, classes, tto_clips, emo)
     publish_hd_icons(run, pub_clips)
     publish_fx(run, classes)
+    publish_weapon_fx(run, classes)
     run.write_json("meta.json", meta_out)
     if candidates is not None:
         candidates.extend(run.candidates)
