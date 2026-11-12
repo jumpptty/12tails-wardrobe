@@ -2,7 +2,7 @@
 //   node --test pipeline/test_site_worker.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker, { pngSize, cleanLink, clean, LIMITS } from "./site_worker.mjs";
+import worker, { pngSize, cleanLink, clean, LIMITS, META_TAG } from "./site_worker.mjs";
 
 const HOST = "https://12tails-wardrobe.jumpthai.workers.dev";
 const ENV = { DISCORD_WEBHOOK: "https://discord.test/api/webhooks/1/abc", TURNSTILE_SECRET: "s3cret" };
@@ -47,6 +47,8 @@ test("a good submission reaches Discord with the skin, plain fields and no menti
   const meta = JSON.parse(await body.get("files[1]").text());
   assert.deepEqual([meta.cls, meta.kind, meta.item, meta.name, meta.link], ["sheep", "weapons", "halloweenLantern", "นักวาด", "https://example.com/me"]);
   assert.deepEqual(meta.textures, [{ tex: "Sheep_halloweenWeapon.png", file: "skin0.png", w: 512, h: 512 }]);
+  assert.deepEqual(JSON.parse(payload.embeds[0].footer.text.slice(META_TAG.length)), meta);   // the live list reads this
+  assert.ok(payload.embeds[0].footer.text.length <= 2048);
   assert.equal((await body.get("files[0]").arrayBuffer()).byteLength, 33);
 });
 
@@ -88,9 +90,12 @@ test("community: the ✅ webhook messages, live; a picture only while approved; 
   const msg = (id, ok, extra = {}) => ({ id, webhook_id: ok === null ? undefined : "9", timestamp: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
     reactions: ok ? [{ emoji: { name: "✅" }, count: 1 }] : [], attachments: [{ filename: "meta.json", url: cdn(id + "/meta.json") }],
     embeds: [{ image: { url: cdn(id + "/skin0.png") } }], ...extra });
-  let messages = [msg("101", true), msg("102", false), msg("103", null)], discordStatus = 200;
   const metaOf = id => ({ v: 1, cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด" + id, link: "", at: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
     textures: [{ tex: "Sheep_mothLantern.png", file: "skin0.png", w: 128, h: 128 }] });
+  // 104: a message since the footer meta (no meta.json download needed); 101: an older one (its meta.json)
+  const withFooter = msg("104", true, { attachments: [] });
+  withFooter.embeds[0].footer = { text: META_TAG + JSON.stringify(metaOf("104")) };
+  let messages = [withFooter, msg("101", true), msg("102", false), msg("103", null)], discordStatus = 200;
   const calls = [];
   globalThis.fetch = async (url, init) => {
     url = String(url); calls.push({ url, init });
@@ -104,9 +109,11 @@ test("community: the ✅ webhook messages, live; a picture only while approved; 
   const r = await get("/api/community");
   assert.equal(r.status, 200);
   const { skins } = await r.json();
-  assert.deepEqual(skins, [{ id: "101", cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด101", link: "", at: "2026-11-12T00:00:01Z",
-    tex: { "Sheep_mothLantern.png": "api/community/101/0.png" } }]);               // no ✅, no webhook: left out; no Discord URL leaks
+  const row = id => ({ id, cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด" + id, link: "", at: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
+    tex: { "Sheep_mothLantern.png": `api/community/${id}/0.png` } });
+  assert.deepEqual(skins, [row("101"), row("104")]);                  // no ✅, no webhook: left out; oldest first; no Discord URL leaks
   assert.equal(calls[0].init.headers.authorization, "Bot bot");
+  assert.deepEqual(calls.filter(c => c.url.includes("meta.json")).map(c => c.url.split("/42/")[1].split("/")[0]), ["101"]);   // 104 read from its footer
   const img = await get("/api/community/101/0.png");
   assert.equal(img.headers.get("content-type"), "image/png");
   assert.equal(new Uint8Array(await img.arrayBuffer()).length, 33);

@@ -1179,3 +1179,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   marks on ไม่ใช่ render clean, top left of the stage.  Later the same day (user: "approve settin the bot secrets"): Claude set DISCORD_BOT_TOKEN (from discord.json, Git
   Bash pipe, never printed) and DISCORD_CHANNEL. /api/community lists the test skin, its picture 200 image/png; a
   headless run of the live page loads both from the route and the pop-up card shows it. Phone approval is live.
+- **2026-11-12, the live list's call ceiling lifted** (user: "fix that now"). The free plan allows 50 outgoing calls per
+  request; the list made 1 per 100 messages + 1 meta.json download per approved skin (cached a day per data centre),
+  so a cold rebuild failed at about 40-45 skins. The Worker now also writes the meta into the embed's footer
+  ("meta {json}", <= 2048 chars) and the list reads it from the message: 1 call per 100 messages. Messages from before
+  (the two tests) still use their meta.json. meta.json stays (the PC import reads it). node 6/6; deployed c4362bde;
+  the live list lists both test messages (the user had ✅'d the format test too). Keep the channel tidy: every message
+  costs a little (1 call per 100), so delete rejected submissions now and then.

@@ -96,7 +96,10 @@ export function discordBody(s, at) {
   ];
   const payload = { username: "ห้องแต่งตัว", allowed_mentions: { parse: [] },
     content: "ลายใหม่จากผู้เล่น: กด ✅ เพื่ออนุมัติ",
-    embeds: [{ title: `${s.item} (${KINDS[s.kind]})`, fields, image: { url: "attachment://skin0.png" }, timestamp: at }],
+    // the meta again in the footer: the live list reads it from the message itself, one Discord call per 100 messages
+    // (a meta.json download per skin hit the free plan's 50 calls at about 40 skins; meta.json stays for the PC import)
+    embeds: [{ title: `${s.item} (${KINDS[s.kind]})`, fields, image: { url: "attachment://skin0.png" }, timestamp: at,
+      footer: { text: META_TAG + JSON.stringify(meta) } }],
     attachments: [...s.textures.map((t, i) => ({ id: i, filename: `skin${i}.png` })), { id: s.textures.length, filename: "meta.json" }] };
   const fd = new FormData();
   fd.append("payload_json", JSON.stringify(payload));
@@ -135,6 +138,11 @@ export async function submit(request, env) {
 // DISCORD_CHANNEL; without them (or when Discord fails) the route answers an error and the page falls back to the
 // published community.json (pipeline/wardrobe_community.py, the PC import).
 const LIST_SEC = 60, cacheKey = path => new Request("https://community.wardrobe.invalid/" + path);
+export const META_TAG = "meta ";
+const footerMeta = m => {                             // the meta the Worker wrote into the embed's footer (since 2026-11-12)
+  for (const e of m.embeds || []) { const t = e.footer?.text || ""; if (t.startsWith(META_TAG)) try { return JSON.parse(t.slice(META_TAG.length)); } catch {} }
+  return null;
+};
 async function cached(path, sec, make) {             // the data centre's cache when there is one (not in node tests)
   const c = typeof caches === "undefined" ? null : caches.default, hit = c && await c.match(cacheKey(path));
   if (hit) return hit.json();
@@ -160,8 +168,8 @@ async function approvedSkins(env) {
       for (const m of page) {
         if (!m.webhook_id || !(m.reactions || []).some(x => x.emoji?.name === "✅")) continue;
         const files = filesOf(m);
-        if (!files["meta.json"]) continue;
-        const meta = await cached("meta/" + m.id, 86400, () => fetch(files["meta.json"]).then(x => x.ok ? x.json() : null)).catch(() => null);
+        const meta = footerMeta(m) || (files["meta.json"] &&     // older messages: their meta.json, once a day per data centre
+          await cached("meta/" + m.id, 86400, () => fetch(files["meta.json"]).then(x => x.ok ? x.json() : null)).catch(() => null));
         const texs = (meta?.textures || []).map((t, i) => ({ tex: String(t.tex ?? ""), src: files[t.file], i })).filter(t => t.src);
         if (!texs.length) continue;
         skins.push({ id: m.id, cls: meta.cls, kind: meta.kind, item: meta.item, name: meta.name, link: meta.link || "", at: meta.at || m.timestamp,
