@@ -201,9 +201,10 @@ def knight(debug=False, K=HI):
     # it, the dark knot and its stud between them (the chest crest sits just below)
     col_d = (Z - (1.195 + 0.62 * Y)) / 1.18
     mix(F, ramp(form + 0.1, WHITE), ins(-col_d))
-    mix(F, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0028))
-    mix(F, hexv("#1b1a20"), ins(np.abs(col_d - 0.0085) - 0.0011))
-    knot = np.maximum(Y - (0.006 + 0.10 * (Z - 1.185)), 1.185 - Z)
+    # (more black, user: "collar has more black in the ref": a broad black edge, a heavier trim line, a wide dark knot)
+    mix(F, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0050))
+    mix(F, hexv("#1b1a20"), ins(np.abs(col_d - 0.0115) - 0.0019))
+    knot = np.maximum(Y - (0.013 + 0.30 * (Z - 1.185)), 1.185 - Z)
     mix(F, ramp(form, BLACK), ins(knot))
     mix(F, hexv("#d5d8e2"), ins(np.hypot(Y, Z - 1.215) - 0.0036))
     mix(B, hexv("#4d0a13"), ins(Y - 0.0016) * 0.8)                                           # the back: a centre seam
@@ -258,9 +259,10 @@ def knight(debug=False, K=HI):
     mix(A, ramp(np.full(Y.shape, 0.95), SILVER), ins(np.abs(lame - 0.003) - 0.0012) * ins(d_p + 0.010) * 0.8)
 
     # ----- the straps across the waist: black leather, the reference's fasteners; the chest crest: the dark studded jabot
-    for k in ("straps", "crest"):
+    # (the crest's border white, not gold: the user, with a close-up of it, "should be white instead of gold")
+    for k, edge in (("straps", GOLD), ("crest", WHITE)):
         mix(I[k], ramp(tone(L, I[k] & (gold_k < 0.3)) * 0.8, BLACK), 1 - gold_k)
-        mix(I[k], ramp(tone(L, I[k] & (gold_k > 0.7)), GOLD), gold_k)
+        mix(I[k], ramp(tone(L, I[k] & (gold_k > 0.7)), edge), gold_k)
 
     C = I["crest"]                                                                              # the jabot's studs
     for z0 in (1.195, 1.170, 1.145):
@@ -279,12 +281,13 @@ def knight(debug=False, K=HI):
     # the choker's band (z up to 1.287): the suit's white standing collar, one clean dark line along its top
     # (re-toning the choker's own paint left dotted bits of its outline under the chin)
     mix(head, ramp(form + 0.12, WHITE), ins(Z - 1.287))
-    mix(head, hexv("#1b1a20"), ins(np.abs(Z - 1.2835) - 0.0035))                    # its black trim band
-    mix(head, ramp(form, GOLD), ins(np.abs(Z - 1.2775) - 0.0011) * ins(Z - 1.287))  # a gold line under the trim
+    mix(head, hexv("#1b1a20"), ins(np.abs(Z - 1.2815) - 0.0055))                    # its black trim band, broad
+    mix(head, ramp(form, GOLD), ins(np.abs(Z - 1.2740) - 0.0011) * ins(Z - 1.287))  # a gold line under the trim
+    mix(head, hexv("#1b1a20"), ins(Z - 1.2475))                                     # and a black foot where it meets the suit
     front = sstep(X, 0.030, 0.040)
-    mix(head, hexv("#1b1a20"), ins(Y - (0.0025 + 0.20 * (Z - 1.243))) * ins(Z - 1.287) * front)   # the opening
-    mix(head, hexv("#d5d8e2"), ins(np.hypot(Y - 0.019, Z - 1.262) - 0.0036) * front)
-    mix(head, hexv("#1b1a20"), ins(np.abs(np.hypot(Y - 0.019, Z - 1.262) - 0.0042) - 0.0007) * front)
+    mix(head, hexv("#1b1a20"), ins(Y - (0.006 + 0.42 * (Z - 1.243))) * ins(Z - 1.287) * front)    # the opening: the black lining
+    mix(head, hexv("#d5d8e2"), ins(np.hypot(Y - 0.026, Z - 1.260) - 0.0034) * front)
+    mix(head, hexv("#1b1a20"), ins(np.abs(np.hypot(Y - 0.026, Z - 1.260) - 0.0040) - 0.0007) * front)
     for k in ("ears", "tail", "tip"):
         mix(I[k], ramp(tone(L, I[k]), BLOND))
     return np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)

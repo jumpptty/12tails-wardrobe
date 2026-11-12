@@ -1289,4 +1289,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   each side; the lapels on the chest a second trim line and a dark knot with a stud. (4) **Steel**: SILVER is a mid
   grey-blue ramp (#3f4553 / #949baf / #f8fafd) and the plate's tone = 0.40 paint + 0.50 env(nz) capped at 0.84 + a
   narrow glint on up-facing texels, env = bright sky, a dark horizon band at nz ~ 0, a dim ground glow; the hip cloth
-  stays white, so cloth and plate now differ. Gold takes a quarter of env.
+  stays white, so cloth and plate now differ. Gold takes a quarter of env.  Later (user, with a close-up of the chest crest: "collar has more black in the ref and the image attached should be
+  white instead of gold"): the crest's border is the WHITE ramp (the straps keep gold); the collar's black is broader:
+  the trim band z 1.2815 +- 0.0055, a black foot under z 1.2475, the front opening a wide V of black lining
+  (|y| < 0.006 + 0.42 (z - 1.243)), the studs moved out to |y| 0.026; on the chest a 0.005 black lapel edge, a heavier
+  second trim line, a wider knot.
