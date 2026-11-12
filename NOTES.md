@@ -1196,3 +1196,22 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (not committed until the user picks) + shots (the local page headless, the canvas only, cropped) + preview.html.
   Known: ant's red emblem on the boots' back stays red (shared with other outfits, so counted as body). Community skins
   of an outfit replace the whole texture, so a reskin fixes the fur at colour 1 (pink) whatever colour the visitor picked.
+- **2026-11-12, the Rabbit's summer set as a school uniform, painted on the 3D surface** (user: recolours are "too
+  normal"; then a reference picture (black dress, white collar, red ribbon, white cuffs, black knee socks, white
+  shoes): "try using this reference for rabbit summer set, make sure it looks good in 3D", "don't bake in the eyes to
+  the 2D texture since that part get overlaid by the game face preset anyway"). `pipeline/wardrobe_repaint.py
+  [--preview]`: the outfit's mesh (o_summer.bin: pos, uv, bone weights) is drawn into UV space, so every texel has its
+  bone, its bind-pose position (x front, y left, z up; the Rabbit is 1.8 tall, knee z 0.39, wrist |y| 0.40) and its UV
+  island; gutters take the nearest island's values, so paint reaches them too (no seams). No Blender needed. The design
+  paints by part and height and keeps the painted shading (luminance -> a shadow / base / light ramp): dress white ->
+  black (navy trim falls to the ramp's shadow, the striped inset plain, buttons dark metal), collar navy -> white,
+  sleeves on the arms to |y| 0.30 then a white cuff (the right wrist's band geometry is the cuff), socks to z 0.37 with
+  a ribbed top, feet in socks, shoe trim and soles charcoal, the ear's ribbon red. A = that on the pink Rabbit; B =
+  also black hair (every Head / Neck texel but the face island), black outer ears, dusty-rose inner ears, the fur left
+  showing (thigh, chest) as the face's cream skin. The cap: black crown, white band. Lessons: (1) white cloth turned
+  near black shows the webp's 8x8 blocks: luminance is blurred (sigma 2.5) where flat and kept sharp near edges, the
+  edge mask as wide as the blur (a narrower one grew dark halos around small marks); (2) tone spans get a floor (0.12)
+  or a flat area is stretched into noise; (3) the face presets' pixels span x 24-114, y 18-87 of the sheet and are
+  mostly transparent (3.7 %): only eyes and mouth are overlaid, the rest of the head is the skin's; the script asserts
+  nothing is painted in y 30-88 there, and that size and alpha equal the original's. Outputs
+  plans/reskins/rabbit/summer_uniform_<A|B>/ + shots + uniform.html (not committed until the user picks).
