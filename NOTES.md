@@ -1268,3 +1268,10 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   a border; the per-texel test bit notches into the borders' tips); greaves and boots have no gold (their trims a
   darker steel, faint gold too), only the knee emblems; the collar is the choker's band painted white with one clean
   dark line on top (z 1.287). Checks: unit 61 OK, community check all ok, the Rabbit build still passes.
+- **2026-11-12, the knight's hair** (user: "you are granted permission to try change the hair color too btw, I didn't
+  restrict you"). The Cat's hair is not on the outfit's sheet (the island-id render had shown that): it is her **head
+  piece**, accessory `default` (`BASE_HEAD.cat`; texture props/tex/Cat_default.png, 128 px; `setProp("Head", null)` puts
+  it back on), so its skin is a second texture, key `cat|accessories|default|Cat_default.png`. `hair()` re-tones its
+  own shading to the reference's blonde at 4x (512 px); ears and tail use the same ramp (BLOND #b0843f / #ecd087 /
+  #fdf1c4; a first, more orange ramp read darker than the reference). The set is now two files:
+  plans/reskins/cat/knight/champion.png + Cat_default.png. A set of community skins = one submission per piece.

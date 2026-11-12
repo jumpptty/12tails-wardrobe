@@ -101,11 +101,11 @@ img{{width:24%;min-width:200px}}figcaption{{font-weight:600;margin:4px}}</style>
 # surface normal, UV island): the reference's lines are drawn in body coordinates (x front, y left, z up; the Cat's
 # hips z 0.87, neck base 1.24, elbow |y| 0.30). The plate and the hip cloth keep the original's painted forms (their
 # gold trims follow the modelled edges) in the reference's metals. Hair and eyes are not the outfit texture's: the hair
-# is the Cat's own pale blonde, the eyes are the face preset's (38: purple, calm).
+# is her head piece's own texture (hair(), below), the eyes are the face preset's (38: purple, calm).
 GOLD = ("#74460e", "#d9a22c", "#ffe690")
 STEEL = ("#474c5a", "#9298a8", "#e3e6ed")       # the plate's trim where the reference has no gold
 SKIN = ("#b97a5e", "#efc5a9", "#fcdfca")
-BLOND = ("#8d8260", "#d8cfa9", "#f7f2da")       # the Cat's own hair, for her ears and tail
+BLOND = ("#b0843f", "#ecd087", "#fdf1c4")       # the reference's golden blonde: the hair piece, her ears and tail
 SEEDS = dict(torsoF=(290, 100), torsoB=(430, 100), arms=(170, 360), thighs=(450, 340), skirt=(270, 300), skirt2=(67, 319),
              sash=(430, 222), sash2=(364, 100), sash3=(500, 127), belt=(326, 217), belt2=(355, 34), straps=(200, 219),
              crest=(118, 357), wing=(212, 42), pauldronR=(235, 415), gauntR=(374, 435), gauntR2=(100, 430), gauntR3=(312, 391),
@@ -233,6 +233,17 @@ def knight(debug=False, K=HI):
     return np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)
 
 
+def hair(K=HI):
+    """The Cat's hair is not on the outfit's sheet: it is her head piece (accessory "default", Cat_default.png, 128 px;
+    the page puts it on whenever no hat is worn). Its own shading, in the reference's blonde (user 2026-11-12: "you are
+    granted permission to try change the hair color too")."""
+    im = Image.open(DATA / "props" / "tex" / "Cat_default.png").convert("RGBA")
+    im = im.resize((im.width * K, im.height * K), Image.LANCZOS)
+    a = np.asarray(im).astype(float)
+    L = ndimage.gaussian_filter(a[..., :3] @ [0.299, 0.587, 0.114] / 255, 0.6 * K)
+    return np.dstack([np.clip(ramp(tone(L, np.ones(L.shape, bool), lo=1), BLOND), 0, 255), a[..., 3]]).astype(np.uint8)
+
+
 def paint_main(debug):
     """The skin, its checks, the hero from four sides, and original | new | reference side by side (--ref <picture>:
     the user's reference, copied beside the shots; it is theirs, so it stays out of git)."""
@@ -247,7 +258,9 @@ def paint_main(debug):
     print(f"{skin.shape[1]}x{skin.shape[0]} px, {(d / 'champion.png').stat().st_size / 1e6:.1f} MB")
     views = ((0, "front"), (90, "left"), (180, "back"), (270, "right"))
     asyncio.run(shots("cat", "champion", [("orig", {}, {})], OUT, yaws=views[:1], size=1000, dpr=2))
-    asyncio.run(shots("cat", "champion", [("knight", {"cat|outfits|champion|": d / "champion.png"}, {})], OUT, yaws=views, size=1000, dpr=2, face=38))
+    Image.fromarray(hair(), "RGBA").save(d / "Cat_default.png")
+    skins = {"cat|outfits|champion|": d / "champion.png", "cat|accessories|default|Cat_default.png": d / "Cat_default.png"}
+    asyncio.run(shots("cat", "champion", [("knight", skins, {})], OUT, yaws=views, size=1000, dpr=2, face=38))
     panels = [Image.open(OUT / "shots" / "orig_front.png"), Image.open(OUT / "shots" / "knight_front.png")]
     if "--ref" in sys.argv:
         Image.open(sys.argv[sys.argv.index("--ref") + 1]).convert("RGB").save(OUT / "reference.png")
@@ -266,7 +279,7 @@ figure img{{width:24%;min-width:200px}}.cmp img{{width:100%;min-width:0}}figcapt
 <h1>แมว · ชุด Champion เป็นอัศวินตามภาพอ้างอิง</h1>
 <figure class=cmp><img src=knight_compare.png><figcaption>ของเดิม · ของใหม่บนโมเดล 3D (หน้าแบบที่ 38) · ภาพอ้างอิง</figcaption></figure>
 <figure>{imgs}<figcaption>ของใหม่ · หน้า ซ้าย หลัง ขวา</figcaption></figure>
-<figure><img src=knight/champion.png style="width:48%"><figcaption>ลาย ({skin.shape[1]} × {skin.shape[0]})</figcaption></figure>""", encoding="utf-8")
+<figure><img src=knight/champion.png style="width:48%"><img src=knight/Cat_default.png style="width:24%"><figcaption>ลายชุด ({skin.shape[1]} × {skin.shape[0]}) · ลายผม (ชิ้นหัว default)</figcaption></figure>""", encoding="utf-8")
     print("painted", d / "champion.png")
     print("preview:", (OUT / "knight.html").as_uri())
 
