@@ -1137,3 +1137,15 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   `wardrobe.debug()` also hands out Send / Gallery. The check trap: the pop-up reuses `.send-back`, so a selector for the
   send dialog must say `:not(.gal-back)`; Cloudflare's test widget always returns the same dummy token. All green: unit
   59, node 4/4, community check (twice), menu, TTO, dist check (twice), publish no problems.
+
+- **2026-11-12, community skins: setup done** (office, user: "Let's do the one-time setup", then "can you use browser
+  access to do it?"). Claude drove the user's Chrome; Claude Code's safety check blocks Claude from creating webhooks,
+  bots and other account integrations, so the user clicked those (Create Webhook, Authorize, the bot's channel
+  permission, Reset Token + MFA, the intent toggle, Turnstile Create). Discord: private `#wardrobe-submissions`
+  (id 1570242267397230764) in the user's server "Jump" (12tails category); webhook "Captain Hook"; app "12 Tails Skins"
+  (id 1570241807726547034; Message Content Intent on, flags 524288; View Channels + Read Message History, invite
+  permissions=66560). The token went from the clipboard into `%APPDATA%\12tails-wardrobe\discord.json` (never printed);
+  a read-only check: the bot sees the channel and reads its history. Turnstile widget "12tails-wardrobe" (Managed,
+  hostname 12tails-wardrobe.jumpthai.workers.dev), site key in `wardrobe/community_config.json`. Worker secrets
+  TURNSTILE_SECRET and DISCORD_WEBHOOK set by piping the clipboard into `npx wrangler secret put` from an empty scratch
+  folder (`wrangler secret list` shows both; the live site still 200). Not deployed yet (HANDOFF).
