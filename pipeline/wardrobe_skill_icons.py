@@ -36,7 +36,7 @@ CLIP_SKILLS = {
 
 # skills the game plays with no body animation, shown as idle-stance tiles (index.html SEQ "<Name>: root@<t>", 2026-11-10;
 # found by listing each class's RPC_* that calls no clip, NOTES.md that day)
-EFFECT_ONLY = {"sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast"]}
+EFFECT_ONLY = {"sheep": ["quickHeal"], "penguin": ["manaArc", "dispell", "doubleCast", "tripleCast", "frostSpike"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip
 OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "edenSanctuary": ["cast3"]}}
 

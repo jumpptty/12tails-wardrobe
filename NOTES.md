@@ -984,8 +984,8 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   both members spawn. Open: decision 17 differs from the game (BB hides the snowmanned target, never the caster;
   penguin.js HIDE_ONLY_ON_HERO switches to the game's rule); not yet looked at by the user; the QA pass is next.
 
-- **2026-11-10 (evening, home), the Penguin's effects: QA pass** (workflow `penguin-fx-build`'s last step; in progress,
-  this entry is updated as it goes). New tool `pipeline/wardrobe_fx_shots.py`: the probe's views, boxes and forced pools,
+- **2026-11-10 (evening, home), the Penguin's effects: QA pass** (workflow `penguin-fx-build`'s last step; cut off that
+  night, **finished 2026-11-13** by the overnight run's `penguin-fx-finish` QA step, below). New tool `pipeline/wardrobe_fx_shots.py`: the probe's views, boxes and forced pools,
   but on a virtual clock (the page's one THREE.Clock replaced by a fixed 1/30 s step), so every shot is at exactly the clip
   time asked however slowly swiftshader draws (the probe's real-time samples landed up to 10 s late on the Arctic
   Emperor); forced rolls (`ko!dead`, `cast3!doubleSpell`, several joined by `+`), `BG=white` for the white stage, the hero's
@@ -997,6 +997,47 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   smudge on the dark stage**: the canvas read back (0, 84, 101) over alpha 29, colour above alpha, which the browser's
   premultiplied compositing clamps to the alpha; the premul shader now writes alpha >= its brightest channel (the 'add'
   convention): dark stage (23, 105, 128) vs the game's (33, 111, 139).
+  **Finished 2026-11-13 (overnight, home)**, after the one-tile-per-skill pages and the five effect-only tiles:
+  - Tools: `wardrobe_fx_shots.py` gained `--jobs <jobs.json>` (many tiles in one browser, a fresh context per job: the page
+    keeps the worn look in localStorage, so a reload carried the Staff of Time into every later tile), several views per
+    sample (`back,side`), a `behind` camera (behind and above: the 10 m target and +-10 m around it), `SEED=<n>`
+    (Math.random seeded), `PARTS=1` (each drawn part of the live effects: node, material, vertices, box, indices behind
+    the camera / off screen / NaN) and `HIDE=<regex>` (hide parts before the shot); its emote tab was looked up as
+    "emotion" (the picker's is `emote`: emote tiles were never found; also fixed in `wardrobe_fx_probe.py`). New
+    `pipeline/wardrobe_fx_sheet.py`: contact sheets (one row per tile / forced roll / backdrop, `index.html`).
+  - Shot (virtual clock): 44 jobs on the dark and the white stage (161 samples each) plus 13 `behind` views: Normal
+    Attack (as rolled, Spread Shot forced on all three stages, the Staff of Time worn), Charge Attack, MP Transfer, all 16
+    cast3 tiles (Double Spell forced on Mana Missile, Mana Burn, Frozen Blast, Arctic Wind, Ice Block, Falling Comets),
+    Cosmic Friday, Blink (+ Double Spell), Parallel Shift, Falling Stars (+ Double Spell), Nova Flare, Arctic Emperor,
+    Focus Intellect, Constellation, Frost Field, Emperor's March, Mana Arc, Dispell, Double Cast, Triple Cast, Frost
+    Spike, KO (dead forced and as rolled), wave / talk. Sheets: `checks/fx_penguin_qa/sheets_dark`, `sheets_white`,
+    `sheets_behind` (git-ignored; the shots under `run/`, logs `run/*.log`).
+  - Everything lands as the reports and decisions.md say (boxes in the hero's frame; tile time = clip time + 0.7 s on the
+    cast3 tiles): the Normal Attack balls end at the 10 m point at 0.98 / 1.48 / 1.98 s, Spread Shot's side hits at
+    x +-2.85; the three middle missiles hit (0, 0.62, 9.7) at 1.82 s, the outer pairs pass to the floor at 15.8 / 19.1 m;
+    manaSurge, Meteora's ring and blast, Frozen Break, Blizzard, Absolute Zero, Snow Man / Snow Ball at 10 m; Mana Vortex
+    and Nova Flare at 5 m; the comets in +-10 m around 10 m; Constellation's pentagon 10-15.4 m and the giant star at 13 m;
+    Emperor's March's frost line to the Goal at 22.45 m at 1.636 s; Frost Field at the hero; the effect-only tiles at the
+    hero (Mana Arc's cage 0.5 m up, turned anew each play). Endings: Ice Shield, Mana Vortex and Snow Man at 11.1 s (kill
+    10), Ice Block 13.1, Tornado / Typhoon 7.5, Focus Intellect 6.8, Cosmic Rift's skin 13.3, Cosmic Friday 8.1; the hero
+    is hidden for the snowman and shown again at its end, and a new pick mid-effect (after Snow Man, Cosmic Rift, Cosmic
+    Friday, Ice Shield) shows her again, drops the skin copies and the effects. Staff of Time: the balls hover (0.01 m/s)
+    and the ground hits stay out. No page error and no stalled render loop in any job.
+  - **No new bug found** in the page, the cues or the data (the two fixes of 2026-11-10 hold). Looked into, not bugs:
+    Nova Flare's hard-edged "square" wedges at 0.5-0.8 s are its RingEmitters running from a negative radius (-3..-6 to
+    5..6 m) with a height: mid-life a ring is a cone, whose straight silhouettes read as a square; RingEmitter.cs lerps
+    the radius the same way, no clamp (:419-424), and fresh GPU buffers draw the same frame identically (the kept-buffer
+    setMesh is not involved). snowMan's first-frame box reaching 50 m up / 64 m out: its ParticleEmitter child sits at
+    (0, 50.2, -64) in the prefab (a one-shot puff out of sight), as in the game. castRing's age 60.x after its cut = the
+    cut jumping to its life's end for the afterLife.
+  - Gates: `wardrobe_fx_check.py ... dark --cls penguin` exit 0, errors [] (all tiles); unit tests 65 OK, node 8 pass,
+    `test_adopt_from_video.ps1` fails 0; `wardrobe_weapon_fx_check.py` OK (needs `--with pillow`, as its docstring says).
+    No page or fxparts code changed, so the Sheep / Wolf runs were not needed.
+  - For the user's eye: on the white stage the white parts (the snowman, Meteora's smoke, Ice Shield's and Frost Field's
+    crystals) melt into the backdrop and the additive glows are faint (the game has no white backdrop; the dark stage is
+    the reference); Nova Flare's cone wedges (above, faithful but odd-looking); decision 17 (the game hides the
+    snowmanned target, never the caster); effect_only.md's open points 1-4 (Mana Arc's random cage, the multiCast tint on
+    Double / Triple Cast, Frost Spike with or without the shield, Dispell's screen warp).
 - **2026-11-10 (19:40, home), the usage guard was blind** (user: "is the work flowing?"): the workflow was (the four
   builders and the editor done, QA running), but every one of the guard's 42 checks since 18:08 got HTTP 429 from the
   usage endpoint (`Retry-After: 0`; `--once` worked just before). `usage_watch.py` now checks every 5 min by default,
@@ -1469,3 +1510,50 @@ it), 5 TrailRenderer, 4 ImageEmitter, 1 BoltEmitter, 15 Shuriken (the time weapo
 - Online: wardrobe_publish.py publish_weapon_fx copies weapon_fx.json and its textures. Check:
   `pipeline/wardrobe_weapon_fx_check.py [out.png] [cls:item ...]` (headless; fails on a weapon with particles drawing
   nothing, an effect outliving its weapon, a page error).
+
+## 2026-11-13 (overnight, home), every class's skill effects: the run (plans/goal_fx_all_classes.md)
+
+User, before bed: "finish all classes skill sfx and vfx all skills, commit push and deploy" (usage guard 70 % for this
+run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda, Rabbit, Whale.
+- Workflows: `penguin-fx-finish` (effect-only tiles: researcher -> checker -> editor -> the Penguin's QA) and, per class,
+  `class-fx` with args `{mode: "research"|"build", cls, Cls, skills, tto, released}` (research: six read-only
+  researchers in plans/fx_<cls>/ {attacks_emotes, skills_a, skills_b, tto, effect_only, parts}.md + three checkers
+  appending "## Verification"; build: a planner writing plans/fx_<cls>/decisions.md ("decided overnight, for the user's
+  review") and splitting the missing parts, up to four builders on disjoint files, one editor (cues, tiles, icons, data,
+  the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
+  it in another session, re-create it from this description (the research of one class overlaps the build of the one
+  before; builds never overlap, they share index.html).
+- Progress (updated as it goes): Penguin finish started (QA running); Bat research DONE (6 reports + verifications in plans/fx_bat/); Bison research started.
+
+## 2026-11-13 (overnight, home), the Penguin's effect-only tiles
+
+From plans/fx_penguin/effect_only.md (its "## Verification" wins: the corrected SEQ comment). Five tiles on the idle
+stance, one per skill: **Mana Arc** (root@2), **Dispell** (root@2), **Double Cast** (root@1.5), **Triple Cast** (root@1.5),
+**Frost Spike** (root@1).
+- Page (wardrobe/index.html): SEQ penguin's five `"<Name>: root@t"` (step = the effect's EffectControl life + afterLife,
+  at least the longest voice), SEQ_SKILL `@ManaArc/@Dispell/@DoubleCast/@TripleCast/@FrostSpike`, and one new page part:
+  a cue's `"rot": "random"` = Unity's Random.rotation (`randRot`, Shoemake's uniform quaternion as YXZ Euler degrees,
+  drawn per play in cueOf), for Mana Arc's ring cage (`createEffect(penguinOfArc, hero + 0.5 up, Random.rotation)`
+  Penguin.cs:21798).
+- Cues (wardrobe/fx_cues/penguin.json, before "wave"): `@ManaArc:root` penguinOfArc (#412 on: hasSkill(412) :21774;
+  max rank sLv 4, pgn_manaArc4 :7430) {y 0.5, rot random} + voice manaArc1|manaArc2 (:21886); `@Dispell:root` dispell
+  (:22289-22301) + dispell1|dispell2 (:22355); `@DoubleCast:root` / `@TripleCast:root` multiCast (RPC_multiCast sLv 1 / 2,
+  :9819-10007, effect :9838-9850) + multiCast1|multiCast3 / multiCast2|multiCast3 (:9897-10006); `@FrostSpike:root`
+  frostSpike_ring (Instantiate identity :37883-37895; proc CharacterControl.cs:31236-31270) + frostSpike1|frostSpike2
+  (:37947).
+- Icons: wardrobe_skill_icons.py EFFECT_ONLY penguin + frostSpike (Bible penguin_frostSpike5); ran it: only
+  data/icons/hd/index.json's frostSpike entry and penguin/frostSpike.webp changed.
+- Data: `wardrobe_fx.py penguin --fx penguinOfArc,dispell,multiCast,frostSpike_ring --voices manaArc1,manaArc2,dispell1,
+  dispell2,multiCast1,multiCast2,multiCast3,frostSpike1,frostSpike2` (merged: fx.json 77 effects; new sfx dispell.mp3,
+  frostSpike.mp3, nine v_*.mp3; data/fx/tex/frost.webp). No TTO effect, so no wardrobe_fx_tto.py.
+- Judgement calls (effect_only.md's defaults; the open points stay the user's): Mana Arc plays penguinOfArc, not manaArc
+  (passives on); the random rotation built (not the fixed prefab tilts); voices every play (the game's 2 / 6 / 12 s voice
+  timers only thin out spamming); Frost Spike's burst alone, every play (no 12 % roll, no Ice Shield around her: the
+  variant is in the report); left out: Dispell's camera screen warp (AddScreenWarp ringMask :22433, no page part; Cat /
+  Chameleon / Whale use barrierMask / zoomMask / ringMask+burstMask), the multiCast status's purple tint (decision 10's
+  analogy; open point for the user on these two tiles, where the tint is the buff).
+- Gotcha: the Edit tool rewrote index.html with CRLF on every line (the repo keeps it LF, .gitattributes eol=lf, and the
+  publish copies its bytes): converted back to LF; check `grep -c $'\r$' wardrobe/index.html` = 0 after editing it.
+- Gate: files-only penguin "no problems"; `wardrobe_fx_check.py ... checks/fx_penguin dark --cls penguin` exit 0,
+  errors [], all 44 tiles played, the five new ones each spawning their effect (penguinOfArc 200 v, dispell 84 v,
+  multiCast 162 v x2, frostSpike_ring 504 v). Not committed (the run's commit does it).

@@ -60,7 +60,7 @@ async def main():
             await page.click('.pk-tab[data-g="skill"]')
             loc = page.locator(f'#pkBody .pk-item[data-m="{tile}"]')
             if await loc.count() == 0:
-                await page.click('.pk-tab[data-g="emotion"]') if await page.locator('.pk-tab[data-g="emotion"]').count() else None
+                await page.click('.pk-tab[data-g="emote"]') if await page.locator('.pk-tab[data-g="emote"]').count() else None
             await page.click(f'#pkBody .pk-item[data-m="{tile}"]')
             await page.click('#pkClose') if await page.locator('#pkClose').count() else None
             await page.evaluate("""([p, t]) => { const { camera, controls, C, THREE } = wardrobe.debug();

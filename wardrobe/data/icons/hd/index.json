@@ -811,6 +811,12 @@
     "focusIntellect"
    ]
   },
+  "frostSpike": {
+   "icon": "icons/hd/penguin/frostSpike.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "frozenBlast": {
    "icon": "icons/hd/penguin/frozenBlast.webp",
    "clips": [

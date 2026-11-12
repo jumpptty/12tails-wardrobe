@@ -458,6 +458,41 @@
     [1.636, "fx", "tto/emperorPenguin_poof", {"x": 0.644, "y": 0.263, "d": 16.85}]
     ]
   },
+  "@ManaArc:root": {
+    "why": "Penguin.cs RPC_manaArc (:10291, coroutine :21578-21965) at max rank (sLv 4, pgn_manaArc4 :7430; the dispatcher starts it with no clip, :9072-9085; the tile plays it on the idle stance): at 0 addTimeOut 1 s (:21756); Penguin Of Arc #412 on (passives on, hasSkill(412) :21774): Effects/penguinOfArc at the hero + 0.5 m up with Random.rotation (createEffect :21786-21798; else Effects/manaArc the same way, :21821-21833; EffectControl life 2, no followPosition, no followState; plays its own Sounds/manaArc); voice manaArc1 / manaArc2 (Random.Range(0, 2) :21886, :21896-21961; the game skips it within 2 s of the last, :21877-21883); Yield 0.1 (:21963): the hit on foes within 3 m (FindAreaTarget :21696, hit :21724): the 10 m target is out of reach, nothing drawn",
+    "cues": [
+    [0, "fx", "penguinOfArc", {"y": 0.5, "rot": "random"}],
+    [0, "voice", "manaArc1|manaArc2"]
+    ]
+  },
+  "@Dispell:root": {
+    "why": "Penguin.cs RPC_dispell (:10298, coroutine :22009-22445) at max rank (sLv 2, pgn_dispell2 :7468; the dispatcher starts it with no clip, :9037-9050; the tile plays it on the idle stance): at 0 addTimeOut agiAdjust(3 + sLv) (:22280), Effects/dispell at the hero's position and rotation (createEffect :22289-22301; EffectControl life 1 + afterLife 1, followPosition; plays its own Sounds/dispell), voice dispell1 / dispell2 (Random.Range(0, 2) :22355, :22367-22410; the game skips it within 6 s of the last, :22344-22350); the local player's camera screen warp ringMask (AddScreenWarp :22433) left out (the page has no camera effects); Yield 0.1 (:22443): orbs within 6 m removed (:22149), the dispell status (2 x sLv, +1 with #422) on every unit within 5 m (:22208, :22252), which draws nothing (CharacterControl.cs:38485-38544)",
+    "cues": [
+    [0, "fx", "dispell"],
+    [0, "voice", "dispell1|dispell2"]
+    ]
+  },
+  "@DoubleCast:root": {
+    "why": "Penguin.cs RPC_multiCast (:9819-10007, a plain method: no clip, no wait; pgn_doubleCast1 :7384 calls it with sLv 1, :9135-9144; the tile plays it on the idle stance): all at 0: addTimeOut doubleCast and tripleCast agiAdjust(240) (:9826-9829), Effects/multiCast at the hero's position and rotation (:9838-9850; EffectControl life 1, followPosition; plays its own Sounds/trippleCast), the multiCast status Lv 1 for chaAdjust(12) s (:9862; its purple tint, CharacterControl.cs:38470-38477, left out as decisions.md 10), voice Random.Range(0, 2) (:9897): multiCast1 for sLv 1 (:9911, :10000) or multiCast3 (:9974, :10003)",
+    "cues": [
+    [0, "fx", "multiCast"],
+    [0, "voice", "multiCast1|multiCast3"]
+    ]
+  },
+  "@TripleCast:root": {
+    "why": "Penguin.cs RPC_multiCast (:9819-10007, a plain method: no clip, no wait; pgn_tripleCast2 :7372 calls it with sLv 2, :9135-9144; the tile plays it on the idle stance): all at 0: addTimeOut doubleCast and tripleCast agiAdjust(240) (:9826-9829), Effects/multiCast at the hero's position and rotation (:9838-9850; EffectControl life 1, followPosition; plays its own Sounds/trippleCast), the multiCast status Lv 2 for chaAdjust(12) s (:9862; its purple tint, CharacterControl.cs:38470-38477, left out as decisions.md 10), voice Random.Range(0, 2) (:9897): multiCast2 for sLv 2 (:9942, :10006) or multiCast3 (:9974, :10003)",
+    "cues": [
+    [0, "fx", "multiCast"],
+    [0, "voice", "multiCast2|multiCast3"]
+    ]
+  },
+  "@FrostSpike:root": {
+    "why": "Penguin.cs RPC_frostSpike_fire (:11625, coroutine :37695-38022), Frost Spike #423's proc (no clip; the tile plays it on the idle stance, the proc every play): a hit absorbed whole by an Ice Shield on a Penguin who learned it rolls lckAdjust(12) = 12 % (CharacterControl.cs:31236-31242) and fires it at her position (:31259-31270); at 0 Effects/frostSpike_ring there, Quaternion.identity (Instantiate :37883-37895; EffectControl life 1; plays its own Sounds/frostSpike), voice frostSpike1 / frostSpike2 (Random.Range(0, 2) :37947, :37957-38020; the game skips it within 12 s of the last, :37938-37944); Yield 0.1 (:38015): frost on foes within 5 m (:37813, :37852): the 10 m target is out of reach, nothing drawn",
+    "cues": [
+    [0, "fx", "frostSpike_ring"],
+    [0, "voice", "frostSpike1|frostSpike2"]
+    ]
+  },
   "wave": {
     "why": "Penguin.cs RPC_emotion (:41355): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:41606, PlayOneShot :41618; the rip has hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, chat1-5); no effect, no sound; emo_hi (:41672) and emo_wave (:41680) both play the wave clip (:42122): voice hi or wave",
     "cues": [

@@ -1174,7 +1174,13 @@ const SEQ = {
   // looped cosmicFriday clip (Yield(2, 0.4) :39691, PlayAnimation(cosmicFriday, 0) :39203-39208; plans/fx_penguin/cast_b.md
   // "Read this first" 1). The mission's activateIcon1 (cAttack2 looped) has no tile (decisions.md 19)
   penguin: ["Normal Attack: nAttack1@0.5 nAttack2~@0.5 nAttack3~", "Charge Attack: cAttack1@0.7 cAttack2*~@3", "Cast: cast1 cast2*@0 cast3",
-    "Cosmic Friday: cast1@0.7 cast2*@0 cast3@0.4 cosmicFriday*@6", "MP Transfer: nAttack1!"],
+    "Cosmic Friday: cast1@0.7 cast2*@0 cast3@0.4 cosmicFriday*@6", "MP Transfer: nAttack1!",
+    // Mana Arc, Dispell and Double Cast / Triple Cast (one RPC_multiCast, sLv 1 / 2) play no animation: the dispatcher
+    // calls their RPCs straight (Penguin.cs:9037-9144); Frost Spike (passive #423) is Ice Shield's proc, started from the
+    // shield's absorb (CharacterControl.cs:31259); none calls PlayAnimation (:9819, :21578, :22009, :37695): their
+    // effects on the idle stance, each step one effect's life (2026-11-13, plans/fx_penguin/effect_only.md; the user
+    // 2026-11-10: effect-only tiles)
+    "Mana Arc: root@2", "Dispell: root@2", "Double Cast: root@1.5", "Triple Cast: root@1.5", "Frost Spike: root@1"],
   rabbit: ["Charge Attack: cAttack1 cAttack2* cAttack3", "Mix: mix1 mix2*@0 mix3~", "Sticky Gum: mix1 mix2*@0 mix4~", "Bounce: bounce1 bounce2",
     "Mall: mall1* mall2*"],
   // the Sheep (plans/fx_sheep, decisions.md 12, 16, 17): Normal Attack's stage 2 at 0.7 s and stage 3 at 0.7 + 0.8 = 1.5 s
@@ -3199,7 +3205,8 @@ const RING_SPOTS = { 1: [[0.12, 0.12, 0.76]], 2: [[0.02, 0.265, 0.47], [0.51, 0.
 // icons of the skills its clip belongs to (Normal Attack's)
 // (also the sequences on a pool's clip, 2026-11-10: the Sheep's seals and Eden Sanctuary on cast3, the Penguin's Cosmic
 // Friday, which would otherwise show the pool's skills)
-const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday" },
+const SEQ_SKILL = { penguin: { "@MPTransfer": "mpTransfer", "@CosmicFriday": "cosmicFriday", "@ManaArc": "manaArc", "@Dispell": "dispell",
+    "@DoubleCast": "doubleCast", "@TripleCast": "tripleCast", "@FrostSpike": "frostSpike" },
   sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
@@ -4290,7 +4297,8 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //   kind  "fx" (an effect prefab), "voice" (the hero's Voices/ clip, file v_<name>.mp3), "sound" (a Sounds/ clip the
 //         hero's code plays, file <name>.mp3: voices and sounds share names, crusader1 / nAttack1 ...)
 //   name  "a|b" = the game's random pick, made when the clip starts (effects and sounds alike)
-//   options d (metres ahead), x (right), y (up), rot ([x, y, z] degrees, Unity's Euler, after the hero's facing), vol,
+//   options d (metres ahead), x (right), y (up), rot ([x, y, z] degrees, Unity's Euler, after the hero's facing,
+//         or "random": Unity's Random.rotation, drawn when the clip starts: Mana Arc's ring cage, Penguin.cs:21798), vol,
 //         cut (the clip time the hero's action changes: ends a followState effect), p (chance, 0-1: a rolled proc),
 //         roll (cues sharing a roll name share one roll per play: Double Art's effect and Sublime Art's ring),
 //         scale (the spawned root's scale x this), kill (seconds after spawning: the effect is destroyed, Destroy(obj, t)),
@@ -4315,10 +4323,17 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //   kind  "skin" (the hero's own look for kill seconds, else until the next pick: HERO_SKINS; Cosmic Rift / Cosmic
 //         Friday's FX/CosmicRift, decisions.md 16)
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+// Unity's Random.rotation (Mana Arc's ring cage, Penguin.cs:21798, 2026-11-13): a uniform random rotation (Shoemake), as
+// the Euler [x, y, z] degrees the placement takes ("YXZ"); a uniform rotation after the hero's facing stays uniform
+const randRot = () => {
+  const u = Math.random(), a = 2 * Math.PI * Math.random(), b = 2 * Math.PI * Math.random(), s = Math.sqrt(1 - u), t = Math.sqrt(u);
+  const e = new THREE.Euler().setFromQuaternion(new THREE.Quaternion(s * Math.sin(a), s * Math.cos(a), t * Math.sin(b), t * Math.cos(b)), "YXZ");
+  return [e.x, e.y, e.z].map(r => r * 180 / Math.PI);
+};
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
   const q = { ...o, at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
-    rot: o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
+    rot: o.rot === "random" ? randRot() : o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
   if (Array.isArray(o.spread)) {
     q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
     if (!o.rot && (q.x || q.d)) q.rot = [0, Math.atan2(q.x, q.d) * 180 / Math.PI, 0];   // LookRotation(flat): yaw = atan2(x, z)

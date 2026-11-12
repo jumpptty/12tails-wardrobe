@@ -41,21 +41,12 @@ the token on discord.com/developers → 12 Tails Skins → Bot (then the office'
 
 ## Either PC
 
-- **Done for the Wolf and the Sheep (2026-11-10, NOTES.md "one tile per skill"); the Penguin's pools split by the same
-  page code already; left for the Penguin: its effect-only tiles (Mana Arc, Dispell, Frost Spike, Double / Triple Cast:
-  read each RPC, add SEQ "<Name>: root@<t>" + SEQ_SKILL + cue key "@<Name>:root", build with `wardrobe_fx.py penguin
-  --fx ... --voices ...`), then its QA.** The original item:
-- **Every skill gets a tile, Wolf and Sheep first, then the Penguin** (user 2026-11-10: "Yes to both, but redo Wolf and
-  Sheep first"; NOTES.md "skills without an animation, and the pooled tiles"): (1) one tile per skill instead of the
-  pools (the Cast tile's random pick among the skills sharing cast3, cast4, blink): each tile plays the shared clip with
-  that skill's cues, its own Bible icon; (2) the skills the game plays with no body animation (Penguin: Mana Arc,
-  Dispell, Frost Spike; the Wolf's and Sheep's to be found: their RPCs that call no clip) get effect-only tiles on the
-  idle stance, researched and cued like the rest. Then the Penguin's unfinished QA (its workflow stopped in QA).
-- **The Penguin's effects: QA, the user's hand checks, then deploy** (built and cued at home 2026-11-10, NOTES.md "the
-  Penguin's effects: built and cued"; the workflow's QA step over Penguin, Sheep and Wolf was cut off). The built data
-  (`wardrobe/data/penguin/fx.json`, `sfx/`, `data/fx/tex/tto_*`) travels in git with the commit. Optional: rebuild the
-  Wolf and Sheep data with `wardrobe_fx.py` so their KO deadEffect gets the new premul blend (207); until then it stays
-  additive (look at it on the white stage). Deploy only when the user asks.
+- **The Penguin, for the user's eye** (done overnight 2026-11-13: its effect-only tiles and QA, NOTES.md "the Penguin's
+  effect-only tiles"): contact sheets `checks/fx_penguin_qa/sheets_dark|white|behind/index.html` (git-ignored, home PC);
+  the open calls in `plans/fx_penguin/effect_only.md` (Mana Arc's random cage, the multiCast tint on Double / Triple
+  Cast, Frost Spike with or without the Ice Shield, Dispell's screen warp left out) and decision 17 (the game hides the
+  snowmanned target, never the caster: penguin.js HIDE_ONLY_ON_HERO). Optional: rebuild the Wolf and Sheep data with
+  `wardrobe_fx.py` so their KO deadEffect gets the premul blend (207).
 
 ## Video repo (either PC)
 
