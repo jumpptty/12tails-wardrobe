@@ -9,7 +9,7 @@ The face block's eyes and mouth are the page's overlay (composeTexture): nothing
 
   uv run --no-project --with pillow --with numpy --with scipy --with playwright python -I pipeline/wardrobe_repaint.py [--preview]
 Outputs plans/reskins/rabbit/summer_uniform_<A|B>/ (summer.png, Rabbit_summerHat.png: the originals' sizes) and, with
---preview, shots/ + uniform.html. A = the uniform on the pink Rabbit; B = black hair and ears, fair skin too."""
+--preview, shots/ + uniform.html. A = the uniform on the pink Rabbit; B = black hair and ears, fair skin on the thighs too."""
 import argparse, functools, http.server, json, sys, threading
 from pathlib import Path
 from types import SimpleNamespace
@@ -101,7 +101,7 @@ RED = ("#5c060c", "#b00c17", "#e8414c")
 SOLE = ("#18171b", "#34323a", "#5d5a66")
 METAL = ("#2a272c", "#6f6a73", "#c9c4cc")
 HAIR = ("#0f0d14", "#25222e", "#5a5470")        # black hair with a violet sheen
-SKIN = ("#d1a48f", "#f6dccb", "#fff3e8")        # the face's own cream, for B's legs and neck
+SKIN = ("#d1a48f", "#f6dccb", "#fff3e8")        # the face's own cream, for B's thighs
 EAR_IN = ("#4a2a36", "#a86f7e", "#d9a9b3")
 LINE = "#bdb8c9"
 
@@ -140,6 +140,12 @@ def uniform(variant):
     bars = sstep(-L0, -0.62, -0.45) * ((xx > 305) & (xx < 348) & (yy > 283) & (yy < 412))
     mix(cloth, ramp(np.full(L.shape, 0.42), BLACK), ndimage.gaussian_filter(bars, 0.7))
     mix(dress, ramp(tone(L, dress & (gold_k > 0.5)), METAL), gold_k)
+    # the shoulders: the summer dress is sleeveless, its bare shoulder tops (|y| 0.04-0.09, z 0.83-0.90) are fur on two
+    # islands (the dress's top edge, and a strip of its own); the reference's dress covers them (user: "at the shoulder,
+    # it is still rabbit skin color")
+    pink_k = sstep(s, 0.2, 0.3) * (hd(h, 350) < 30)
+    for sh in (dress, isl(360, 252)):
+        mix(sh, ramp(np.clip(0.5 + (tone(L, sh & pink) - 0.5) * 0.6, 0.42, 1), BLACK), pink_k)
     under = isl(450, 485)                                       # the skirt's inside
     mix(under, ramp(tone(L, under) * 0.6, BLACK))
 
@@ -193,7 +199,7 @@ def uniform(variant):
         # the fringe's edge painted on the face island (a stricter test: the forehead's peach shade is skin)
         mix(face, ramp(tone(L, isl(250, 70) & pink), HAIR), sstep(s, 0.3, 0.45) * (hd(h, 352) < 30))
         mix(face & ~M.covered, ramp(tone(L, isl(250, 70) & pink), HAIR), red_k)      # and its gutter: no pink seam at the hairline
-        skin = (leg | dress | isl(360, 252)) & pink
+        skin = leg & pink                                       # the thighs between the hem and the socks
         mix(skin, ramp(tone(L, leg & pink), SKIN), (1 - sock) * sstep(s, 0.2, 0.3))
 
     res = np.dstack([np.clip(out, 0, 255), src[..., 3]]).astype(np.uint8)

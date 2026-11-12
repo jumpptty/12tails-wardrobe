@@ -1214,4 +1214,7 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   or a flat area is stretched into noise; (3) the face presets' pixels span x 24-114, y 18-87 of the sheet and are
   mostly transparent (3.7 %): only eyes and mouth are overlaid, the rest of the head is the skin's; the script asserts
   nothing is painted in y 30-88 there, and that size and alpha equal the original's. Outputs
-  plans/reskins/rabbit/summer_uniform_<A|B>/ + shots + uniform.html (not committed until the user picks).
+  plans/reskins/rabbit/summer_uniform_<A|B>/ + shots + uniform.html (not committed until the user picks).  Later (user: "at the shoulder, it is still rabbit skin color, you should fix it black right?"): yes. The summer dress
+  is sleeveless: the bare shoulder tops (|y| 0.04-0.09, z 0.83-0.90) are fur on two islands (the pink "V" at the dress
+  island's top edge is the shoulders, not a neckline; and the strip at sheet x 330-391, y 244-261). Both black now in A
+  and B (B had them as skin); B's skin is the thighs only. Checked front, side, back.
