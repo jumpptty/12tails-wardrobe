@@ -7,8 +7,8 @@ version"; the pop-up's picture is the 2D texture) and writes:
   wardrobe/data/community.json                          {"skins": [{id, cls, kind, item, name, link, at, tex: {tex: file}}]}
 The channel is the truth: a message whose ✅ is taken away (or that is deleted) leaves the data at the next run.
 
-  py -3 -I pipeline/wardrobe_community.py [--dry-run]
   uv run --no-project --with pillow python -I pipeline/wardrobe_community.py [--dry-run]
+(plain py -3 works only where Pillow is installed: the office's is not, 2026-11-12)
 
 The bot's token and the channel id: %APPDATA%\12tails-wardrobe\discord.json {"token": "...", "channel": "..."} on each PC
 (never in the repo), or the environment's DISCORD_BOT_TOKEN / DISCORD_CHANNEL. The bot needs View Channel and Read

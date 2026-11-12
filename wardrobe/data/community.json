@@ -1,1 +1,16 @@
-{"skins": []}
+{
+ "skins": [
+  {
+   "id": "1570282277877842090",
+   "cls": "sheep",
+   "kind": "weapons",
+   "item": "mothLatern",
+   "name": "ทดสอบระบบ",
+   "link": "",
+   "at": "2026-11-12T03:41:09.159Z",
+   "tex": {
+    "Sheep_mothLantern.png": "community/sheep/1570282277877842090_0.webp"
+   }
+  }
+ ]
+}

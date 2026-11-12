@@ -9,9 +9,10 @@ Built and tested 2026-11-11 (NOTES.md "community skins"). The one-time setup was
 "community skins: setup done"): channel `#wardrobe-submissions` (id 1570242267397230764, the user's "Jump" server), its
 webhook, the bot app "12 Tails Skins" (in the server, allowed in the channel, Message Content Intent on), the Turnstile
 widget (site key in `wardrobe/community_config.json`), and both Worker secrets. Deployed 2026-11-12 (d1380e15) and a
-test skin sent from the live site ("ทดสอบระบบ", the Sheep's mothLatern). Left: the user reacts ✅ to it, run
-`py -3 -I pipeline/wardrobe_community.py`, publish, deploy, check ลายจากผู้เล่น in the lantern's menu; then the user takes
-the ✅ away (or deletes the test messages) and the import + publish + deploy remove it again. Delete this item.
+test skin sent from the live site ("ทดสอบระบบ", the Sheep's mothLatern), approved, imported, published and deployed
+(a37d6a66): the lantern's menu shows ลายจากผู้เล่น 1 and it wears with the credit. Left: when the user takes the ✅ away
+(or deletes the test messages), run `uv run --no-project --with pillow python -I pipeline/wardrobe_community.py`,
+publish, deploy, commit the data. Delete this item.
 
 ## Home PC: the bot's token file (once, the user)
 
