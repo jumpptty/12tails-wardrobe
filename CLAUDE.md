@@ -48,6 +48,11 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
   (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py` (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
+- Painting a skin (a reskin / repaint, `pipeline\wardrobe_bat_robe.py` and its like): open the live view for the user
+  before the first pass (user 2026-11-12: "please remember the script for this live view, it's really good"):
+  `py -3 pipeline\wardrobe_serve.py 8771`, then
+  `http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=<class>&outfit=<outfit>&face=<n>&skin=/<the png, under the repo>`:
+  the real 3D page wearing the skin, put on again after every pass, the flat texture beside it.
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then deploy (NOTES.md "Online copy"):
   Claude may deploy when the user asks for it (user 2026-11-09: "please change that Claude.md setting then deploy"),
   always from an empty folder, never from the video folder. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the

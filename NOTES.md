@@ -1350,4 +1350,96 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   the user changed any part that replaced the community skins, if yes the try this skin set should be available
   again"): a skin stays in SKINS on a piece taken off, so its presence alone said ใส่อยู่. Now `setWorn2`: worn = every
   piece this copy can wear is on in its slot and all its textures wear this set's skin; the piece pop-up's ใส่อยู่ also
-  needs the piece on. Check: wear the look, swap the weapon, the card says ลองทั้งชุด again.
+  needs the piece on. Check: wear the look, swap the weapon, the card says ลองทั้งชุด again.- **2026-11-12 (home), the Bat as a robed house student** (user: two reference pictures, a long black robe lined green,
+  a grey V-neck sweater with green trim, white shirt, green and silver striped tie, grey pleated skirt, black tights,
+  black loafers, long platinum hair, green eyes; "try this reference character for Bat, you may pick the best models").
+  `pipeline/wardrobe_bat_robe.py --islands | --paint [--debug]` -> plans/reskins/bat/ (robe/student.png 2048 px, shots,
+  robe_compare.png, robe.html; not committed until the user picks). Base: **student** (of the Bat's 22, sheet.png): an
+  open knee-length coat (the robe), shirt, a tie that is its own mesh piece, skirt, bare legs, pumps; teacher has no
+  coat, royal's coat is closed with a high collar and armour boots, bathRobe is short and belted. The Bat's hair, ears,
+  wings and tail are all on the outfit's sheet (1024 px; no head piece as the Cat has), so one texture is the whole
+  look. Face 16 (BB's, so online too): green eyes, a stern brow. What was learned: (1) the coat, legs and shoes are
+  **mirrored** (both halves read the same texels: an equal count of triangles at y < 0 and y > 0 per island), the torso
+  is not: the crest sits on the sweater's left chest (y 0.047, z 1.105), not on the robe. (2) The tie hangs in front
+  of the sweater: alpha 0 below z 1.16 tucks it into the V (V point z 1.168); the belt's buckle (island 27 + its inner
+  piece, an island of 39 px), and the two loops are alpha 0 too; the skirt island's top (z > 0.95) is the sweater's hem
+  (a green stripe at z 0.985, a ribbed band under it). (3) The green facing down the coat's front = the lowest |y| per
+  height on the coat's front + 3 cm (read per 1 cm bin it stepped into a row of teeth: interpolate over z). (4) The
+  body under the coat pokes through at the shoulder: torso |y| > 0.085 above z 1.22 and the arm to |y| 0.42 are the
+  robe's black. (5) Islands under 60 px exist (one shoulder patch reads a single texel at sheet 411,408): paint them by
+  seed or they keep the original white. Wings: black backs, green membrane (the robe and its lining); ears black, a
+  dark green inside. Not possible on this mesh: the hood, the long loose hair (the Bat's is a ponytail), the flared
+  skirt (pleats are painted on the pencil skirt), hoop earrings. The second reference was pasted mid-turn and is not on
+  disk (only the first: plans/reskins/bat/reference.png, the user's, not in git).
+  Later the same day, the user's review ("give almost every part more texture, cloth wringles, hair details"; "a very
+  faint blush"; "fix the necktie, it should start from the collar and goes inside the grey sweater"; "long sleeves
+  shirt that is longer than the robe should be white"; "some green part of the robe shouldn't be outside the robe";
+  "stockings too dark to look like stockings"; then on the live view: the forehead band "is intended to be hair
+  shadow, not the hair color", under the chin the same, the badge "should partially be behind the robe fold", "all 10
+  fingernails painted green"). What the painter gained: (1) **Generated detail from body coordinates** (no seams
+  between islands): `vnoise` (value noise), `folds(u, w, lam, seed)` = a noise height field stretched along w, lit from
+  the side (its slope across u): drape down the coat (stronger to the hem), folds at the elbow and armpit only (all
+  along the sleeve they read as stripes), creases at the sweater's waist + a fine knit rib, wandering pleats each a
+  little different, rings on the shirt cuff. (2) **Hair strands** (`strands`): noise smeared along a direction field
+  (line integral convolution, 28 steps each way): mostly "down the hair" (the sheet-space gradient of z, turned a
+  quarter for the tensor: the first try put the gradient itself in and the strands ran in rings), a little of the
+  original strokes' own direction; fine + coarse, a shine band broken by them. The painted strokes alone, enlarged
+  from 1024 px, gave scribbles. (3) **`ramp` runs on past its light colour for t > 1** (white patches on the shoe,
+  blotches in the shine): robe() clips every ramp (`rampc`). (4) **The tie is painted on the shirt** (knot z
+  1.299-1.333 under the collar's leaves, the blade widening into the V); the outfit's own tie mesh is alpha 0 (a loose
+  one, its knot 6 cm under the collar: it read as a bug). (5) The robe's outside is black only: green = lining, the
+  sleeve's inside, the lapel. The coat's chest came through the lapel in black patches seen from below: chest texels
+  under the lapel are green (under = the lapel's nearest point lies along the normal, side offset < 2.5 mm; by plain
+  distance the green grew a ragged fringe past the lapel's edge; a KD-tree of the lapel's texel positions). (6) **The
+  face preset is drawn at 2x** on the Bat's 1024 sheet (eyes z 1.475-1.53, mouth 1.43; the cheeks' blush |y| 0.056,
+  z 1.452, 20 %). The face island's dark band under the fringe and under the chin is the hair's SHADOW: skin's shadow
+  tone, hair colour only on the island's rim above z 1.5. (7) The crest at y 0.066, z 1.212: the lapel half covers it.
+  (8) Tights: a skin-through-black ramp (#1d1516 / #4d3b39 / #8a6a61), lighter where the leg faces front or back and on
+  the knee, a shade under the skirt's hem. (9) **Hands**: thumb + index + one block for the other three (bones
+  Thumb1-2, Index1-3, Middle1-3), both hands on the same texels; the gloves' holes left edge lines, so the whole hand
+  is one skin, the block's fingers drawn apart by two straight lines (the finger's edges fitted as lines along its
+  axis), nails on the last joint's outer side (the outer island's mean normal), larger than life (19-21 mm; at 12 mm
+  they were specks). The block's last joint has about 20 x 25 px of the 1024 sheet for three nails and curls inward
+  in the idle pose: those three are small and seen from the side or behind, not from the front.
+  **The live view** (user: "is it possible to see you working on the texture and 3D model in real time?", then
+  "please remember the script for this live view, it's really good"): `pipeline/wardrobe_skin_live.html` (the local
+  wardrobe in a frame wearing the skin file, put on again whenever the file changes, the flat texture beside it, the
+  camera kept): `py -3 pipeline\wardrobe_serve.py 8771`, then
+  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=bat&outfit=student&face=16&skin=/plans/reskins/bat/robe/student.png
+  Open it for the user at the start of any skin painting (CLAUDE.md "Running things"). Outfit textures only so far.
+
+  Then (user: "the darker part is making uneven skin around the bat collar / neck"; "improve the quality of Bat's
+  bangs and john details"): the neck island is one even skin (the choker's band had been repainted from its own dark
+  tone: a darker patch under the collar), a soft shade up under the chin only. The hair keeps the original's painted
+  locks (their shadows cut clean, their glints) under the new detail; `strands()` now works on the hair's texels only
+  and gives fine / coarse noise, the clumps' relief (lit across the strands) and single strands as thin lines that taper
+  out at both ends; the direction also follows the nearest side edge of each lock, so the lines run together into a
+  lock's point instead of being cut by it. The side locks (จอน) are a shade darker under the fringe. Before, the locks
+  were washed pale under grainy streaks.
+
+## 2026-11-12 (home), props: the game's shaders (missing textures, glass edges) and the wagasa's loop
+
+User: "Wolf Time Sword and Champion Sword why their textures are missing, champion sword shoe have aqua glass like
+blades along the edges of the blade"; "fix Bat Japanese Umbrella non-stop animation loop".
+- **Why textures went missing**: the page cut every prop texel under alpha 0.5 (alphaTest), and props/json leaves the
+  shader empty. BB's material of the same name (the Bible's `RippedAssets/ExportedProject/Assets/Material/<tex>.mat`)
+  says what the alpha is for. Two kinds were wrong: **built-in Diffuse** (fileID 7) ignores alpha: the Time Sword's
+  alpha is 96 % under 0.5 (a mask for something else), so it was cut almost away; likewise the Bison Time Hammer, the
+  Bat Veggie Hat. **Transparent/AdditiveAlpha** (shader guid 184331bf..., not a file in the rip: known by its materials'
+  `_AdditiveColor` / `_AdditiveRange`; the rip's `Shader/AdditiveAlpha.shader` shows the passes): texels with alpha >=
+  `_AdditiveRange` (default 0.9; the Bat rapier 0.5178) solid and lit, the rest added as light (texture x alpha, Blend
+  SrcAlpha One, Cull Off, ZWrite Off). Every class's champion weapon uses it: their glass edges (alpha ~0.36) were cut.
+- `wardrobe_data.py` `game_shader()` writes `"shader": "opaque"` or `"shader": "addAlpha", "cut": r` on BB prop
+  materials (1455 opaque, 13 addAlpha); the page: opaque = no alphaTest, addAlpha = alphaTest at the cut + `glowTwin`
+  (a copy of the mesh drawing the texels under the cut additively, premultiplied with alpha = the brightest channel, as
+  fxMaterial's additive blends; flagged hoverOverlay so hover tints / outlines skip it; shares the texture, so skins
+  swap it too). Not touched: built-in fileID 30 (the glasses' lenses: cut as before), fileID 202 (halos), shader
+  5eda1254 (Cat luckyStarKnife, Penguin lightScepter: also carry _AdditiveColor, unconfirmed).
+- **`--props-only` drops the ToT pieces**: run `py -3.10 pipeline/wardrobe_tot.py` after it (its docstring says so).
+  That run also wrote 7 `props/tex/tot_*_Student_Color.png` hat textures the tracked data already named but git never had
+  (the office's ToT student hats were untextured).
+- **The wagasa**: its default clip "close" (0.4 s) looped for ever (the data marks every clip a loop). The game holds it
+  closed and toggles open / close on the battle emote (Bat.cs: `mWep1.animation.CrossFade("open" / "close")` for
+  w_bat65 under "emo_battle"). finishProp now plays a clip that ends away from its start (0.1 in position / scale, 14
+  degrees) once and holds its end: the wagasa, and the Mole's barrel and legend cannons' "fire" (a handle / a drum
+  turned one step; they snapped back every 0.2 s). Every wing and other loop drifts at most 0.04 and still loops.

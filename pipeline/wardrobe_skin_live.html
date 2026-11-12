@@ -1,0 +1,58 @@
+<!doctype html>
+<!-- A skin being painted, live on the hero (2026-11-12; user: "is it possible to see you working on the texture and 3D
+model in real time?"): the local wardrobe in a frame wearing the skin file, put on again whenever the file changes (a
+painter's pass rewrites it), the flat texture beside it. The camera stays where the user left it.
+  wardrobe server running (wardrobe.cmd, or py -3 pipeline\wardrobe_serve.py 8771), then
+  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=bat&outfit=student&face=16&skin=/plans/reskins/bat/robe/student.png -->
+<meta charset=utf-8>
+<title>ลายสด</title>
+<style>
+  html, body { height: 100%; margin: 0; background: #1d1c20; color: #e9e6ef; font: 14px system-ui, sans-serif; }
+  body { display: grid; grid-template-columns: 1fr min(42vw, 100vh - 40px); grid-template-rows: 1fr 40px; }
+  iframe { width: 100%; height: 100%; border: 0; grid-row: 1; }
+  #tex { grid-row: 1; overflow: hidden; display: flex; align-items: center; justify-content: center;
+         background: repeating-conic-gradient(#2b2a30 0 25%, #232227 0 50%) 0 0 / 24px 24px; }
+  #tex img { max-width: 100%; max-height: 100%; }
+  #bar { grid-column: 1 / 3; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #131216; }
+  #dot { width: 10px; height: 10px; border-radius: 50%; background: #5a5866; }
+  #dot.new { background: #49d17d; box-shadow: 0 0 10px #49d17d; }
+</style>
+<iframe id=f src="/wardrobe/"></iframe>
+<div id=tex><img id=img alt=""></div>
+<div id=bar><span id=dot></span><span id=msg>กำลังเปิดห้องแต่งตัว…</span></div>
+<script>
+const q = new URLSearchParams(location.search), cls = q.get("cls"), outfit = q.get("outfit"), skin = q.get("skin");
+const face = q.get("face"), f = document.getElementById("f"), msg = document.getElementById("msg"), dot = document.getElementById("dot");
+let seen = "", n = 0, busy = false, first = true;
+async function wear() {
+  const w = f.contentWindow, W = w.wardrobe, { SKINS } = W.debug();
+  const blob = await (await w.fetch(skin + "?t=" + Date.now(), { cache: "no-store" })).blob();
+  const bmp = await w.createImageBitmap(blob), c = new w.OffscreenCanvas(bmp.width, bmp.height), g = c.getContext("2d");
+  g.drawImage(bmp, 0, 0);
+  SKINS.set(`${cls}|outfits|${outfit}|`, { w: bmp.width, h: bmp.height, data: g.getImageData(0, 0, bmp.width, bmp.height).data });
+  if (first) { await W.show(cls, {}); first = false; }
+  if (face != null) W.debug().C.state.face = +face;
+  await W.setOutfit(outfit, 1);
+  document.getElementById("img").src = URL.createObjectURL(blob);
+  return bmp.width + " × " + bmp.height;
+}
+async function tick() {
+  if (busy) return;
+  busy = true;
+  try {
+    const W = f.contentWindow.wardrobe;
+    if (W && W.debug().C) {
+      const r = await fetch(skin, { method: "HEAD", cache: "no-store" });
+      const tag = r.headers.get("last-modified") + "|" + r.headers.get("content-length");
+      if (r.ok && tag !== seen) {
+        const size = await wear();                 // a file caught half written fails to decode: tried again next tick
+        seen = tag; n++;
+        msg.textContent = `ลายรอบที่ ${n} · ${size} · ${new Date().toLocaleTimeString("th-TH")} · หมุนดูได้ตามปกติ หน้านี้จะใส่ลายใหม่เองเมื่อไฟล์เปลี่ยน`;
+        dot.className = "new"; setTimeout(() => dot.className = "", 4000);
+      }
+    }
+  } catch (e) { /* the page still loading, or the file mid-write */ }
+  busy = false;
+}
+setInterval(tick, 1500);
+</script>
