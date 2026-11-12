@@ -10,9 +10,14 @@ Built and tested 2026-11-11 (NOTES.md "community skins"). The one-time setup was
 webhook, the bot app "12 Tails Skins" (in the server, allowed in the channel, Message Content Intent on), the Turnstile
 widget (site key in `wardrobe/community_config.json`), and both Worker secrets. Deployed 2026-11-12 (d1380e15) and a
 test skin sent from the live site ("ทดสอบระบบ", the Sheep's mothLatern), approved, imported, published and deployed
-(a37d6a66): the lantern's menu shows ลายจากผู้เล่น 1 and it wears with the credit. Left: when the user takes the ✅ away
-(or deletes the test messages), run `uv run --no-project --with pillow python -I pipeline/wardrobe_community.py`,
-publish, deploy, commit the data. Delete this item.
+(a37d6a66): the lantern's menu shows ลายจากผู้เล่น 1 and it wears with the credit. Since 6e9c7831 the site reads the
+approvals live (NOTES.md "community skins live from Discord"), once **the user** sets two Worker secrets (Claude Code
+refuses Claude's secret writes), from an empty folder in PowerShell:
+`(Get-Content "$env:APPDATA\12tails-wardrobe\discord.json" -Raw | ConvertFrom-Json).token | npx wrangler secret put DISCORD_BOT_TOKEN --name 12tails-wardrobe`
+and `"1570242267397230764" | npx wrangler secret put DISCORD_CHANNEL --name 12tails-wardrobe`. Then check
+`https://12tails-wardrobe.jumpthai.workers.dev/api/community` lists the test skin; when the user takes its ✅ away it
+leaves within a minute (then also run the PC import once, so the data's fallback community.json drops it, publish,
+deploy, commit). Delete this item.
 
 ## Home PC: the bot's token file (once, the user)
 

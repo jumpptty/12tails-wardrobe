@@ -1164,3 +1164,13 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   PNG pasted with Ctrl+V on the tile) and `pipeline/wardrobe_send_live_probe.py` (headless, reads Send's state). The
   channel holds two test messages: "ทดสอบรูปแบบข้อความ (จากเครื่อง ไม่ผ่านเว็บ)" (the Worker's message format posted
   from the PC with node) and "ทดสอบระบบ" (the real send from the site, a recoloured mothLatern 128x128).
+- **2026-11-12, community skins live from Discord** (user: "can you make it so that I can upload player skin data thru
+  phone after I approved in discord? that flow is much smoother"). The Worker's `GET /api/community` lists the channel's
+  webhook messages with a ✅ (meta.json read once per message, the list cached 60 s per data centre) and
+  `/api/community/<id>/<n>.png` serves a skin only while it is approved; no KV, no cron. No data-side re-check: the
+  Worker checked each skin when it was sent, and the page skips missing / TTO pieces and draws a skin at the original's
+  size (wearCommunity). Page: `LIVE_COMMUNITY` (false locally, the publish sets true) asks api/community first, else
+  the data's community.json; `communitySrc` maps "api/..." pictures. The dist check's server stands in for the route.
+  Tests: node 6/6 (the route), unit 60, community check, dist check. Deployed 6e9c7831; the route answers 503 "closed"
+  until the Worker has DISCORD_BOT_TOKEN and DISCORD_CHANNEL: Claude Code's safety check refuses Claude's secret writes
+  now ("Secret-Store Writes"), so the user sets them (HANDOFF). After that the PC import is only the fallback.
