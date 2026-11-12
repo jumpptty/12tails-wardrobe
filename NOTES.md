@@ -1275,3 +1275,18 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   own shading to the reference's blonde at 4x (512 px); ears and tail use the same ramp (BLOND #b0843f / #ecd087 /
   #fdf1c4; a first, more orange ramp read darker than the reference). The set is now two files:
   plans/reskins/cat/knight/champion.png + Cat_default.png. A set of community skins = one submission per piece.
+- **2026-11-12, the knight: sleeves, collar, shiny steel, shoulders** (user: "I want more details along her red arm
+  cloths, like a black stripe", "add details at her collar", "make the armor looks more silver shiny, now it looks too
+  white", "add a fake texture at her right shoulder too, some white furs both left and right"). (1) **The arm's own
+  frame**: it hangs 39 degrees off the y axis (axis by SVD of the arm island's positions: 0.05, 0.78, -0.63; length
+  0.43, elbow s 0.31, the left band s 0.165-0.29), so rings at constant |y| cut it obliquely; now S = along the arm from
+  the shoulder, th = round it from the normals (mirrored for the right arm's texels; 0 = the outer side). A black
+  stripe |th| < 0.42 rad with gold piping down the sleeve; the vambrace from s_el. (2) **Shoulders**: a painted
+  pauldron (S < 0.10 curving to 0.07 at the sides, |th| < 1.9; gold rim, dark edges, an upper lame line) and under it
+  the reference's white fringe (12 strands by |sin(12 th)|, grey between them), on the shared arm texels so both arms
+  have it; with real edges it reads as plate (the plain cap of pass 1 read as a bare shoulder). (3) **Collar**: the
+  neck band gets a black trim band (z 1.2835), a gold line under it, the front opening (a black V), a ringed stud
+  each side; the lapels on the chest a second trim line and a dark knot with a stud. (4) **Steel**: SILVER is a mid
+  grey-blue ramp (#3f4553 / #949baf / #f8fafd) and the plate's tone = 0.40 paint + 0.50 env(nz) capped at 0.84 + a
+  narrow glint on up-facing texels, env = bright sky, a dark horizon band at nz ~ 0, a dim ground glow; the hip cloth
+  stays white, so cloth and plate now differ. Gold takes a quarter of env.

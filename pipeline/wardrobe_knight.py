@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))      # python -I leaves
 from wardrobe_repaint import ROOT, DATA, texel_maps, hsv, hd, sstep, ramp, tone, shots
 
 RED = ("#560c14", "#b01f2b", "#e2565c")
-SILVER = ("#6c717e", "#c6c9d4", "#ffffff")
+SILVER = ("#3f4553", "#949baf", "#f8fafd")       # steel: mid grey-blue, white only in the highlights (user: "too white")
 WHITE = ("#b9b6c2", "#f3f2f6", "#ffffff")
 BLACK = ("#101014", "#25242b", "#4b4954")
 OUT = ROOT / "plans" / "reskins" / "cat"
@@ -143,6 +143,12 @@ def knight(debug=False, K=HI):
     # painted light for the new cloth: from above, the sides and the islands' edges a little darker
     form = ndimage.gaussian_filter(0.5 + 0.30 * nz - 0.10 * np.abs(ny) - 0.16 * (1 - sstep(M.edge, 0, 6 * K)) * M.covered, 1.2 * K)
     gold_k = sstep(s, 0.45, 0.65) * (hd(h, 42) < 20) * sstep(v, 0.5, 0.7)
+    # polished metal (user 2026-11-12: "make the armor looks more silver shiny, now it looks too white"): what a plate
+    # reflects by where it faces: bright sky above, a dark horizon band, a dimmer ground glow below; mixed with the paint
+    env = np.interp(ndimage.gaussian_filter(nz, 1.5 * K), [-1, -0.45, -0.05, 0.12, 0.6, 1], [0.36, 0.5, 0.14, 0.48, 0.8, 1.0])
+    # (capped below white: only a narrow highlight on the faces turned straight up reaches it, or the plate reads white)
+    glint = 0.14 * sstep(ndimage.gaussian_filter(nz, 1.5 * K), 0.90, 0.99)
+    metal = lambda t: np.clip(0.40 * t + 0.50 * env, 0, 0.84) + glint
     hexv = lambda c: np.array([int(c[i:i + 2], 16) for i in (1, 3, 5)], float)
     hexc_white = hexv(WHITE[1])
 
@@ -151,9 +157,10 @@ def knight(debug=False, K=HI):
     for k in ("wing", "pauldronR", "gauntR", "gauntR2", "gauntR3", "gauntR4", "bracerL", "bandL", "greave", "rim", "boot", "boot2", "boot3", "boot4"):
         plate |= I[k]
     cloth = I["skirt"] | I["skirt2"] | I["sash"] | I["sash2"] | I["sash3"] | I["belt"] | I["belt2"]
-    for area, cols in ((plate, SILVER), (cloth, WHITE)):
-        mix(area, ramp(tone(L, area & (gold_k < 0.3) & (s < 0.25)), cols))
-        mix(area, ramp(tone(L, area & (gold_k > 0.7)), GOLD), gold_k)
+    mix(plate, ramp(metal(tone(L, plate & (gold_k < 0.3) & (s < 0.25))), SILVER))
+    mix(cloth, ramp(tone(L, cloth & (gold_k < 0.3) & (s < 0.25)), WHITE))
+    for area in (plate, cloth):
+        mix(area, ramp(0.75 * tone(L, area & (gold_k > 0.7)) + 0.25 * env, GOLD), gold_k)
     alpha[I["shield"] | I["shield2"]] = 0
 
     # the hip cloth: its thin gold ornaments (the wing) gone, plain white inside the gold border, as the reference's tabard
@@ -190,9 +197,15 @@ def knight(debug=False, K=HI):
         tip = (np.abs(Y - 0.042) / 0.011 + np.abs(Z - z0) / 0.0105 - 1) * 0.008
         mix(F, ramp(form, BLACK), ins(np.minimum(bar, tip)))
         mix(F, hexv("#cfd2dc"), ins(np.hypot(Y - 0.021, Z - z0) - 0.0034))
-    col_d = (Z - (1.207 + 0.75 * Y)) / 1.25                                                     # the collar: close to the neck
+    # the collar (user: "add details at her collar"): pointed white lapels, a black edge and a second trim line inside
+    # it, the dark knot and its stud between them (the chest crest sits just below)
+    col_d = (Z - (1.195 + 0.62 * Y)) / 1.18
     mix(F, ramp(form + 0.1, WHITE), ins(-col_d))
-    mix(F, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0030))
+    mix(F, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0028))
+    mix(F, hexv("#1b1a20"), ins(np.abs(col_d - 0.0085) - 0.0011))
+    knot = np.maximum(Y - (0.006 + 0.10 * (Z - 1.185)), 1.185 - Z)
+    mix(F, ramp(form, BLACK), ins(knot))
+    mix(F, hexv("#d5d8e2"), ins(np.hypot(Y, Z - 1.215) - 0.0036))
     mix(B, hexv("#4d0a13"), ins(Y - 0.0016) * 0.8)                                           # the back: a centre seam
     # (a white cape yoke was tried here: beside the fair skin it read as a bare back)
     mix(B, ramp(form + 0.1, WHITE), ins(-col_d))                                             # the collar goes round
@@ -200,10 +213,49 @@ def knight(debug=False, K=HI):
 
     # ----- the sleeves: red to the elbow (|y| 0.30), a vambrace from there
     A = I["arms"]
-    # (red from the shoulder: the left arm's band and bracer, the right's pauldron and gauntlet are modelled over it;
-    # a painted shoulder cap read as a bare white shoulder, pass 1)
-    mix(A, ramp(form + 0.05, SILVER), ins(0.300 - Y))
-    mix(A, ramp(form, GOLD), ins(np.abs(Y - 0.300) - 0.004))
+    # the arm's own frame (it hangs 40 degrees off the y axis; both arms share these texels, mirrored): S = along the
+    # arm from the shoulder, th = round it (0 on the outer / upper side)
+    Pm = np.stack([X, Y, Z], -1)
+    pts = Pm[A & M.covered]
+    ax = np.linalg.svd(pts - pts.mean(0), full_matrices=False)[2][0]
+    ax *= np.sign(ax[1])
+    S = (Pm - pts.mean(0)) @ ax
+    S = S - S[A & M.covered].min()
+    up = np.array([0, 0, 1.0]) - ax[2] * ax
+    up /= np.linalg.norm(up)
+    Nm = np.stack([nx, ny * np.sign(Ys + 1e-9), nz], -1)
+    th = np.arctan2(ndimage.gaussian_filter(Nm @ np.cross(ax, up), K), ndimage.gaussian_filter(Nm @ up, K))
+    R_ARM = 0.028
+    s_at = lambda y: float(np.median(S[A & M.covered & (np.abs(Y - y) < 0.006)]))
+    s_el = s_at(0.300)
+    if debug:
+        print("arm axis", ax.round(3), "length", round(float(S[A & M.covered].max()), 3), "elbow s", round(s_el, 3), "band s", round(s_at(0.19), 3), round(s_at(0.29), 3))
+    # a black stripe down the outer sleeve, gold piping each side (user: "more details along her red arm cloths")
+    stripe = (np.abs(th) - 0.42) * R_ARM
+    mix(A, ramp(form, GOLD), ins(stripe - 0.0042) * ins(S - s_el))
+    mix(A, ramp(form, BLACK), ins(stripe) * ins(S - s_el))
+    mix(A, hexv("#4d0a13"), ins(np.abs(stripe - 0.0055) - 0.0008) * ins(S - s_el) * 0.7)
+    # the vambrace from the elbow
+    mix(A, ramp(metal(form), SILVER), ins(s_el - S))
+    mix(A, ramp(form, GOLD), ins(np.abs(S - s_el) - 0.005))
+    # the shoulders (user: "add a fake texture at her right shoulder too, some white furs both left and right"): a
+    # painted pauldron over the arm's top (two lames, a gold rim, dark edges) and the reference's white fringe under
+    # it; the modelled pauldron of the other arm sits over the same paint
+    rim = 0.100 - 0.030 * (np.abs(th) / 1.9) ** 2
+    wrap = (np.abs(th) - 1.9) * R_ARM
+    strands = np.abs(np.sin(th * 12))
+    d_f = np.maximum(S - (rim + 0.040 - 0.010 * (1 - strands) ** 2), (np.abs(th) - 1.7) * R_ARM)
+    mix(A, ramp(form + 0.18, WHITE), ins(d_f))
+    mix(A, hexv("#8f8b9c"), ins(d_f + 0.001) * (1 - sstep(strands, 0.10, 0.22)) * 0.75)       # between the strands
+    mix(A, hexv("#3a0a10"), ins(np.abs(d_f) - 0.0009) * 0.6)
+    d_p = np.maximum(S - rim, wrap)
+    mix(A, ramp(metal(form + 0.05), SILVER), ins(d_p))
+    mix(A, ramp(form + 0.05, GOLD), ins(np.abs(d_p + 0.0045) - 0.0045))
+    for off, wdt in ((0.0, 0.0013), (0.0092, 0.0009)):
+        mix(A, hexv("#1b1a20"), ins(np.abs(d_p + off) - wdt))
+    lame = np.maximum(S - (rim - 0.045), wrap)                                                   # the upper lame's edge
+    mix(A, hexv("#1b1a20"), ins(np.abs(lame) - 0.0011) * ins(d_p + 0.010))
+    mix(A, ramp(np.full(Y.shape, 0.95), SILVER), ins(np.abs(lame - 0.003) - 0.0012) * ins(d_p + 0.010) * 0.8)
 
     # ----- the straps across the waist: black leather, the reference's fasteners; the chest crest: the dark studded jabot
     for k in ("straps", "crest"):
@@ -218,7 +270,7 @@ def knight(debug=False, K=HI):
     hands = I["hand1"] | I["hand2"] | I["hand3"] | I["hand4"]
     mix(hands, ramp(tone(L, hands), BLACK))
     fingers = np.isin(M.bone, [i for i, b in enumerate(M.bones) if b[:-3] in ("Index", "Middle") or b.startswith("Thumb2")])
-    mix(hands & fingers, ramp(tone(L, hands), SILVER))
+    mix(hands & fingers, ramp(metal(tone(L, hands)), SILVER))
 
     # ----- skin and fur: the face and neck fair, the ears and tail the hair's blonde
     head = I["head"]
@@ -227,7 +279,12 @@ def knight(debug=False, K=HI):
     # the choker's band (z up to 1.287): the suit's white standing collar, one clean dark line along its top
     # (re-toning the choker's own paint left dotted bits of its outline under the chin)
     mix(head, ramp(form + 0.12, WHITE), ins(Z - 1.287))
-    mix(head, hexv("#1b1a20"), ins(np.abs(Z - 1.287) - 0.0016))
+    mix(head, hexv("#1b1a20"), ins(np.abs(Z - 1.2835) - 0.0035))                    # its black trim band
+    mix(head, ramp(form, GOLD), ins(np.abs(Z - 1.2775) - 0.0011) * ins(Z - 1.287))  # a gold line under the trim
+    front = sstep(X, 0.030, 0.040)
+    mix(head, hexv("#1b1a20"), ins(Y - (0.0025 + 0.20 * (Z - 1.243))) * ins(Z - 1.287) * front)   # the opening
+    mix(head, hexv("#d5d8e2"), ins(np.hypot(Y - 0.019, Z - 1.262) - 0.0036) * front)
+    mix(head, hexv("#1b1a20"), ins(np.abs(np.hypot(Y - 0.019, Z - 1.262) - 0.0042) - 0.0007) * front)
     for k in ("ears", "tail", "tip"):
         mix(I[k], ramp(tone(L, I[k]), BLOND))
     return np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)
