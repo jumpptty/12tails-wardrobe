@@ -1717,7 +1717,7 @@ const Gallery = {
       return `<div class="gal-card${worn ? " on" : ""}" data-cs="${esc(s.id)}"><div class="gal-pic"><img alt="ลายโดย ${esc(s.name)}">`
         + (n > 1 ? `<span class="gal-n"><span class="num">${n}</span> ลาย</span>` : "") + `</div>`
         + `<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>`
-        + (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : `<span class="gal-link none">ไม่มีลิงก์</span>`)
+        + (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "")
         + `<div class="gal-acts"><button type="button" class="sc-b sc-wear" data-a="wear"${worn ? " disabled" : " data-primary"}>${worn ? "ใส่อยู่" : "ใส่ในห้องแต่งตัว"}</button>`
         + `<button type="button" class="sc-b" data-a="dl">ดาวน์โหลด</button></div></div>`;
     };
@@ -1802,7 +1802,7 @@ async function downloadSet(set) {
   }
 }
 const GAL_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-const linkHTML = s => (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : `<span class="gal-link none">ไม่มีลิงก์</span>`);
+const linkHTML = s => (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "");
 const SetGallery = {
   el: null, back: null,
   async open() {

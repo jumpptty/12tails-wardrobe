@@ -226,7 +226,7 @@ async def main():
         check("gallery" in m["items"], "outfit: the ลายจากผู้เล่น entry")
         await page.click('#pmenu .pm-item[data-a="gallery"]')
         await page.wait_for_selector(".gal-back:not([hidden]) .gal-card")
-        check(await page.locator(".gal-card .gal-link.none").first.inner_text() == "ไม่มีลิงก์", "no link: says so")
+        check(await page.locator(".gal-card").first.locator(".gal-link").count() == 0, "no link: no line for it")
         async with page.expect_download() as d:
             await page.click('.gal-card [data-a="dl"]')
         dl = await d.value
