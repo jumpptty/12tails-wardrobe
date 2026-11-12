@@ -8,7 +8,7 @@ halloweenLantern that the page must ignore) and for the Worker's api/submit (it 
     Esc closes)
   - wearing a community skin: one undo step, the nameplate's "ลายโดย ...", the menu's meta, the tile badge ลายผู้เล่น;
     the BB outfit's skin downloads as a PNG at the texture's size, named with its credit
-  - the visitor's own skin on the BB piece, then ส่งลายนี้ให้ทีมงาน: the dialog (Turnstile renders and passes), the
+  - the visitor's own skin on the BB piece, then ส่งลายให้ทีมงาน (the toolbar): the dialog (Turnstile renders and passes), the
     checks before sending (name, link, consent), the request (fields, the PNG at the texture's size), a refusal shown
     in the dialog, the success toast; the outfit's community skin; a phone-sized dialog
   - no page / console errors
@@ -172,8 +172,9 @@ async def main():
         await page.wait_for_function("() => wardrobe.debug().SKINS.size === 1", timeout=15000)
         check((await page.evaluate(SKINS))[0][1] is None, "own skin on the BB piece")
         m = await tile_menu("R", "mothLatern")
-        check("send" in m["items"], f"send offered: {m['items']}")
-        await page.click('#pmenu .pm-item[data-a="send"]')
+        check("send" not in m["items"], f"the piece menu has no send entry (one place: the toolbar, 2026-11-12): {m['items']}")
+        await page.keyboard.press("Escape")
+        await page.click("#sendlook")
         await page.wait_for_selector(".send-back:not([hidden]) form.send")
         dlg = page.locator("form.send")
         await dlg.locator('button[type="submit"]').click()
@@ -283,7 +284,7 @@ async def main():
         check(st["skins"] == [["outfits|standard", None], ["weapons|mothLatern", None]] and st["R"] == "mothLatern",
               f"dropped files went to their pieces (the lantern put on): {st} / {dropped!r}")
         check("ไม่รู้จัก 1 ไฟล์" in dropped and "holiday photo.png" in dropped, f"the file with an unknown name is reported: {dropped!r}")
-        check(await page.locator("#sendlook").is_visible(), "ส่งลุคนี้ shows once own skins are worn")
+        check(await page.locator("#sendlook").is_visible() and await page.locator("#sendlook").inner_text() == "ส่งลายให้ทีมงาน", "the send button beside the camera")
         undo_n = await page.evaluate("() => document.getElementById('undo').disabled")
         await page.click("#undo"); await page.wait_for_timeout(800)
         st2 = await page.evaluate(STATE)
@@ -325,8 +326,9 @@ async def main():
         await pp.evaluate("""() => { const c = document.querySelector('#pkBody .pk-cell[data-item="mothLatern"]');
           c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 50, clientY: 600 })); }""")
         await pp.wait_for_timeout(300)
-        if await pp.locator('#pmenu .pm-item[data-a="send"]').count():
-            await pp.locator('#pmenu .pm-item[data-a="send"]').click()
+        await pp.keyboard.press("Escape")
+        if await pp.locator("#sendlook").is_visible():
+            await pp.locator("#sendlook").click()
             await pp.wait_for_selector("form.send"); await pp.wait_for_timeout(1500)
             r = await pp.evaluate("() => { const r = document.querySelector('form.send').getBoundingClientRect(); return [r.left, r.right, r.top, r.bottom, innerWidth, innerHeight]; }")
             check(r[0] >= 0 and r[1] <= r[4] and r[2] >= 0 and r[3] <= r[5], f"phone dialog inside the screen: {r}")

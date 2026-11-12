@@ -92,7 +92,7 @@ main.bg-dark .status.err { color: #f0937c; }
 .tb svg { width: 19px; height: 19px; flex: none; }
 .tb:disabled { cursor: default; }
 .tb:disabled svg { opacity: .35; }
-.tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 13px 0 10px; }
+.tb.primary { background: var(--gold); color: var(--gold-ink); font-weight: 600; padding: 0 10px; }   /* บันทึกภาพ: its icon only (user 2026-11-12) */
 .tb.txt { font-weight: 500; padding: 0 10px; }
 .tb-sep { width: 1px; align-self: stretch; margin: 6px 3px; background: var(--line); }
 /* the SFX / VFX toggles (user 2026-11-10: "make toggle SFX and VFX, SFX replacing the current audio icon"): gold when
@@ -103,7 +103,7 @@ main.bg-dark .status.err { color: #f0937c; }
 .tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
 /* beside an open desktop picker the free part of the stage is narrow: the toolbar keeps its icons only (2026-11-12: with
-   ลายผู้เล่น and ส่งลุคนี้ it slid under the picker at 1366 px and hid undo); the names stay as tooltips */
+   ลายผู้เล่น and the send button it slid under the picker at 1366 px and hid undo); the names stay as tooltips */
 main.inset .bar .l-full, main.inset .bar .l-short { display: none; }
 main.inset .bar .tb.primary { padding: 0 10px; }
 /* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
@@ -387,7 +387,6 @@ main.inset .cm-card { top: 96px; }
 .send.gal.sets { width: min(820px, 100%); }
 .gal-pic.tall { aspect-ratio: 3 / 4; }
 .gal-pic img.thumb { object-fit: cover; object-position: 50% 0; }
-.gal-send { flex: none; padding: 0 12px; }
 .gal-empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
 .send.look { width: min(560px, 100%); }
 .look-top { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -516,6 +515,9 @@ main.inset .cm-card { top: 96px; }
 /* the toolbar grew a VFX button (2026-11-10): on a narrow phone the gold บันทึกภาพ keeps its camera alone, so the bar
    stays clear of the Bible logo (at 360 px it covered ย้อนกลับ) */
 @media (max-width: 400px) { .bar .l-short { display: none; } .bar .tb.primary { padding: 0 10px; } }
+/* the send button is always there online (2026-11-12): on a phone the bar keeps clear of the logo chip, tighter buttons */
+@media (max-width: 480px) { .bar { gap: 0; padding: 2px; } .bar .tb { min-width: 29px; height: 34px; padding: 0 3px; } .bar .tb svg { width: 18px; height: 18px; }
+  .bar .tb.fxt { padding: 0 4px; font-size: 11.5px; } .bar .tb.primary { padding: 0 7px; } .bar .tb-sep { margin: 6px 1px; } }
 /* ... and the พื้นหลัง button (2026-11-10): on a phone the bar's buttons go a little narrower (36 -> 32 px, still a fair
    touch target at 36 px tall), so it stays clear of the logo at 360-430 px */
 @media (max-width: 760px) { .bar .tb { min-width: 32px; padding: 0 5px; } .bar .tb.fxt { padding: 0 5px; } .bar .tb-sep { margin: 6px 1px; } }
@@ -541,8 +543,8 @@ main.inset .cm-card { top: 96px; }
       <button type="button" class="tb fxt" id="vfx" title="เอฟเฟกต์ท่าทาง (VFX)" aria-label="เอฟเฟกต์ VFX" aria-pressed="true">VFX</button>
       <button type="button" class="tb" id="bg" title="พื้นหลังมืด" aria-label="พื้นหลังมืด" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
-      <button type="button" class="tb" id="sendlook" title="ส่งลายของคุณบนชุดนี้ให้ทีมงาน" aria-label="ส่งลุคนี้ให้ทีมงาน" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 20 4l-6.5 16-2.6-6.2z M10.9 13.8 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ส่งลุคนี้</span><span class="l-short">ส่ง</span></button>
-      <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
+      <button type="button" class="tb" id="sendlook" title="ส่งลายที่คุณใส่อยู่ให้ทีมงาน (ไม่รวมลายเดิมของเกมและลายจากผู้เล่น)" aria-label="ส่งลายให้ทีมงาน" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 20 4l-6.5 16-2.6-6.2z M10.9 13.8 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ส่งลายให้ทีมงาน</span><span class="l-short">ส่งลาย</span></button>
+      <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)" aria-label="บันทึกภาพ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
     <p class="disclaimer" id="disclaimer">เว็บแฟนเมด ไม่ใช่ของ Official</p>
@@ -1754,7 +1756,8 @@ const Gallery = {
 // ---------- whole looks (2026-11-12, user: "I want more well-thought out batch approach. Skin from community one-click
 // change the whole sets and texture"): the toolbar's ลายผู้เล่น opens every approved set of this class as a card (the
 // character's picture, the credit), ลองทั้งชุด puts every piece on with its textures and the set's face as one undo step;
-// ส่งลุคนี้ sends every worn piece that wears the visitor's own skin as one submission (one ✅ for the user)
+// ส่งลายให้ทีมงาน (the toolbar, beside the camera) sends every worn piece that wears the visitor's own skin as one
+// submission (one ✅ for the user)
 const LOOK_SLOTS = ["outfit", "Head", "R", "L", "Back"];
 const lookSlot = p => (p.slot && kindOf(p.slot) === p.kind ? p.slot : SLOT_OF_KIND[p.kind]);
 const outfitFirst = list => list.slice().sort((a, b) => (b.slot === "outfit") - (a.slot === "outfit"));
@@ -1827,10 +1830,9 @@ const SetGallery = {
     };
     el.innerHTML = `<section class="send gal sets" role="dialog" aria-modal="true" aria-labelledby="setsTitle">
       <div class="gal-head"><div><h2 id="setsTitle">ลายจากผู้เล่น</h2><p>${esc(cls)} · <span class="num">${sets.length}</span> ชุด · กดครั้งเดียวใส่ทั้งชุด ย้อนกลับด้วย Ctrl+Z</p></div>
-      ${SUBMIT_KEY ? '<button type="button" class="sc-b gal-send" data-a="send">ส่งลายของคุณ</button>' : ""}
       <button type="button" class="sc-b gal-x" data-a="close" aria-label="ปิด" title="ปิด (Esc)">${GAL_X}</button></div>
       ${sets.length ? `<div class="gal-grid">${sets.map(card).join("")}</div>`
-        : `<p class="gal-empty">ยังไม่มีลายจากผู้เล่นของ${esc(cls)}${SUBMIT_KEY ? "<br>ใส่ลายของคุณแล้วกด ส่งลายของคุณ เป็นคนแรกได้เลย" : ""}</p>`}
+        : `<p class="gal-empty">ยังไม่มีลายจากผู้เล่นของ${esc(cls)}${SUBMIT_KEY ? "<br>ใส่ลายของคุณแล้วกด ส่งลายให้ทีมงาน ที่แถบด้านบน เป็นคนแรกได้เลย" : ""}</p>`}
       </section>`;
     el.hidden = false;
     if (!el.isConnected) document.body.append(el);
@@ -1841,7 +1843,6 @@ const SetGallery = {
       if (!b || b.disabled) return;
       const s = SETS.find(x => x.id === b.closest(".gal-card")?.dataset.set);
       if (b.dataset.a === "close") return this.close();
-      if (b.dataset.a === "send") { this.close(); return Send.open(); }
       if (b.dataset.a === "wear" && s) { this.close(); return wearSet(s).catch(x => { console.error(x); toast("โหลดชุดนี้ไม่สำเร็จ ลองกดอีกครั้ง", 2500); }); }
       if (b.dataset.a === "dl" && s) return downloadSet(s).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
     };
@@ -1882,7 +1883,8 @@ function capturePreview() {
   g.drawImage(cut, (W - cut.width * k) / 2, (H - cut.height * k) / 2, cut.width * k, cut.height * k);
   return new Promise(ok => out.toBlob(b => ok(b), "image/jpeg", 0.86));
 }
-// the worn pieces that wear the visitor's own skin (not a community one, never a TTO piece): what ส่งลุคนี้ sends
+// the worn pieces that wear the visitor's own skin (not the game's texture, not a community one, never a TTO piece):
+// what ส่งลายให้ทีมงาน sends
 function ownPieces() {
   if (!C) return [];
   return LOOK_SLOTS.map(slot => ({ slot, kind: kindOf(slot), item: slot === "outfit" ? C.state.outfit : C.state[slot] }))
@@ -1890,7 +1892,10 @@ function ownPieces() {
     .map(p => ({ ...p, texs: texsOf(p.kind, p.item).filter(t => { const s = SKINS.get(skinKey(p.kind, p.item, t)); return s && !s.by; }) }))
     .filter(p => p.texs.length);
 }
-function syncSendBtn() { const b = $("sendlook"); if (b) b.hidden = !(SUBMIT_KEY && C && ownPieces().length); }
+// the one place to send (user 2026-11-12: "a button near the camera ... it check all skin the preset is wearing if it's not
+// from the default nor the community skins, those skins are filtered to send to discord"): always there online; with
+// nothing of the visitor's own worn it says how to put one on
+function syncSendBtn() { const b = $("sendlook"); if (b) b.hidden = !SUBMIT_KEY; }
 // ---------- send a look to the team (community skins, 2026-11-11; a whole look since 2026-11-12): the worn pieces with
 // the visitor's own skins (each can be left out), the character's picture, a name to credit, an optional https link,
 // consent and Cloudflare Turnstile -> POST api/submit (pipeline/site_worker.mjs) -> the private Discord channel the user
@@ -2426,7 +2431,7 @@ async function dropMany(files) {
   });
   renderTopics(); syncTiles(); for (const p of use) refreshShowcase(p.kind, p.item); autoFit();
   toast([`ใส่ลาย ${got.length} ไฟล์บน ${use.length} ชิ้นแล้ว`, unknown.length && `ไม่รู้จัก ${unknown.length} ไฟล์: ${unknown.slice(0, 2).join(", ")}${unknown.length > 2 ? " …" : ""}`,
-    SUBMIT_KEY && "กด ส่งลุคนี้ เพื่อส่งให้ทีมงาน"].filter(Boolean).join("\n"), 4500);
+    SUBMIT_KEY && "กด ส่งลายให้ทีมงาน ที่แถบด้านบน"].filter(Boolean).join("\n"), 4500);
 }
 // ---------- the piece menu and the hover (user 2026-11-09: "instead of viewing individual object, downloading 2D and 3D
 // and uploading buttons scattered all around the place, I want the user to be able to hover and click at each individual
@@ -2495,7 +2500,6 @@ function pmList(slot, item, from, paste) {
   L.push(sep, ...perTex("png", "ดาวน์โหลดลาย (PNG)", "png"), it("glb", "ดาวน์โหลดโมเดล 3D (GLB)", { off: model ? "" : "ชิ้นนี้ไม่มีโมเดล 3D" }));
   L.push(sep, ...perTex("up", "อัปโหลดลายของคุณ", "up"));
   if (mine) L.push(it("reset", "คืนลายเดิม"));
-  if (SUBMIT_KEY && ownSkin(kind, item)) L.push(it("send", "ส่งลายนี้ให้ทีมงาน"));
   return L.join("");
 }
 // at = { x, y } (a click: the menu opens beside it) | { rect } (a tile, a ring, a button: under it, else over it) | null
@@ -2540,7 +2544,6 @@ PM.el.addEventListener("click", async e => {
   if (a === "paste") return skinUpload({ slot, item, tex }, file).catch(x => { console.error(x); toast("เปิดรูปนี้ไม่ได้\nคัดลอกรูปใหม่แล้วกด Ctrl+V อีกครั้ง", 2500); });
   if (a === "reset") return skinReset(slot, item).catch(err);
   if (a === "gallery") return Gallery.open(slot, item).catch(err);
-  if (a === "send") return Send.open(slot, item);
   if (a === "view") return Showcase.enter(slot, item, await viewList(slot));
   if (a === "change") return openPicker(slot, { fresh: true, kb: e.detail === 0 });
   if (a === "wear" || a === "remove") {      // one undo step, like a pick in the picker

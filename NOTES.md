@@ -1339,3 +1339,11 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   needed). The set: outfit legend, legendHelmet, the weapon atlas on legendLance (R) and legendShield (L), credited
   DeetaeZ, its picture shot from the local page. Deployed 7d3ce552; live: the Whale's card counts 1, ลองทั้งชุด puts all
   four pieces on, the nameplate "Legend ลายโดย DeetaeZ", no errors.
+- **2026-11-12, one place to send; the camera an icon** (user: "บันทึกภาพ only icon is enough, and let's change the send
+  skin to ทีมงาน place of usage, the new logic will be a button near the camera, what it does is it check all skin the
+  preset is wearing if it's not from the default nor the community skins, those skins are filtered to send to
+  discord"). บันทึกภาพ: its icon only (aria-label / title keep the name). **ส่งลายให้ทีมงาน** beside it is the only way to
+  send: always shown online (SUBMIT_KEY), it collects every worn piece wearing the visitor's own skin (ownPieces: not the
+  game's texture, not a community skin, never TTO's) into one submission; with none it says how to put one on. Gone: the
+  piece menu's ส่งลายนี้ให้ทีมงาน and the gallery's ส่งลายของคุณ. Phone (<= 480 px): tighter toolbar buttons so the bar
+  clears the logo chip (measured: 360 / 390 / 430 px all clear). Checks: community all ok, menu 35 ok.
