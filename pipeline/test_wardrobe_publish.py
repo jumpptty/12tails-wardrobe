@@ -49,6 +49,7 @@ const UI_DIR = "ui/";
 const FX_ON = true;
 const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
 const SUBMIT_KEY = new URLSearchParams(location.search).get("submitkey") || "";
+const LIVE_COMMUNITY = false;
 const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
@@ -846,6 +847,7 @@ class PublishTest(unittest.TestCase):
         html = (w.out / "index.html").read_text(encoding="utf-8")
         self.assertIn('const SUBMIT_KEY = "', html)
         self.assertNotIn("submitkey", html)
+        self.assertIn("const LIVE_COMMUNITY = true;", html)          # online the Worker's live list is asked first
         self.assertEqual(wp.check(w.out), [])
 
     def test_community_json_written_when_the_data_has_none(self):

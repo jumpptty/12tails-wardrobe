@@ -1455,6 +1455,9 @@ function texsOf(kind, item) {            // an outfit has one texture (when it h
 // community skins (2026-11-11): approved visitor skins listed in community.json (pipeline/wardrobe_community.py). A worn
 // one is a SKINS entry like the visitor's own, with by = { id, name, link }; ownSkin / skinBy tell the two apart
 let COMMUNITY = [];
+// a skin's picture: the published data's webp, or (online, 2026-11-12) the Worker's live copy from the Discord channel
+const communitySrc = f => f.startsWith("api/") ? f : DATA + f;
+const LIVE_COMMUNITY = false;               // the published copy: true (wardrobe_publish.py), its Worker answers api/community
 const skinEntries = (kind, item) => texsOf(kind, item).map(t => SKINS.get(skinKey(kind, item, t))).filter(Boolean);
 const ownSkin = (kind, item) => skinEntries(kind, item).some(s => !s.by);
 const skinBy = (kind, item) => skinEntries(kind, item).find(s => s.by)?.by || null;
@@ -1579,7 +1582,7 @@ async function wearCommunity(slot, item, id) {
   const by = { id: s.id, name: s.name, link: s.link || "" }, got = [];
   for (const [tex, file] of Object.entries(s.tex)) {
     if (!texsOf(kind, item).includes(tex)) continue;
-    const [img, orig] = await Promise.all([loadImage(DATA + file), texImage(kind, item, tex)]);
+    const [img, orig] = await Promise.all([loadImage(communitySrc(file)), texImage(kind, item, tex)]);
     const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height;
     got.push([skinKey(kind, item, tex), { w, h, data: pixels(img, w, h).data, by }]);
   }
@@ -1602,7 +1605,7 @@ async function communityDownload(slot, item, id) {
   if (!s) return;
   for (const [tex, file] of Object.entries(s.tex)) {
     if (!texs.includes(tex)) continue;
-    const img = await loadImage(DATA + file), id2 = pixels(img);
+    const img = await loadImage(communitySrc(file)), id2 = pixels(img);
     saveBlob(await pngOf(id2.data, id2.width, id2.height), `12tails_${CLASS_TH[C.cls] || C.cls}_${humanize(item)}`
       + (texs.length > 1 ? `_ลาย${texs.indexOf(tex) + 1}` : "") + `_ลายโดย${s.name}.png`);
   }
@@ -1648,7 +1651,7 @@ const Gallery = {
     (el.querySelector('.gal-card:not(.on) [data-a="wear"]') || el.querySelector('[data-a="close"]')).focus({ preventScroll: true });
     for (const s of cs) {                // the pictures arrive as they load
       const img = el.querySelector(`.gal-card[data-cs="${CSS.escape(s.id)}"] img`), file = Object.values(s.tex)[0];
-      loadImage(DATA + file).then(i => { if (img?.isConnected) img.src = i.src; }, e => console.warn(e));
+      loadImage(communitySrc(file)).then(i => { if (img?.isConnected) img.src = i.src; }, e => console.warn(e));
     }
   },
   close() {
@@ -4154,7 +4157,9 @@ const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.
   getJSON(DATA + "icons.json").catch(() => ({})), getJSON(DATA + "placements.json").catch(() => ({})),
   getJSON(DATA + "item_map.json").catch(() => ({})), getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }))]);
 meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
-getJSON(DATA + "community.json").then(x => { COMMUNITY = x.skins || []; }).catch(() => {});
+// online the Worker lists the skins approved in Discord right now (a ✅ on the phone is enough); else (the local server,
+// Discord down) the published community.json from the PC import
+(LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).then(x => { COMMUNITY = x.skins || []; }).catch(() => {});
 getJSON(DATA + "icons/hd/index.json").then(x => { HDI = x; if (openTopic === "move") openPicker("move"); renderTopics(); }).catch(() => {});
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
 await loadClass(first).catch(e => err(e, "โหลดอาชีพนี้ไม่สำเร็จ ลองรีเฟรชหน้านี้"));

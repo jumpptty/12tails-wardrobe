@@ -82,6 +82,43 @@ test("refusals: another origin, a failed Turnstile, bad fields, not a PNG, too l
   assert.deepEqual(await code(form(), { discord: 500 }), [502, "upstream"]);
 });
 
+test("community: the ✅ webhook messages, live; a picture only while approved; errors let the page fall back", async () => {
+  const env = { ...ENV, DISCORD_BOT_TOKEN: "﻿bot\r\n", DISCORD_CHANNEL: "42" };
+  const cdn = n => `https://cdn.discordapp.com/attachments/42/${n}?ex=1&is=2&hm=3`;
+  const msg = (id, ok, extra = {}) => ({ id, webhook_id: ok === null ? undefined : "9", timestamp: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
+    reactions: ok ? [{ emoji: { name: "✅" }, count: 1 }] : [], attachments: [{ filename: "meta.json", url: cdn(id + "/meta.json") }],
+    embeds: [{ image: { url: cdn(id + "/skin0.png") } }], ...extra });
+  let messages = [msg("101", true), msg("102", false), msg("103", null)], discordStatus = 200;
+  const metaOf = id => ({ v: 1, cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด" + id, link: "", at: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
+    textures: [{ tex: "Sheep_mothLantern.png", file: "skin0.png", w: 128, h: 128 }] });
+  const calls = [];
+  globalThis.fetch = async (url, init) => {
+    url = String(url); calls.push({ url, init });
+    if (url.startsWith("https://discord.com/api/v10/channels/42/messages")) return new Response(JSON.stringify(messages), { status: discordStatus });
+    const m = url.match(/attachments\/42\/(\d+)\/(meta\.json|skin0\.png)/);
+    if (m && m[2] === "meta.json") return new Response(JSON.stringify(metaOf(m[1])));
+    if (m) return new Response(png(128, 128));
+    throw new Error("unexpected fetch " + url);
+  };
+  const get = p => worker.fetch(new Request(HOST + p), env);
+  const r = await get("/api/community");
+  assert.equal(r.status, 200);
+  const { skins } = await r.json();
+  assert.deepEqual(skins, [{ id: "101", cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด101", link: "", at: "2026-11-12T00:00:01Z",
+    tex: { "Sheep_mothLantern.png": "api/community/101/0.png" } }]);               // no ✅, no webhook: left out; no Discord URL leaks
+  assert.equal(calls[0].init.headers.authorization, "Bot bot");
+  const img = await get("/api/community/101/0.png");
+  assert.equal(img.headers.get("content-type"), "image/png");
+  assert.equal(new Uint8Array(await img.arrayBuffer()).length, 33);
+  assert.equal((await get("/api/community/102/0.png")).status, 404);              // not approved: no picture
+  messages = [msg("101", false)];                                                  // the ✅ taken away
+  assert.deepEqual((await (await get("/api/community")).json()).skins, []);
+  assert.equal((await get("/api/community/101/0.png")).status, 404);
+  discordStatus = 500;
+  assert.equal((await get("/api/community")).status, 502);
+  assert.equal((await worker.fetch(new Request(HOST + "/api/community"), ENV)).status, 503);   // no bot secrets yet
+});
+
 test("an empty link is fine; text is one plain line", async () => {
   const calls = stub();
   const r = await worker.fetch(post(form({ link: "", name: "a\nb\u0007  c" })), ENV);

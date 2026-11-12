@@ -15,6 +15,13 @@ OUT.mkdir(parents=True, exist_ok=True)
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
+    def do_GET(self):        # the Worker's live list (api/community, 2026-11-12) stands in as the published community.json
+        if self.path.split("?")[0] != "/api/community":
+            return super().do_GET()
+        b = next(DIST.glob("data-*/community.json")).read_bytes()
+        self.send_response(200); self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(b)))
+        self.end_headers(); self.wfile.write(b)
+
 
 http.server.ThreadingHTTPServer.request_queue_size = 128
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(DIST)))

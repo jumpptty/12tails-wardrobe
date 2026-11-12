@@ -143,6 +143,9 @@ def page_edits(data_dir, ui_dir):
         # the send action stays hidden); the local page's ?submitkey= test hook goes
         ("send key", 'const SUBMIT_KEY = new URLSearchParams(location.search).get("submitkey") || "";',
          f'const SUBMIT_KEY = "{submit_key()}";', 1),
+        # the approved skins read live from Discord by the site's Worker (2026-11-12; user: approve on the phone, no PC
+        # step); the local page has no Worker and keeps the data's community.json
+        ("live community", "const LIVE_COMMUNITY = false;", "const LIVE_COMMUNITY = true;", 1),
     ]
 
 
