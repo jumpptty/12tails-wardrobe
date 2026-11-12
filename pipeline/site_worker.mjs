@@ -15,7 +15,14 @@
 const CLASSES = { bat: "ค้างคาว", bison: "ไบซัน", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
   penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า" };
 const KINDS = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ประดับหลัง" };
-export const LIMITS = { files: 2, fileBytes: 4 << 20, bodyBytes: 9 << 20, side: 4096, name: 40, link: 200, perWindow: 5, windowSec: 600 };
+// a submission is a whole look (2026-11-12, "one-click change the whole sets"): up to 6 pieces, 8 texture files in all
+// (Discord takes 10 attachments a message: the files + the preview + meta.json), their sum <= 9 MB (Discord's per-message
+// limit is believed to be 10 MB: unverified, a 502 "upstream" is what too much looks like) and a small preview picture
+export const LIMITS = { files: 8, pieces: 6, perPiece: 2, fileBytes: 4 << 20, setBytes: 9 << 20, previewBytes: 400 << 10, bodyBytes: 10 << 20,
+  side: 4096, name: 40, link: 200, perWindow: 5, windowSec: 600 };
+const SLOT_KIND = { outfit: "outfits", R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
+const DEFAULT_SLOT = { outfits: "outfit", weapons: "R", accessories: "Head", trinkets: "Back" };
+const NAME_OK = /^[A-Za-z0-9_ .-]{1,64}$/, TEX_OK = /^[A-Za-z0-9_ .-]{0,80}$/;
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -36,28 +43,64 @@ export function cleanLink(s) {
   try { const u = new URL(t); return u.protocol === "https:" ? u.href : null; } catch { return null; }
 }
 
+// the pieces the form names: the `pieces` JSON [{slot, kind, item, textures: [{tex, field}]}] (a texture's file is the form
+// field `field`), or the first format's single piece (kind, item, tex0 / skin0, tex1 / skin1) from a page not reloaded yet
+function pieceDefs(form) {
+  if (!form.has("pieces")) {
+    return [{ kind: String(form.get("kind") || ""), item: String(form.get("item") || ""),
+      textures: [0, 1].map(i => ({ tex: String(form.get("tex" + i) ?? ""), field: "skin" + i })) }];
+  }
+  try { const d = JSON.parse(String(form.get("pieces"))); return Array.isArray(d) ? d : null; } catch { return null; }
+}
+const jpegOrPng = b => (pngSize(b) ? "png" : b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff ? "jpg" : null);
+
 // the form's fields -> the submission, or an error code (the page shows each in Thai)
 export async function readSubmission(form) {
-  const cls = String(form.get("cls") || ""), kind = String(form.get("kind") || ""), item = String(form.get("item") || "");
+  const cls = String(form.get("cls") || "");
   if (!(cls in CLASSES) && cls !== "all") return { error: "piece" };
-  if (!(kind in KINDS) || !/^[A-Za-z0-9_ .-]{1,64}$/.test(item)) return { error: "piece" };
+  const defs = pieceDefs(form);
+  if (!defs || !defs.length || defs.length > LIMITS.pieces) return { error: "piece" };
+  const seen = new Set();
+  for (const d of defs) {                                                          // the names first, the files after
+    if (!d || !(d.kind in KINDS) || !NAME_OK.test(String(d.item)) || !Array.isArray(d.textures) || d.textures.length > LIMITS.perPiece) return { error: "piece" };
+    if (d.slot != null && SLOT_KIND[d.slot] !== d.kind) return { error: "piece" };
+    const key = (d.slot || DEFAULT_SLOT[d.kind]) + "|" + d.item;
+    if (seen.has(key)) return { error: "piece" };
+    seen.add(key);
+  }
+  const face = form.has("face") && form.get("face") !== "" ? Number(form.get("face")) : null;
+  if (face !== null && !(Number.isInteger(face) && face >= 0 && face < 200)) return { error: "piece" };
   if (form.get("consent") !== "1") return { error: "consent" };
   const name = clean(form.get("name"), LIMITS.name), link = cleanLink(form.get("link"));
   if (!name) return { error: "name" };
   if (link === null) return { error: "link" };
-  const textures = [];
-  for (let i = 0; i < LIMITS.files; i++) {
-    const f = form.get("skin" + i);
-    if (!f || typeof f === "string") continue;
-    const tex = String(form.get("tex" + i) ?? "");
-    if (!/^[A-Za-z0-9_ .-]{0,80}$/.test(tex)) return { error: "piece" };
-    if (f.size > LIMITS.fileBytes) return { error: "big" };
-    const bytes = new Uint8Array(await f.arrayBuffer()), size = pngSize(bytes);
-    if (!size || !size.w || !size.h || size.w > LIMITS.side || size.h > LIMITS.side) return { error: "png" };
-    textures.push({ tex, bytes, ...size });
+  const pieces = [];
+  let files = 0, total = 0;
+  for (const d of defs) {
+    const textures = [];
+    for (const t of d.textures) {
+      const f = form.get(String(t?.field));
+      if (!f || typeof f === "string") continue;
+      const tex = String(t.tex ?? "");
+      if (!TEX_OK.test(tex)) return { error: "piece" };
+      if (f.size > LIMITS.fileBytes) return { error: "big" };
+      const bytes = new Uint8Array(await f.arrayBuffer()), size = pngSize(bytes);
+      if (!size || !size.w || !size.h || size.w > LIMITS.side || size.h > LIMITS.side) return { error: "png" };
+      if (++files > LIMITS.files || (total += bytes.length) > LIMITS.setBytes) return { error: "big" };
+      textures.push({ tex, bytes, ...size });
+    }
+    if (!textures.length) return { error: "png" };
+    pieces.push({ slot: d.slot || DEFAULT_SLOT[d.kind], kind: d.kind, item: String(d.item), textures });
   }
-  if (!textures.length) return { error: "png" };
-  return { cls, kind, item, name, link, textures };
+  let preview = null;
+  const pv = form.get("preview");
+  if (pv && typeof pv !== "string") {                                              // the whole character, a small picture
+    if (pv.size > LIMITS.previewBytes) return { error: "big" };
+    const bytes = new Uint8Array(await pv.arrayBuffer()), ext = jpegOrPng(bytes);
+    if (!ext) return { error: "png" };
+    preview = { bytes, ext };
+  }
+  return { cls, name, link, face, preview, pieces };
 }
 
 // the token is Cloudflare's to judge; the site key is limited to the site's hostname in the Turnstile dashboard
@@ -84,27 +127,33 @@ async function overLimit(ip) {
 // the Discord message: the skin as the embed's picture, every field as plain text, no mention can ping anyone, and a
 // meta.json the import reads (wardrobe_community.py), so nothing has to be parsed out of the message text
 export function discordBody(s, at) {
-  const meta = { v: 1, cls: s.cls, kind: s.kind, item: s.item, name: s.name, link: s.link, at,
-    textures: s.textures.map((t, i) => ({ tex: t.tex, file: `skin${i}.png`, w: t.w, h: t.h })) };
+  let n = 0;                                                                       // skin<n>.png: one running number over every piece
+  const meta = { v: 2, cls: s.cls, name: s.name, link: s.link, face: s.face, at,
+    pieces: s.pieces.map(p => ({ slot: p.slot, kind: p.kind, item: p.item,
+      textures: p.textures.map(t => ({ tex: t.tex, file: `skin${n++}.png`, w: t.w, h: t.h })) })) };
+  const flat = s.pieces.flatMap(p => p.textures), pv = s.preview ? `preview.${s.preview.ext}` : null;
   const fields = [
     { name: "ตัวละคร", value: s.cls === "all" ? "ทุกอาชีพ" : CLASSES[s.cls], inline: true },
-    { name: "ช่อง", value: KINDS[s.kind], inline: true },
-    { name: "ชิ้น", value: s.item, inline: true },
     { name: "ลายโดย", value: s.name, inline: true },
     { name: "ลิงก์", value: s.link || "-", inline: true },
-    { name: "ขนาด", value: s.textures.map(t => `${t.w}×${t.h}`).join(", "), inline: true },
+    { name: "ชิ้น", value: s.pieces.map(p => `${KINDS[p.kind]}: ${p.item}`).join("\n"), inline: false },
+    { name: "ขนาด", value: flat.map(t => `${t.w}×${t.h}`).join(", "), inline: true },
   ];
+  const footer = META_TAG + JSON.stringify(meta);
   const payload = { username: "ห้องแต่งตัว", allowed_mentions: { parse: [] },
-    content: "ลายใหม่จากผู้เล่น: กด ✅ เพื่ออนุมัติ",
+    content: s.pieces.length > 1 ? `ชุดลายใหม่จากผู้เล่น (${s.pieces.length} ชิ้น): กด ✅ เพื่ออนุมัติทั้งชุด` : "ลายใหม่จากผู้เล่น: กด ✅ เพื่ออนุมัติ",
     // the meta again in the footer: the live list reads it from the message itself, one Discord call per 100 messages
-    // (a meta.json download per skin hit the free plan's 50 calls at about 40 skins; meta.json stays for the PC import)
-    embeds: [{ title: `${s.item} (${KINDS[s.kind]})`, fields, image: { url: "attachment://skin0.png" }, timestamp: at,
-      footer: { text: META_TAG + JSON.stringify(meta) } }],
-    attachments: [...s.textures.map((t, i) => ({ id: i, filename: `skin${i}.png` })), { id: s.textures.length, filename: "meta.json" }] };
+    // (a meta.json download per skin hit the free plan's 50 calls at about 40 skins; meta.json stays for the PC import);
+    // a footer holds 2048 characters: a long set leaves it out and the list falls back to meta.json
+    embeds: [{ title: s.pieces.length > 1 ? `ชุดลาย ${s.pieces.length} ชิ้น` : `${s.pieces[0].item} (${KINDS[s.pieces[0].kind]})`, fields,
+      image: { url: `attachment://${pv || "skin0.png"}` }, timestamp: at, ...(footer.length <= 2048 ? { footer: { text: footer } } : {}) }],
+    attachments: [...flat.map((t, i) => ({ id: i, filename: `skin${i}.png` })),
+      ...(pv ? [{ id: flat.length, filename: pv }] : []), { id: flat.length + (pv ? 1 : 0), filename: "meta.json" }] };
   const fd = new FormData();
   fd.append("payload_json", JSON.stringify(payload));
-  s.textures.forEach((t, i) => fd.append(`files[${i}]`, new Blob([t.bytes], { type: "image/png" }), `skin${i}.png`));
-  fd.append(`files[${s.textures.length}]`, new Blob([JSON.stringify(meta, null, 1)], { type: "application/json" }), "meta.json");
+  flat.forEach((t, i) => fd.append(`files[${i}]`, new Blob([t.bytes], { type: "image/png" }), `skin${i}.png`));
+  if (pv) fd.append(`files[${flat.length}]`, new Blob([s.preview.bytes], { type: s.preview.ext === "png" ? "image/png" : "image/jpeg" }), pv);
+  fd.append(`files[${flat.length + (pv ? 1 : 0)}]`, new Blob([JSON.stringify(meta, null, 1)], { type: "application/json" }), "meta.json");
   return fd;
 }
 
@@ -155,11 +204,30 @@ export function filesOf(m) {                          // attachments + the embed
   for (const e of m.embeds || []) { const u = e.image?.url || ""; if (u.startsWith("https://")) f[new URL(u).pathname.split("/").pop()] ??= u; }
   return f;
 }
-async function approvedSkins(env) {
+// a message's meta -> the set the page shows ({ id, cls, name, link, at, face, thumb, pieces: [{ slot, kind, item, tex }] }),
+// with the Discord URLs it reads kept apart (src: the textures in the order the picture routes count them, prev: the
+// preview): meta v2 has `pieces`, the first format one piece's kind / item / textures
+function setOf(m, meta, files) {
+  const defs = Array.isArray(meta.pieces) ? meta.pieces : [{ kind: meta.kind, item: meta.item, textures: meta.textures }];
+  const pieces = [], src = [];
+  for (const d of defs) {
+    const tex = {};
+    for (const t of d?.textures || []) {
+      const u = files[t.file];
+      if (u) { tex[String(t.tex ?? "")] = `api/community/${m.id}/${src.length}.png`; src.push(u); }
+    }
+    if (Object.keys(tex).length) pieces.push({ slot: SLOT_KIND[d.slot] === d.kind ? d.slot : DEFAULT_SLOT[d.kind] || null, kind: d.kind, item: d.item, tex });
+  }
+  if (!pieces.length) return null;
+  const prev = files["preview.jpg"] || files["preview.png"] || null;
+  return { id: m.id, cls: meta.cls, name: meta.name, link: meta.link || "", at: meta.at || m.timestamp,
+    face: Number.isInteger(meta.face) ? meta.face : null, thumb: prev ? `api/community/${m.id}/preview` : null, pieces, src, prev };
+}
+async function approvedSets(env) {
   const token = String(env.DISCORD_BOT_TOKEN ?? "").trim(), ch = String(env.DISCORD_CHANNEL ?? "").trim();
   if (!token || !ch) throw new Error("closed");
-  return cached("list", LIST_SEC, async () => {
-    const skins = [];
+  return cached("sets", LIST_SEC, async () => {
+    const sets = [];
     for (let before = ""; ;) {
       const r = await fetch(`https://discord.com/api/v10/channels/${ch}/messages?limit=100${before && "&before=" + before}`,
         { headers: { authorization: "Bot " + token, "user-agent": "DiscordBot (https://12tails-wardrobe.jumpthai.workers.dev, 1)" } });
@@ -170,31 +238,30 @@ async function approvedSkins(env) {
         const files = filesOf(m);
         const meta = footerMeta(m) || (files["meta.json"] &&     // older messages: their meta.json, once a day per data centre
           await cached("meta/" + m.id, 86400, () => fetch(files["meta.json"]).then(x => x.ok ? x.json() : null)).catch(() => null));
-        const texs = (meta?.textures || []).map((t, i) => ({ tex: String(t.tex ?? ""), src: files[t.file], i })).filter(t => t.src);
-        if (!texs.length) continue;
-        skins.push({ id: m.id, cls: meta.cls, kind: meta.kind, item: meta.item, name: meta.name, link: meta.link || "", at: meta.at || m.timestamp,
-          tex: Object.fromEntries(texs.map(t => [t.tex, `api/community/${m.id}/${t.i}.png`])), src: texs.map(t => t.src) });
+        const s = meta && setOf(m, meta, files);
+        if (s) sets.push(s);
       }
       if (page.length < 100) break;
       before = page.at(-1).id;
     }
-    return skins.sort((a, b) => (a.at > b.at) - (a.at < b.at));
+    return sets.sort((a, b) => (a.at > b.at) - (a.at < b.at));
   });
 }
 export async function community(request, env) {
   if (request.method !== "GET") return fail("method", 405);
-  let skins;
-  try { skins = await approvedSkins(env); } catch (e) { return fail(e.message === "closed" ? "closed" : "upstream", e.message === "closed" ? 503 : 502); }
-  const m = new URL(request.url).pathname.match(/^\/api\/community\/(\d+)\/(\d)\.png$/);
-  if (!m) return new Response(JSON.stringify({ skins: skins.map(({ src, ...s }) => s) }),
+  let sets;
+  try { sets = await approvedSets(env); } catch (e) { return fail(e.message === "closed" ? "closed" : "upstream", e.message === "closed" ? 503 : 502); }
+  const path = new URL(request.url).pathname, m = path.match(/^\/api\/community\/(\d+)\/(\d)\.png$/), pm = path.match(/^\/api\/community\/(\d+)\/preview$/);
+  if (!m && !pm) return new Response(JSON.stringify({ sets: sets.map(({ src, prev, ...s }) => s) }),
     { headers: { "content-type": "application/json; charset=utf-8", "cache-control": `public, max-age=${LIST_SEC}` } });
-  const src = skins.find(s => s.id === m[1])?.src[+m[2]];  // only a skin that is approved now
-  if (!src) return new Response("Not found", { status: 404 });
-  const r = await fetch(src);
+  const found = sets.find(s => s.id === (m || pm)[1]);                     // only a set that is approved now
+  const url = m ? found?.src[+m[2]] : found?.prev;
+  if (!url) return new Response("Not found", { status: 404 });
+  const r = await fetch(url);
   if (!r.ok) return fail("upstream", 502);
-  return new Response(r.body, { headers: { "content-type": "image/png", "cache-control": "public, max-age=3600" } });
+  const type = m ? "image/png" : (r.headers.get("content-type") || "").startsWith("image/") ? r.headers.get("content-type") : "image/jpeg";
+  return new Response(r.body, { headers: { "content-type": type, "cache-control": "public, max-age=3600" } });
 }
-
 export default {
   async fetch(request, env) {
     const { pathname } = new URL(request.url);

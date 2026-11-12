@@ -102,6 +102,10 @@ main.bg-dark .status.err { color: #f0937c; }
 .tb[hidden] { display: none; }
 .tb[aria-pressed=true] { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }   /* ชมชิ้นส่วน open */
 .bar .l-short { display: none; }
+/* beside an open desktop picker the free part of the stage is narrow: the toolbar keeps its icons only (2026-11-12: with
+   ลายผู้เล่น and ส่งลุคนี้ it slid under the picker at 1366 px and hid undo); the names stay as tooltips */
+main.inset .bar .l-full, main.inset .bar .l-short { display: none; }
+main.inset .bar .tb.primary { padding: 0 10px; }
 /* the stage's lower left (V6): the nameplate (class, then the set or outfit worn), the loading / error line under it and
    the toasts above it. --inset = the width the desktop picker covers (F1): all of it stays in the free part of the stage */
 .dock { position: absolute; left: calc(var(--inset, 0px) + 16px); right: 160px; bottom: 14px; z-index: 7; display: flex; flex-direction: column;
@@ -363,6 +367,27 @@ main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the
 .gal-acts .sc-b.sc-wear:disabled { opacity: 1; background: none; color: var(--gold); border-color: var(--gold); }
 @media (max-width: 760px) { .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
 .plate-by { margin-left: 8px; }
+/* whole looks (2026-11-12): the set gallery (a card per set: the character's picture, ลองทั้งชุด), the look send dialog
+   (each worn piece with the visitor's skin, the character's picture), the toolbar's count */
+.send.gal.sets { width: min(820px, 100%); }
+.gal-pic.tall { aspect-ratio: 3 / 4; }
+.gal-pic img.thumb { object-fit: cover; }
+.gal-send { flex: none; padding: 0 12px; }
+.gal-empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
+.send.look { width: min(560px, 100%); }
+.look-top { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: start; }
+.look-pv { aspect-ratio: 3 / 4; border-radius: 4px; background: var(--well); border: 1px solid var(--line); overflow: hidden; }
+.look-pv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.look-list { display: flex; flex-direction: column; gap: 6px; max-height: 264px; overflow-y: auto; }
+.send label.look-row { flex-direction: row; align-items: center; gap: 8px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); cursor: pointer; }
+.look-row input { flex: none; margin: 0; accent-color: var(--gold); }
+.look-row canvas { width: 44px; height: 44px; flex: none; border-radius: 3px; background: var(--well); }
+.look-row > span { display: flex; flex-direction: column; min-width: 0; font-size: 13px; line-height: 1.45; }
+.look-row small { color: var(--muted); font-size: 11.5px; font-weight: 400; }
+@media (max-width: 520px) { .look-top { grid-template-columns: 110px minmax(0, 1fr); } }
+.cm-n { min-width: 16px; margin-left: 2px; padding: 0 4px; border-radius: 8px; background: var(--gold); color: #1d140b; font-size: 10.5px; font-weight: 700; line-height: 16px; text-align: center; }
+.cm-n:empty { display: none; }
+.bar .tb[hidden] { display: none; }
 .send-back { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; background: rgba(10, 7, 5, .55); }
 .send-back[hidden] { display: none; }
 .send { width: min(380px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin: 0;
@@ -499,6 +524,8 @@ main.inset .disclaimer { top: 66px; }       /* beside an open desktop picker the
       <button type="button" class="tb fxt" id="vfx" title="เอฟเฟกต์ท่าทาง (VFX)" aria-label="เอฟเฟกต์ VFX" aria-pressed="true">VFX</button>
       <button type="button" class="tb" id="bg" title="พื้นหลังมืด" aria-label="พื้นหลังมืด" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor"/></svg></button>
       <span class="tb-sep" aria-hidden="true"></span>
+      <button type="button" class="tb" id="cm" title="ลายจากผู้เล่น: กดครั้งเดียวใส่ทั้งชุด" aria-label="ลายจากผู้เล่น"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 4.5 6.5l1.8 3.6 1.7-.8V20h8V9.3l1.7.8 1.8-3.6L15 4a3 3 0 0 1-6 0z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ลายผู้เล่น</span><span class="l-short">ลาย</span><span class="num cm-n" id="cmN"></span></button>
+      <button type="button" class="tb" id="sendlook" title="ส่งลายของคุณบนชุดนี้ให้ทีมงาน" aria-label="ส่งลุคนี้ให้ทีมงาน" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 20 4l-6.5 16-2.6-6.2z M10.9 13.8 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="l-full">ส่งลุคนี้</span><span class="l-short">ส่ง</span></button>
       <button type="button" class="tb primary" id="shot" title="บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.4l1.5-2.2h6.2L16.6 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5zM12 9.8a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="l-full">บันทึกภาพ</span><span class="l-short">บันทึก</span></button>
       <span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>
     </div>
@@ -685,6 +712,7 @@ async function loadClass(cls) {
   renderClassUI();
   await setOutfit(C.state.outfit, C.state.color);
   if (!fresh) for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
+  syncCommunityBtn(); syncSendBtn();       // the ลายผู้เล่น count is per class
   play("root");
   fitCamera();
   status("");
@@ -815,7 +843,8 @@ const fetchProps = (cls, kind) => PROP_LISTS[cls + "|" + kind] ||= Promise.all([
 ]).then(([own, shared]) => own.concat(shared.map(p => ({ ...p, shared: true }))));
 function propList(kind) {
   const K = C;
-  return K.propLists[kind] ? Promise.resolve(K.propLists[kind]) : fetchProps(K.cls, kind).then(l => (K.propLists[kind] = l));
+  return K.propLists[kind] ? Promise.resolve(K.propLists[kind])
+    : fetchProps(K.cls, kind).then(l => { K.propLists[kind] = l; if (K === C) syncCommunityBtn(); return l; });   // a set it can't wear leaves the count
 }
 function propMaterials(list) {
   return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
@@ -1411,7 +1440,7 @@ let undoStack = [], redoStack = [];
 const snap = () => JSON.stringify({ outfit: C.state.outfit, color: C.state.color, edition: C.state.edition || "", face: C.state.face,
   R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null,
   sk: [...SKINS].map(([k, v]) => [k, skinId(v)]).sort((a, b) => (a[0] < b[0] ? -1 : 1)) });
-function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; }
+function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; syncSendBtn(); }   // every skin change passes here
 async function tracked(fn) {               // run a change; remember the loadout before it if anything changed
   const before = snap();                   // (also when a later piece fails: what did change can be undone)
   try { await fn(); }
@@ -1457,6 +1486,24 @@ function texsOf(kind, item) {            // an outfit has one texture (when it h
 // community skins (2026-11-11): approved visitor skins listed in community.json (pipeline/wardrobe_community.py). A worn
 // one is a SKINS entry like the visitor's own, with by = { id, name, link }; ownSkin / skinBy tell the two apart
 let COMMUNITY = [];
+// sets (2026-11-12, user: "Skin from community one-click change the whole sets and texture"): a submission is a whole
+// look { id, cls, name, link, at, face, thumb, pieces: [{ slot, kind, item, tex }] }; the first format's skins come in as
+// sets of one. COMMUNITY stays the per-piece list (the piece menu's ลายจากผู้เล่น), one entry per piece, id "<set>#<n>"
+let SETS = [];
+const SLOT_OF_KIND = { outfits: "outfit", weapons: "R", accessories: "Head", trinkets: "Back" };
+function setCommunity(x) {
+  SETS = (x.sets || (x.skins || []).map(s => ({ id: s.id, cls: s.cls, name: s.name, link: s.link || "", at: s.at, face: null, thumb: null,
+    pieces: [{ slot: SLOT_OF_KIND[s.kind], kind: s.kind, item: s.item, tex: s.tex }] }))).filter(s => s?.pieces?.length);
+  COMMUNITY = SETS.flatMap(s => s.pieces.map((p, i) => ({ id: `${s.id}#${i}`, setId: s.id, cls: s.cls, kind: p.kind, item: p.item,
+    name: s.name, link: s.link || "", at: s.at, tex: p.tex })));
+  syncCommunityBtn();
+}
+// this class's sets, newest first; a set none of whose pieces this copy can wear (TTO's, not published) is left out once
+// the piece lists it names have loaded (until then a piece counts as wearable)
+const pieceOk = p => { const r = p.kind === "outfits" ? C.outfits.find(o => o.name === p.item) : C.propLists[p.kind] ? C.propLists[p.kind].find(x => x.name === p.item) : {};
+  return !!r && !r.tto; };
+const setsHere = () => (C ? SETS.filter(s => (s.cls === C.cls || s.cls === "all") && s.pieces.some(pieceOk)).slice().reverse() : []);
+function syncCommunityBtn() { const n = setsHere().length, b = $("cmN"); if (b) b.textContent = n ? String(n) : ""; }
 // a skin's picture: the published data's webp, or (online, 2026-11-12) the Worker's live copy from the Discord channel
 const communitySrc = f => f.startsWith("api/") ? f : DATA + f;
 const LIVE_COMMUNITY = false;               // the published copy: true (wardrobe_publish.py), its Worker answers api/community
@@ -1545,19 +1592,25 @@ async function decodeImage(file) {       // in the browser: no URL fetched, noth
   try { return await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(file.name)); i.src = url; }); }
   finally { URL.revokeObjectURL(url); }
 }
-async function skinUpload({ slot, item, tex }, file) {
-  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
-  const kind = kindOf(slot), up = await decodeImage(file), orig = await texImage(kind, item, tex);
+// a picture -> a skin's pixels for one texture: any size in, the original's size out (or a high-res skin's own: skinDims);
+// an opaque picture (an AI reskin comes back opaque) keeps the item's own cut-outs
+async function skinPixels(file, kind, item, tex) {
+  const up = await decodeImage(file), orig = await texImage(kind, item, tex);
   const uw = up.width, uh = up.height, [w, h] = skinDims(uw, uh, orig.naturalWidth || orig.width, orig.naturalHeight || orig.height);
-  const data = pixels(up, w, h).data;    // any size in, the original's size out (or a high-res skin's own: skinDims)
+  const data = pixels(up, w, h).data;
   up.close?.();
   let opaque = true, keptAlpha = false;
   for (let i = 3; i < data.length; i += 4) if (data[i] < 255) { opaque = false; break; }
-  if (opaque) {                          // an AI reskin comes back opaque: keep the item's own cut-outs
+  if (opaque) {
     const a = pixels(orig, w, h).data;
     for (let i = 3; i < a.length; i += 4) if (a[i] < 255) { keptAlpha = true; break; }
     if (keptAlpha) for (let i = 3; i < a.length; i += 4) data[i] = a[i];
   }
+  return { w, h, data, keptAlpha, stretched: Math.abs(uw * h - uh * w) > 0.01 * uh * w };   // the aspect ratios differ by more than 1 %
+}
+async function skinUpload({ slot, item, tex }, file) {
+  if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
+  const kind = kindOf(slot), { w, h, data, keptAlpha, stretched } = await skinPixels(file, kind, item, tex);
   const key = skinKey(kind, item, tex), worn = kind === "outfits" ? C.state.outfit === item : C.state[slot] === item;
   await tracked(async () => {              // one undo step: the skin, and the equip when the tile was not worn (undo keeps the old pictures)
     SKINS.set(key, { w, h, data });
@@ -1566,7 +1619,6 @@ async function skinUpload({ slot, item, tex }, file) {
     if (kind !== "outfits") for (const s of wornSlots(kind, item)) skinProp(C.props[s], kind, item);
   });
   renderTopics(); syncTiles(); refreshShowcase(kind, item); autoFit();      // an upload on a tile not worn put it on
-  const stretched = Math.abs(uw * h - uh * w) > 0.01 * uh * w;     // the aspect ratios differ by more than 1 %
   toast([`ใส่ลายใหม่ให้ ${humanize(item)} แล้ว`, stretched && `ภาพสัดส่วนไม่ตรงกับลายเดิม ยืดเป็น ${w}×${h} ให้`, keptAlpha && "ใช้ส่วนโปร่งใสของลายเดิม"]
     .filter(Boolean).join("\n"), stretched || keptAlpha ? 4000 : 2000);
 }
@@ -1585,7 +1637,7 @@ async function skinReset(slot, item) {
 async function wearCommunity(slot, item, id) {
   const s = COMMUNITY.find(x => x.id === id), kind = kindOf(slot);
   if (!s) return;
-  const by = { id: s.id, name: s.name, link: s.link || "" }, got = [];
+  const by = { id: s.id, setId: s.setId, name: s.name, link: s.link || "" }, got = [];
   for (const [tex, file] of Object.entries(s.tex)) {
     if (!texsOf(kind, item).includes(tex)) continue;
     const [img, orig] = await Promise.all([loadImage(communitySrc(file)), texImage(kind, item, tex)]);
@@ -1667,35 +1719,184 @@ const Gallery = {
     if (back?.isConnected) back.focus({ preventScroll: true });
   },
 };
-// ---------- send a skin to the team (community skins, 2026-11-11): the visitor's own skin on one piece, a name to credit,
-// an optional https link, consent and Cloudflare Turnstile -> POST api/submit (pipeline/site_worker.mjs) -> the private
-// Discord channel the user approves from. The menu offers it only when SUBMIT_KEY is set (the published copy)
+// ---------- whole looks (2026-11-12, user: "I want more well-thought out batch approach. Skin from community one-click
+// change the whole sets and texture"): the toolbar's ลายผู้เล่น opens every approved set of this class as a card (the
+// character's picture, the credit), ลองทั้งชุด puts every piece on with its textures and the set's face as one undo step;
+// ส่งลุคนี้ sends every worn piece that wears the visitor's own skin as one submission (one ✅ for the user)
+const LOOK_SLOTS = ["outfit", "Head", "R", "L", "Back"];
+const lookSlot = p => (p.slot && kindOf(p.slot) === p.kind ? p.slot : SLOT_OF_KIND[p.kind]);
+const outfitFirst = list => list.slice().sort((a, b) => (b.slot === "outfit") - (a.slot === "outfit"));
+// inside tracked(): put the pieces on (the outfit first: a new outfit composes its texture from SKINS), then every worn
+// prop wears what SKINS now holds; the caller recomposes the outfit (setColorOrFace) with the face it wants
+async function equipPieces(list) {
+  for (const p of outfitFirst(list))
+    if ((p.slot === "outfit" ? C.state.outfit : C.state[p.slot]) !== p.item) await (p.slot === "outfit" ? setOutfit(p.item, C.state.color) : setProp(p.slot, p.item));
+  for (const k of ["R", "L", "Head", "Back"]) if (C.state[k] && C.props[k]) skinProp(C.props[k], SLOTS[k], C.state[k]);
+}
+async function wearSet(set) {
+  if (Showcase.on) Showcase.exit(true);
+  const pieces = set.pieces.map((p, i) => ({ ...p, i, slot: lookSlot(p) })).filter(p => p.slot);
+  await Promise.all([...new Set(pieces.map(p => p.kind).filter(k => k !== "outfits"))].map(k => propList(k).catch(() => [])));
+  const use = [], got = [];
+  for (const p of pieces) {
+    const r = recOf(p.slot, p.item);
+    if (!r.name || r.tto) continue;                                    // a piece this copy lacks, or TTO's
+    const texs = texsOf(p.kind, p.item), mine = [];
+    for (const [tex, file] of Object.entries(p.tex)) {
+      if (!texs.includes(tex)) continue;
+      const [img, orig] = await Promise.all([loadImage(communitySrc(file)), texImage(p.kind, p.item, tex)]);
+      const [w, h] = skinDims(img.naturalWidth, img.naturalHeight, orig.naturalWidth || orig.width, orig.naturalHeight || orig.height);
+      mine.push([skinKey(p.kind, p.item, tex), { w, h, data: pixels(img, w, h).data, by: { id: `${set.id}#${p.i}`, setId: set.id, name: set.name, link: set.link || "" } }]);
+    }
+    if (mine.length) { use.push(p); got.push(...mine); }
+  }
+  if (!use.length) return toast("ชุดนี้ใส่ในห้องแต่งตัวนี้ไม่ได้", 2500);
+  const face = set.face != null && C.faces.some(f => f.n === set.face) ? set.face : null;
+  await tracked(async () => {                                          // one undo step: skins, pieces, face
+    for (const p of use) for (const t of texsOf(p.kind, p.item)) SKINS.delete(skinKey(p.kind, p.item, t));
+    for (const [k, v] of got) SKINS.set(k, v);
+    await equipPieces(use);
+    await setColorOrFace(null, face);
+  });
+  renderTopics(); syncTiles(); for (const p of use) refreshShowcase(p.kind, p.item); autoFit();
+  const left = pieces.length - use.length;
+  toast(`ใส่ชุดลายโดย ${set.name} แล้ว` + (left ? `\nข้าม ${left} ชิ้นที่ห้องแต่งตัวนี้ไม่มี` : "\nกด Ctrl+Z เพื่อย้อนกลับ"), left ? 3500 : 2400);
+}
+async function downloadSet(set) {
+  for (const [i, p] of set.pieces.entries()) {
+    if (p.kind !== "outfits") await propList(p.kind).catch(() => []);
+    const slot = lookSlot(p);
+    if (recOf(slot, p.item).name) await communityDownload(slot, p.item, `${set.id}#${i}`);
+  }
+}
+const GAL_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const linkHTML = s => (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : `<span class="gal-link none">ไม่มีลิงก์</span>`);
+const SetGallery = {
+  el: null, back: null,
+  async open() {
+    if (!C) return;
+    if (Showcase.on) Showcase.exit(true);
+    closeMenu();
+    const kinds = new Set(SETS.filter(s => s.cls === C.cls || s.cls === "all").flatMap(s => s.pieces.map(p => p.kind)).filter(k => k !== "outfits"));
+    await Promise.all([...kinds].map(k => propList(k).catch(() => [])));    // so a set this copy can't wear stays out
+    syncCommunityBtn();
+    const sets = setsHere(), cls = CLASS_TH[C.cls] || C.cls;
+    this.back = document.activeElement;
+    const el = this.el ||= Object.assign(document.createElement("div"), { className: "send-back gal-back" });
+    const on = new Set([...SKINS.values()].map(v => v.by?.id).filter(Boolean));
+    const worn = s => s.pieces.every((p, i) => on.has(`${s.id}#${i}`));
+    const card = s => {
+      const w = worn(s), n = s.pieces.length;
+      return `<div class="gal-card${w ? " on" : ""}" data-set="${esc(s.id)}"><div class="gal-pic tall"><img alt="ชุดลายโดย ${esc(s.name)}">`
+        + `<span class="gal-n"><span class="num">${n}</span> ชิ้น</span></div>`
+        + `<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>${linkHTML(s)}`
+        + `<div class="gal-acts"><button type="button" class="sc-b sc-wear" data-a="wear"${w ? " disabled" : " data-primary"}>${w ? "ใส่อยู่" : "ลองทั้งชุด"}</button>`
+        + `<button type="button" class="sc-b" data-a="dl">ดาวน์โหลด</button></div></div>`;
+    };
+    el.innerHTML = `<section class="send gal sets" role="dialog" aria-modal="true" aria-labelledby="setsTitle">
+      <div class="gal-head"><div><h2 id="setsTitle">ลายจากผู้เล่น</h2><p>${esc(cls)} · <span class="num">${sets.length}</span> ชุด · กดครั้งเดียวใส่ทั้งชุด ย้อนกลับด้วย Ctrl+Z</p></div>
+      ${SUBMIT_KEY ? '<button type="button" class="sc-b gal-send" data-a="send">ส่งลายของคุณ</button>' : ""}
+      <button type="button" class="sc-b gal-x" data-a="close" aria-label="ปิด" title="ปิด (Esc)">${GAL_X}</button></div>
+      ${sets.length ? `<div class="gal-grid">${sets.map(card).join("")}</div>`
+        : `<p class="gal-empty">ยังไม่มีลายจากผู้เล่นของ${esc(cls)}${SUBMIT_KEY ? "<br>ใส่ลายของคุณแล้วกด ส่งลายของคุณ เป็นคนแรกได้เลย" : ""}</p>`}
+      </section>`;
+    el.hidden = false;
+    if (!el.isConnected) document.body.append(el);
+    el.onpointerdown = e => { if (e.target === el) this.close(); };
+    el.onkeydown = e => { e.stopPropagation(); if (e.key === "Escape") { e.preventDefault(); this.close(); } };
+    el.onclick = e => {
+      const b = e.target.closest("button[data-a]");
+      if (!b || b.disabled) return;
+      const s = SETS.find(x => x.id === b.closest(".gal-card")?.dataset.set);
+      if (b.dataset.a === "close") return this.close();
+      if (b.dataset.a === "send") { this.close(); return Send.open(); }
+      if (b.dataset.a === "wear" && s) { this.close(); return wearSet(s).catch(x => { console.error(x); toast("โหลดชุดนี้ไม่สำเร็จ ลองกดอีกครั้ง", 2500); }); }
+      if (b.dataset.a === "dl" && s) return downloadSet(s).catch(x => { console.error(x); toast("ดาวน์โหลดลายไม่สำเร็จ ลองกดอีกครั้ง", 2500); });
+    };
+    (el.querySelector('.gal-card:not(.on) [data-a="wear"]') || el.querySelector('[data-a="close"]')).focus({ preventScroll: true });
+    for (const s of sets) {                // the pictures arrive as they load: the set's preview, else its first texture
+      const img = el.querySelector(`.gal-card[data-set="${CSS.escape(s.id)}"] img`), src = s.thumb || Object.values(s.pieces[0].tex)[0];
+      if (s.thumb) img.classList.add("thumb");
+      loadImage(communitySrc(src)).then(i => { if (img?.isConnected) img.src = i.src; }, x => console.warn(x));
+    }
+  },
+  close() {
+    if (!this.el || this.el.hidden) return;
+    this.el.hidden = true; this.el.innerHTML = "";
+    if (this.back?.isConnected) this.back.focus({ preventScroll: true });
+    this.back = null;
+  },
+};
+$("cm").onclick = () => SetGallery.open();
+// the set's picture for the Discord message and the cards: the whole character from the front (the fitted camera, not
+// wherever the visitor turned it), cut to what is drawn, on the stage's light ground, 360 x 480, a JPEG of ~30 KB
+function capturePreview() {
+  hoverClear();
+  const pos = camera.position.clone(), target = controls.target.clone(), pr = renderer.getPixelRatio(), f = heroFitPose();
+  camera.position.copy(f.pos); controls.target.copy(f.target); controls.update();
+  camera.clearViewOffset(); viewOff = -1;
+  vShadow.visible = false;
+  renderer.setPixelRatio(Math.max(2, devicePixelRatio)); renderer.setSize(vw, vh, false); renderer.render(scene, camera);
+  const cv = Object.assign(document.createElement("canvas"), { width: renderer.domElement.width, height: renderer.domElement.height });
+  cv.getContext("2d").drawImage(renderer.domElement, 0, 0);
+  vShadow.visible = true;
+  renderer.setPixelRatio(pr); renderer.setSize(vw, vh, false);
+  camera.position.copy(pos); controls.target.copy(target); controls.update();
+  applyViewOffset(); renderer.render(scene, camera);
+  const cut = cropToAlpha(cv), W = 360, H = 480, k = Math.min(W / cut.width, H / cut.height);
+  const out = Object.assign(document.createElement("canvas"), { width: W, height: H }), g = out.getContext("2d");
+  g.fillStyle = "#ece6dc"; g.fillRect(0, 0, W, H);
+  g.imageSmoothingQuality = "high";
+  g.drawImage(cut, (W - cut.width * k) / 2, (H - cut.height * k) / 2, cut.width * k, cut.height * k);
+  return new Promise(ok => out.toBlob(b => ok(b), "image/jpeg", 0.86));
+}
+// the worn pieces that wear the visitor's own skin (not a community one, never a TTO piece): what ส่งลุคนี้ sends
+function ownPieces() {
+  if (!C) return [];
+  return LOOK_SLOTS.map(slot => ({ slot, kind: kindOf(slot), item: slot === "outfit" ? C.state.outfit : C.state[slot] }))
+    .filter(p => p.item && !recOf(p.slot, p.item).tto)
+    .map(p => ({ ...p, texs: texsOf(p.kind, p.item).filter(t => { const s = SKINS.get(skinKey(p.kind, p.item, t)); return s && !s.by; }) }))
+    .filter(p => p.texs.length);
+}
+function syncSendBtn() { const b = $("sendlook"); if (b) b.hidden = !(SUBMIT_KEY && C && ownPieces().length); }
+// ---------- send a look to the team (community skins, 2026-11-11; a whole look since 2026-11-12): the worn pieces with
+// the visitor's own skins (each can be left out), the character's picture, a name to credit, an optional https link,
+// consent and Cloudflare Turnstile -> POST api/submit (pipeline/site_worker.mjs) -> the private Discord channel the user
+// approves from, one message (one ✅) per look. Offered only when SUBMIT_KEY is set (the published copy)
 const SEND_ERR = { closed: "ยังไม่เปิดรับลายตอนนี้", bot: "ยืนยันว่าไม่ใช่บอตไม่สำเร็จ ลองอีกครั้ง", name: "กรอกชื่อที่จะให้เครดิตก่อน",
-  link: "ลิงก์ต้องขึ้นต้นด้วย https://", consent: "ติ๊กช่องยินยอมก่อนส่ง", png: "ไฟล์ลายเสีย ลองอัปโหลดลายใหม่", big: "ไฟล์ลายใหญ่เกินไป",
-  rate: "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", piece: "ส่งลายของชิ้นนี้ไม่ได้", wait: "รอให้ช่องยืนยันว่าไม่ใช่บอตขึ้นเครื่องหมายถูกก่อน" };
+  link: "ลิงก์ต้องขึ้นต้นด้วย https://", consent: "ติ๊กช่องยินยอมก่อนส่ง", png: "ไฟล์ลายเสีย ลองอัปโหลดลายใหม่", big: "ไฟล์ลายใหญ่เกินไป เอาบางชิ้นออกแล้วส่งใหม่",
+  rate: "ส่งถี่เกินไป รอสักครู่แล้วลองใหม่", piece: "ส่งลายของชุดนี้ไม่ได้", wait: "รอให้ช่องยืนยันว่าไม่ใช่บอตขึ้นเครื่องหมายถูกก่อน",
+  none: "เลือกอย่างน้อยหนึ่งชิ้น" };
 const SEND_KEY = "wardrobe_sender";          // the name and link typed last time (this browser only)
+const SET_BYTES = 9 * 1024 * 1024;           // the Worker's limit for a look's PNGs together (LIMITS.setBytes)
 const Send = {
-  el: null, cur: null, token: "", widget: null, busy: false, script: null,
-  async open(slot, item) {
-    const kind = kindOf(slot), texs = texsOf(kind, item).filter(t => { const s = SKINS.get(skinKey(kind, item, t)); return s && !s.by; });
-    if (!SUBMIT_KEY || !texs.length) return;
-    this.cur = { slot, item, kind, texs, back: document.activeElement };
+  el: null, cur: null, token: "", widget: null, busy: false, script: null, pv: null, pvUrl: "",
+  async open() {
+    if (!SUBMIT_KEY || !C) return;
+    if (Showcase.on) Showcase.exit(true);
+    closeMenu();
+    const pieces = ownPieces();
+    if (!pieces.length) return toast("ยังไม่มีลายของคุณบนชุดที่ใส่อยู่\nอัปโหลดลาย หรือลากไฟล์ลายมาวางบนตัวละครก่อน", 3500);
+    this.cur = { pieces, back: document.activeElement };
     let me = {}; try { me = JSON.parse(localStorage.getItem(SEND_KEY) || "{}"); } catch (e) {}
+    const many = pieces.length > 1;
     const el = this.el ||= Object.assign(document.createElement("div"), { className: "send-back" });
-    el.innerHTML = `<form class="send" role="dialog" aria-modal="true" aria-labelledby="sendTitle" novalidate>
+    el.innerHTML = `<form class="send look" role="dialog" aria-modal="true" aria-labelledby="sendTitle" novalidate>
       <h2 id="sendTitle">ส่งลายให้ทีมงาน</h2>
-      <div class="send-pic">${texs.map(() => '<canvas width="144" height="144"></canvas>').join("")}<p>${nameHTML(item)}<br>${SLOT_TH[slot]} · ${CLASS_TH[C.cls] || C.cls}</p></div>
-      <p>ทีมงานจะตรวจลายก่อน ถ้าผ่าน ลายจะขึ้นในเมนูของชิ้นนี้ หัวข้อ "ลายจากผู้เล่น" พร้อมชื่อของคุณ</p>
+      <div class="look-top"><div class="look-pv"><img alt="ภาพตัวละครที่จะส่ง"></div>
+        <div class="look-list">${pieces.map((p, i) => `<label class="look-row"><input type="checkbox" name="p" value="${i}" checked>`
+          + `<canvas width="88" height="88"></canvas><span>${nameHTML(p.item)}<small>${SLOT_TH[p.slot] || ""}${p.texs.length > 1 ? ` · <span class="num">${p.texs.length}</span> ลาย` : ""}</small></span></label>`).join("")}</div></div>
+      <p>ทีมงานจะตรวจก่อน ถ้าผ่าน ทุกคนจะกด "ลองทั้งชุด" ได้ที่ปุ่ม ลายผู้เล่น พร้อมชื่อของคุณ</p>
       <label>ชื่อที่จะให้เครดิต<input type="text" name="name" maxlength="40" autocomplete="nickname" value="${esc(me.name || "")}"></label>
       <label>ลิงก์ (ไม่บังคับ)<input type="url" name="link" maxlength="200" placeholder="https://" value="${esc(me.link || "")}"></label>
       <label class="send-ok"><input type="checkbox" name="consent" value="1"><span>ลายนี้เป็นผลงานของฉัน และยินยอมให้แสดงบนเว็บไซต์ห้องแต่งตัว พร้อมชื่อและลิงก์ที่กรอก</span></label>
       <div class="send-ts"></div>
       <p class="send-msg" role="alert"></p>
-      <div class="send-acts"><button type="button" class="sc-b" data-a="cancel">ยกเลิก</button><button type="submit" class="sc-b" data-primary>ส่งลาย</button></div></form>`;
+      <div class="send-acts"><button type="button" class="sc-b" data-a="cancel">ยกเลิก</button><button type="submit" class="sc-b" data-primary>${many ? "ส่งทั้งชุด" : "ส่งลาย"}</button></div></form>`;
     el.hidden = false;
     if (!el.isConnected) document.body.append(el);
-    el.querySelectorAll(".send-pic canvas").forEach((cv, i) => {    // the skin itself, small
-      const s = SKINS.get(skinKey(kind, item, texs[i])), tmp = Object.assign(document.createElement("canvas"), { width: s.w, height: s.h });
+    el.querySelectorAll(".look-row canvas").forEach((cv, i) => {      // each piece's (first) skin, small
+      const p = pieces[i], s = SKINS.get(skinKey(p.kind, p.item, p.texs[0])), tmp = Object.assign(document.createElement("canvas"), { width: s.w, height: s.h });
       tmp.getContext("2d").putImageData(new ImageData(s.data, s.w, s.h), 0, 0);
       const g = cv.getContext("2d"); g.imageSmoothingQuality = "high"; g.drawImage(tmp, 0, 0, cv.width, cv.height);
     });
@@ -1705,6 +1906,12 @@ const Send = {
     el.querySelector("form").onsubmit = e => { e.preventDefault(); this.send(); };
     el.querySelector('input[name="name"]').focus({ preventScroll: true });
     this.token = "";
+    this.pv = null;
+    capturePreview().then(b => {                                       // the character as it stands now
+      if (!b || !this.el || this.el.hidden) return;
+      this.pv = b; this.pvUrl = URL.createObjectURL(b);
+      const img = this.el.querySelector(".look-pv img"); if (img) img.src = this.pvUrl;
+    }).catch(x => console.warn(x));
     this.turnstile(el.querySelector(".send-ts")).catch(e => { console.warn(e); this.say("โหลดช่องยืนยันว่าไม่ใช่บอตไม่สำเร็จ ลองเปิดหน้านี้ใหม่"); });
   },
   say(m) { const p = this.el?.querySelector(".send-msg"); if (p) p.textContent = m || ""; },
@@ -1712,6 +1919,7 @@ const Send = {
     if (!this.el || this.el.hidden) return;
     if (this.widget != null) try { window.turnstile.remove(this.widget); } catch (e) {}
     this.widget = null; this.el.hidden = true; this.el.innerHTML = "";
+    if (this.pvUrl) { URL.revokeObjectURL(this.pvUrl); this.pvUrl = ""; }
     const back = this.cur?.back; this.cur = null;
     if (back?.isConnected) back.focus({ preventScroll: true });
   },
@@ -1731,27 +1939,43 @@ const Send = {
   async send() {
     if (this.busy || !this.cur) return;
     const f = this.el.querySelector("form"), E = f.elements;
+    const chosen = [...f.querySelectorAll('input[name="p"]:checked')].map(x => this.cur.pieces[+x.value]);
     const name = E.namedItem("name").value.trim(), link = E.namedItem("link").value.trim();
+    if (!chosen.length) return this.say(SEND_ERR.none);
     if (!name) return this.say(SEND_ERR.name);
     if (link && !/^https:\/\/\S+$/i.test(link)) return this.say(SEND_ERR.link);
     if (!E.namedItem("consent").checked) return this.say(SEND_ERR.consent);
     if (!this.token) return this.say(SEND_ERR.wait);
-    const { kind, item, texs } = this.cur, fd = new FormData(), btn = f.querySelector('[type="submit"]');
+    const fd = new FormData(), btn = f.querySelector('[type="submit"]'), label = btn.textContent;
     this.busy = true; btn.disabled = true; btn.textContent = "กำลังส่ง…"; this.say("");
     try {
-      for (const [k, v] of Object.entries({ token: this.token, cls: C.cls, kind, item, name, link, consent: "1" })) fd.append(k, v);
-      for (const [i, t] of texs.entries()) {
-        const s = SKINS.get(skinKey(kind, item, t));
-        fd.append("tex" + i, t); fd.append("skin" + i, await pngOf(s.data, s.w, s.h), `skin${i}.png`);
+      const defs = [];
+      let n = 0, total = 0;
+      for (const p of chosen) {
+        const textures = [];
+        for (const t of p.texs) {
+          const s = SKINS.get(skinKey(p.kind, p.item, t));
+          if (!s) continue;                                            // taken off while the dialog was open
+          const b = await pngOf(s.data, s.w, s.h), field = "f" + n++;
+          total += b.size;
+          fd.append(field, b, field + ".png");
+          textures.push({ tex: t, field });
+        }
+        if (textures.length) defs.push({ slot: p.slot, kind: p.kind, item: p.item, textures });
       }
+      if (!defs.length) return this.say(SEND_ERR.none);
+      if (total > SET_BYTES) return this.say(`ลายรวมกัน ${(total / 1048576).toFixed(1)} MB เกิน 9 MB\nเอาบางชิ้นออกแล้วส่งใหม่`);
+      for (const [k, v] of Object.entries({ token: this.token, cls: C.cls, name, link, consent: "1", face: String(C.state.face), pieces: JSON.stringify(defs) })) fd.append(k, v);
+      if (this.pv) fd.append("preview", this.pv, "preview.jpg");
       const r = await fetch("api/submit", { method: "POST", body: fd }), v = await r.json().catch(() => ({}));
       if (!r.ok || !v.ok) { this.resetTs(); return this.say(SEND_ERR[v.error] || "ส่งไม่สำเร็จ ลองอีกครั้ง"); }   // a Turnstile token works once
       try { localStorage.setItem(SEND_KEY, JSON.stringify({ name, link })); } catch (e) {}
-      this.close(); toast("ส่งลายแล้ว ขอบคุณที่ส่งมา\nทีมงานจะตรวจก่อนขึ้นเว็บ", 3500);
+      this.close(); toast((defs.length > 1 ? `ส่งชุดลาย ${defs.length} ชิ้นแล้ว` : "ส่งลายแล้ว") + " ขอบคุณที่ส่งมา\nทีมงานจะตรวจก่อนขึ้นเว็บ", 3500);
     } catch (e) { console.error(e); this.resetTs(); this.say("ส่งไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง"); }
-    finally { this.busy = false; if (btn.isConnected) { btn.disabled = false; btn.textContent = "ส่งลาย"; } }
+    finally { this.busy = false; if (btn.isConnected) { btn.disabled = false; btn.textContent = label; } }
   },
 };
+$("sendlook").onclick = () => Send.open();
 // ---------- one piece on its own (task 16): makePiece builds a detached copy of a piece from the data, with the texture
 // it wears now (colour / edition / the visitor's skin; an outfit with the face), the page's own materials. ชมชิ้นส่วน
 // floats it (pose "idle": an outfit on a fresh copy of the class's skeleton in the idle clip's first frame, a prop at rest
@@ -2122,13 +2346,56 @@ renderer.domElement.addEventListener("dragleave", () => { Hover.at = null; });
 renderer.domElement.addEventListener("drop", e => {
   if (!C || ![...(e.dataTransfer?.types || [])].includes("Files")) return;
   e.preventDefault(); e.stopPropagation(); Hover.at = null;
-  const file = [...e.dataTransfer.files].find(f => f.type.startsWith("image/"));
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith("image/")), file = files[0];
   if (!file) { toast("ลากไฟล์รูป PNG, JPG หรือ WebP มาวางบนชิ้นส่วน", 2500); return; }
   if (Showcase.phase !== "off") { toast("ปิดโหมดดูชิ้นเดียวก่อน แล้วลากรูปมาวางบนตัวละคร", 2500); return; }
+  const fail = x => { console.error(x); toast("ใส่ลายไม่สำเร็จ ลองอีกครั้ง", 2500); };
+  if (files.length > 1) return dropMany(files).catch(fail);            // several: each file finds its piece by its name
   const t = pieceAt(e.clientX, e.clientY);
-  if (!t) { toast("วางรูปบนชิ้นส่วนของตัวละคร", 2500); return; }
+  if (!t) return dropMany(files).catch(fail);                          // one beside the character: by its name too
   skinFromFile(t, file, { x: e.clientX, y: e.clientY });
 });
+// several pictures at once (2026-11-12, the batch upload): each file goes to the piece its name says, the name this page
+// gives a downloaded texture: 12tails_<class>_<item>[_สี<n>][_ลาย<n>][_ลายโดย<name> | _ลายของคุณ].png (dlName). Every
+// piece of this class is a candidate (the worn one first when two share a name); a piece not worn is put on; one undo step
+async function dropMany(files) {
+  await Promise.all(["weapons", "accessories", "trinkets"].map(k => propList(k).catch(() => [])));
+  const norm = s => s.normalize("NFC").replace(/\.[a-z0-9]+$/i, "").replace(/\s*\(\d+\)$/, "").replace(/[\\/:*?"<>|\s]+/g, "_").toLowerCase();
+  const cands = C.outfits.filter(o => o.colors?.length).map(o => ({ slot: "outfit", kind: "outfits", item: o.name }));
+  for (const [slot, kind] of [["Head", "accessories"], ["R", "weapons"], ["Back", "trinkets"]]) for (const p of C.propLists[kind] || []) cands.push({ slot, kind, item: p.name });
+  for (const c of cands) c.key = norm(humanize(c.item));
+  const cls = norm(CLASS_TH[C.cls] || C.cls), wornAs = c => (c.slot === "outfit" ? (C.state.outfit === c.item ? "outfit" : null)
+    : ["R", "L", "Head", "Back"].find(s => SLOTS[s] === c.kind && C.state[s] === c.item) || null);
+  const plan = new Map(), unknown = [];
+  for (const f of files) {
+    let n = norm(f.name);
+    if (n.startsWith("12tails_")) n = n.slice(8);
+    if (n.startsWith(cls + "_")) n = n.slice(cls.length + 1);
+    const hits = cands.filter(c => n === c.key || n.startsWith(c.key + "_"));
+    if (!hits.length) { unknown.push(f.name); continue; }
+    const best = Math.max(...hits.map(c => c.key.length)), top = hits.filter(c => c.key.length === best);
+    const c = top.find(wornAs) || top[0], slot = wornAs(c) || c.slot, texs = texsOf(c.kind, c.item);
+    if (!texs.length || ttoLocked(slot, c.item)) { unknown.push(f.name); continue; }
+    const m = n.slice(c.key.length).match(/_ลาย(\d+)(?:_|$)/), tex = texs[m ? Math.min(Math.max(+m[1] - 1, 0), texs.length - 1) : 0];
+    plan.set(skinKey(c.kind, c.item, tex), { slot, kind: c.kind, item: c.item, tex, file: f });
+  }
+  if (!plan.size) return toast(`ไม่รู้ว่าไฟล์เป็นของชิ้นไหน\nตั้งชื่อไฟล์แบบที่ดาวน์โหลดลายจากหน้านี้ เช่น 12tails_${CLASS_TH[C.cls] || C.cls}_ชื่อชิ้น.png`, 5000);
+  const got = [];
+  for (const [k, p] of plan) {
+    const s = await skinPixels(p.file, p.kind, p.item, p.tex).catch(() => null);
+    if (s) got.push([k, p, s]); else unknown.push(p.file.name);
+  }
+  if (!got.length) return toast("เปิดไฟล์ภาพเหล่านี้ไม่ได้\nใช้ไฟล์ PNG, JPG หรือ WebP", 3000);
+  const use = [...new Map(got.map(([, p]) => [p.slot + "|" + p.item, p])).values()];
+  await tracked(async () => {
+    for (const [k, , s] of got) SKINS.set(k, { w: s.w, h: s.h, data: s.data });
+    await equipPieces(use);
+    await setColorOrFace(null, null);
+  });
+  renderTopics(); syncTiles(); for (const p of use) refreshShowcase(p.kind, p.item); autoFit();
+  toast([`ใส่ลาย ${got.length} ไฟล์บน ${use.length} ชิ้นแล้ว`, unknown.length && `ไม่รู้จัก ${unknown.length} ไฟล์: ${unknown.slice(0, 2).join(", ")}${unknown.length > 2 ? " …" : ""}`,
+    SUBMIT_KEY && "กด ส่งลุคนี้ เพื่อส่งให้ทีมงาน"].filter(Boolean).join("\n"), 4500);
+}
 // ---------- the piece menu and the hover (user 2026-11-09: "instead of viewing individual object, downloading 2D and 3D
 // and uploading buttons scattered all around the place, I want the user to be able to hover and click at each individual
 // item in the model directly, with mild hover effect, clicking at each piece will then show basic info of that item and
@@ -4165,7 +4432,7 @@ const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.
 meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
 // online the Worker lists the skins approved in Discord right now (a ✅ on the phone is enough); else (the local server,
 // Discord down) the published community.json from the PC import
-(LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).then(x => { COMMUNITY = x.skins || []; }).catch(() => {});
+(LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).then(setCommunity).catch(() => {});
 getJSON(DATA + "icons/hd/index.json").then(x => { HDI = x; if (openTopic === "move") openPicker("move"); renderTopics(); }).catch(() => {});
 const first = meta.classes.find(c => c.cls === saved.cls) ? saved.cls : (meta.classes.find(c => c.cls === "sheep") || meta.classes[0]).cls;
 await loadClass(first).catch(e => err(e, "โหลดอาชีพนี้ไม่สำเร็จ ลองรีเฟรชหน้านี้"));
@@ -4182,7 +4449,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains, PM, Hover, Send, Gallery }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, get SETS() { return SETS; } }),   // scripted checks only
 };
 </script>
 </body>

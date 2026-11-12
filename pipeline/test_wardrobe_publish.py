@@ -839,7 +839,7 @@ class PublishTest(unittest.TestCase):
         (w.data / "community.json").write_text(json.dumps({"skins": skins}), encoding="utf-8")
         result = w.publish()
         d = data_dir(w)
-        self.assertEqual([s["id"] for s in json.loads((d / "community.json").read_text("utf-8"))["skins"]], ["1"])
+        self.assertEqual([s["id"] for s in json.loads((d / "community.json").read_text("utf-8"))["sets"]], ["1"])      # the first format came out as sets
         self.assertEqual((d / "community/cat/1_0.webp").read_bytes(), (w.data / "community/cat/1_0.webp").read_bytes())
         self.assertFalse((d / "community/cat/2_0.webp").exists())
         self.assertFalse((d / "community/all/3_0.webp").exists())
@@ -850,10 +850,32 @@ class PublishTest(unittest.TestCase):
         self.assertIn("const LIVE_COMMUNITY = true;", html)          # online the Worker's live list is asked first
         self.assertEqual(wp.check(w.out), [])
 
+    def test_a_community_set_keeps_its_published_pieces_and_its_thumbnail(self):
+        """a set (2026-11-12): the pieces that are published stay, one that is not goes alone, the thumbnail comes along;
+        a set with no piece left goes whole"""
+        w = self.world()
+        sets = [{"id": "7", "cls": "cat", "name": "A", "link": "", "at": "7", "face": 38, "thumb": "community/cat/7_p.webp",
+                 "pieces": [{"slot": "outfit", "kind": "outfits", "item": "a", "owner": "cat", "tex": {"": "community/cat/7_0.webp"}},
+                            {"slot": "R", "kind": "weapons", "item": "notThere", "owner": "cat", "tex": {"x.png": "community/cat/7_1.webp"}}]},
+                {"id": "8", "cls": "cat", "name": "B", "link": "", "at": "8", "face": None, "thumb": "community/cat/8_p.webp",
+                 "pieces": [{"slot": "R", "kind": "weapons", "item": "notThere", "owner": "cat", "tex": {"x.png": "community/cat/8_0.webp"}}]}]
+        for s in sets:
+            for rel in [s["thumb"]] + [r for p in s["pieces"] for r in p["tex"].values()]:
+                webp(w.data / rel)
+        (w.data / "community.json").write_text(json.dumps({"sets": sets}), encoding="utf-8")
+        result = w.publish()
+        d = data_dir(w)
+        out = json.loads((d / "community.json").read_text("utf-8"))["sets"]
+        self.assertEqual([(s["id"], [p["item"] for p in s["pieces"]], s["face"], s["thumb"]) for s in out], [("7", ["a"], 38, "community/cat/7_p.webp")])
+        self.assertTrue((d / "community/cat/7_p.webp").exists())
+        self.assertFalse((d / "community/cat/7_1.webp").exists())
+        self.assertFalse((d / "community/cat/8_p.webp").exists())
+        self.assertEqual(dropped_names(result, "community"), ["cat/notThere/7", "cat/notThere/8"])
+
     def test_community_json_written_when_the_data_has_none(self):
         w = self.world()
         w.publish()
-        self.assertEqual(json.loads((data_dir(w) / "community.json").read_text("utf-8")), {"skins": []})
+        self.assertEqual(json.loads((data_dir(w) / "community.json").read_text("utf-8")), {"sets": []})
 
     def test_submit_key_must_look_like_a_site_key(self):
         with tempfile.TemporaryDirectory() as t:

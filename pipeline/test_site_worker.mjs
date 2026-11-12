@@ -45,8 +45,9 @@ test("a good submission reaches Discord with the skin, plain fields and no menti
   assert.deepEqual(payload.allowed_mentions, { parse: [] });
   assert.equal(payload.embeds[0].image.url, "attachment://skin0.png");
   const meta = JSON.parse(await body.get("files[1]").text());
-  assert.deepEqual([meta.cls, meta.kind, meta.item, meta.name, meta.link], ["sheep", "weapons", "halloweenLantern", "นักวาด", "https://example.com/me"]);
-  assert.deepEqual(meta.textures, [{ tex: "Sheep_halloweenWeapon.png", file: "skin0.png", w: 512, h: 512 }]);
+  assert.deepEqual([meta.v, meta.cls, meta.name, meta.link, meta.face], [2, "sheep", "นักวาด", "https://example.com/me", null]);
+  assert.deepEqual(meta.pieces, [{ slot: "R", kind: "weapons", item: "halloweenLantern",
+    textures: [{ tex: "Sheep_halloweenWeapon.png", file: "skin0.png", w: 512, h: 512 }] }]);       // the first format reads as one piece
   assert.deepEqual(JSON.parse(payload.embeds[0].footer.text.slice(META_TAG.length)), meta);   // the live list reads this
   assert.ok(payload.embeds[0].footer.text.length <= 2048);
   assert.equal((await body.get("files[0]").arrayBuffer()).byteLength, 33);
@@ -95,12 +96,18 @@ test("community: the ✅ webhook messages, live; a picture only while approved; 
   // 104: a message since the footer meta (no meta.json download needed); 101: an older one (its meta.json)
   const withFooter = msg("104", true, { attachments: [] });
   withFooter.embeds[0].footer = { text: META_TAG + JSON.stringify(metaOf("104")) };
-  let messages = [withFooter, msg("101", true), msg("102", false), msg("103", null)], discordStatus = 200;
+  // 105: a whole look (v2): two pieces, its footer meta, a preview picture; the embed's picture is the preview
+  const look = msg("105", true, { attachments: [{ filename: "skin0.png", url: cdn("105/skin0.png") }, { filename: "skin1.png", url: cdn("105/skin1.png") }],
+    embeds: [{ image: { url: cdn("105/preview.jpg") }, footer: { text: META_TAG + JSON.stringify({ v: 2, cls: "cat", name: "ผู้ส่งชุด", link: "https://x.example/a", face: 38, at: "2026-11-12T00:00:05Z",
+      pieces: [{ slot: "outfit", kind: "outfits", item: "champion", textures: [{ tex: "", file: "skin0.png", w: 128, h: 128 }] },
+        { slot: "Head", kind: "accessories", item: "default", textures: [{ tex: "Cat_default.png", file: "skin1.png", w: 32, h: 32 }] }] }) } }] });
+  let messages = [look, withFooter, msg("101", true), msg("102", false), msg("103", null)], discordStatus = 200;
   const calls = [];
   globalThis.fetch = async (url, init) => {
     url = String(url); calls.push({ url, init });
     if (url.startsWith("https://discord.com/api/v10/channels/42/messages")) return new Response(JSON.stringify(messages), { status: discordStatus });
-    const m = url.match(/attachments\/42\/(\d+)\/(meta\.json|skin0\.png)/);
+    if (url.includes("/preview.jpg")) return new Response(JPEG, { headers: { "content-type": "image/jpeg" } });
+    const m = url.match(/attachments\/42\/(\d+)\/(meta\.json|skin\d\.png)/);
     if (m && m[2] === "meta.json") return new Response(JSON.stringify(metaOf(m[1])));
     if (m) return new Response(png(128, 128));
     throw new Error("unexpected fetch " + url);
@@ -108,23 +115,81 @@ test("community: the ✅ webhook messages, live; a picture only while approved; 
   const get = p => worker.fetch(new Request(HOST + p), env);
   const r = await get("/api/community");
   assert.equal(r.status, 200);
-  const { skins } = await r.json();
-  const row = id => ({ id, cls: "sheep", kind: "weapons", item: "mothLatern", name: "คนวาด" + id, link: "", at: "2026-11-12T00:00:0" + id.slice(-1) + "Z",
-    tex: { "Sheep_mothLantern.png": `api/community/${id}/0.png` } });
-  assert.deepEqual(skins, [row("101"), row("104")]);                  // no ✅, no webhook: left out; oldest first; no Discord URL leaks
+  const { sets } = await r.json();
+  // the first format's skins read as sets of one (slot from the kind, no preview, no face)
+  const row = id => ({ id, cls: "sheep", name: "คนวาด" + id, link: "", at: "2026-11-12T00:00:0" + id.slice(-1) + "Z", face: null, thumb: null,
+    pieces: [{ slot: "R", kind: "weapons", item: "mothLatern", tex: { "Sheep_mothLantern.png": `api/community/${id}/0.png` } }] });
+  assert.deepEqual(sets, [row("101"), row("104"), { id: "105", cls: "cat", name: "ผู้ส่งชุด", link: "https://x.example/a", at: "2026-11-12T00:00:05Z", face: 38,
+    thumb: "api/community/105/preview", pieces: [{ slot: "outfit", kind: "outfits", item: "champion", tex: { "": "api/community/105/0.png" } },
+      { slot: "Head", kind: "accessories", item: "default", tex: { "Cat_default.png": "api/community/105/1.png" } }] }]);   // no ✅, no webhook: left out; oldest first; no Discord URL leaks
   assert.equal(calls[0].init.headers.authorization, "Bot bot");
-  assert.deepEqual(calls.filter(c => c.url.includes("meta.json")).map(c => c.url.split("/42/")[1].split("/")[0]), ["101"]);   // 104 read from its footer
+  assert.deepEqual(calls.filter(c => c.url.includes("meta.json")).map(c => c.url.split("/42/")[1].split("/")[0]), ["101"]);   // 104 and 105 read from their footers
   const img = await get("/api/community/101/0.png");
   assert.equal(img.headers.get("content-type"), "image/png");
   assert.equal(new Uint8Array(await img.arrayBuffer()).length, 33);
+  assert.equal((await get("/api/community/105/1.png")).status, 200);              // the second piece's texture
+  const pv = await get("/api/community/105/preview");
+  assert.equal(pv.headers.get("content-type"), "image/jpeg");
+  assert.equal((await get("/api/community/101/preview")).status, 404);            // no preview there
   assert.equal((await get("/api/community/102/0.png")).status, 404);              // not approved: no picture
   messages = [msg("101", false)];                                                  // the ✅ taken away
-  assert.deepEqual((await (await get("/api/community")).json()).skins, []);
+  assert.deepEqual((await (await get("/api/community")).json()).sets, []);
+  assert.equal((await get("/api/community/105/preview")).status, 404);
   assert.equal((await get("/api/community/101/0.png")).status, 404);
   discordStatus = 500;
   assert.equal((await get("/api/community")).status, 502);
   assert.equal((await worker.fetch(new Request(HOST + "/api/community"), ENV)).status, 503);   // no bot secrets yet
 });
+
+// a whole look (2026-11-12): the pieces JSON, the textures in form fields f0.., a preview picture, a face
+function setForm(pieces, extra = {}) {
+  const f = new FormData();
+  let n = 0;
+  const defs = pieces.map(p => ({ slot: p.slot, kind: p.kind, item: p.item, textures: p.texs.map(t => { const field = "f" + n++; f.append(field, new Blob([png(t.size || 64, t.size || 64)], { type: "image/png" }), field + ".png"); return { tex: t.tex, field }; }) }));
+  f.append("pieces", JSON.stringify(defs));
+  for (const [k, v] of Object.entries({ token: "tok", cls: "cat", name: "นักวาด", link: "", consent: "1", face: "38", ...extra })) if (v != null) f.append(k, v);
+  return f;
+}
+const LOOK = [{ slot: "outfit", kind: "outfits", item: "champion", texs: [{ tex: "", size: 128 }] },
+  { slot: "Head", kind: "accessories", item: "default", texs: [{ tex: "Cat_default.png", size: 32 }] }];
+const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0]);
+
+test("a whole look: every piece, the face and the preview reach Discord as one message", async () => {
+  const calls = stub();
+  const f = setForm(LOOK, {}); f.append("preview", new Blob([JPEG], { type: "image/jpeg" }), "preview.jpg");
+  const r = await worker.fetch(post(f), ENV);
+  assert.equal(r.status, 200);
+  const body = calls.find(c => c.url.startsWith(ENV.DISCORD_WEBHOOK)).init.body, payload = JSON.parse(body.get("payload_json"));
+  const meta = JSON.parse(await body.get("files[3]").text());                  // skin0, skin1, the preview, meta.json
+  assert.deepEqual(meta.pieces.map(p => [p.slot, p.item, p.textures.map(t => t.file)]), [["outfit", "champion", ["skin0.png"]], ["Head", "default", ["skin1.png"]]]);
+  assert.equal(meta.face, 38);
+  assert.equal(payload.embeds[0].image.url, "attachment://preview.jpg");       // the preview is the picture, not the first skin
+  assert.equal(body.get("files[2]").type, "image/jpeg");
+  assert.deepEqual(payload.attachments.map(a => a.filename), ["skin0.png", "skin1.png", "preview.jpg", "meta.json"]);
+  assert.ok(payload.content.includes("2 ชิ้น"));
+  assert.deepEqual(JSON.parse(payload.embeds[0].footer.text.slice(META_TAG.length)), meta);
+});
+
+test("a look is refused when it is too big, doubled, mis-slotted or its preview is not a picture", async () => {
+  const code = async f => { stub(); const r = await worker.fetch(post(f), ENV); return [r.status, (await r.json()).error]; };
+  const many = Array.from({ length: LIMITS.pieces + 1 }, (_, i) => ({ slot: "R", kind: "weapons", item: "w" + i, texs: [{ tex: "a.png" }] }));
+  assert.deepEqual(await code(setForm(many)), [400, "piece"]);
+  assert.deepEqual(await code(setForm([LOOK[0], LOOK[0]])), [400, "piece"]);                         // the same piece twice
+  assert.deepEqual(await code(setForm([{ ...LOOK[1], slot: "R" }])), [400, "piece"]);                // a hat in the weapon slot
+  assert.deepEqual(await code(setForm([{ ...LOOK[0], texs: [{ tex: "", size: 64 }, { tex: "b.png" }, { tex: "c.png" }] }])), [400, "piece"]);   // 3 textures
+  const bad = setForm(LOOK); bad.append("preview", new Blob([new Uint8Array(30)]), "x.jpg");
+  assert.deepEqual(await code(bad), [400, "png"]);
+  assert.deepEqual(await code(setForm(LOOK, { face: "-3" })), [400, "piece"]);
+  const files = Array.from({ length: 5 }, (_, i) => ({ slot: i ? "R" : "outfit", kind: i ? "weapons" : "outfits", item: "x" + i, texs: [{ tex: "a.png" }, { tex: "b.png" }] }));
+  assert.deepEqual(await code(setForm(files.slice(0, 5))), [400, "big"]);                            // 10 files: over the 8
+  // each file under 4 MB, the sum over 9 MB: a 3.2 MB PNG (a header + padding) x 3
+  const pad = (w, extra) => { const b = new Uint8Array(33 + extra); b.set(png(w, w)); return b; };
+  const bigForm = setForm([{ slot: "outfit", kind: "outfits", item: "a", texs: [{ tex: "" }] }]);
+  const fat = new FormData();
+  const defs = [0, 1, 2].map(i => ({ slot: ["outfit", "R", "L"][i], kind: i ? "weapons" : "outfits", item: "p" + i, textures: [{ tex: "", field: "f" + i }] }));
+  defs.forEach((d, i) => fat.append("f" + i, new Blob([pad(64, 3.2 * 1024 * 1024)], { type: "image/png" }), "f.png"));
+  for (const [k, v] of Object.entries({ pieces: JSON.stringify(defs), token: "tok", cls: "cat", name: "x", consent: "1" })) fat.append(k, v);
+  assert.deepEqual(await code(fat), [400, "big"]);});
 
 test("an empty link is fine; text is one plain line", async () => {
   const calls = stub();

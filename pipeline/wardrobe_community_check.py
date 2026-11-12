@@ -33,16 +33,25 @@ def webp(size, color):
 LANTERN_TEX = "Sheep_mothLantern.png"                # the BB mothLatern's texture
 LANTERN_SIZE = Image.open(DATA / "props" / "tex" / LANTERN_TEX).size
 OUTFIT_SIZE = Image.open(DATA / "sheep" / "tex" / "standard1.webp").size
+def one(sid, slot, kind, item, name, link, at, tex):
+    return {"id": sid, "cls": "sheep", "name": name, "link": link, "at": at, "face": None, "thumb": None,
+            "pieces": [{"slot": slot, "kind": kind, "item": item, "tex": tex}]}
+
+
 FAKE = {
-    "/wardrobe/data/community.json": json.dumps({"skins": [
-        {"id": "900001", "cls": "sheep", "kind": "weapons", "item": "mothLatern", "name": "ทดสอบ ลายเขียว", "link": "https://example.com/artist",
-         "at": "2026-11-11T00:00:00Z", "tex": {LANTERN_TEX: "community/sheep/900001_0.webp"}},
-        {"id": "900002", "cls": "sheep", "kind": "outfits", "item": "standard", "name": "คนที่สอง", "link": "",
-         "at": "2026-11-11T00:00:01Z", "tex": {"": "community/sheep/900002_0.webp"}},
-        {"id": "900003", "cls": "sheep", "kind": "weapons", "item": "halloweenLantern", "name": "ไม่ควรเห็น", "link": "",
-         "at": "2026-11-11T00:00:02Z", "tex": {"Sheep_halloweenWeapon.png": "community/sheep/900001_0.webp"}}]}, ensure_ascii=False).encode(),
+    "/wardrobe/data/community.json": json.dumps({"sets": [
+        one("900001", "R", "weapons", "mothLatern", "ทดสอบ ลายเขียว", "https://example.com/artist", "2026-11-11T00:00:00Z", {LANTERN_TEX: "community/sheep/900001_0.webp"}),
+        one("900002", "outfit", "outfits", "standard", "คนที่สอง", "", "2026-11-11T00:00:01Z", {"": "community/sheep/900002_0.webp"}),
+        one("900003", "R", "weapons", "halloweenLantern", "ไม่ควรเห็น", "", "2026-11-11T00:00:02Z", {"Sheep_halloweenWeapon.png": "community/sheep/900001_0.webp"}),
+        # a whole look (2026-11-12): the outfit and the lantern together, a face, the character's picture
+        {"id": "900010", "cls": "sheep", "name": "ชุดเต็ม", "link": "", "at": "2026-11-12T00:00:00Z", "face": 3, "thumb": "community/sheep/900010_p.webp",
+         "pieces": [{"slot": "outfit", "kind": "outfits", "item": "standard", "tex": {"": "community/sheep/900010_0.webp"}},
+                    {"slot": "R", "kind": "weapons", "item": "mothLatern", "tex": {LANTERN_TEX: "community/sheep/900010_1.webp"}}]}]}, ensure_ascii=False).encode(),
     "/wardrobe/data/community/sheep/900001_0.webp": webp(LANTERN_SIZE, (40, 220, 60, 255)),
     "/wardrobe/data/community/sheep/900002_0.webp": webp(OUTFIT_SIZE, (60, 90, 240, 255)),
+    "/wardrobe/data/community/sheep/900010_0.webp": webp(OUTFIT_SIZE, (220, 40, 40, 255)),
+    "/wardrobe/data/community/sheep/900010_1.webp": webp(LANTERN_SIZE, (240, 200, 30, 255)),
+    "/wardrobe/data/community/sheep/900010_p.webp": webp((360, 480), (200, 180, 160, 255)),
 }
 POSTS, ANSWER = [], {"body": {"ok": True}, "status": 200}
 
@@ -127,8 +136,10 @@ async def main():
         g = await page.evaluate("""() => [...document.querySelectorAll('.gal-card')].map(c => ({ id: c.dataset.cs, by: c.querySelector('.gal-by').innerText,
           link: c.querySelector('a.gal-link')?.href || null, rel: c.querySelector('a.gal-link')?.rel || null,
           wear: c.querySelector('[data-a="wear"]').innerText, dl: c.querySelector('[data-a="dl"]').disabled }))""")
-        check(g == [{"id": "900001", "by": "ลายโดย ทดสอบ ลายเขียว", "link": "https://example.com/artist", "rel": "noopener noreferrer",
-                     "wear": "ใส่ในห้องแต่งตัว", "dl": False}], f"the pop-up's card: {g}")
+        # the lantern's skins: the single one and the lantern of the whole look (each piece of a set is offered on its own here)
+        check(g == [{"id": "900001#0", "by": "ลายโดย ทดสอบ ลายเขียว", "link": "https://example.com/artist", "rel": "noopener noreferrer",
+                     "wear": "ใส่ในห้องแต่งตัว", "dl": False},
+                    {"id": "900010#1", "by": "ลายโดย ชุดเต็ม", "link": None, "rel": None, "wear": "ใส่ในห้องแต่งตัว", "dl": False}], f"the pop-up's cards: {g}")
         await page.screenshot(path=str(OUT.resolve() / "gallery.png"))
         await page.keyboard.press("Escape")
         check(await page.locator(".gal-back").is_hidden(), "Esc closes the pop-up")
@@ -199,11 +210,14 @@ async def main():
         t = await page.evaluate("() => document.getElementById('toast').textContent")
         check("ส่งลายแล้ว" in t, f"success toast: {t!r}")
         f = POSTS[-1] if POSTS else {}
-        got = {k: f.get(k) for k in ("cls", "kind", "item", "name", "link", "consent", "tex0")}
-        check(got == {"cls": "sheep", "kind": "weapons", "item": "mothLatern", "name": "ผู้ทดสอบ", "link": "https://example.com/me",
-                      "consent": "1", "tex0": LANTERN_TEX} and f.get("token"), f"the request: {got}")
-        size = Image.open(io.BytesIO(f["skin0"])).size if f.get("skin0") else None
+        got = {k: f.get(k) for k in ("cls", "name", "link", "consent")}
+        pieces = json.loads(f.get("pieces") or "[]")
+        check(got == {"cls": "sheep", "name": "ผู้ทดสอบ", "link": "https://example.com/me", "consent": "1"} and f.get("token")
+              and pieces == [{"slot": "R", "kind": "weapons", "item": "mothLatern", "textures": [{"tex": LANTERN_TEX, "field": "f0"}]}],
+              f"the request: {got} {pieces}")
+        size = Image.open(io.BytesIO(f["f0"])).size if f.get("f0") else None
         check(size == LANTERN_SIZE, f"the PNG sent is the texture's size: {size}")
+        check((f.get("preview") or b"")[:3] == b"\xff\xd8\xff" and f.get("face", "").isdigit(), f"the character's picture (JPEG) and the face: {len(f.get('preview') or b'')} bytes, face {f.get('face')!r}")
         check(len(POSTS) == 2, f"two requests (the refused one, the sent one): {len(POSTS)}")
 
         # the outfit's community skin
@@ -212,7 +226,7 @@ async def main():
         check("gallery" in m["items"], "outfit: the ลายจากผู้เล่น entry")
         await page.click('#pmenu .pm-item[data-a="gallery"]')
         await page.wait_for_selector(".gal-back:not([hidden]) .gal-card")
-        check(await page.locator(".gal-card .gal-link.none").inner_text() == "ไม่มีลิงก์", "no link: says so")
+        check(await page.locator(".gal-card .gal-link.none").first.inner_text() == "ไม่มีลิงก์", "no link: says so")
         async with page.expect_download() as d:
             await page.click('.gal-card [data-a="dl"]')
         dl = await d.value
@@ -222,6 +236,81 @@ async def main():
         await page.click('.gal-card [data-a="wear"]'); await page.wait_for_timeout(1500)
         plate = await page.evaluate("() => document.getElementById('plateSub').innerText")
         check("คนที่สอง" in plate, f"outfit skin credited: {plate!r}")
+
+        # ---- whole looks (2026-11-12): the toolbar's ลายผู้เล่น, ลองทั้งชุด, several files at once, ส่งลุคนี้
+        await page.click("#pkClose"); await page.wait_for_timeout(300)
+        STATE = "() => { const d = wardrobe.debug(); return { outfit: d.C.state.outfit, R: d.C.state.R, face: d.C.state.face, skins: [...d.SKINS.entries()].map(([k, v]) => [k.split('|').slice(1, 3).join('|'), v.by ? v.by.setId : null]).sort() }; }"
+        n = await page.locator("#cmN").inner_text()
+        check(n == "3", f"the toolbar counts this class's sets (the TTO-only one left out): {n!r}")
+        await page.click("#cm")
+        await page.wait_for_selector(".gal-back:not([hidden]) .send.gal.sets .gal-card")
+        await page.wait_for_function("() => [...document.querySelectorAll('.sets .gal-card img')].every(i => i.naturalWidth > 0)", timeout=15000)
+        cards = await page.evaluate("""() => [...document.querySelectorAll('.sets .gal-card')].map(c => ({ id: c.dataset.set,
+          n: c.querySelector('.gal-n').innerText, thumb: c.querySelector('img').classList.contains('thumb'), wear: c.querySelector('[data-a="wear"]').innerText }))""")
+        check([c["id"] for c in cards] == ["900010", "900002", "900001"] and cards[0]["n"] == "2 ชิ้น" and cards[0]["thumb"] and not cards[1]["thumb"],
+              f"set cards, newest first, the look's picture as its thumbnail: {cards}")
+        check(cards[1]["wear"] == "ใส่อยู่", f"the worn set says so: {cards[1]}")
+        await page.screenshot(path=str(OUT.resolve() / "sets.png"))
+        before = await page.evaluate(STATE)
+        await page.click('.sets .gal-card[data-set="900010"] [data-a="wear"]')
+        await page.wait_for_function("() => [...wardrobe.debug().SKINS.values()].filter(v => v.by?.setId === '900010').length === 2", timeout=15000)
+        after = await page.evaluate(STATE)
+        check(await page.locator(".gal-back:not([hidden])").count() == 0, "ลองทั้งชุด closes the pop-up")
+        check(after["outfit"] == "standard" and after["R"] == "mothLatern" and after["face"] == 3
+              and after["skins"] == [["outfits|standard", "900010"], ["weapons|mothLatern", "900010"]], f"one click: both pieces, their skins, the set's face: {after}")
+        await page.click("#undo"); await page.wait_for_timeout(800)
+        check(await page.evaluate(STATE) == before, f"one undo step takes the whole look off: {await page.evaluate(STATE)}")
+        await page.click("#redo"); await page.wait_for_timeout(800)
+        await page.evaluate("() => wardrobe.debug().setCommunity({ skins: [{ id: '1', cls: 'sheep', kind: 'weapons', item: 'mothLatern', name: 'x', link: '', at: '1', tex: {} }] })")
+        legacy = await page.evaluate("() => wardrobe.debug().SETS.map(s => [s.id, s.pieces[0].slot, s.pieces.length])")
+        check(legacy == [["1", "R", 1]], f"the first format's skins read as sets of one: {legacy}")
+        await page.evaluate(f"() => wardrobe.debug().setCommunity({FAKE['/wardrobe/data/community.json'].decode()})")
+
+        # several files dropped at once: each to the piece its name says (the names this page gives a download), one undo step
+        await page.evaluate("() => wardrobe.setOutfit('standard', 1)")
+        await page.click("#undo"); await page.wait_for_timeout(300)        # back to a look without the set (whatever undo gives)
+        await page.evaluate("() => { const d = wardrobe.debug(); d.SKINS.clear(); }")
+        dropped = await page.evaluate(f"""async () => {{
+          const mk = async (w, h, rgb, name) => {{ const c = new OffscreenCanvas(w, h), g = c.getContext('2d'); g.fillStyle = rgb; g.fillRect(0, 0, w, h);
+            return new File([await c.convertToBlob({{ type: 'image/png' }})], name, {{ type: 'image/png' }}); }};
+          const files = [await mk({OUTFIT_SIZE[0]}, {OUTFIT_SIZE[1]}, '#2a8', '12tails_แกะ_Standard_สี1.png'),
+                         await mk({LANTERN_SIZE[0]}, {LANTERN_SIZE[1]}, '#a2f', '12tails_แกะ_Moth Latern_ลายของคุณ (1).png'),
+                         await mk(8, 8, '#000', 'holiday photo.png')];
+          const n = wardrobe.debug().C ? 0 : 0; await wardrobe.debug().dropMany(files);
+          return document.getElementById('toast').textContent; }}""")
+        st = await page.evaluate(STATE)
+        check(st["skins"] == [["outfits|standard", None], ["weapons|mothLatern", None]] and st["R"] == "mothLatern",
+              f"dropped files went to their pieces (the lantern put on): {st} / {dropped!r}")
+        check("ไม่รู้จัก 1 ไฟล์" in dropped and "holiday photo.png" in dropped, f"the file with an unknown name is reported: {dropped!r}")
+        check(await page.locator("#sendlook").is_visible(), "ส่งลุคนี้ shows once own skins are worn")
+        undo_n = await page.evaluate("() => document.getElementById('undo').disabled")
+        await page.click("#undo"); await page.wait_for_timeout(800)
+        st2 = await page.evaluate(STATE)
+        check(not undo_n and st2["skins"] == [], f"one undo step takes every dropped skin off: {st2}")
+        await page.click("#redo"); await page.wait_for_timeout(800)
+
+        # ส่งลุคนี้: every worn piece with an own skin, each can be left out; one request
+        await page.click("#sendlook")
+        await page.wait_for_selector(".send-back:not([hidden]) form.send.look")
+        rows = await page.evaluate("() => [...document.querySelectorAll('.look-row')].map(r => r.innerText.split('\\n')[0])")
+        check(len(rows) == 2, f"the look lists both pieces: {rows}")
+        await page.wait_for_function("() => document.querySelector('.look-pv img')?.naturalWidth > 0", timeout=10000)
+        await page.screenshot(path=str(OUT.resolve() / "look_dialog.png"))
+        dlg = page.locator("form.send.look")
+        await dlg.locator('input[name="name"]').fill("ผู้ส่งชุด")
+        await dlg.locator('input[name="link"]').fill("")
+        await dlg.locator('input[name="consent"]').check()
+        await page.wait_for_function("() => wardrobe.debug().Send.token", timeout=30000)
+        n0 = len(POSTS)
+        await dlg.locator('button[type="submit"]').click()
+        await page.wait_for_selector("form.send.look", state="detached", timeout=15000)
+        f = POSTS[-1] if len(POSTS) > n0 else {}
+        pieces = json.loads(f.get("pieces") or "[]")
+        sizes = [Image.open(io.BytesIO(f[t["field"]])).size for p in pieces for t in p["textures"] if f.get(t["field"])]
+        check([(p["slot"], p["item"]) for p in pieces] == [("outfit", "standard"), ("R", "mothLatern")] and sizes == [OUTFIT_SIZE, LANTERN_SIZE],
+              f"one request with the whole look: {[(p['slot'], p['item']) for p in pieces]} {sizes}")
+        t = await page.evaluate("() => document.getElementById('toast').textContent")
+        check("ส่งชุดลาย 2 ชิ้นแล้ว" in t, f"the look's toast: {t!r}")
 
         # a phone-sized dialog and pop-up
         pp = await (await b.new_context(viewport={"width": 390, "height": 700}, is_mobile=True, has_touch=True)).new_page()

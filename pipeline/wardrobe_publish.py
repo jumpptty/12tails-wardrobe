@@ -916,22 +916,34 @@ def publish_props(run, cls, kind):
 
 
 def publish_community(run, outfits, props):
-    """community.json and its pictures (community skins, 2026-11-11; pipeline/wardrobe_community.py): a skin goes online
-    when its piece is published and is BB's: a TTO piece has none (user 2026-11-11: "TTO upload should work only on
-    private version"; the pop-up shows the 2D texture). Always written, empty or not (the page asks for it)."""
+    """community.json and its pictures (community skins, 2026-11-11; pipeline/wardrobe_community.py): a set goes online
+    with the pieces of it that are published and are BB's: a TTO piece has none (user 2026-11-11: "TTO upload should work
+    only on private version"; the pop-up shows the 2D texture). A set with no piece left goes whole. Always written,
+    empty or not (the page asks for it). The first format ({"skins": [one piece each]}) reads as sets of one."""
     pub = {("outfits", cls, o["name"]): bool(o.get("tto")) for cls, kept in outfits.items() for o in kept}
     pub |= {(kind, cls, p["name"]): bool(p.get("tto")) for (cls, kind), kept in props.items() for p in kept}
-    skins = []
-    for s in run.load("community.json", default={"skins": []}).get("skins", []):
-        key = (s["kind"], s["cls"], s["item"])
-        if key not in pub or pub[key]:
-            run.drop("community", f"{s['cls']}/{s['item']}/{s['id']}", "its piece is TTO's" if pub.get(key) else "its piece is not published")
+    j = run.load("community.json", default={"sets": []})
+    raw = j["sets"] if "sets" in j else [
+        {"id": s["id"], "cls": s["cls"], "name": s["name"], "link": s["link"], "at": s["at"], "face": None, "thumb": None,
+         "pieces": [{"slot": None, "kind": s["kind"], "item": s["item"], "owner": s["cls"], "tex": s["tex"]}]} for s in j.get("skins", [])]
+    sets = []
+    for s in raw:
+        kept = []
+        for p in s["pieces"]:
+            key = (p["kind"], p["owner"], p["item"])
+            if key not in pub or pub[key]:
+                run.drop("community", f"{p['owner']}/{p['item']}/{s['id']}", "its piece is TTO's" if pub.get(key) else "its piece is not published")
+            else:
+                kept.append(p)
+        if not kept:
             continue
-        for rel in s["tex"].values():
-            run.copy(rel)
-        skins.append(s)
-    run.write_json("community.json", {"skins": skins})
-
+        for p in kept:
+            for rel in p["tex"].values():
+                run.copy(rel)
+        if s.get("thumb"):
+            run.copy(s["thumb"])
+        sets.append({**s, "pieces": kept})
+    run.write_json("community.json", {"sets": sets})
 
 def strip_hand(name):
     return re.sub(r"_[LRlr]$", "", name)

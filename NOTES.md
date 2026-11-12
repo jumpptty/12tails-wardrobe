@@ -1294,3 +1294,27 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   the trim band z 1.2815 +- 0.0055, a black foot under z 1.2475, the front opening a wide V of black lining
   (|y| < 0.006 + 0.42 (z - 1.243)), the studs moved out to |y| 0.026; on the chest a 0.005 black lapel edge, a heavier
   second trim line, a wider knot.
+- **2026-11-12, community skins as whole looks** (user: "ease of use for the users is very important ... the user have to
+  click too many clicks ... I want more well-thought out batch approach. Skin from community one-click change the whole
+  sets and texture"; then "ok build it", "continue"). A submission is now a **set** (a whole look). Format:
+  community.json / the Worker's list = `{"sets": [{id, cls, name, link, at, face, thumb, pieces: [{slot, kind, item,
+  owner, tex}]}]}`; the first format (`{"skins": [...]}`, Discord meta v1) reads as sets of one everywhere (page,
+  Worker, import, publish), so the live test skin keeps working. (1) **Page**: the toolbar's **ลายผู้เล่น** (a count of
+  this class's sets) opens `SetGallery`: a card per set (the character's picture, credit, link), **ลองทั้งชุด** = every
+  piece on with its textures + the set's face, one undo step (`wearSet`, `equipPieces`); ดาวน์โหลด saves every texture.
+  A set none of whose pieces this copy can wear (TTO's, not published) is left out once the prop lists load. The piece
+  menu's ลายจากผู้เล่น still lists each piece of a set on its own (COMMUNITY is derived, ids "<set>#<n>"). **ส่งลุคนี้**
+  (toolbar, shown only with SUBMIT_KEY and an own skin worn) sends every worn piece wearing the visitor's own skin, each
+  can be unticked, with the character's picture (`capturePreview`: the fitted front camera, 360x480 JPEG ~30 KB) and the
+  face: one message, one ✅. **Several files dropped at once** (or one beside the character) go to the piece their name
+  says, the names this page gives downloads (`12tails_<class>_<item>[_สี n][_ลาย n][_ลายโดย..]`, `(1)` copies too), a
+  piece not worn is put on, one undo step (`dropMany`). Toolbar: icons only while the desktop picker is open (with the
+  two new buttons it slid under the picker at 1366 px and hid undo; the check caught it). (2) **Worker**: the `pieces`
+  form field [{slot, kind, item, textures: [{tex, field}]}], up to 6 pieces / 8 files / 9 MB together, `preview`
+  (JPEG/PNG <= 400 KB) and `face`; Discord meta v2 (`pieces`, `face`), the embed's picture is the preview; the list
+  serves `/api/community/<id>/<n>.png` (numbered over the whole set) and `/api/community/<id>/preview`. Unverified:
+  Discord's per-message limit (believed 10 MB; too much shows as "upstream"). (3) **Import** writes sets,
+  `<id>_p.webp` thumbnails (<= 640 px), drops a piece it can't carry (TTO's, missing) and refuses a set with none left.
+  (4) **Publish** keeps a set's published pieces and thumbnail. Checks: unit 63, node 8/8, community check all ok
+  (new: gallery, ลองทั้งชุด + undo, drop many + undo, ส่งลุคนี้ one request with both pieces + preview + face), menu
+  check 35/35. Not deployed (HANDOFF).

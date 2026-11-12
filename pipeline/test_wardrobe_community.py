@@ -43,9 +43,10 @@ class Community(unittest.TestCase):
     def test_adds_writes_webp_and_mirrors_removals(self):
         added, removed, refused = wc.apply(self.d, [self.sub("111"), self.sub("222", kind="outfits", item="standard", tex=(("", 16),), link="https://x.example/a")])
         self.assertEqual((added, removed, refused), (["111", "222"], [], []))
-        j = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["skins"]
+        j = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["sets"]
         self.assertEqual([s["id"] for s in j], ["111", "222"])
-        self.assertEqual(j[0]["tex"], {"Lantern.png": "community/sheep/111_0.webp"})
+        self.assertEqual(j[0]["pieces"], [{"slot": "R", "kind": "weapons", "item": "halloweenLantern", "owner": "sheep", "tex": {"Lantern.png": "community/sheep/111_0.webp"}}])
+        self.assertEqual((j[0]["face"], j[0]["thumb"]), (None, None))              # the first format: no face, no preview
         self.assertEqual(j[1]["link"], "https://x.example/a")
         with Image.open(self.d / "community/sheep/111_0.webp") as im:
             self.assertEqual((im.format, im.size), ("WEBP", (8, 8)))
@@ -53,12 +54,47 @@ class Community(unittest.TestCase):
         self.assertEqual((added, removed), ([], ["111"]))
         self.assertFalse((self.d / "community/sheep/111_0.webp").exists())
         self.assertTrue((self.d / "community/sheep/222_0.webp").exists())
+        self.assertEqual(wc.old_ids(self.d), {"222"})
 
-    def test_shared_piece_goes_under_all_with_both_textures(self):
+    def test_shared_piece_keeps_its_owner_and_both_textures(self):
         wc.apply(self.d, [self.sub("333", kind="trinkets", item="Azure_Wing", tex=(("Wing.png", 8), ("Wing2.png", 4)))])
-        s = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["skins"][0]
-        self.assertEqual(s["cls"], "all")
-        self.assertEqual(s["tex"], {"Wing.png": "community/all/333_0.webp", "Wing2.png": "community/all/333_1.webp"})
+        s = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["sets"][0]
+        self.assertEqual(s["cls"], "sheep")
+        self.assertEqual(s["pieces"][0]["owner"], "all")
+        self.assertEqual(s["pieces"][0]["tex"], {"Wing.png": "community/sheep/333_0.webp", "Wing2.png": "community/sheep/333_1.webp"})
+
+    def look(self, mid, pieces, preview=True, face=38, at="2026-11-12T10:00:00Z"):
+        """a whole look (meta v2): pieces = [(slot, kind, item, [(tex, size)])]"""
+        n, defs, files = 0, [], {}
+        for slot, kind, item, texs in pieces:
+            ts = []
+            for t, s in texs:
+                files[f"skin{n}.png"] = png(s, s)
+                ts.append({"tex": t, "file": f"skin{n}.png", "w": s, "h": s})
+                n += 1
+            defs.append({"slot": slot, "kind": kind, "item": item, "textures": ts})
+        if preview:
+            b = io.BytesIO()
+            Image.new("RGB", (30, 40), (200, 200, 190)).save(b, "JPEG")
+            files["preview.jpg"] = b.getvalue()
+        return mid, {"v": 2, "cls": "sheep", "name": "ผู้ส่งชุด", "link": "", "face": face, "at": at, "pieces": defs}, files, at
+
+    def test_a_whole_look_is_one_set_with_its_face_and_thumbnail(self):
+        added, _, refused = wc.apply(self.d, [self.look("500", [("outfit", "outfits", "standard", [("", 16)]), ("R", "weapons", "halloweenLantern", [("Lantern.png", 8)])])])
+        self.assertEqual((added, refused), (["500"], []))
+        s = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["sets"][0]
+        self.assertEqual((s["face"], s["thumb"]), (38, "community/sheep/500_p.webp"))
+        self.assertEqual([(p["slot"], p["item"], list(p["tex"].values())) for p in s["pieces"]],
+                         [("outfit", "standard", ["community/sheep/500_0.webp"]), ("R", "halloweenLantern", ["community/sheep/500_1.webp"])])
+        with Image.open(self.d / s["thumb"]) as im:
+            self.assertEqual(im.format, "WEBP")
+
+    def test_a_look_drops_a_piece_it_cannot_carry_and_is_refused_when_none_is_left(self):
+        added, _, refused = wc.apply(self.d, [self.look("501", [("outfit", "outfits", "standard", [("", 16)]), ("R", "weapons", "ttoStaff", [("Lantern.png", 8)])], preview=False)])
+        s = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["sets"][0]
+        self.assertEqual((added, refused, [p["item"] for p in s["pieces"]], s["thumb"]), (["501"], [], ["standard"], None))   # the TTO staff is left out
+        _, _, refused = wc.apply(self.d, [self.look("502", [("R", "weapons", "ttoStaff", [("Lantern.png", 8)])])])
+        self.assertEqual([i for i, _ in refused], ["502"])
 
     def test_refusals(self):
         bad = [self.sub("1", item="nothing"), self.sub("2", tex=(("Lantern.png", 12),)), self.sub("3", kind="outfits", item="nude", tex=(("", 16),)),
