@@ -1176,4 +1176,6 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   now ("Secret-Store Writes"), so the user sets them (HANDOFF). After that the PC import is only the fallback.
 - **2026-11-12, the disclaimer reworded** (user picked from six takes: "let's go with เว็บแฟนเมด ไม่ใช่ของ Official";
   "Official" in English is the user's choice, an exception to the all-Thai rule). Deployed 32507daf; checked live: the
-  marks on ไม่ใช่ render clean, top left of the stage.
+  marks on ไม่ใช่ render clean, top left of the stage.  Later the same day (user: "approve settin the bot secrets"): Claude set DISCORD_BOT_TOKEN (from discord.json, Git
+  Bash pipe, never printed) and DISCORD_CHANNEL. /api/community lists the test skin, its picture 200 image/png; a
+  headless run of the live page loads both from the route and the pop-up card shows it. Phone approval is live.
