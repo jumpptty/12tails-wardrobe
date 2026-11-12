@@ -29,10 +29,11 @@ def texel_maps(cls, name, size):
     buf = (DATA / cls / f"o_{name}.bin").read_bytes()
     W, H = size
     names = sorted({b for m in o["meshes"] for b in m["bones"]})
-    bone, pos = np.full((H, W), -1, int), np.zeros((H, W, 3))
+    bone, pos, nrm = np.full((H, W), -1, int), np.zeros((H, W, 3)), np.zeros((H, W, 3))
     for m in o["meshes"]:
         n = m["verts"]
         P = np.frombuffer(buf, np.float32, n * 3, m["pos"]).reshape(-1, 3)
+        N = np.frombuffer(buf, np.float32, n * 3, m["nrm"]).reshape(-1, 3)
         uv = np.frombuffer(buf, np.float32, n * 2, m["uv"]).reshape(-1, 2)
         J = np.frombuffer(buf, np.uint16, n * 4, m["j"]).reshape(-1, 4)
         Wt = np.frombuffer(buf, np.float32, n * 4, m["w"]).reshape(-1, 4)
@@ -53,6 +54,7 @@ def texel_maps(cls, name, size):
             yy, xx = np.where(inside)
             L = np.stack([l0[inside], l1[inside], 1 - l0[inside] - l1[inside]], 1)
             pos[yy + y0, xx + x0] = L @ P[t]
+            nrm[yy + y0, xx + x0] = L @ N[t]
             bw = np.zeros((len(yy), len(names)))
             for k in range(3):
                 for q in range(4):
@@ -61,7 +63,9 @@ def texel_maps(cls, name, size):
     covered = bone >= 0
     lab, _ = ndimage.label(covered)
     iy, ix = ndimage.distance_transform_edt(~covered, return_distances=False, return_indices=True)
-    return SimpleNamespace(bones=names, bone=bone[iy, ix], pos=pos[iy, ix], lab=lab[iy, ix], covered=covered)
+    nrm = nrm[iy, ix] / np.maximum(np.linalg.norm(nrm[iy, ix], axis=-1, keepdims=True), 1e-6)
+    return SimpleNamespace(bones=names, bone=bone[iy, ix], pos=pos[iy, ix], nrm=nrm, lab=lab[iy, ix], covered=covered,
+                           edge=ndimage.distance_transform_edt(covered))     # texels to the island's edge (0 in the gutter)
 
 
 # ---------- colour ----------
@@ -221,7 +225,7 @@ def uniform(variant):
 
 
 # ---------- on the hero ----------
-async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), (200, "back"), (290, "right")), size=640, dpr=1):
+async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), (200, "back"), (290, "right")), size=640, dpr=1, face=None):
     """variants: (name, {skin key: png}, {slot: prop}) -> out/shots/<name>_<side>.png, the hero cut out on a light backdrop."""
     from playwright.async_api import async_playwright
     Q = type("Q", (http.server.SimpleHTTPRequestHandler,), {"log_message": lambda *a: None})
@@ -237,7 +241,7 @@ async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), 
         await page.add_style_tag(content="*{visibility:hidden!important} canvas{visibility:visible!important}")
         for name, files, props in variants:
             skins = {k: "/" + f.relative_to(ROOT).as_posix() for k, f in files.items()}
-            await page.evaluate("""async ([cls, outfit, skins, props]) => {
+            await page.evaluate("""async ([cls, outfit, skins, props, face]) => {
               const { SKINS, scene, THREE } = wardrobe.debug(); SKINS.clear();
               scene.background = new THREE.Color(0xe6e1d8);
               for (const [k, url] of Object.entries(skins)) {
@@ -245,9 +249,11 @@ async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), 
                 const g = c.getContext("2d"); g.drawImage(img, 0, 0);
                 SKINS.set(k, { w: img.width, h: img.height, data: g.getImageData(0, 0, img.width, img.height).data });
               }
-              await wardrobe.show(cls, {}); await wardrobe.setOutfit(outfit, 1);
+              await wardrobe.show(cls, {});
+              if (face != null) wardrobe.debug().C.state.face = face;      // the face preset (the page's own overlay)
+              await wardrobe.setOutfit(outfit, 1);
               for (const s of ["Head", "R", "L", "Back"]) await wardrobe.show(cls, { [s]: props[s] || null });
-            }""", [cls, outfit, skins, props])
+            }""", [cls, outfit, skins, props, face])
             for yaw, side in yaws:
                 await page.evaluate("([c, y]) => wardrobe.show(c, {}, y)", [cls, yaw])
                 await page.wait_for_timeout(350)

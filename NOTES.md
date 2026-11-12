@@ -1234,3 +1234,24 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   trims carried over); the knight is to be painted from the mesh (bone, position, island), the original's paint
   optional. `wardrobe_repaint.shots(cls, outfit, variants, out, yaws, size, dpr)` is general now (skins must sit under
   the repo: the page fetches them). Next: the detailed paint on champion, waiting for the user's go.
+- **2026-11-12, the Cat's knight: the detailed paint on champion** (user: "You may go ahead, note that you can also change
+  the skin color to match, you may also edit the faces your self"; then "if done I want a original vs new 3D vs ref").
+  `pipeline/wardrobe_knight.py --paint [--ref <picture>] [--debug]` -> plans/reskins/cat/knight/champion.png, shots,
+  knight_compare.png (original | new | reference) and knight.html. What the outfit texture does NOT hold (an island-id
+  render showed it: each island a flat colour, numbers on the model): the **hair** (it kept its colour; the Cat's own
+  pale blonde stays) and the **eyes** (the face preset's overlay; preset 38 = purple, calm, the closest of the 43; the
+  render sets `C.state.face`, a visitor picks it in the page). Painted from the mesh alone (bone, position, normal,
+  island; the original's paint not read): the red suit on the bare torso / thighs / arms (islands 3, 4, 23, 24) with
+  form shading from the normals (lighter facing up, darker at the sides and island edges), princess seams, a black
+  placket with a silver zip, three frog fasteners with studs (z 1.075 / 1.040 / 1.005, |y| < 0.04), a white collar
+  close to the neck; red sleeves to the elbow (|y| 0.30) and a painted vambrace below; gold knee emblems with a black
+  hexagon (z 0.368, |y| 0.09, front-facing texels); black gloves with plated fingers; fair skin on the head island and
+  the head's side under the hair (island 5, dark fur before); ears and tail the hair's blonde. From the original's
+  paint, re-toned (its gold trims follow the modelled edges): the plate (silver / the reference's gold), the hip cloth
+  (white, its filigree blurred away, thin gold ornaments removed by a binary opening, a soft dark contour beside the
+  gold border), the crossed straps and the chest crest (black, gold edges; studs on the crest). The shield: alpha 0.
+  Tried and dropped: a painted shoulder cap + fringe (read as a bare white shoulder), a white cape yoke on the back
+  (beside fair skin it read as a bare back), a dilated-ring line on the cloth (jagged), black for the choker's gold
+  (a dotted line under the chin). `texel_maps` now also gives `nrm` and `edge` (texels to the island's edge); `shots`
+  takes `face`. The script asserts the size and that only the shield's texels lose alpha. The reference picture is the
+  user's: copied to plans/reskins/cat/reference.png for the comparison, not committed.
