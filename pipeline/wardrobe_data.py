@@ -265,7 +265,49 @@ def mirror_rows(rows, slot):
     return [[-x if i in neg else x for i, x in enumerate(r)] for r in rows]
 
 
+BIBLE_MATS = next((p for p in (r"D:\12tails", r"C:\Users\Jump\Desktop\12tails")
+                   if os.path.isdir(os.path.join(p, "RippedAssets"))), r"D:\12tails") + r"\RippedAssets\ExportedProject\Assets\Material"
+ADDITIVE_ALPHA = "184331bfe0c8b0c428d3876fa69d4cd1"       # Transparent/AdditiveAlpha (the champion weapons; its properties
+# _AdditiveColor / _AdditiveRange are this shader's only), not a file in the rip: known by its materials
+
+
+def game_shader(tex):
+    """What the game's material of the same name does with the texture's alpha, as the page needs it. BB's prop
+    materials sit in the Bible's rip (props/json leaves the shader empty). The page cuts every texel under alpha 0.5
+    (alphaTest), right for most props, wrong for two kinds (user 2026-11-12: "Wolf Time Sword and Champion Sword why
+    their textures are missing, champion sword shoe have aqua glass like blades along the edges"):
+      opaque: the built-in Diffuse (fileID 7) ignores alpha, the texture's alpha is a mask for something else (the
+              Time Sword's is 96 % under 0.5: it was cut almost away)
+      addAlpha, cut: Transparent/AdditiveAlpha draws texels with alpha >= cut (_AdditiveRange, default 0.9) solid, the
+              rest added as light (tex x alpha, Blend SrcAlpha One, both sides, no depth write): the glass edges
+    """
+    if not tex:
+        return {}
+    f = os.path.join(BIBLE_MATS, os.path.splitext(tex)[0] + ".mat")
+    if not os.path.exists(f):
+        return {}
+    s = open(f, encoding="utf-8", errors="ignore").read()
+    m = re.search(r"m_Shader: \{fileID: (\d+), guid: (\w+)", s)
+    if not m:
+        return {}
+    if m.group(1) == "7" and m.group(2) == "0000000000000000e000000000000000":
+        return {"shader": "opaque"}
+    if m.group(2) == ADDITIVE_ALPHA:
+        r = re.search(r"name: _AdditiveRange\s+second: ([\d.]+)", s)
+        return {"shader": "addAlpha", "cut": round(float(r.group(1)) if r else 0.9, 4)}
+    return {}
+
+
+def prop_mats(mats, tto):
+    """A node's materials for the page: texture, colour, and the game's shader where it matters (BB items only: TTO's
+    new ones have no material in the rip)."""
+    return [{"tex": m.get("tex"), "color": [round(x, 3) for x in m.get("color", [1, 1, 1, 1])],
+             **({} if tto else game_shader(m.get("tex")))} for m in mats]
+
+
 if "--no-props" not in argv:
+    if not os.path.isdir(BIBLE_MATS):
+        print(f"no {BIBLE_MATS}: the props' shaders are left out (every texture cut at alpha 0.5)", flush=True)
     for f in sorted(os.listdir(os.path.join(VIDEO, "props", "json"))):
         D = json.load(open(os.path.join(VIDEO, "props", "json", f)))
         if ONLY and D["class"] not in ONLY and D["class"] != "all":
@@ -321,8 +363,7 @@ if "--no-props" not in argv:
                      "q": [round(x, 6) for x in mq(n["q"])], "s": [round(x, 5) for x in n["s"]], "on": n.get("active", True)}
                 if "mesh" in n and not (live and n.get("baked")):
                     e["mesh"] = prop_mesh(n["mesh"], len(n.get("mats", [])))
-                    e["mats"] = [{"tex": m.get("tex"), "color": [round(x, 3) for x in m.get("color", [1, 1, 1, 1])]}
-                                 for m in n.get("mats", [])]
+                    e["mats"] = prop_mats(n.get("mats", []), prop["tto_new"])
                 if live and "skin" in n:
                     sk = n["skin"]
                     M = sk["mesh"]
@@ -331,8 +372,7 @@ if "--no-props" not in argv:
                     e["skin"]["j"] = [int(x) for v in M["bi"] for x in (list(v) + [0, 0, 0, 0])[:4]]
                     Sg = (-1, 1, 1, 1)                 # bind poses S B S, column-major for three.js
                     e["skin"]["ibm"] = [round(b[r][c] * Sg[r] * Sg[c], 6) for b in M["bind"] for c in range(4) for r in range(4)]
-                    e["mats"] = [{"tex": m.get("tex"), "color": [round(x, 3) for x in m.get("color", [1, 1, 1, 1])]}
-                                 for m in sk["mats"]]
+                    e["mats"] = prop_mats(sk["mats"], prop["tto_new"])
                 nn.append(e)
             for k, n in enumerate(nodes):
                 if keep[k] and live and "skin" in n:

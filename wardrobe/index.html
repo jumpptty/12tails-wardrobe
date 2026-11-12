@@ -865,9 +865,14 @@ function propList(kind) {
   return K.propLists[kind] ? Promise.resolve(K.propLists[kind])
     : fetchProps(K.cls, kind).then(l => { K.propLists[kind] = l; if (K === C) syncCommunityBtn(); return l; });   // a set it can't wear leaves the count
 }
+// m.shader (wardrobe_data.py game_shader, BB items): "opaque" = the game's Diffuse, the texture's alpha is not see-through
+// (the Time Sword, cut almost away at 0.5); "addAlpha" = Transparent/AdditiveAlpha: solid from m.cut up, the rest
+// glows (glowTwin). Neither: cut at 0.5, as every prop was before 2026-11-12
 function propMaterials(list) {
   return (list && list.length ? list : [{ tex: null, color: [1, 1, 1, 1] }]).map(m => {
-    const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(m.color[0], m.color[1], m.color[2]), side: THREE.DoubleSide, alphaTest: 0.5 });
+    const alphaTest = m.shader === "opaque" ? 0 : m.shader === "addAlpha" ? m.cut : 0.5;
+    const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(m.color[0], m.color[1], m.color[2]), side: THREE.DoubleSide, alphaTest });
+    if (m.shader === "addAlpha") mat.userData.glowCut = m.cut;
     if (m.tex) {
       const t = loadTex(`${DATA}props/tex/${m.tex}`);
       t.colorSpace = THREE.SRGBColorSpace;
@@ -889,13 +894,40 @@ function propGeometry(m) {
   for (const [start, count, mi] of m.groups) g.addGroup(start, count, mi);
   return g;
 }
+// Transparent/AdditiveAlpha's second pass (the champion weapons' aqua glass edges, user 2026-11-12): a copy of the mesh
+// drawing only the texels under the cut, added as light: the game's Blend SrcAlpha One, texture x alpha, unlit, both
+// sides, no depth write. As fxMaterial's additive blends, it writes premultiplied colour with alpha = its brightest
+// channel (the canvas is transparent over the stage; a browser drops colour where the canvas alpha is 0). The copy
+// shares the geometry and the texture (a visitor's skin swaps both: skinProp finds it by userData.tex)
+function glowTwin(o) {
+  const mats = [].concat(o.material);
+  if (!mats.some(m => m.userData.glowCut != null)) return;
+  const twin = mats.map(m => {
+    if (m.userData.glowCut == null) return new THREE.MeshBasicMaterial({ visible: false });
+    const cut = m.userData.glowCut, g = new THREE.MeshBasicMaterial({ map: m.map, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+      blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor });
+    g.userData = { tex: m.userData.tex, map0: m.userData.map0, glow: true };
+    g.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader
+      .replace("#include <alphatest_fragment>", `if (diffuseColor.a >= ${cut.toFixed(4)}) discard;`)
+      .replace("#include <dithering_fragment>", "#include <dithering_fragment>\n\tgl_FragColor.rgb *= gl_FragColor.a;"
+        + "\n\tgl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));"); };
+    g.customProgramCacheKey = () => "propGlow" + cut;
+    return g;
+  });
+  const t = o.isSkinnedMesh ? new THREE.SkinnedMesh(o.geometry, twin.length > 1 ? twin : twin[0]) : new THREE.Mesh(o.geometry, twin.length > 1 ? twin : twin[0]);
+  t.name = "glow"; t.renderOrder = 1; t.frustumCulled = o.frustumCulled;
+  t.userData.hoverOverlay = true;                     // not a piece of its own for the hover's tint and outline
+  if (o.isSkinnedMesh) { o.parent.add(t); t.bind(o.skeleton, o.bindMatrix); } else o.add(t);
+}
 function buildProp(p) {
   const objs = [], skins = [];
   p.nodes.forEach((n, i) => {
     let o;
     if (n.mesh) { const mats = propMaterials(n.mats);
       if (stacked(n.mesh.pos, n.mesh.idx)) mats.forEach(m => { m.side = THREE.FrontSide; });
-      o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]); }
+      o = new THREE.Mesh(propGeometry(n.mesh), mats.length > 1 ? mats : mats[0]);
+      glowTwin(o); }
     else o = new THREE.Bone();                          // plain nodes double as the bones an animated prop's skin uses
     o.name = "p" + i;                                   // unique in the prop: its clip tracks bind by these names
     o.userData.label = n.name;
@@ -922,6 +954,7 @@ function buildHeroSkin(p) {
   const inv = sm.matrixWorld.clone().invert();
   const boneInverses = s.bones.map((_, i) => new THREE.Matrix4().fromArray(s.ibm, i * 16).multiply(inv));
   sm.bind(new THREE.Skeleton(s.bones.map(n => C.byName[n]), boneInverses), sm.matrixWorld.clone());
+  glowTwin(sm);
   return sm;
 }
 // after mounting: bind the live skins (the wings, on their own bones) and loop the prop's own clip (they flap)
@@ -940,6 +973,7 @@ function finishProp(root) {
     const inv = sm.matrixWorld.clone().invert();
     const boneInverses = n.skin.bones.map((_, i) => new THREE.Matrix4().fromArray(n.skin.ibm, i * 16).multiply(inv));
     sm.bind(new THREE.Skeleton(n.skin.bones.map(b => objs[b]), boneInverses), sm.matrixWorld.clone());
+    glowTwin(sm);
   }
   const a = prop.anim;
   if (!a) return;
@@ -966,8 +1000,17 @@ function finishProp(root) {
       tracks.push(new THREE.VectorKeyframeTrack(`p${idx}.${prop_}`, times, v));
     }
   }
-  const mixer = new THREE.AnimationMixer(root);
-  mixer.clipAction(new THREE.AnimationClip(pick, dur, tracks)).play();
+  // a clip that ends away from where it starts can't loop (the data marks every clip a loop): it plays once and holds
+  // its end. The Bat's wagasa "close" (its default: the game holds it closed and opens / closes it on the battle emote,
+  // Bat.cs) looped a 0.4 s closing for ever (user 2026-11-12: "fix Bat Japanese Umbrella non-stop animation loop");
+  // the Mole's barrel and legend cannons' "fire" turn a handle / a drum one step and snapped back every 0.2 s
+  const ends = tracks.some(tr => { const k = tr.getValueSize(), v = tr.values, e = v.length - k;
+    let d = 0; for (let i = 0; i < k; i++) d = Math.max(d, Math.abs(v[i] - v[e + i]));
+    if (k === 4) { let dot = 0; for (let i = 0; i < 4; i++) dot += v[i] * v[e + i]; d = 2 * Math.acos(Math.min(1, Math.abs(dot))) / 2.5; }
+    return d > 0.1; });                         // 0.1 in position / scale, 14 degrees: the wings' loops drift up to 0.04
+  const mixer = new THREE.AnimationMixer(root), act = mixer.clipAction(new THREE.AnimationClip(pick, dur, tracks));
+  if (ends) { act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; }
+  act.play();
   root.userData.mixer = mixer;
 }
 // where a prop goes on the hero (setProp; ชมชิ้นส่วน turns a floating piece the way it sits): TTO's own placement for
