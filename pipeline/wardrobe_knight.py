@@ -20,12 +20,14 @@ BLACK = ("#101014", "#25242b", "#4b4954")
 OUT = ROOT / "plans" / "reskins" / "cat"
 
 
-def load(outfit):
+def load(outfit, K=1):
     im = Image.open(DATA / "cat" / "tex" / f"{outfit}1.webp").convert("RGBA")
+    if K > 1:
+        im = im.resize((im.width * K, im.height * K), Image.LANCZOS)
     src = np.asarray(im).astype(float)
     M = texel_maps("cat", outfit, im.size)
     h, s, v = hsv(src[..., :3])
-    L = ndimage.gaussian_filter(src[..., :3] @ [0.299, 0.587, 0.114] / 255, 1.0)
+    L = ndimage.gaussian_filter(src[..., :3] @ [0.299, 0.587, 0.114] / 255, 1.0 * K)
     grp = lambda *pre: np.isin(M.bone, [i for i, b in enumerate(M.bones) if b.startswith(pre)])
     return src, M, h, s, v, L, grp
 
@@ -101,6 +103,7 @@ img{{width:24%;min-width:200px}}figcaption{{font-weight:600;margin:4px}}</style>
 # gold trims follow the modelled edges) in the reference's metals. Hair and eyes are not the outfit texture's: the hair
 # is the Cat's own pale blonde, the eyes are the face preset's (38: purple, calm).
 GOLD = ("#74460e", "#d9a22c", "#ffe690")
+STEEL = ("#474c5a", "#9298a8", "#e3e6ed")       # the plate's trim where the reference has no gold
 SKIN = ("#b97a5e", "#efc5a9", "#fcdfca")
 BLOND = ("#8d8260", "#d8cfa9", "#f7f2da")       # the Cat's own hair, for her ears and tail
 SEEDS = dict(torsoF=(290, 100), torsoB=(430, 100), arms=(170, 360), thighs=(450, 340), skirt=(270, 300), skirt2=(67, 319),
@@ -110,21 +113,25 @@ SEEDS = dict(torsoF=(290, 100), torsoB=(430, 100), arms=(170, 360), thighs=(450,
              boot2=(20, 392), boot3=(44, 360), boot4=(154, 436), head=(72, 90), ears=(64, 192), inner=(160, 50),
              hand1=(95, 249), hand2=(36, 247), hand3=(20, 292), hand4=(64, 296), tail=(238, 482), tip=(46, 450),
              shield=(180, 135), shield2=(497, 30))
-AA = 0.0014                                      # about a texel, in body units
+AA = 0.0014                                      # about a texel of the game's 512 px sheet, in body units
+HI = 4                                           # the skin's scale: 2048 px
 
 
 def inside(d, aa=AA):                            # a signed distance (negative inside) -> a soft mask
     return 1 - sstep(d, -aa, aa)
 
 
-def knight(debug=False):
-    src, M, h, s, v, L, grp = load("champion")
-    out, alpha = src[..., :3].copy(), src[..., 3].copy()
-    I = {k: (M.lab == M.lab[y, x]) for k, (x, y) in SEEDS.items()}
+def knight(debug=False, K=HI):
+    """K: the texture's scale over the game's 512 px (user 2026-11-12: "you are allowed to ignore game logic and apply
+    high-res texture"): the drawn lines are sharp at any K; the original's paint under the plate is enlarged (soft)."""
+    src, M, h, s, v, L, grp = load("champion", K)
+    out, alpha = src[..., :3].copy(), np.full(src.shape[:2], 255.0)
+    I = {k: (M.lab == M.lab[y * K + K // 2, x * K + K // 2]) for k, (x, y) in SEEDS.items()}
+    ins = lambda d: inside(d, AA / K)
     if debug:
         for k, m in I.items():
             ys, xs = np.where(m & M.covered)
-            print(f"{k:10s} covered={bool(M.covered[SEEDS[k][1], SEEDS[k][0]])} px={len(xs):6d} x {xs.min()}-{xs.max()} y {ys.min()}-{ys.max()}")
+            print(f"{k:10s} px={len(xs):7d} x {xs.min() // K}-{xs.max() // K} y {ys.min() // K}-{ys.max() // K}")
     X, Ys, Z = M.pos[..., 0], M.pos[..., 1], M.pos[..., 2]
     Y = np.abs(Ys)
     nx, ny, nz = M.nrm[..., 0], M.nrm[..., 1], M.nrm[..., 2]
@@ -134,7 +141,7 @@ def knight(debug=False):
         out[m] = (out * (1 - k) + col * k)[m]
 
     # painted light for the new cloth: from above, the sides and the islands' edges a little darker
-    form = ndimage.gaussian_filter(0.5 + 0.30 * nz - 0.10 * np.abs(ny) - 0.16 * (1 - sstep(M.edge, 0, 6)) * M.covered, 1.2)
+    form = ndimage.gaussian_filter(0.5 + 0.30 * nz - 0.10 * np.abs(ny) - 0.16 * (1 - sstep(M.edge, 0, 6 * K)) * M.covered, 1.2 * K)
     gold_k = sstep(s, 0.45, 0.65) * (hd(h, 42) < 20) * sstep(v, 0.5, 0.7)
     hexv = lambda c: np.array([int(c[i:i + 2], 16) for i in (1, 3, 5)], float)
     hexc_white = hexv(WHITE[1])
@@ -149,49 +156,54 @@ def knight(debug=False):
         mix(area, ramp(tone(L, area & (gold_k > 0.7)), GOLD), gold_k)
     alpha[I["shield"] | I["shield2"]] = 0
 
-    # the hip cloth: its thin gold ornaments (the wing) gone, a black line inside the gold border, as the reference's tabard
-    thick = ndimage.binary_opening(cloth & (gold_k > 0.5), iterations=2)
-    near = ndimage.binary_dilation(thick, iterations=2)
-    Ls = ndimage.gaussian_filter(L, 3)                         # and its grey filigree: the cloth plain, softly shaded
+    # the hip cloth: its thin gold ornaments (the wing) gone, plain white inside the gold border, as the reference's tabard
+    # (a gold piece is a border when some part of it is thick; a per-texel test bit ragged notches into the borders' tips)
+    gmask = cloth & (gold_k > 0.4)
+    gl, _ = ndimage.label(gmask)
+    border = np.isin(gl, np.unique(gl[ndimage.binary_opening(gmask, iterations=2 * K)])) & gmask
+    near = ndimage.binary_dilation(border, iterations=K)
+    Ls = ndimage.gaussian_filter(L, 3 * K)                     # and its grey filigree: the cloth plain, softly shaded
     mix(cloth, ramp(tone(Ls, cloth & (gold_k < 0.3) & (s < 0.25)), WHITE), (1 - gold_k) + gold_k * ~near)
-    g = ndimage.gaussian_filter(thick.astype(float), 1.6)      # a smooth contour beside the border (a dilated ring was jagged)
-    mix(cloth & M.covered, hexv("#211e27"), (1 - sstep(np.abs(g - 0.16), 0.03, 0.09)) * 0.6 * (gold_k < 0.3))
+    # (no dark line inside the border: at 512 px it is a texel wide and steps; the user: "the black outline looks cheap")
+    # the legs: no gold but the knee emblems (user: "the boots shouldn't have any gold"): their trims a darker steel
+    legs = I["greave"] | I["rim"] | I["boot"] | I["boot2"] | I["boot3"] | I["boot4"]
+    mix(legs, ramp(tone(L, legs & (gold_k > 0.7)), STEEL), np.maximum(gold_k, sstep(s, 0.25, 0.45) * (hd(h, 42) < 25)))   # faint gold too
     # the knees: the reference's gold emblem, a black hexagon inside it (the greave's front, z 0.37, |y| 0.09)
     G = I["greave"]
     dy, dz = Y - 0.09, Z - 0.368
     hexd = np.maximum(np.abs(dy) * 0.866 + np.abs(dz) * 0.5, np.abs(dz))
     front = sstep(nx, 0.15, 0.4)
-    mix(G, hexv("#1b1a20"), inside(hexd - 0.0345) * front)
-    mix(G, ramp(form + 0.1, GOLD), inside(hexd - 0.031) * front)
-    mix(G, hexv("#1b1a20"), inside(np.abs(hexd - 0.0185) - 0.0022) * front)
+    mix(G, hexv("#1b1a20"), ins(hexd - 0.0345) * front)
+    mix(G, ramp(form + 0.1, GOLD), ins(hexd - 0.031) * front)
+    mix(G, hexv("#1b1a20"), ins(np.abs(hexd - 0.0185) - 0.0022) * front)
     # ----- the suit: the torso
     red = ramp(form, RED)
     for k in ("torsoF", "torsoB", "thighs", "arms"):
         mix(I[k], red)
     F, B = I["torsoF"], I["torsoB"]
     seam = np.abs(Y - (0.028 + 0.062 * np.clip((Z - 0.88) / 0.31, 0, 1) ** 1.2)) - 0.0020      # the princess seams
-    mix(F | B, hexv("#4d0a13"), inside(seam) * 0.8)
-    mix(F, ramp(form, BLACK), inside(Y - 0.0085) * (Z < 1.2))                                   # the placket and its zip
-    mix(F, hexv("#aab0bd"), inside(Y - 0.0015) * (Z < 1.2))
+    mix(F | B, hexv("#4d0a13"), ins(seam) * 0.8)
+    mix(F, ramp(form, BLACK), ins(Y - 0.0085) * (Z < 1.2))                                   # the placket and its zip
+    mix(F, hexv("#aab0bd"), ins(Y - 0.0015) * (Z < 1.2))
     for z0 in (1.075, 1.040, 1.005):                                                            # the frog fasteners
         bar = np.maximum(np.abs(Z - z0) - 0.0048, Y - 0.040)
         tip = (np.abs(Y - 0.042) / 0.011 + np.abs(Z - z0) / 0.0105 - 1) * 0.008
-        mix(F, ramp(form, BLACK), inside(np.minimum(bar, tip)))
-        mix(F, hexv("#cfd2dc"), inside(np.hypot(Y - 0.021, Z - z0) - 0.0034))
+        mix(F, ramp(form, BLACK), ins(np.minimum(bar, tip)))
+        mix(F, hexv("#cfd2dc"), ins(np.hypot(Y - 0.021, Z - z0) - 0.0034))
     col_d = (Z - (1.207 + 0.75 * Y)) / 1.25                                                     # the collar: close to the neck
-    mix(F, ramp(form + 0.1, WHITE), inside(-col_d))
-    mix(F, hexv("#1b1a20"), inside(np.abs(col_d) - 0.0030))
-    mix(B, hexv("#4d0a13"), inside(Y - 0.0016) * 0.8)                                           # the back: a centre seam
+    mix(F, ramp(form + 0.1, WHITE), ins(-col_d))
+    mix(F, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0030))
+    mix(B, hexv("#4d0a13"), ins(Y - 0.0016) * 0.8)                                           # the back: a centre seam
     # (a white cape yoke was tried here: beside the fair skin it read as a bare back)
-    mix(B, ramp(form + 0.1, WHITE), inside(-col_d))                                             # the collar goes round
-    mix(B, hexv("#1b1a20"), inside(np.abs(col_d) - 0.0030))
+    mix(B, ramp(form + 0.1, WHITE), ins(-col_d))                                             # the collar goes round
+    mix(B, hexv("#1b1a20"), ins(np.abs(col_d) - 0.0030))
 
     # ----- the sleeves: red to the elbow (|y| 0.30), a vambrace from there
     A = I["arms"]
     # (red from the shoulder: the left arm's band and bracer, the right's pauldron and gauntlet are modelled over it;
     # a painted shoulder cap read as a bare white shoulder, pass 1)
-    mix(A, ramp(form + 0.05, SILVER), inside(0.300 - Y))
-    mix(A, ramp(form, GOLD), inside(np.abs(Y - 0.300) - 0.004))
+    mix(A, ramp(form + 0.05, SILVER), ins(0.300 - Y))
+    mix(A, ramp(form, GOLD), ins(np.abs(Y - 0.300) - 0.004))
 
     # ----- the straps across the waist: black leather, the reference's fasteners; the chest crest: the dark studded jabot
     for k in ("straps", "crest"):
@@ -200,7 +212,7 @@ def knight(debug=False):
 
     C = I["crest"]                                                                              # the jabot's studs
     for z0 in (1.195, 1.170, 1.145):
-        mix(C, hexv("#d5d8e2"), inside(np.hypot(Y - 0.011, Z - z0) - 0.0042))
+        mix(C, hexv("#d5d8e2"), ins(np.hypot(Y - 0.011, Z - z0) - 0.0042))
 
     # ----- gloves: black, the fingers plated
     hands = I["hand1"] | I["hand2"] | I["hand3"] | I["hand4"]
@@ -212,9 +224,10 @@ def knight(debug=False):
     head = I["head"]
     mix(head, ramp(tone(L, head), SKIN))
     mix(I["inner"], ramp(np.full(Y.shape, 0.36), SKIN))        # the head's side under the hair (dark fur before)
-    choker = head & (Z < 1.30)                                 # the choker: the suit's white collar, black where it was gold
-    mix(choker, ramp(tone(L, choker & (s < 0.2)) * 0.5 + 0.4, WHITE), (1 - sstep(s, 0.15, 0.25)) * (1 - sstep(v, 0.78, 0.86)))
-    mix(choker, hexc_white, gold_k)                            # (black here came out as a dotted line under the chin)
+    # the choker's band (z up to 1.287): the suit's white standing collar, one clean dark line along its top
+    # (re-toning the choker's own paint left dotted bits of its outline under the chin)
+    mix(head, ramp(form + 0.12, WHITE), ins(Z - 1.287))
+    mix(head, hexv("#1b1a20"), ins(np.abs(Z - 1.287) - 0.0016))
     for k in ("ears", "tail", "tip"):
         mix(I[k], ramp(tone(L, I[k]), BLOND))
     return np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)
@@ -226,11 +239,12 @@ def paint_main(debug):
     d = OUT / "knight"
     d.mkdir(parents=True, exist_ok=True)
     skin = knight(debug)
-    orig = np.asarray(Image.open(DATA / "cat" / "tex" / "champion1.webp").convert("RGBA"))
-    assert skin.shape == orig.shape, "a skin keeps the original's size"
-    hidden = skin[..., 3] != orig[..., 3]
+    ow, oh = Image.open(DATA / "cat" / "tex" / "champion1.webp").size
+    assert skin.shape[:2] == (oh * HI, ow * HI), "a skin is the original's size or 2x / 4x / 8x of it (the page's skinDims)"
+    hidden = skin[..., 3] != 255
     assert hidden.mean() < 0.06 and (skin[..., 3][hidden] == 0).all(), "only the shield's texels lose their alpha"
-    Image.fromarray(skin, "RGBA").save(d / "champion.png")
+    Image.fromarray(skin, "RGBA").save(d / "champion.png", optimize=True)
+    print(f"{skin.shape[1]}x{skin.shape[0]} px, {(d / 'champion.png').stat().st_size / 1e6:.1f} MB")
     views = ((0, "front"), (90, "left"), (180, "back"), (270, "right"))
     asyncio.run(shots("cat", "champion", [("orig", {}, {})], OUT, yaws=views[:1], size=1000, dpr=2))
     asyncio.run(shots("cat", "champion", [("knight", {"cat|outfits|champion|": d / "champion.png"}, {})], OUT, yaws=views, size=1000, dpr=2, face=38))
@@ -252,7 +266,7 @@ figure img{{width:24%;min-width:200px}}.cmp img{{width:100%;min-width:0}}figcapt
 <h1>แมว · ชุด Champion เป็นอัศวินตามภาพอ้างอิง</h1>
 <figure class=cmp><img src=knight_compare.png><figcaption>ของเดิม · ของใหม่บนโมเดล 3D (หน้าแบบที่ 38) · ภาพอ้างอิง</figcaption></figure>
 <figure>{imgs}<figcaption>ของใหม่ · หน้า ซ้าย หลัง ขวา</figcaption></figure>
-<figure><img src=knight/champion.png style="width:48%"><figcaption>ลาย (512 × 512)</figcaption></figure>""", encoding="utf-8")
+<figure><img src=knight/champion.png style="width:48%"><figcaption>ลาย ({skin.shape[1]} × {skin.shape[0]})</figcaption></figure>""", encoding="utf-8")
     print("painted", d / "champion.png")
     print("preview:", (OUT / "knight.html").as_uri())
 

@@ -99,8 +99,11 @@ def check(data, meta, files):
             with Image.open(io.BytesIO(files[f])) as im:
                 if im.format != "PNG":
                     raise Refused(f"{f} is not a PNG")
-                if im.size != sizes[tex]:
-                    raise Refused(f"{f} is {im.size[0]}x{im.size[1]}, the original {sizes[tex][0]}x{sizes[tex][1]}")
+                # the original's size, or exactly 2x / 4x / 8x of it up to 4096 (the page's skinDims: a high-res skin
+                # keeps its detail; user 2026-11-12: "ignore game logic and apply high-res texture")
+                w, h = sizes[tex]
+                if not any(im.size == (w * k, h * k) for k in (1, 2, 4, 8)) or max(im.size) > 4096:
+                    raise Refused(f"{f} is {im.size[0]}x{im.size[1]}, the original {w}x{h} (or 2x / 4x / 8x of it)")
                 im.load()
         except Refused:
             raise

@@ -705,14 +705,16 @@ async function composeTexture(o, color, face, ed = "") {
   const skin = SKINS.get(skinKey("outfits", o.name));     // the visitor's own skin for this outfit: every colour, face on top
   // the own texture loads even under a skin: an upload then reads its size from the cache, with no request
   const base = await loadImage(`${DATA}${C.cls}/tex/${o.name}${color}${edOf(o, color, ed)}.webp`);
-  const cv = document.createElement("canvas"); cv.width = base.naturalWidth; cv.height = base.naturalHeight;
+  // a skin drawn at 2x / 4x / 8x of the game's texture keeps its size (skinDims); the face block scales with it
+  const k = skin ? skin.w / base.naturalWidth : 1;
+  const cv = document.createElement("canvas"); cv.width = base.naturalWidth * k; cv.height = base.naturalHeight * k;
   const g = cv.getContext("2d");
   if (skin) g.putImageData(new ImageData(skin.data, skin.w, skin.h), 0, 0); else g.drawImage(base, 0, 0);
   try {
     const f = await loadImage(`${DATA}${C.cls}/faces/${face}.webp`);
     // skins.py: the face block = 256 px wide x half the sheet tall, top left. ToT's student sheets ("face": "quarter",
     // wardrobe_tot.py): ToT's TryBlendLegacySkinOverlay stretches the face over the whole top-left quarter
-    g.drawImage(f, 0, 0, 256, 256, 0, 0, o.face === "quarter" ? cv.width / 2 : Math.min(256, cv.width / 2), cv.height / 2);
+    g.drawImage(f, 0, 0, 256, 256, 0, 0, (o.face === "quarter" ? base.naturalWidth / 2 : Math.min(256, base.naturalWidth / 2)) * k, cv.height / 2);
   } catch (e) {}
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -1494,6 +1496,10 @@ async function texImage(kind, item, tex) {
   if (!t.image) throw new Error("texture " + tex);
   return t.image;
 }
+// the size a skin is kept at: the original's, or its own when that is exactly 2x / 4x / 8x of it and at most 4096 px
+// (user 2026-11-12: "you are allowed to ignore game logic and apply high-res texture"); any other size is scaled to the
+// original's, as every skin was before
+const skinDims = (uw, uh, w, h) => ([2, 4, 8].some(k => uw === w * k && uh === h * k) && Math.max(uw, uh) <= 4096 ? [uw, uh] : [w, h]);
 function pixels(img, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height) {   // scaled to w x h
   const cv = Object.assign(document.createElement("canvas"), { width: w, height: h }), g = cv.getContext("2d", { willReadFrequently: true });
   g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, w, h);
@@ -1542,13 +1548,13 @@ async function decodeImage(file) {       // in the browser: no URL fetched, noth
 async function skinUpload({ slot, item, tex }, file) {
   if (ttoLocked(slot, item)) return toast(TTO_NO, 2500);
   const kind = kindOf(slot), up = await decodeImage(file), orig = await texImage(kind, item, tex);
-  const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height, uw = up.width, uh = up.height;
-  const data = pixels(up, w, h).data;    // any size in, the original's size out
+  const uw = up.width, uh = up.height, [w, h] = skinDims(uw, uh, orig.naturalWidth || orig.width, orig.naturalHeight || orig.height);
+  const data = pixels(up, w, h).data;    // any size in, the original's size out (or a high-res skin's own: skinDims)
   up.close?.();
   let opaque = true, keptAlpha = false;
   for (let i = 3; i < data.length; i += 4) if (data[i] < 255) { opaque = false; break; }
   if (opaque) {                          // an AI reskin comes back opaque: keep the item's own cut-outs
-    const a = pixels(orig).data;
+    const a = pixels(orig, w, h).data;
     for (let i = 3; i < a.length; i += 4) if (a[i] < 255) { keptAlpha = true; break; }
     if (keptAlpha) for (let i = 3; i < a.length; i += 4) data[i] = a[i];
   }
@@ -1583,7 +1589,7 @@ async function wearCommunity(slot, item, id) {
   for (const [tex, file] of Object.entries(s.tex)) {
     if (!texsOf(kind, item).includes(tex)) continue;
     const [img, orig] = await Promise.all([loadImage(communitySrc(file)), texImage(kind, item, tex)]);
-    const w = orig.naturalWidth || orig.width, h = orig.naturalHeight || orig.height;
+    const [w, h] = skinDims(img.naturalWidth, img.naturalHeight, orig.naturalWidth || orig.width, orig.naturalHeight || orig.height);
     got.push([skinKey(kind, item, tex), { w, h, data: pixels(img, w, h).data, by }]);
   }
   if (!got.length) return;

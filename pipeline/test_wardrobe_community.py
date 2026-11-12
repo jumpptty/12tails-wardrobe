@@ -61,7 +61,7 @@ class Community(unittest.TestCase):
         self.assertEqual(s["tex"], {"Wing.png": "community/all/333_0.webp", "Wing2.png": "community/all/333_1.webp"})
 
     def test_refusals(self):
-        bad = [self.sub("1", item="nothing"), self.sub("2", tex=(("Lantern.png", 16),)), self.sub("3", kind="outfits", item="nude", tex=(("", 16),)),
+        bad = [self.sub("1", item="nothing"), self.sub("2", tex=(("Lantern.png", 12),)), self.sub("3", kind="outfits", item="nude", tex=(("", 16),)),
                self.sub("4", name="  "), self.sub("5", link="http://plain.example"), self.sub("6", tex=(("Other.png", 8),)),
                self.sub("7", kind="hats"), self.sub("9", item="ttoStaff")]
         m, meta, files, at = self.sub("8")
@@ -71,8 +71,15 @@ class Community(unittest.TestCase):
         self.assertEqual(added, [])
         self.assertEqual(sorted(i for i, _ in refused), [str(i) for i in range(1, 10)])
         self.assertIn("TTO", dict(refused)["9"])
-        self.assertIn("16x16, the original 8x8", dict(refused)["2"])
+        self.assertIn("12x12, the original 8x8", dict(refused)["2"])
         self.assertIn("not a PNG", dict(refused)["8"])
+
+    def test_a_high_res_skin_is_kept(self):
+        # exactly 2x of the original (8 -> 16): in, at its own size (the page's skinDims; user 2026-11-12)
+        added, _, refused = wc.apply(self.d, [self.sub("1", tex=(("Lantern.png", 16),))])
+        self.assertEqual((added, refused), (["1"], []))
+        with Image.open(self.d / "community/sheep/1_0.webp") as im:
+            self.assertEqual(im.size, (16, 16))
 
     def test_files_of_finds_the_embed_picture(self):
         # Discord's real shape: the embed's image is not listed in attachments (2026-11-12, the first live send)

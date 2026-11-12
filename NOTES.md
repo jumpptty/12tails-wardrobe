@@ -1255,3 +1255,16 @@ Entries moved from 12tails-video's NOTES.md (2026-11-05 to 2026-11-09), then thi
   (a dotted line under the chin). `texel_maps` now also gives `nrm` and `edge` (texels to the island's edge); `shots`
   takes `face`. The script asserts the size and that only the shield's texels lose alpha. The reference picture is the
   user's: copied to plans/reskins/cat/reference.png for the comparison, not committed.
+- **2026-11-12, the knight polished, and high-res skins** (user: "can you polish a bit more? like the boots shouldn't
+  have any gold, and the black outline looks cheap"; then "you are allowed to ignore game logic and apply high-res
+  texture"). (1) **The page keeps a skin larger than the game's texture**: `skinDims(uw, uh, w, h)` = the skin's own
+  size when it is exactly 2x / 4x / 8x of the original and at most 4096 px, else the original's (as before);
+  `composeTexture` sizes its canvas by the skin and scales the face block with it; `skinUpload` and `wearCommunity`
+  use it; the import (`wardrobe_community.check`) accepts the same multiples (test: 8 -> 16 kept; 12 refused). Local
+  only until a publish + deploy. Send limit: the Worker's 4 MB per file (the knight's 2048 px PNG is 2.4 MB). (2) The
+  painter: `HI = 4` (2048 px): the original is enlarged (LANCZOS) for the re-toned parts, the texel maps are drawn at
+  that size, seeds / pixel radii / AA scale with K; the drawn lines (frogs, zip, studs, knee hexagons, collar line) are
+  sharp. (3) Polish: no dark line on the cloth; the cloth's gold kept per connected piece (a piece with a thick part is
+  a border; the per-texel test bit notches into the borders' tips); greaves and boots have no gold (their trims a
+  darker steel, faint gold too), only the knee emblems; the collar is the choker's band painted white with one clean
+  dark line on top (z 1.287). Checks: unit 61 OK, community check all ok, the Rabbit build still passes.
