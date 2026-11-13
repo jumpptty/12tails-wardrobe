@@ -55,7 +55,13 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # WorldParticleCollider: luckyDice's / treasureHunt's dice and coins bounce on the floor); fxparts/additivealpha.js
          # (Transparent/AdditiveAlpha, a shader: this table doesn't see it). supportFire_hit's ParticleSystem is grafted
          # from TTO's copy as magmaClutter_ring2's (NOTES below)
-         "StatusControl", "Cat_grandCasinoArcade", "Cat_supportFire", "WorldParticleCollider"}
+         "StatusControl", "Cat_grandCasinoArcade", "Cat_supportFire", "WorldParticleCollider",
+         # 2026-11-13, the Chameleon (plans/fx_chameleon/parts.md "Rank by value", decisions.md 55-61): fxparts/chameleon.js
+         # (Chameleon_nAttack: the arrow, a copy of the worn arrow, index.html api.propModel; Chameleon_needlePrison's 16
+         # needles); Chameleon_campFire draws nothing (data only: its heal; the cue's kill is its life); mesh.js's FX/Invisible
+         # and Self-Illumin/DoubleTexture, index.html's FX/Blend / FX/Invisible hero looks are shaders (this table doesn't see
+         # them). thunderDragon_ring2's and zeroShot_ring's ParticleSystems are grafted from TTO's copies (NOTES below)
+         "Chameleon_nAttack", "Chameleon_needlePrison", "Chameleon_campFire"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -68,6 +74,11 @@ NOTES = {
     "cat": {
         "supportFire_hit": "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are "
                            "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Bomb2 material): drawn",
+    },
+    "chameleon": {
+        n: "its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's "
+           "copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn"
+        for n in ("thunderDragon_ring2", "zeroShot_ring")
     },
 }
 CLASS_NOTES = {

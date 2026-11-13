@@ -1,1 +1,720 @@
-{}
+{
+  "nAttack1": {
+    "why": "Chameleon.cs RPC_nAttack1 (:15380-16051): at 0 the voice, own hero (:15840-15862): nAttack1 when more than 0.5 s since the last action (:15863, load :15875, PlayOneShot :15887; a held button gives nAttack2 or nothing, Random.Range(0, 2) :15898-15922: the tile starts from idle), clip cut (Rewind + animation.Play :16006-16009); 0.2 s (Yield(2, 0.2) :16036): mWep2's renderers off (:15516-15548; the page's L, the arrow and its own particles) until 1.8 s (Yield(3, 0.1) :16038, standby :15721, Yield(4, 1.5) :16040, back on :15761-15813: hideProp kill 1.6), the hero's PlayOneShot of the field nAttack_bowFx1 = sounds/bow_fire1 (checks/fx_chameleon_research/attacks_emotes/probe_fields.txt), or sounds/plunger with w_chm15 = R plungerBow (:15645-15695, data/item_map.json); RPC_nAttack_fire (:15624, :8447-8545): Effects/nAttack at mPos + (0, 1.5, 0) + forward (:15586), LookRotation(tDir - (0, 1.5, 0) - forward) (:15591, :8473), the no-target aim position + 10 forward (GameGui.cs:1659, doNormalAttack :5984) = the 10 m ground point (Bat decision 1): pitch atan(1.5 / 9) = 9.4623 deg; Chameleon_nAttack flies it 40 m/s with Bow Mastery #401 (Chameleon_nAttack.cs:100; passives on), life (0.4 + 0.1 x 4) = 0.8 s (:8482), carrying a copy of the worn arrow (mWep2; w_chm25 mWep1) at Euler(0, 270, 270) (:110-188), and ends on the floor (:379-397); at 0.2 + 9.1241 m / 40 m/s = 0.4281 s RPC_nAttack_hit at the contact point (:406-436, before any Player / Enemy test), nAttack_hit there with the hero's rotation (:8588; plays its own Sounds/bow_hit1); the arrow's trigger box is not counted (geom.txt: the game-true touch 8.37 m / 0.362 s); Critical Plus 4's crit (passives on): on an arrow that hits a foe (tag Player / Enemy, hp > 0, Chameleon_nAttack.cs:451-482), Random.Range(0, 100) < lckAdjust(4 x 4 + 4) = 20 % (:620-643), RPC_criticalPlus_hit at the hit point with the hero's rotation (:669; Chameleon.cs:9338-9348; EffectControl life 1, its own Sounds/bow_hit3): here at the 10 m target point, the same spot and time as nAttack_hit (plans/fx_chameleon/effect_only.md Verification, decisions.md 12)",
+    "cues": [
+    [0, "voice", "nAttack1"],
+    [0.2, "hideProp", "L", {"kill": 1.6, "all": true}],
+    [0.2, "sound", "bow_fire1", {"notWorn": ["R", "plungerBow"]}],
+    [0.2, "sound", "plunger", {"worn": ["R", "plungerBow"]}],
+    [0.2, "fx", "nAttack", {"d": 1, "y": 1.5, "rot": [9.4623, 0, 0]}],
+    [0.4281, "fx", "nAttack_hit", {"d": 10}],
+    [0.4281, "fx", "criticalPlus_hit", {"d": 10, "p": 0.2}]
+    ]
+  },
+  "@CriticalPlus:nAttack1": {
+    "why": "Critical Plus 4 (#314, passive, top rank; decisions.md 12): no press of its own, it rolls on every arrow that hits a foe (Chameleon_nAttack.cs:451-482, :620-643: Random.Range(0, 100) < lckAdjust(4 x 4 + 4) = 20 %); its own tile on the Normal Attack's clip, the crit on every play: the nAttack1 cues (RPC_nAttack1, Chameleon.cs:15380-16051, as that entry) and RPC_criticalPlus_hit (:669; Chameleon.cs:9325-9364: Effects/criticalPlus_hit Instantiated at the hit point with the hero's rotation; EffectControl life 1, its own Sounds/bow_hit3) at the arrow's 10 m landing, 0.4281 s, beside nAttack_hit",
+    "cues": [
+    [0, "voice", "nAttack1"],
+    [0.2, "hideProp", "L", {"kill": 1.6, "all": true}],
+    [0.2, "sound", "bow_fire1", {"notWorn": ["R", "plungerBow"]}],
+    [0.2, "sound", "plunger", {"worn": ["R", "plungerBow"]}],
+    [0.2, "fx", "nAttack", {"d": 1, "y": 1.5, "rot": [9.4623, 0, 0]}],
+    [0.4281, "fx", "nAttack_hit", {"d": 10}],
+    [0.4281, "fx", "criticalPlus_hit", {"d": 10}]
+    ]
+  },
+  "@ClearArrow:nAttack1": {
+    "why": "Clear Arrow (#263, decisions.md 13, 51): RPC_nAttack1 (Chameleon.cs:15380-16051) fires RPC_clearArrow_fire in place of RPC_nAttack_fire when getClearArrow() holds (the skill learned and the invisible status on her, :15596-15602): shown with its precondition, the hero in the own-team FX/Invisible look (CharacterControl.cs:32493-32684; no kill: until the next pick) and the hand arrow hidden with no kill (the game shows it again only when she is not invisible, :15761-15813, every Renderer under mWep2: all); at 0 the voice nAttack1 (:15863-15887); 0.2 s (Yield(2, 0.2) :16036): bow_fire1 (plunger with w_chm15 = R plungerBow, :15645-15695); RPC_clearArrow_fire (:8983-9060): Effects/clearArrow Instantiated at mPos + (0, 1.5, 0) + forward, LookRotation(fireDir) (the untargeted 10 m ground point: pitch 9.4623, as nAttack1), ProjectileControl life (0.4 + 0.1 x Far Reach 4) = 0.8 s, Chameleon_nAttack.Init(owner, fatal, 1): 40 m/s, its child 'arrow' drawn with the worn arrow's root mesh in FX/Invisible (35 % white + blue rim; Chameleon_nAttack.cs:272-318; fxparts/chameleon.js, fxinvisible.js), no Fatal Strike blood; it meets the floor 0.2281 s later: RPC_nAttack_hit puts nAttack_hit there with the hero's rotation (:8588; its own Sounds/bow_hit1), and Critical Plus' 20 % roll (decisions.md 12)",
+    "cues": [
+    [0, "skin", "FX/Invisible"],
+    [0, "hideProp", "L", {"all": true}],
+    [0, "voice", "nAttack1"],
+    [0.2, "sound", "bow_fire1", {"notWorn": ["R", "plungerBow"]}],
+    [0.2, "sound", "plunger", {"worn": ["R", "plungerBow"]}],
+    [0.2, "fx", "clearArrow", {"d": 1, "y": 1.5, "rot": [9.4623, 0, 0]}],
+    [0.4281, "fx", "nAttack_hit", {"d": 10}],
+    [0.4281, "fx", "criticalPlus_hit", {"d": 10, "p": 0.2}]
+    ]
+  },
+  "cAttack1": {
+    "why": "Chameleon.cs RPC_cAttack1 (:16112-16797): at 0 the clip cut (PlayAnimation(cAttack1, 0) :16688) and voice cAttack1 (own hero or a mission teammate, no gate: :16708-16745, PlayOneShot :16778); 0.2 s (Yield(2, 0.2) :16791): the hero's PlayOneShot of Sounds/cAttack_bow (:16253-16265); at 0.8 s (Yield(3, 0.6) :16782) the change to the looped cAttack2, whose entry holds the blend and the rings",
+    "cues": [
+    [0, "voice", "cAttack1"],
+    [0.2, "sound", "cAttack_bow"]
+    ]
+  },
+  "cAttack2": {
+    "why": "Chameleon.cs RPC_cAttack1 case 3 (0.8 s in: Yield(2, 0.2) :16791 + Yield(3, 0.6) :16782; times from this clip), mission / arena (mGameType > 4 :16302): Effects/blend at the hero + 0.6 up, her rotation (:16325-16337; plays its own Sounds/blend), the blend status on her (RPC_AddStatus(blend, 4, chaAdjust(12)) :16358) whose look for her own team is FX/Blend on every Diffuse material, every other renderer off (CharacterControl.cs:36835-36926; the skin cue, index.html HERO_SKINS) until the release (Chameleon.cs Update :166-201 removes it at RPC_cAttack2's myCommand cAttack2 :17293): kill 9, the tile's hold; PlayAnimation(cAttack2, 0) looped (:16370-16375); each FixedUpdate (:16776) chargeTimer++ when chargeTimer < held - 0.8 (:16422-16428), for her own layer (:16433-16439) cAttack_ring1 while chargeTimer < 3 x Charge Attack 3 (:16445-16469), cAttack_ring2 at 9 (:16484-16508), at her position and rotation: rings at 0 ... 7 s, the full-charge ring at 8 s (8.8 s from the press; n = 9 needs the 9.8 s release, :6228); cAttack_ring2's followState cut at the release, 8.95 (EffectControl, as the Penguin's 2.95); ring1s end on their 1 s life",
+    "cues": [
+    [0, "fx", "blend", {"y": 0.6}],
+    [0, "skin", "FX/Blend", {"kill": 9}],
+    [0, "fx", "cAttack_ring1"],
+    [1, "fx", "cAttack_ring1"],
+    [2, "fx", "cAttack_ring1"],
+    [3, "fx", "cAttack_ring1"],
+    [4, "fx", "cAttack_ring1"],
+    [5, "fx", "cAttack_ring1"],
+    [6, "fx", "cAttack_ring1"],
+    [7, "fx", "cAttack_ring1"],
+    [8, "fx", "cAttack_ring2", {"cut": 8.95}]
+    ]
+  },
+  "cAttack3": {
+    "why": "Chameleon.cs RPC_cAttack2 (:16841-17445; doReleaseCharge at 9.8 s: n = FloorToInt(Clamp(9.8 - 0.8, 0, 3 x 3)) = 9, :6228-6233): at 0 myCommand cAttack2 (:17293; the blend ends, Update :166-201), voice cAttack2 (own hero or a mission teammate, :17311-17358), PlayAnimation(cAttack3, 0) looped (:17376-17382), mWep2's renderers off (:17385-17407; the page's L) until the 3.9 s standby (case 3 :17084-17157: hideProp kill 3.9); 2n = 18 swings 0.2 s apart (IL_A65 :17201-17277, Yield(2, 0.2) :17434, i++ :17059), each Effects/cAttack_fire at the hero's position and rotation (:17253-17265; plays its own Sounds/cAttack_fire): 17 here at 0 ... 3.2 s, the 18th with cAttack4 at 3.4 s (i == 2n - 1, :17212-17218); the hits (:16970-17050) draw nothing; myForce -0.5 forward (:17308) left out (no hero mover)",
+    "cues": [
+    [0, "voice", "cAttack2"],
+    [0, "hideProp", "L", {"kill": 3.9, "all": true}],
+    [0, "fx", "cAttack_fire"],
+    [0.2, "fx", "cAttack_fire"],
+    [0.4, "fx", "cAttack_fire"],
+    [0.6, "fx", "cAttack_fire"],
+    [0.8, "fx", "cAttack_fire"],
+    [1.0, "fx", "cAttack_fire"],
+    [1.2, "fx", "cAttack_fire"],
+    [1.4, "fx", "cAttack_fire"],
+    [1.6, "fx", "cAttack_fire"],
+    [1.8, "fx", "cAttack_fire"],
+    [2.0, "fx", "cAttack_fire"],
+    [2.2, "fx", "cAttack_fire"],
+    [2.4, "fx", "cAttack_fire"],
+    [2.6, "fx", "cAttack_fire"],
+    [2.8, "fx", "cAttack_fire"],
+    [3.0, "fx", "cAttack_fire"],
+    [3.2, "fx", "cAttack_fire"]
+    ]
+  },
+  "cAttack4": {
+    "why": "Chameleon.cs RPC_cAttack2 IL_A65 at i == 2n - 1 = 17 (3.4 s after the release, the proposed cAttack3*@3.4): PlayAnimation(cAttack4, 0), Once (:17212-17223), then the 18th Effects/cAttack_fire at the hero's position and rotation (:17253-17265; its own Sounds/cAttack_fire); its hit at 0.2 s, standby at 0.5 s (Yield(3, 0.3) :17440, :17147; the arrow back on, :17084-17125, cAttack3's hideProp ends there)",
+    "cues": [
+    [0, "fx", "cAttack_fire"]
+    ]
+  },
+  "silentWalk": {
+    "why": "Chameleon.cs RPC_cAttack1's loop with Silent Walk #411 (passives on, :16526-16653): moving while charging, PlayAnimation(silentWalk, 0.2) (:16584, :16634), always after cAttack2's start (case 3 :16302-16388), so under the blend status (its own-team look FX/Blend, CharacterControl.cs:36835-36926: the skin cue, kill 1.6 = the page's hold, HOLD_SECS 1.5 rounded to whole 0.8 s cycles, index.html:1274, :1431) with cAttack_ring1 each second at her (:16422-16469; followPosition, life 1), the phase picked at 0 s",
+    "cues": [
+    [0, "skin", "FX/Blend", {"kill": 1.6}],
+    [0, "fx", "cAttack_ring1"],
+    [1, "fx", "cAttack_ring1"]
+    ]
+  },
+  "cast1": {
+    "why": "Chameleon.cs RPC_cast1 ($RPC_cast1$22545, :17732-18689), the cast channel for True Invisibility, Mass Invisibility, Camp Fire, Final Entrapment, Tent and Mark of Slayer (the dispatcher :7032-8154, its skill switch :18083-18246): at 0 (IL_454): cast time and cooldown per skill (:18257-18380), actionState attack, myCommand cast, clip cast1 (0.2 fade, :18389), voice cast1 / cast2 (Random.Range(0, 2) :18430, Voices/cast1 :18442, Voices/cast2 :18473; PlayOneShot volume 1 for the local player), the arrow in hand (mWep2, the page's slot L) hidden (:18498-18517) and never shown again by the channel or the release (no enabled = true in RPC_cast1 or any of the six _cast coroutines; the next attack or invisible's end shows it): hideProp L until the next pick (plans/fx_chameleon/attacks_emotes.md part P2), castRing at the hero's position with Quaternion.Euler(270, 90, 0), world-absolute (createEffect :18544; Resources chameleon/effects/castRing :18534; EffectControl life 60, afterLife 0.5, followPosition, followState; Animation create / root / destroy; plays its own looping Sounds/cast_ring); Yield 0.4 (:18585): cast2 cut in and looped at 0.4 s (:17901-17906; the cast1 clip is 0.4 s); Yield 0.1 (:18592): the ring's root clip looped and the cast bar magAdjust (:17933-17961; the page: none, its floor 0.1 s, CharacterControl.cs:20584-20588), then each frame until it ends (YieldDefault(4) :18607) the skill's RPC_<skill>_cast starts (:18088-18246) and sets myCommand to the skill: the ring's followState cut there (about 0.6 s); on the page the cast1 step ends at 0.4 s and FX.t restarts, so the cut is cued 0.35 (the Bat's and the Penguin's 0.65 before their 0.7 s edge)",
+    "cues": [
+    [0, "voice", "cast1|cast2"],
+    [0, "fx", "castRing", {"rot": [270, 90, 0], "cut": 0.35}],
+    [0, "hideProp", "L", {"all": true}]
+    ]
+  },
+  "cast3": {
+    "why": "Chameleon.cs: the cast3 clip after the RPC_cast1 channel (the bar 0 s, then RPC_cast1 starts the skill's coroutine, :18083-18246): 5 Chameleon skills, one per play, even chance, picked anew on every play (each with its own tile, poolChains): True Invisibility (:21241), Mass Invisibility (:24668), Final Entrapment (:25103), Camp Fire (:29464), Mark of Slayer (:36878), all PlayAnimation(cast3, 0.2f), the SEQ's cast3~. Tent (:36368) also goes through the channel but plays sleep after cast3: its own sequence (@Tent:cast3, @Tent:sleep). Immunity, Venom Shock, Blood Burn and Rusty Decay play cast3 straight from the key press, with no channel (the dispatcher :8288, :8020, :7620, :6986): their own sequences (@Immunity:cast3 ...), as the Sheep's Seal and Eden Sanctuary",
+    "skills": {
+      "trueInvisibility": {
+        "why": "Chameleon.cs RPC_trueInvisibility_cast (:20960-21406), max rank 2 + Erase Senses #412 (passives on): at 0: clip cast3 (0.2 fade, :21241), voice: the code asks Voices/trueInvisibility1 / trueInvisibility2 (Random.Range(0, 2) :21276, :21286, :21317), which BB's data does not have (voices/ holds invisible1 / invisible2); TTO1102 loads Voices/invisible1 / invisible2 (TTO pseudo Chameleon.c:21367-21370): TTO's fix, as plans/fx_sheep/decisions.md 10; Yield 0.4 (:21368): the target ally (or self: ally-targeted skills show as self-casts, plans/fx_sheep/decisions.md 1) gets 'invisible' sLv 2 for chaAdjust(4 + 4 x 2 + 4) = 16 s (:21155; chaAdjust(16) at the page's CHA 1 = 16, CharacterControl.cs:20593-20619), cut at 10 s (the long-buff rule) (CharacterControl.cs status add 'invisible' :36942-36958: Effects/invisible at the holder's position, identity, InitEffectControl(holder): EffectControl life 2, followPosition, plays its own Sounds/invisible; then Yield 0.2 (Block_989 :42212-42213) and case 2 (:32493-32684): for the holder's own team every Diffuse renderer's material becomes new Material(FX/Invisible) with its mainTexture and every other renderer is switched off: the hero-skin cue FX/Invisible, a part to build); Yield 0.3 (:21364): standby at 0.7 s (:21182)",
+        "cues": [
+        [0, "voice", "invisible1|invisible2"],
+        [0.4, "fx", "invisible"],
+        [0.6, "skin", "FX/Invisible", {"kill": 10}]
+        ]
+      },
+      "massInvisibility": {
+        "why": "Chameleon.cs RPC_massInvisibility_cast (:24389-24837), max rank 2: at 0: clip cast3 (0.2 fade, :24668), voice massInvisibility1 / massInvisibility2 (Random.Range(0, 2) :24703, :24713, :24744); Yield 0.4 (:24776): every Player in the caster's team container, the caster too, gets 'invisible' sLv 2 for chaAdjust(4 x 2 + 4) = 12 s (:24522-24575), cut at 10 s (CharacterControl.cs status add 'invisible' :36942-36958: Effects/invisible at the holder's position, identity, InitEffectControl(holder): EffectControl life 2, followPosition, plays its own Sounds/invisible; then Yield 0.2 (Block_989 :42212-42213) and case 2 (:32493-32684): for the holder's own team every Diffuse renderer's material becomes new Material(FX/Invisible) with its mainTexture and every other renderer is switched off: the hero-skin cue FX/Invisible, a part to build); Yield 0.3 (:24785): standby at 0.7 s (:24609)",
+        "cues": [
+        [0, "voice", "massInvisibility1|massInvisibility2"],
+        [0.4, "fx", "invisible"],
+        [0.6, "skin", "FX/Invisible", {"kill": 10}]
+        ]
+      },
+      "finalEntrapment": {
+        "why": "Chameleon.cs RPC_finalEntrapment_cast (:24837-25269), max rank 2, enemy target: the 10 m target point: at 0: clip cast3 (0.2 fade, :25103), voice finalEntrapment1 / finalEntrapment2 (Random.Range(0, 2) :25138, :25148, :25179); Yield 0.4 (:25220): mDuration = FloorToInt(chaAdjust(2 x 2 + 3)) = 7 (:24999) and RPC_finalEntrapment_hit at the target's position (:25004; :9116-9175): the old cage destroyed, Effects/finalEntrapment Instantiated there with Quaternion.identity, its EffectControl.life set to 7 (:9172; the prefab says 6: the cue's life, a page option to build; plays its own Sounds/finalEntrapment_hit and the looping finalEntrapment); Yield 0.3 (:25214): standby at 0.7 s (:25044)",
+        "cues": [
+        [0, "voice", "finalEntrapment1|finalEntrapment2"],
+        [0.4, "fx", "finalEntrapment", {"d": 10, "life": 7}]
+        ]
+      },
+      "campFire": {
+        "why": "Chameleon.cs RPC_campFire_cast (:29212-29654), max rank 2: at 0: clip cast3 (0.2 fade, :29464), voice campFire1 / campFire2 (Random.Range(0, 2) :29530, :29540, :29571); Yield 0.4 (:29608): RPC_campFire_create at getSpawnPos(position + 2 x forward) (the ground 2 m ahead, :29355-29365; :9417-9458): Effects/campFire + sLv = campFire2, Instantiated with Quaternion.Euler(270, 90, 0), world-absolute (:9440), Chameleon_campFire.Init(owner, chaAdjust(30) = 30 s) (:29360, :9452): its Update only heals sitting allies every 4 s and destroys the fire when the 30 s end (Chameleon_campFire.cs:52-183; it draws nothing: a no-op part, its one field mLv i, Chameleon_campFire.cs:219), cut at 10 s (kill 10; plays its own looping Sounds/campFire); Yield 0.3 (:29603): standby at 0.7 s (:29405)",
+        "cues": [
+        [0, "voice", "campFire1|campFire2"],
+        [0.4, "fx", "campFire2", {"d": 2, "rot": [270, 90, 0], "kill": 10}]
+        ]
+      },
+      "markOfSlayer": {
+        "why": "Chameleon.cs RPC_markOfSlayer_cast (:36564-36976), max rank (sLv 5, the dispatcher :7069), enemy target: the 10 m target point: no voice; at 0: clip cast3 (0.2 fade, :36878) and markOfSlayer_ring at the hero's position and rotation (createEffect :36900; EffectControl life 1, afterLife 1, followPosition, followState: cut at the standby, 0.7 s); the camera's motion blur for the local player (:36694-36705) left out; Yield 0.4 (:36927): markOfSlayer_hit created by the target at its collider.bounds.center with the HERO's rotation (:36770: no rot; the target 0.6 m up, plans/fx_penguin/decisions.md 3; plays its own Sounds/markOfSlayer_hit) and the slayerMark status (:36792: draws nothing); Yield 0.3 (:36936): standby at 0.7 s (:36819)",
+        "cues": [
+        [0, "fx", "markOfSlayer_ring", {"cut": 0.7}],
+        [0.4, "fx", "markOfSlayer_hit", {"d": 10, "y": 0.6}]
+        ]
+      }
+    }
+  },
+  "@Tent:cast3": {
+    "why": "Chameleon.cs RPC_tent_cast (:35950-36564; RPC_cast1 starts it when the bar ends, :18192-18216), the one rank (sLv 5, :7032): at 0 (IL_885): clip cast3 (0.2 fade, :36368), voice tent1 / tent2 (Random.Range(0, 2) :36409, :36421, :36452); the m_fab14 item spent (:36489); Yield 0.4 (:36535): the sleep clip, its entry (@Tent:sleep) has the rest",
+    "cues": [
+    [0, "voice", "tent1|tent2"]
+    ]
+  },
+  "@Tent:sleep": {
+    "why": "Chameleon.cs RPC_tent_cast case 2 at 0.4 s (:36063-36096): PlayAnimation(sleep, 0.5f) looped (the SEQ's sleep*~0.5) and tent_ring at the hero's position and rotation (createEffect :36091; the tent model tent_tri, stars, smoke; EffectControl life 99, followPosition, followState; plays its own Sounds/tent); Yield 0.5 (:36526): case 3 at 0.9 s: the channel castTime = magAdjust(12) with a cast bar (:36128-36151; the cast-bar rule, high INT: its floor 0.1 s) and the tent status (:36139: moveSpeed 0, a zzz emote every 3 s, CharacterControl.cs:9274-9289, left out); the channel's end test actionTime + castTime + 0.5 (:36280, actionTime from cast3's start) has passed, so at 0.9 s (sleep 0.5 s): tent_heal at the hero (:36306; plays its own Sounds/tent_heal), the full heal and the cooldown reset (:36326-36337, nothing drawn); Yield 0.2 (:36533): standby at 1.1 s (sleep 0.7 s, :36228): tent_ring's followState cut there. tent_destroy (:36181) comes only when the channel is broken: not cued",
+    "cues": [
+    [0, "fx", "tent_ring", {"cut": 0.7}],
+    [0.5, "fx", "tent_heal"]
+    ]
+  },
+  "@Immunity:cast3": {
+    "why": "Chameleon.cs RPC_immunity (:18689-19240), started straight from the key press (the dispatcher :8288, no channel), max rank 2 + Skin Shift #421 (status level 2 x 2 + 1 = 5): at 0: clip cast3 (0.2 fade, :19018); voice: the code asks Voices/immunity1 / immunity2 (Random.Range(0, 2) :19059, :19071, :19102), which BB's data does not have, and TTO1102 asks the same (TTO pseudo Chameleon.c RPC_immunity d__152): no voice cue; the arrow in hand (slot L) hidden (:19127-19146) until 0.5 s (:18885-18920): hideProp L; Yield 0.2 (:19174): immunity_ring at the hero's position and rotation (createEffect :18854; EffectControl life 1, followPosition; plays its own Sounds/immune_ring) and the immunity status for chaAdjust(12) = 12 s (:18876), whose look (CharacterControl.cs status add :36591-36613) is Effects/immunity at collider.bounds.center + 0.1 x height up (CharacterController center y 0.98, height 1.8, radius 0.3, Chameleon.prefab: y 1.16), the hero's rotation, parented to the hero, scaled Clamp(0.3 + 0.4, 0.5, 1.5) = 0.7 (no EffectControl: it goes with the status; plays its own looping Sounds/immune), cut at 10 s (kill 10); Yield 0.3 (:19172): standby at 0.5 s (:18948)",
+    "cues": [
+    [0, "hideProp", "L", {"kill": 0.5, "all": true}],
+    [0.2, "fx", "immunity_ring"],
+    [0.2, "fx", "immunity", {"y": 1.16, "scale": 0.7, "kill": 10}]
+    ]
+  },
+  "@VenomShock:cast3": {
+    "why": "Chameleon.cs RPC_venomShock (:23758-24389), started straight from the key press (the dispatcher :8020, no channel), max rank 2, enemy target: the 10 m target point: at 0: clip cast3 (0.2 fade, :24098), voice venomShock1 / venomShock2 (Random.Range(0, 2) :24139, :24151, :24182; venomShock3 is never played) and venomShock_ring at the hero's position and rotation (createEffect :24225; plays its own Sounds/venomShock_ring); the arrow in hand (slot L) hidden (:24239-24258) until 0.5 s (:23965-24000): hideProp L; the camera's venomRamp (:24281) left out; Yield 0.2 (:24314): the venomShock status on the target (:23956), whose apply (CharacterControl.cs:36972-37030) detonates the target's poison: Effects/venomShock created by the target at its collider.bounds.center, identity (:37002; the target 0.6 m up; plays its own Sounds/venomShock), when it has poison with more than 1 s left: drawn (the skill's point; the page's target stands for a poisoned one, open question 5); Yield 0.3 (:24308): standby at 0.5 s (:24028)",
+    "cues": [
+    [0, "voice", "venomShock1|venomShock2"],
+    [0, "fx", "venomShock_ring"],
+    [0, "hideProp", "L", {"kill": 0.5, "all": true}],
+    [0.2, "fx", "venomShock", {"d": 10, "y": 0.6}]
+    ]
+  },
+  "@BloodBurn:cast3": {
+    "why": "Chameleon.cs RPC_bloodBurn (:29654-30217), started straight from the key press (the dispatcher :7620, no channel), max rank 2: at 0: clip cast3 (0.2 fade, :29994), voice bloodBurn1 / bloodBurn2 (Random.Range(0, 2) :30035, :30047, :30078); the arrow in hand (slot L) hidden (:30103-30122) until 0.5 s (:29855-29883): hideProp L; Yield 0.2 (:30152): bloodBurn at the hero's position and rotation (createEffect :29819; EffectControl life 1, followPosition; plays its own Sounds/cAttack_ring), the self-damage 30 and the MP / SP heal (:29841-29846, nothing drawn); Yield 0.3 (:30156): standby at 0.5 s (:29911)",
+    "cues": [
+    [0, "voice", "bloodBurn1|bloodBurn2"],
+    [0, "hideProp", "L", {"kill": 0.5, "all": true}],
+    [0.2, "fx", "bloodBurn"]
+    ]
+  },
+  "@RustyDecay:cast3": {
+    "why": "Chameleon.cs RPC_rustyDecay (:35336-35950), started straight from the key press (the dispatcher :6986, no channel), its one rank (status level 2), enemy target: the 10 m target point: at 0: clip cast3 (0.2 fade, :35665), voice rustyDecay1 / rustyDecay2 (Random.Range(0, 2) :35706, :35718, :35749) and rustyDecay_ring at the hero's position and rotation (createEffect :35792; plays its own Sounds/venomShock_ring); the arrow in hand (slot L) hidden (:35806-35825) until 0.5 s (:35532-35567): hideProp L; the camera's rustyRamp (:35848) left out; Yield 0.2 (:35873): the rustyDecay status on the target (:35523), whose apply (CharacterControl.cs:37142-37200) detonates the target's rust: Effects/rustyDecay created by the target at its collider.bounds.center, identity (:37172; the target 0.6 m up; plays its own Sounds/venomShock), when it has rust with more than 1 s left: drawn (open question 5); Yield 0.3 (:35880): standby at 0.5 s (:35595)",
+    "cues": [
+    [0, "voice", "rustyDecay1|rustyDecay2"],
+    [0, "fx", "rustyDecay_ring"],
+    [0, "hideProp", "L", {"kill": 0.5, "all": true}],
+    [0.2, "fx", "rustyDecay", {"d": 10, "y": 0.6}]
+    ]
+  },
+  "backStep": {
+    "why": "Chameleon.cs RPC_perfectBlend (:20438-20960), the only code that plays backStep, max rank 2 + Erase Senses #412 (passives on): at 0: clip backStep cut (PlayAnimation(backStep, 0) :20789), voice perfectBlend1 / perfectBlend2 (Random.Range(0, 2) :20830, :20840, :20871); Yield 0.1 (:20907): moveSpeed -8 (the hop back, 1.6 m by 0.3 s: no hero mover on the page, plans/fx_penguin/decisions.md 8, so both effects at the hero) and perfectBlend_ring at the hero's position and rotation (createEffect :20607; EffectControl life 1); Yield 0.2 (:20911): moveSpeed 0, blend at the hero + 1.2 m up with its rotation (createEffect :20667; plays its own Sounds/blend) and the blend status sLv 2 for chaAdjust(2 x 2 + 4) = 8 s (:20687), whose look for the hero's own team (CharacterControl.cs:36665-36929): every Diffuse renderer's material becomes new Material(FX/Blend) with its mainTexture, every other renderer off: the hero-skin cue FX/Blend (a part to build), 8 s; Yield 0.2 (:20918): standby at 0.5 s (:20719)",
+    "cues": [
+    [0, "voice", "perfectBlend1|perfectBlend2"],
+    [0.1, "fx", "perfectBlend_ring"],
+    [0.3, "fx", "blend", {"y": 1.2}],
+    [0.3, "skin", "FX/Blend", {"kill": 8}]
+    ]
+  },
+  "needlePrison": {
+    "why": "Chameleon.cs RPC_needlePrison (:21406-22195), max rank 2 + Mass House Lock #422 (passives on), enemy target: the 10 m target point: at 0: clip needlePrison cut (PlayAnimation(needlePrison, 0) :21915), voice needlePrison1 / needlePrison2 (Random.Range(0, 2) :21956, :21968, :21999; needlePrison3 is never played), #422: massLock_ring at the hero's position and rotation (createEffect :22061; EffectControl life 1, followPosition; its rays have a 0.8 s delay); Yield 0.3 (:22103): Sounds/cAttack_bow (:21570-21582); Yield 0.5 (:22094): at 0.8 s the prefab field nAttack_bowFx1 = Sounds/bow_fire1 (:21619-21625; the Chameleon MonoBehaviour's 4th field, checks/fx_chameleon_research/skills_a/probe_fields.txt), the arrow in hand (slot L) hidden (:21631-21658) until 1.0 s (:21764-21799): hideProp L, and the needlePrison status on the target (with #422 every enemy within 6 m of it) for getDebuff(1 + 2) + 2 = 5 s at equal CHA (:21694-21750; Damage.cs:317-319), whose look (CharacterControl.cs:36622-36656): Effects/needlePrison at the target's position, identity, parented to it (plays its own Sounds/needlePrison), Chameleon_needlePrison.Init(Clamp(2 x radius, 0.5, 2)) = 0.6 for a 0.3 m target: 16 needlePrison_arrow (its field mPrisonArrow) one every 0.05 s at position + rotateH(0.6 x forward, i x 67.5 deg), LookRotation(up), parented (Chameleon_needlePrison.cs:144-213): a part to build (its layout mPrisonArrow r; the cue's r 0.6); the prison goes with the status: kill 5; Yield 0.2 (:22101): standby at 1.0 s (:21827)",
+    "builds": ["needlePrison_arrow"],
+    "cues": [
+    [0, "voice", "needlePrison1|needlePrison2"],
+    [0, "fx", "massLock_ring"],
+    [0.3, "sound", "cAttack_bow"],
+    [0.8, "sound", "bow_fire1"],
+    [0.8, "hideProp", "L", {"kill": 0.2, "all": true}],
+    [0.8, "fx", "needlePrison", {"d": 10, "r": 0.6, "kill": 5}]
+    ]
+  },
+  "massShot": {
+    "why": "Chameleon.cs RPC_massShot (:22195-23037), max rank 2 + Mass House Lock #422 (passives on): at 0: clip massShot cut (PlayAnimation(massShot, 0) :22771), voice massShot1 / massShot2 (Random.Range(0, 2) :22812, :22824, :22855); the camera's AutoZoom (:22907) left out; Yield 0.2 (:22927): moveSpeed -2 (the hop back; no hero mover on the page) and, #422 on, massHouseShot at the hero's position and rotation (createEffect :22371; else massShot :22408; EffectControl life 1; its arrow rain has a 0.4-0.6 s delay; plays its own Sounds/massHouseShot); Yield 0.6 (:22933): at 0.8 s the arrow in hand (slot L) hidden (:22446-22473) until 1.4 s (:22638-22673): hideProp L, and the hits on every enemy in FindAreaTarget(hero, 6 + 3 = 9 m) (:22508; Damage.cs:963-1120 measures to the target's edge): the 10 m target point is out of reach, so no nAttack_hit (as the Penguin's Mana Arc); Yield 0.4 (:22929): moveSpeed 0 at 1.2 s; Yield 0.2 (:22937): standby at 1.4 s (:22701)",
+    "cues": [
+    [0, "voice", "massShot1|massShot2"],
+    [0.2, "fx", "massHouseShot"],
+    [0.8, "hideProp", "L", {"kill": 0.6, "all": true}]
+    ]
+  },
+  "cast4": {
+    "why": "Chameleon.cs RPC_fatalStrike (:26159-26607), the only code that plays cast4, max rank 4 + Extra Arrows #403 (status level 5, 10 arrows): at 0: clip cast4 cut (Rewind + PlayAnimation(cast4, 0) :26409-26412), voice fatalStrike1 / fatalStrike2 (Random.Range(0, 2) :26453, :26465, :26496) and fatalStrike_ring at the hero's position and rotation (createEffect :26537; EffectControl life 1, followPosition; plays its own Sounds/aura1); Yield 0.3 (:26569): the fatalStrike status for chaAdjust(12) = 12 s (:26313), whose look for the hero's own team (CharacterControl.cs:37038-37131): Effects/fatalStrike Instantiated at mount_Hand_L and at mount_Hand_R and parented to each (no EffectControl: they go with the status, or when its 10 arrows are spent, :8494-8530), cut at 10 s; Yield 0.2 (:26567): standby at 0.5 s (:26339)",
+    "cues": [
+    [0, "voice", "fatalStrike1|fatalStrike2"],
+    [0, "fx", "fatalStrike_ring"],
+    [0.3, "fx", "fatalStrike", {"bone": "mount_Hand_L", "kill": 10}],
+    [0.3, "fx", "fatalStrike", {"bone": "mount_Hand_R", "kill": 10}]
+    ]
+  },
+  "leftStride": {
+    "why": "Chameleon.cs RPC_leftStride (:26607-27821), max rank 2 (2 x 2 + 1 = 5 arrows, :27058) + Double Strider #423 + Bow Mastery (40 m/s arrows, Chameleon_nAttack.cs:94-100; passives on), enemy target: the 10 m target point: at 0 (IL_89C): clip leftStride (0.2 fade, :27106), the hero runs left at runSpeed + 1 facing the target (strideLeft :27546-27605, vMovement -right :27589; no hero mover on the page); #423: the old clone destroyed and doubleStrider_left (the clone: a skinned Chameleon with its own 2.7 s root clip; EffectControl life 3, followState) at the hero's position and rotation (createEffect :27173), which doubleStrideLeft moves the other way: every FixedUpdate LookAt(flat target) and Translate((runSpeed + 1) x right x dt, World) while myCommand is leftStride (:27725-27795; runSpeed 4.02 at the page's stats, CharacterDataClass.cs:979: 5.02 m/s, a part to build, shared with Right Stride's doubleStrider_right: to = the target, strafe = + m/s to its right); voice leftStride1 / leftStride2 (Random.Range(0, 2) :27243, :27255, :27286); strideShot_dust at the hero (createEffect :27329; EffectControl life 2, followState; plays its own looping Sounds/rightStride_footStep); Yield 0.366 (:27371), then 0.433 between arrows (:27369): at 0.366, 0.799, 1.232, 1.665, 2.098 s: the arrow in hand (slot L) hidden at the first (:26765-26792) until 2.298 s (:26823-26851): hideProp L, the prefab field nAttack_bowFx1 = Sounds/bow_fire1 (:26931-26937), RPC_nAttack_fire from hero + TransformDirection(-0.38, 1.2, 1) at the target's collider centre (:26949-26971; the target 0.6 m up, plans/fx_penguin/decisions.md 3) and, #423, a second one from the clone + its TransformDirection(0.4, 1.2, 1) (:27004-27032; the clone's spots from checks/fx_chameleon_research/skills_a/stride_sim.py): the nAttack arrow (ProjectileControl, Chameleon_nAttack: the Normal Attack's arrow part, :8447-8545); each arrow hits when its trigger box (0.3 x 0.3 x 1.5 centred 1 m ahead, nAttack.prefab:34-44) touches the target body (capsule radius 0.3 centred 0.6 m up, plans/fx_bat/decisions.md 4) and is destroyed there (Chameleon_nAttack.cs:379-397): the hero's 0.174 s after the shot, the clone's 0.175-0.176 s (checks/fx_chameleon_research/verify_a/box_hit2.py); nAttack_hit at target.ClosestPointOnBounds(the box centre) (Chameleon_nAttack.cs:406, :436; RPC_nAttack_hit :8565-8597) with the hero's rotation (plays its own Sounds/bow_hit1); Critical Plus 4's crit on each landed arrow, its own draw: lckAdjust(4 x 4 + 4) = 20 % (Chameleon_nAttack.cs:620-643), criticalPlus_hit at the same spot and frame with the hero's rotation (:669; Chameleon.cs:9325-9364; plays its own Sounds/bow_hit3; plans/fx_chameleon/effect_only.md 'Critical Plus'); the Poison Arrow roll's poison draws nothing (CharacterControl.cs:36965-36969); after the 5th, Yield 0.2 (:27365): the arrow back and standby at 2.298 s (:26862-26889): the clone's and the dust's followState cut (cued 2.3)",
+    "cues": [
+    [0, "voice", "leftStride1|leftStride2"],
+    [0, "fx", "strideShot_dust", {"cut": 2.3}],
+    [0, "fx", "doubleStrider_left", {"to": [0, 0, 10], "strafe": 5.02, "cut": 2.3}],
+    [0.366, "sound", "bow_fire1"],
+    [0.366, "fx", "nAttack", {"x": -0.38, "y": 1.2, "d": 1, "rot": [3.81, 2.42, 0], "to": [0, 0.6, 10]}],
+    [0.366, "fx", "nAttack", {"x": 2.1, "y": 1.2, "d": 1.23, "rot": [3.81, -13.47, 0], "to": [0, 0.6, 10]}],
+    [0.366, "hideProp", "L", {"kill": 1.932, "all": true}],
+    [0.54, "fx", "nAttack_hit", {"x": -0.04, "y": 0.67, "d": 9.7}],
+    [0.54, "fx", "criticalPlus_hit", {"x": -0.04, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [0.541, "fx", "nAttack_hit", {"x": 0.24, "y": 0.67, "d": 9.7}],
+    [0.541, "fx", "criticalPlus_hit", {"x": 0.24, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [0.799, "sound", "bow_fire1"],
+    [0.799, "fx", "nAttack", {"x": -0.38, "y": 1.2, "d": 1, "rot": [3.81, 2.42, 0], "to": [0, 0.6, 10]}],
+    [0.799, "fx", "nAttack", {"x": 3.89, "y": 1.2, "d": 1.85, "rot": [3.8, -25.53, 0], "to": [0, 0.6, 10]}],
+    [0.973, "fx", "nAttack_hit", {"x": -0.04, "y": 0.67, "d": 9.7}],
+    [0.973, "fx", "criticalPlus_hit", {"x": -0.04, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [0.974, "fx", "nAttack_hit", {"x": 0.3, "y": 0.67, "d": 9.7}],
+    [0.974, "fx", "criticalPlus_hit", {"x": 0.3, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [1.232, "sound", "bow_fire1"],
+    [1.232, "fx", "nAttack", {"x": -0.38, "y": 1.2, "d": 1, "rot": [3.81, 2.42, 0], "to": [0, 0.6, 10]}],
+    [1.232, "fx", "nAttack", {"x": 5.58, "y": 1.2, "d": 2.89, "rot": [3.8, -38.15, 0], "to": [0, 0.6, 10]}],
+    [1.406, "fx", "nAttack_hit", {"x": -0.04, "y": 0.67, "d": 9.7}],
+    [1.406, "fx", "criticalPlus_hit", {"x": -0.04, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [1.407, "fx", "nAttack_hit", {"x": 0.3, "y": 0.67, "d": 9.7}],
+    [1.407, "fx", "criticalPlus_hit", {"x": 0.3, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [1.665, "sound", "bow_fire1"],
+    [1.665, "fx", "nAttack", {"x": -0.38, "y": 1.2, "d": 1, "rot": [3.81, 2.42, 0], "to": [0, 0.6, 10]}],
+    [1.665, "fx", "nAttack", {"x": 7.01, "y": 1.2, "d": 4.27, "rot": [3.79, -50.75, 0], "to": [0, 0.6, 10]}],
+    [1.839, "fx", "nAttack_hit", {"x": -0.04, "y": 0.67, "d": 9.7}],
+    [1.839, "fx", "criticalPlus_hit", {"x": -0.04, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [1.84, "fx", "nAttack_hit", {"x": 0.3, "y": 0.67, "d": 9.7}],
+    [1.84, "fx", "criticalPlus_hit", {"x": 0.3, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [2.098, "sound", "bow_fire1"],
+    [2.098, "fx", "nAttack", {"x": -0.38, "y": 1.2, "d": 1, "rot": [3.81, 2.42, 0], "to": [0, 0.6, 10]}],
+    [2.098, "fx", "nAttack", {"x": 8.06, "y": 1.2, "d": 5.85, "rot": [3.79, -62.77, 0], "to": [0, 0.6, 10]}],
+    [2.272, "fx", "nAttack_hit", {"x": -0.04, "y": 0.67, "d": 9.7}],
+    [2.272, "fx", "criticalPlus_hit", {"x": -0.04, "y": 0.67, "d": 9.7, "p": 0.2}],
+    [2.274, "fx", "nAttack_hit", {"x": 0.3, "y": 0.67, "d": 9.7}],
+    [2.274, "fx", "criticalPlus_hit", {"x": 0.3, "y": 0.67, "d": 9.7, "p": 0.2}]
+    ]
+  },
+  "quickFire1": {
+    "why": "RPC_quickFire :19240-20438, rank 4 + Added Fire #402 (passives on): every shot = quickFire_fire Instantiated at firePos = hero + TransformDirection(0, 1.5, 1), LookRotation(fireDir), fireDir = (target bounds centre - firePos) (:19435-19490, :19797-19820, :20092-20115; a 0.3 s ImageEmitter flash, no projectile: the shot is a Physics.Raycast of 20 + 4 x Far Reach 4 = 36 m, :19467) + Sounds/quickFire on the hero's AudioSource (:19510-19522, :19834, :20129; a 'sound' cue); 0.1 s later the ray's hit: RPC_nAttack_hit(hit.point, hero forward) (:19590, :19713, :19882) = Effects/nAttack_hit at the hit point, the hero's rotation (:8565-8588; plays its own Sounds/bow_hit1), on the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3): the ray from (0, 1.5, 1) meets the body's side at d 9.7, y 0.63; mChar.hit draws nothing else; this clip: PlayAnimation(quickFire1, 0) cut (:20163) and voice quickFire1 / quickFire2 (Random.Range(0, 2) :20204-20259) at 0; Yield 0.4 (:20329): the arrow in hand (mWep2 = slot L, the arrow) hidden (:19398-19425) until 2.7 s (:19946-19981), the opening shot (:19435-19522); Yield 0.1 (:20323): its hit at 0.5 (:19577-19590); Yield 0.1 (:20313): quickFire2 at 0.6 (case 4 :19641-19670), so the SEQ step is quickFire1@0.6 (index.html had 0.4); left out: the camera motion blur (:20281); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "quickFire1|quickFire2"],
+    [0.4, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.4, "sound", "quickFire"],
+    [0.4, "hideProp", "L", {"kill": 2.3, "all": true}],
+    [0.5, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}]
+    ]
+  },
+  "quickFire2": {
+    "why": "RPC_quickFire :19240-20438, rank 4 + Added Fire #402 (passives on): every shot = quickFire_fire Instantiated at firePos = hero + TransformDirection(0, 1.5, 1), LookRotation(fireDir), fireDir = (target bounds centre - firePos) (:19435-19490, :19797-19820, :20092-20115; a 0.3 s ImageEmitter flash, no projectile: the shot is a Physics.Raycast of 20 + 4 x Far Reach 4 = 36 m, :19467) + Sounds/quickFire on the hero's AudioSource (:19510-19522, :19834, :20129; a 'sound' cue); 0.1 s later the ray's hit: RPC_nAttack_hit(hit.point, hero forward) (:19590, :19713, :19882) = Effects/nAttack_hit at the hit point, the hero's rotation (:8565-8588; plays its own Sounds/bow_hit1), on the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3): the ray from (0, 1.5, 1) meets the body's side at d 9.7, y 0.63; mChar.hit draws nothing else; this clip (from 0.6 s of the skill): PlayAnimation(quickFire2, 0) cut, WrapMode.Loop (:19660-19665), i = 0 (:19670); the loop shots while i < 4 x sLv = 16 with Added Fire (:20061): LookAt the target, shot (:20065-20129), Yield 0.1 (:20340), its hit and i++ (case 5 :19677-19761): shots at 0, 0.1 ... 1.5, hits at 0.1 ... 1.6; after the 16th hit Yield 0.1 (:20303): quickFire3 at 1.7 (the SEQ's quickFire2*@1.7)",
+    "cues": [
+    [0.0, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.0, "sound", "quickFire"],
+    [0.1, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.1, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.1, "sound", "quickFire"],
+    [0.2, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.2, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.2, "sound", "quickFire"],
+    [0.3, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.3, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.3, "sound", "quickFire"],
+    [0.4, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.4, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.4, "sound", "quickFire"],
+    [0.5, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.5, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.5, "sound", "quickFire"],
+    [0.6, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.6, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.6, "sound", "quickFire"],
+    [0.7, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.7, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.7, "sound", "quickFire"],
+    [0.8, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.8, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.8, "sound", "quickFire"],
+    [0.9, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [0.9, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0.9, "sound", "quickFire"],
+    [1.0, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.0, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.0, "sound", "quickFire"],
+    [1.1, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.1, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.1, "sound", "quickFire"],
+    [1.2, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.2, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.2, "sound", "quickFire"],
+    [1.3, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.3, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.3, "sound", "quickFire"],
+    [1.4, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.4, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.4, "sound", "quickFire"],
+    [1.5, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}],
+    [1.5, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [1.5, "sound", "quickFire"],
+    [1.6, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}]
+    ]
+  },
+  "quickFire3": {
+    "why": "RPC_quickFire :19240-20438, rank 4 + Added Fire #402 (passives on): every shot = quickFire_fire Instantiated at firePos = hero + TransformDirection(0, 1.5, 1), LookRotation(fireDir), fireDir = (target bounds centre - firePos) (:19435-19490, :19797-19820, :20092-20115; a 0.3 s ImageEmitter flash, no projectile: the shot is a Physics.Raycast of 20 + 4 x Far Reach 4 = 36 m, :19467) + Sounds/quickFire on the hero's AudioSource (:19510-19522, :19834, :20129; a 'sound' cue); 0.1 s later the ray's hit: RPC_nAttack_hit(hit.point, hero forward) (:19590, :19713, :19882) = Effects/nAttack_hit at the hit point, the hero's rotation (:8565-8588; plays its own Sounds/bow_hit1), on the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3): the ray from (0, 1.5, 1) meets the body's side at d 9.7, y 0.63; mChar.hit draws nothing else; this clip (from 2.3 s of the skill): PlayAnimation(quickFire3, 0) cut, Once (:19787-19792) and the closing shot (:19797-19834) at 0; Yield 0.1 (:20327): its hit at 0.1 (:19869-19882); Yield 0.1 (:20309): CrossFade(root, 0.2) at 0.2 (:19934); Yield 0.2 (:20336): the arrow shown again, standby at 0.4 (:19946-20019)",
+    "cues": [
+    [0, "fx", "quickFire_fire", {"d": 1, "y": 1.5, "rot": [5.711, 0, 0]}],
+    [0, "sound", "quickFire"],
+    [0.1, "fx", "nAttack_hit", {"d": 9.7, "y": 0.63}]
+    ]
+  },
+  "poisonVolley": {
+    "why": "RPC_poisonVolley :23037-23758 (rank 2): PlayAnimation(poisonVolley, 0) cut (:23503), voice poisonVolley1 / poisonVolley2 (Random.Range(0, 2) :23544-23599) and Effects/poisonVolley createEffect at the hero, hero rotation (:23612-23628; life 1, followPosition, plays its own Sounds/poisonVolley) at 0; Yield 0.3 (:23666): the arrow (mWep2, slot L) hidden (:23184-23211) until 0.7 (:23370-23405); the camera's zoomMask warp left out (:23234); Yield 0.2 (:23658): CrossFade(root, 0.2) at 0.5 (:23261), the hits FindRecTarget(hero, forward, 1, 8, 12, 4) (:23279-23312) and poison (:23318-23345) draw nothing on the target (CharacterControl addStatus 'poison' draws nothing, CharacterControl.cs:36965-36969); Yield 0.2 (:23670): standby 0.7 (:23433); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "poisonVolley1|poisonVolley2"],
+    [0, "fx", "poisonVolley"],
+    [0.3, "hideProp", "L", {"kill": 0.4, "all": true}]
+    ]
+  },
+  "rainOfArrow": {
+    "why": "RPC_tormentRain :25269-25872 (Torment Rain #273, rank 1): cast only while the Chameleon's own Final Entrapment cage stands (:6686-6703); its spot tPos = the cage's position (OAQYXXtBCn :25635-25644) = the target's feet (RPC_finalEntrapment_hit(tObject.transform.position) :25004, Instantiate(finalEntrapment, hitPos, identity) :9152): the cage shown at the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) from 0 to the tile's end, as Snow Ball shows the snowman it needs (penguin.json snowBall); PlayAnimation(rainOfArrow, 0) cut (:25668) at 0 and the voice: BB loads Voices/tormentRain1 / tormentRain2 (:25719, :25750), which the game has no file for (the rip: voices/tormenrRain1.wav, tormenrRain2.wav), so BB plays nothing; TTO loads Voices/tormenrRain1 / tormenrRain2 (TTO1102 Chameleon.<RPC_tormentRain>d__170::MoveNext, pseudo/Chameleon.c:20602-20604): TTO's fix (Sheep decision 10); Yield 0.9 (:25811): tormentRain_ring createEffect at the hero, hero rotation (:25405-25423; life 2, followState: cut at the standby, 2.1; plays its own Sounds/tormentRain_ring); Yield 0.3 (:25791): the arrow (slot L) hidden (:25460-25487) until 2.1 (:25527-25555) and RPC_tormentRain_fire(tPos, hero forward) (:25505, :25518): Yield 0.8 (:26105), then Effects/tormentRain_fire Instantiated at the cage spot, LookRotation(hero forward) (:25990-26006) at 2.0 (life 3, plays its own Sounds/tormentRain_fire; its arrows fall from 16 m at 48 m/s and need WorldParticleCollider); the hits FindAreaTarget(cage, 8, 10) at 2.2 (:26044-26067) draw nothing; Yield 0.9 (:25808): standby 2.1 (:25583); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "tormenrRain1|tormenrRain2"],
+    [0, "fx", "finalEntrapment", {"d": 10, "kill": 2.7}],
+    [0.9, "fx", "tormentRain_ring", {"cut": 2.1}],
+    [1.2, "hideProp", "L", {"kill": 0.9, "all": true}],
+    [2.0, "fx", "tormentRain_fire", {"d": 10}]
+    ]
+  },
+  "rightStride": {
+    "why": "RPC_rightStride :27821-29212 (rank 2: 2 x sLv + 1 = 5 shots, :28432; Double Strider #423 on): PlayAnimation(rightStride, 0.2) (:28480), the hero runs right at runSpeed + 1 circling the target (:28486-28504, strideRight :28977-28982: the page has no hero mover, she stays, as the Wolf's Feral Strike); #423: doubleStrider_right createEffect at the hero, hero rotation (:28529-28547; an animated ghost body, life 3, followState: cut at the standby 2.298), moved by doubleStrideRight every FixedUpdate: LookAt the target on the flat, then Translate(-(runSpeed + 1) x its right x dt, world) (:29162-29168): a page part (cue option strafe -5.02 m/s, to = the target): runSpeed 4.02 at the page's stats (0.01 x (400 + 2 AGI - 4 weight), CharacterDataClass.cs:979, CharacterControl.cs:1458; decisions.md 30) + 1; voice rightStride1 / rightStride2 (Random.Range(0, 2) :28617-28672) and strideShot_dust at the hero, hero rotation (:28685-28703; life 2, followPosition + followState, its own looped Sounds/rightStride_footStep) at 0; Yield 0.366 (:28740), then a shot every 0.433 s (:28742): 0.366, 0.799, 1.232, 1.665, 2.098; the arrow (slot L) hidden from 0.366 (:27979-28006) to 2.298 (:28037-28065); each shot: Sounds/rightStride_fire1 on even shots, rightStride_fire2 on odd (:28145-28212, 'sound' cues), rightStride_fire Instantiated at hero + TransformDirection(0.4, 1.2, 1), LookRotation to the target's bounds centre (:28219-28259: rot [3.81, -2.545, 0]) and one at the clone + its TransformDirection(-0.38, 1.2, 1) aimed the same way (:28289-28323; the spots from plans/fx_chameleon/skills_b.md Verification 4, at 5.02 m/s); the RaycastAll hits (:28342-28414) draw nothing; Yield 0.2 (:28744): standby 2.298 (:28093); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "rightStride1|rightStride2"],
+    [0, "fx", "strideShot_dust", {"cut": 2.298}],
+    [0, "fx", "doubleStrider_right", {"cut": 2.298, "strafe": -5.02, "to": [0, 0, 10]}],
+    [0.366, "hideProp", "L", {"kill": 1.932, "all": true}],
+    [0.366, "sound", "rightStride_fire1"],
+    [0.366, "fx", "rightStride_fire", {"x": 0.4, "d": 1, "y": 1.2, "rot": [3.81, -2.545, 0]}],
+    [0.366, "fx", "rightStride_fire", {"x": -2.081, "d": 1.226, "y": 1.2, "rot": [3.807, 13.34, 0]}],
+    [0.799, "sound", "rightStride_fire2"],
+    [0.799, "fx", "rightStride_fire", {"x": 0.4, "d": 1, "y": 1.2, "rot": [3.81, -2.545, 0]}],
+    [0.799, "fx", "rightStride_fire", {"x": -3.872, "d": 1.844, "y": 1.2, "rot": [3.802, 25.399, 0]}],
+    [1.232, "sound", "rightStride_fire1"],
+    [1.232, "fx", "rightStride_fire", {"x": 0.4, "d": 1, "y": 1.2, "rot": [3.81, -2.545, 0]}],
+    [1.232, "fx", "rightStride_fire", {"x": -5.567, "d": 2.879, "y": 1.2, "rot": [3.798, 38.019, 0]}],
+    [1.665, "sound", "rightStride_fire2"],
+    [1.665, "fx", "rightStride_fire", {"x": 0.4, "d": 1, "y": 1.2, "rot": [3.81, -2.545, 0]}],
+    [1.665, "fx", "rightStride_fire", {"x": -6.996, "d": 4.259, "y": 1.2, "rot": [3.793, 50.625, 0]}],
+    [2.098, "sound", "rightStride_fire1"],
+    [2.098, "fx", "rightStride_fire", {"x": 0.4, "d": 1, "y": 1.2, "rot": [3.81, -2.545, 0]}],
+    [2.098, "fx", "rightStride_fire", {"x": -8.048, "d": 5.837, "y": 1.2, "rot": [3.789, 62.645, 0]}]
+    ]
+  },
+  "slayer1": {
+    "why": "RPC_slayer :30217-31274 and RPC_slayer_fire :31274-32144: four skills on one coroutine, sLv = the skill (Bug / Tail / Elemental / Machine Slayer, #341-344, each its own cooldown key slayer + sLv :30820), one per play at random on the Slayer host, each its own tile (poolChains); slayer1 at 0 (:30829)",
+    "skills": {
+      "bugSlayer": {
+        "why": "bugSlayer (sLv 1, x2 on Bugs / Plants): PlayAnimation(slayer1, 0.2) (:30829) and voice bugSlayer1 / bugSlayer2 (the sLv switch, Random.Range(0, 2) :30870-31159) at 0; each frame the hero faces the target until Time.time >= actionTime + 1 (:30367, :30629-30639, YieldDefault :31197): slayer2 at 1.0 (SEQ step slayer1@1; the clip is 1.5 s)",
+        "cues": [
+        [0, "voice", "bugSlayer1|bugSlayer2"]
+        ]
+      },
+      "tailSlayer": {
+        "why": "tailSlayer (sLv 2, x2 on Tails): PlayAnimation(slayer1, 0.2) (:30829) and voice tailSlayer1 / tailSlayer2 (the sLv switch, Random.Range(0, 2) :30870-31159) at 0; each frame the hero faces the target until Time.time >= actionTime + 1 (:30367, :30629-30639, YieldDefault :31197): slayer2 at 1.0 (SEQ step slayer1@1; the clip is 1.5 s)",
+        "cues": [
+        [0, "voice", "tailSlayer1|tailSlayer2"]
+        ]
+      },
+      "elementalSlayer": {
+        "why": "elementalSlayer (sLv 3, x2 on Elementals): PlayAnimation(slayer1, 0.2) (:30829) and voice elementalSlayer1 / elementalSlayer2 (the sLv switch, Random.Range(0, 2) :30870-31159) at 0; each frame the hero faces the target until Time.time >= actionTime + 1 (:30367, :30629-30639, YieldDefault :31197): slayer2 at 1.0 (SEQ step slayer1@1; the clip is 1.5 s)",
+        "cues": [
+        [0, "voice", "elementalSlayer1|elementalSlayer2"]
+        ]
+      },
+      "machineSlayer": {
+        "why": "machineSlayer (sLv 4, x2 on Robots): PlayAnimation(slayer1, 0.2) (:30829) and voice machineSlayer1 / machineSlayer2 (the sLv switch, Random.Range(0, 2) :30870-31159) at 0; each frame the hero faces the target until Time.time >= actionTime + 1 (:30367, :30629-30639, YieldDefault :31197): slayer2 at 1.0 (SEQ step slayer1@1; the clip is 1.5 s)",
+        "cues": [
+        [0, "voice", "machineSlayer1|machineSlayer2"]
+        ]
+      }
+    }
+  },
+  "slayer2": {
+    "why": "RPC_slayer :30217-31274 and RPC_slayer_fire :31274-32144: four skills on one coroutine, sLv = the skill (Bug / Tail / Elemental / Machine Slayer, #341-344, each its own cooldown key slayer + sLv :30820), one per play at random on the Slayer host, each its own tile (poolChains); slayer2 from 1.0 s (:30367-30396)",
+    "skills": {
+      "bugSlayer": {
+        "why": "bugSlayer: PlayAnimation(slayer2, 0.2), Loop (:30391-30396) at 0; the cast castTime = magAdjust(2 + 0.5 x Improved Slayer 4) = 4 s less INT / 32, floor 0.1 (:30406; CharacterControl.cs:20584-20588): 0.1 s at top INT (the user's no-cast-bar rule; the Bat's Guardian step @0.1); in the same frame bugSlayer_eye (:30428-30587) Instantiated at the target's collider.bounds.center, identity, InitEffectControl(target) (:30688-30727; life 1 + 0.5, followPosition, plays its own Sounds/slayerCharge), again every 2 s only while mEffectTimer + 2 < castTimer (:30696-30712): once at 0.1 s; at castTimer RPC_slayer_fire (:30660, :30784-30795)",
+        "cues": [
+        [0, "fx", "bugSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "tailSlayer": {
+        "why": "tailSlayer: PlayAnimation(slayer2, 0.2), Loop (:30391-30396) at 0; the cast castTime = magAdjust(2 + 0.5 x Improved Slayer 4) = 4 s less INT / 32, floor 0.1 (:30406; CharacterControl.cs:20584-20588): 0.1 s at top INT (the user's no-cast-bar rule; the Bat's Guardian step @0.1); in the same frame tailSlayer_eye (:30428-30587) Instantiated at the target's collider.bounds.center, identity, InitEffectControl(target) (:30688-30727; life 1 + 0.5, followPosition, plays its own Sounds/slayerCharge), again every 2 s only while mEffectTimer + 2 < castTimer (:30696-30712): once at 0.1 s; at castTimer RPC_slayer_fire (:30660, :30784-30795)",
+        "cues": [
+        [0, "fx", "tailSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "elementalSlayer": {
+        "why": "elementalSlayer: PlayAnimation(slayer2, 0.2), Loop (:30391-30396) at 0; the cast castTime = magAdjust(2 + 0.5 x Improved Slayer 4) = 4 s less INT / 32, floor 0.1 (:30406; CharacterControl.cs:20584-20588): 0.1 s at top INT (the user's no-cast-bar rule; the Bat's Guardian step @0.1); in the same frame elementalSlayer_eye (:30428-30587) Instantiated at the target's collider.bounds.center, identity, InitEffectControl(target) (:30688-30727; life 1 + 0.5, followPosition, plays its own Sounds/slayerCharge), again every 2 s only while mEffectTimer + 2 < castTimer (:30696-30712): once at 0.1 s; at castTimer RPC_slayer_fire (:30660, :30784-30795)",
+        "cues": [
+        [0, "fx", "elementalSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "machineSlayer": {
+        "why": "machineSlayer: PlayAnimation(slayer2, 0.2), Loop (:30391-30396) at 0; the cast castTime = magAdjust(2 + 0.5 x Improved Slayer 4) = 4 s less INT / 32, floor 0.1 (:30406; CharacterControl.cs:20584-20588): 0.1 s at top INT (the user's no-cast-bar rule; the Bat's Guardian step @0.1); in the same frame machineSlayer_eye (:30428-30587) Instantiated at the target's collider.bounds.center, identity, InitEffectControl(target) (:30688-30727; life 1 + 0.5, followPosition, plays its own Sounds/slayerCharge), again every 2 s only while mEffectTimer + 2 < castTimer (:30696-30712): once at 0.1 s; at castTimer RPC_slayer_fire (:30660, :30784-30795)",
+        "cues": [
+        [0, "fx", "machineSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      }
+    }
+  },
+  "slayer3": {
+    "why": "RPC_slayer :30217-31274 and RPC_slayer_fire :31274-32144: four skills on one coroutine, sLv = the skill (Bug / Tail / Elemental / Machine Slayer, #341-344, each its own cooldown key slayer + sLv :30820), one per play at random on the Slayer host, each its own tile (poolChains); slayer3 from 1.1 s (the 0.1 s cast, :30660; :31749); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "skills": {
+      "bugSlayer": {
+        "why": "bugSlayer: RPC_slayer_fire's start (:31733-31992): PlayAnimation(slayer3, 0.2) (:31749), audio.PlayOneShot(nAttack_bowFx1) (:31761) = Sounds/bow_fire1 (the Chameleon prefab's field 3, checks/fx_chameleon_research/skills_b/probe_fields.txt; a 'sound' cue), fireVector = target bounds centre - hero - 1.5 up, its y clamped to +-0.05 (:31764-31770: rot [2.874, 0, 0]), bugSlayer_fire Instantiated at hero + 1.5 up, LookRotation(fireVector) (:31785-31926; life 1, plays its own Sounds/slayerFire), localScale 1 + 0.1 x Improved Slayer 4 = 1.4 (:31947), the arrow (slot L) hidden (:31953-31972) until 0.85 (:31682-31710); the camera blur left out (:31989); Yield 0.1 (:32022): the hits FindRecTarget(hero + forward, forward, 1.0, 1.0, 36, 10) (:31455-31610) draw nothing; Yield 0.6 (:32028): standby 0.7 (:31642); Yield 0.15 (:32032); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+        "cues": [
+        [0, "sound", "bow_fire1"],
+        [0, "fx", "bugSlayer_fire", {"y": 1.5, "rot": [2.874, 0, 0], "scale": 1.4}],
+        [0, "hideProp", "L", {"kill": 0.85, "all": true}]
+        ]
+      },
+      "tailSlayer": {
+        "why": "tailSlayer: RPC_slayer_fire's start (:31733-31992): PlayAnimation(slayer3, 0.2) (:31749), audio.PlayOneShot(nAttack_bowFx1) (:31761) = Sounds/bow_fire1 (the Chameleon prefab's field 3, checks/fx_chameleon_research/skills_b/probe_fields.txt; a 'sound' cue), fireVector = target bounds centre - hero - 1.5 up, its y clamped to +-0.05 (:31764-31770: rot [2.874, 0, 0]), tailSlayer_fire Instantiated at hero + 1.5 up, LookRotation(fireVector) (:31785-31926; life 1, plays its own Sounds/slayerFire), localScale 1 + 0.1 x Improved Slayer 4 = 1.4 (:31947), the arrow (slot L) hidden (:31953-31972) until 0.85 (:31682-31710); the camera blur left out (:31989); Yield 0.1 (:32022): the hits FindRecTarget(hero + forward, forward, 1.0, 1.0, 36, 10) (:31455-31610) draw nothing; Yield 0.6 (:32028): standby 0.7 (:31642); Yield 0.15 (:32032); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+        "cues": [
+        [0, "sound", "bow_fire1"],
+        [0, "fx", "tailSlayer_fire", {"y": 1.5, "rot": [2.874, 0, 0], "scale": 1.4}],
+        [0, "hideProp", "L", {"kill": 0.85, "all": true}]
+        ]
+      },
+      "elementalSlayer": {
+        "why": "elementalSlayer: RPC_slayer_fire's start (:31733-31992): PlayAnimation(slayer3, 0.2) (:31749), audio.PlayOneShot(nAttack_bowFx1) (:31761) = Sounds/bow_fire1 (the Chameleon prefab's field 3, checks/fx_chameleon_research/skills_b/probe_fields.txt; a 'sound' cue), fireVector = target bounds centre - hero - 1.5 up, its y clamped to +-0.05 (:31764-31770: rot [2.874, 0, 0]), elementalSlayer_fire Instantiated at hero + 1.5 up, LookRotation(fireVector) (:31785-31926; life 1, plays its own Sounds/slayerFire), localScale 1 + 0.1 x Improved Slayer 4 = 1.4 (:31947), the arrow (slot L) hidden (:31953-31972) until 0.85 (:31682-31710); the camera blur left out (:31989); Yield 0.1 (:32022): the hits FindRecTarget(hero + forward, forward, 1.0, 1.0, 36, 10) (:31455-31610) draw nothing; Yield 0.6 (:32028): standby 0.7 (:31642); Yield 0.15 (:32032); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+        "cues": [
+        [0, "sound", "bow_fire1"],
+        [0, "fx", "elementalSlayer_fire", {"y": 1.5, "rot": [2.874, 0, 0], "scale": 1.4}],
+        [0, "hideProp", "L", {"kill": 0.85, "all": true}]
+        ]
+      },
+      "machineSlayer": {
+        "why": "machineSlayer: RPC_slayer_fire's start (:31733-31992): PlayAnimation(slayer3, 0.2) (:31749), audio.PlayOneShot(nAttack_bowFx1) (:31761) = Sounds/bow_fire1 (the Chameleon prefab's field 3, checks/fx_chameleon_research/skills_b/probe_fields.txt; a 'sound' cue), fireVector = target bounds centre - hero - 1.5 up, its y clamped to +-0.05 (:31764-31770: rot [2.874, 0, 0]), machineSlayer_fire Instantiated at hero + 1.5 up, LookRotation(fireVector) (:31785-31926; life 1, plays its own Sounds/slayerFire), localScale 1 + 0.1 x Improved Slayer 4 = 1.4 (:31947), the arrow (slot L) hidden (:31953-31972) until 0.85 (:31682-31710); the camera blur left out (:31989); Yield 0.1 (:32022): the hits FindRecTarget(hero + forward, forward, 1.0, 1.0, 36, 10) (:31455-31610) draw nothing; Yield 0.6 (:32028): standby 0.7 (:31642); Yield 0.15 (:32032); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+        "cues": [
+        [0, "sound", "bow_fire1"],
+        [0, "fx", "machineSlayer_fire", {"y": 1.5, "rot": [2.874, 0, 0], "scale": 1.4}],
+        [0, "hideProp", "L", {"kill": 0.85, "all": true}]
+        ]
+      }
+    }
+  },
+  "allSlayer1": {
+    "why": "Chameleon.cs RPC_allSlayer (:32144-32805), the four All Slayer skills' shared opening (sLv 1-4 = All Bug / Tail / Elemental / Machine Slayer, the dispatcher :7522): no voice; at 0: clip allSlayer1 cut (PlayAnimation(allSlayer1, 0) :32440); Yield 0.5 (:32734): allSlayer_ring at the hero's position and rotation (createEffect :32309; EffectControl life 60, afterLife 0.2, followPosition, followState); Yield 0.2 (:32739): allSlayer2 cut in and looped at 0.7 s (:32346-32351, its entry), then the bar magAdjust(4 + Improved Slayer 4) (:32381-32390; the cast-bar rule: its floor 0.1 s) and RPC_allSlayer_fire when it ends (:32474, :32700) sets myCommand allSlayer2: the ring's followState cut at 0.8 s; the page restarts FX.t at the 0.7 s step edge, so it is cued 0.65 (as castRing's)",
+    "cues": [
+    [0.5, "fx", "allSlayer_ring", {"cut": 0.65}]
+    ]
+  },
+  "allSlayer2": {
+    "why": "Chameleon.cs RPC_allSlayer case 3 / 4 (:32327-32673): allSlayer2 looped from 0.7 s, and on its first frame (the eye timer starts at 0, :32371, :32491-32507) the marking pass: every enemy in FindAreaTarget(hero, 40, 10) (:32512) of the skill's race (sLv 1 Bugs / Plants, 2 Tails, 3 Elementals, 4 Robots, or with slayerMark) that is on screen, up to 4 + Improved Slayer 4 = 8 (:32550-32630), gets RPC_allSlayer_mark (:32645; :9568-9760): its race's eye created by the target at its collider.bounds.center, identity (the target 0.6 m up; EffectControl life 1, afterLife 0.5, followPosition; plays its own Sounds/slayerCharge); the next pass would come 2 s later, after the 0.1 s bar: one eye per play; one member per skill (its own tile, poolChains), the same member's allSlayer3 entry next",
+    "skills": {
+      "allBugSlayer": {
+        "why": "allBugSlayer (sLv 1, Bugs / Plants): RPC_allSlayer_mark sLv 1 loads Effects/bugSlayer_eye (Chameleon.cs:9615) at the 10 m target 0.6 m up",
+        "cues": [
+        [0, "fx", "bugSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "allTailSlayer": {
+        "why": "allTailSlayer (sLv 2, Tails): RPC_allSlayer_mark sLv 2 loads Effects/tailSlayer_eye (Chameleon.cs:9652) at the 10 m target 0.6 m up",
+        "cues": [
+        [0, "fx", "tailSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "allElementalSlayer": {
+        "why": "allElementalSlayer (sLv 3, Elementals): RPC_allSlayer_mark sLv 3 loads Effects/elementalSlayer_eye (Chameleon.cs:9689) at the 10 m target 0.6 m up",
+        "cues": [
+        [0, "fx", "elementalSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      },
+      "allMachineSlayer": {
+        "why": "allMachineSlayer (sLv 4, Robots): RPC_allSlayer_mark sLv 4 loads Effects/machineSlayer_eye (Chameleon.cs:9730) at the 10 m target 0.6 m up",
+        "cues": [
+        [0, "fx", "machineSlayer_eye", {"d": 10, "y": 0.6}]
+        ]
+      }
+    }
+  },
+  "allSlayer3": {
+    "why": "Chameleon.cs RPC_allSlayer_fire (:32805-34044), started when the bar ends (0.8 s), myCommand allSlayer2: at 0: clip allSlayer3 cut (PlayAnimation(allSlayer3, 0) :33546) and the race's voice: BB asks Voices/allBugSlayer1 / 2, allTailSlayer1 / 2, allElementalSlayer1 / 2, allMachineSlayer1 / 2 (Random.Range(0, 2) :33598-33876), which BB's data does not have (voices/ holds allBugSlayer, allTailSlayer, allElementalSlayer, allMachineSlayer, one each; All Bug Slayer's first branch also loads into Blood Burn's field and plays a never-set one, :33604-33622), and TTO1102 loads Voices/allBugSlayer ... allMachineSlayer with no number (TTO pseudo Chameleon.c RPC_allSlayer_fire d__188): TTO's fix (plans/fx_sheep/decisions.md 10); the camera's motion blur (:33892-33895) left out; Yield 0.2 (:33944): the arrow in hand (slot L) hidden (:32952-32979) until 0.95 s (:33479-33507): hideProp L, and the race's all<Race>Slayer_fire at the hero's position and rotation (:32989-33157; EffectControl life 1, followPosition; plays its own Sounds/slayerFire); Yield 0.1 (:33928): at 0.3 s the hits on the marked targets (FindAreaTarget(hero, 40, 10) :33216, the same race / slayerMark test, up to 8): RPC_allSlayer_hit Instantiates the race's all<Race>Slayer_hit at the target's position (its feet), identity (:33320; :9766-9930; a bolt from 12 m up; plays its own Sounds/allSlayer_hit): the 10 m target point; Yield 0.5 (:33942): standby at 0.8 s (:33439); Yield 0.15 (:33936): the arrow back at 0.95 s",
+    "skills": {
+      "allBugSlayer": {
+        "why": "sLv 1: voice allBugSlayer (TTO's fix), allBugSlayer_fire (Chameleon.cs:33006, created :33018), allBugSlayer_hit (Chameleon.cs:9785)",
+        "cues": [
+        [0, "voice", "allBugSlayer"],
+        [0.2, "fx", "allBugSlayer_fire"],
+        [0.2, "hideProp", "L", {"kill": 0.75, "all": true}],
+        [0.3, "fx", "allBugSlayer_hit", {"d": 10}]
+        ]
+      },
+      "allTailSlayer": {
+        "why": "sLv 2: voice allTailSlayer (TTO's fix), allTailSlayer_fire (Chameleon.cs:33047, created :33059), allTailSlayer_hit (Chameleon.cs:9822)",
+        "cues": [
+        [0, "voice", "allTailSlayer"],
+        [0.2, "fx", "allTailSlayer_fire"],
+        [0.2, "hideProp", "L", {"kill": 0.75, "all": true}],
+        [0.3, "fx", "allTailSlayer_hit", {"d": 10}]
+        ]
+      },
+      "allElementalSlayer": {
+        "why": "sLv 3: voice allElementalSlayer (TTO's fix), allElementalSlayer_fire (Chameleon.cs:33088, created :33100), allElementalSlayer_hit (Chameleon.cs:9859)",
+        "cues": [
+        [0, "voice", "allElementalSlayer"],
+        [0.2, "fx", "allElementalSlayer_fire"],
+        [0.2, "hideProp", "L", {"kill": 0.75, "all": true}],
+        [0.3, "fx", "allElementalSlayer_hit", {"d": 10}]
+        ]
+      },
+      "allMachineSlayer": {
+        "why": "sLv 4: voice allMachineSlayer (TTO's fix), allMachineSlayer_fire (Chameleon.cs:33133, created :33145), allMachineSlayer_hit (Chameleon.cs:9900)",
+        "cues": [
+        [0, "voice", "allMachineSlayer"],
+        [0.2, "fx", "allMachineSlayer_fire"],
+        [0.2, "hideProp", "L", {"kill": 0.75, "all": true}],
+        [0.3, "fx", "allMachineSlayer_hit", {"d": 10}]
+        ]
+      }
+    }
+  },
+  "allSlain": {
+    "why": "Chameleon.cs RPC_allSlain (:34044-34709), max rank 2: at 0: clip allSlain cut (PlayAnimation(allSlain, 0) :34489), voice allSlain1 / allSlain2 (Random.Range(0, 2) :34530, :34542, :34573; allSlain3 is never played) and allSlain_ring at the hero's position and rotation (createEffect :34614; EffectControl life 2, afterLife 0.2, followPosition; plays its own Sounds/allSlain_ring); Yield 0.7 (:34655): at 0.7 s RPC_allSlain_hit for every target in the All Slain list (the targets the Chameleon's attacks hit since the last cast, addAllSlainList :9983-10060; Bible chameleon-skill-reference.md:483): allSlain_hit Instantiated at the target's position (its feet), identity (:34227; :9940-9975; a bolt from 12 m up; plays its own Sounds/allSlain_hit): the 10 m target point (the page's target stands for a listed one, open question 5); the camera's motion blur (:34270-34275) and, Yield 0.1 (:34659), shake at 0.8 s (:34310) left out; Yield 0.2 (:34644): the damage at 1.0 s (:34377, nothing drawn); Yield 0.5 (:34651): standby at 1.5 s (:34419)",
+    "cues": [
+    [0, "voice", "allSlain1|allSlain2"],
+    [0, "fx", "allSlain_ring"],
+    [0.7, "fx", "allSlain_hit", {"d": 10}]
+    ]
+  },
+  "skinShift": {
+    "why": "RPC_skinShift :34709-35336 (Skin Shift #421): PlayAnimation(skinShift, 0) cut (:34987), moveSpeed -3 (the hop back, :34996; no hero mover on the page), voice skinShift1 / skinShift2 (Random.Range(0, 2) :35028-35083), Effects/skinShift_ring Instantiated at the hero, hero rotation (:35096-35114; life 1 + 1, the shed skin skinShift_chameleon StaticMesh in Particles/AdditiveOffset, plays its own Sounds/skinShift), the arrow (slot L) hidden (:35128-35147) until 0.7 (:34854-34889), every non-system status removed (:35155-35215) and 10 % of hp taken (RPC_AddDamage :35229, no effect) at 0; Yield 0.6 (:35261): moveSpeed 0; Yield 0.1 (:35257): standby 0.7 (:34917); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "skinShift1|skinShift2"],
+    [0, "fx", "skinShift_ring"],
+    [0, "hideProp", "L", {"kill": 0.7, "all": true}]
+    ]
+  },
+  "zeroShot": {
+    "why": "RPC_zeroShot :36976-37784 (Zero Shot #434): PlayAnimation(zeroShot, 0) cut (:37522), moveSpeed -2 (:37531), voice zeroShot1 / zeroShot2 (Random.Range(0, 2) :37563-37618) and Effects/zeroShot_ring createEffect at the hero, hero rotation (:37631-37647; life 1 + 2, followPosition, its shot lines and ground ring delayed 1.0 / 1.1 s, three BB ParticleSystems: needs that part; plays its own Sounds/zeroShot) at 0; Yield 0.5 (:37689): moveSpeed -1, the camera blur left out (:37134); the pulls toward hero + 2 x forward (FindAreaTarget 6 m, :37441-37490) at 0.5, 0.6, 0.7, 0.8, 0.9 (Yield 0.1 :37679; i < 5 :37338) draw nothing (the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) is out of the 6 m reach); at 1.0: the arrow (slot L) hidden (:37344-37371) until 1.2 (:37218-37255), moveSpeed -6, the hit box FindRecTarget(hero + 0.5 forward, 2, 2, 3, 3) (:37399-37422) draws nothing; Yield 0.2 (:37685); Yield 0.1 (:37681): standby 1.3 (:37286); the arrow is mWep2 = the page's L (ChameleonEquipment.cs:1646-1715; plans/fx_chameleon/skills_b.md Verification 1)",
+    "cues": [
+    [0, "voice", "zeroShot1|zeroShot2"],
+    [0, "fx", "zeroShot_ring"],
+    [1.0, "hideProp", "L", {"kill": 0.2, "all": true}]
+    ]
+  },
+  "thunderDragon1": {
+    "why": "RPC_thunderDragon :37784-38604 (Thunder Dragon #444; no voice in BB or TTO: neither loads one, TTO1102 Chameleon.<RPC_thunderDragon>d__199::MoveNext pseudo/Chameleon.c:19812-20546): PlayAnimation(thunderDragon1, 0) cut (:38240), blend / invisible removed (:38260-38265), thunderDragon_ring1 createEffect at the hero, hero rotation (:38270-38288; life 3 + 1, followPosition, followState: the actionState stays attack to 3.8 s, after its life, so no cut; its thunderBolt falls from 24 m at 48 m/s with a BoltEmitter to its own BoltTarget; plays its own Sounds/thunderDragon_ring1) at 0; Yield 0.3 (:38491): the camera blur left out (:37939); Yield 0.3 (:38500): at 0.6 myCommand thunderDragon2 (:37981), thunderDragon_ring2 createEffect at the hero, hero rotation (:37986-38004; life 3.2, ends with the standby at 3.8: the dragon skeleton StaticMesh in Self-Illumin/DoubleTexture, two BB ParticleSystems, its looped Sounds/thunderDragon_ring2) and every Renderer under the hero off (:38018-38052) until 3.8 (:38305-38332): the whole hero hidden for 3.2 s; Yield 0.2 (:38487): thunderDragon2 at 0.8 (the SEQ's thunderDragon1@0.8)",
+    "cues": [
+    [0, "fx", "thunderDragon_ring1"],
+    [0.6, "fx", "thunderDragon_ring2"],
+    [0.6, "hideProp", "hero", {"kill": 3.2}]
+    ]
+  },
+  "thunderDragon2": {
+    "why": "RPC_thunderDragon case 4 (:38065-38096): PlayAnimation(thunderDragon2, 0) cut, Loop at 0 (0.8 s of the skill); six ticks 0.5 s apart (Yield 0.5 :38485, i++ :38155, i >= 6 :38305) at 0, 0.5 ... 2.5: FindAreaTarget(hero, 3, 3) damage and a 12 % paralysis (:38418-38465) on enemies within 3 m: the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) is out of reach, so nothing is drawn (the Bison's convention; Panda/Effects/paralysis, CharacterControl.cs:35443, would show only on a foe in reach); the hero shown again and standby at 3.0 (:38309-38357), the SEQ's thunderDragon2*@3; the reflect (CharacterControl.cs:4618-4627) needs an attacker; an entry with no cues: it records the clip's timeline",
+    "cues": []
+  },
+  "venomPhantom1": {
+    "why": "TTO1102:Chameleon.<RPC_venomPhantom>d__294::MoveNext@0x1C581A0 (pseudo/Chameleon.c:21679-22040; plans/fx_chameleon/tto.md 2.1; the lone target 10 m ahead): 0: Row6Begin(venomPhantom, clip venomPhantom1) = PlayAnimation(venomPhantom1, 0.1) facing it (:21737; Row6Begin@0x1BD6450 :39498-39580), ClearGhosts (:21741), venomPhantom_coil owned at the hero, hero rotation (:21754; EffectControl 0.4 + 0.3, followPosition + followState: myCommand becomes venomPhantomShot at the first shot, PhantomShot@0x1BD21D0 :35920, so cut 0.3), Row6Sound blend (sounds/, Row6Sound@0x1BD76F0 :39402-39440; :21755); Until(start + 0.3) (:21759, capstone 0x1C58C3F), then the shots (venomPhantom2); no voice, no roll",
+    "cues": [
+    [0, "fx", "tto/venomPhantom_coil", {"cut": 0.3}],
+    [0, "sound", "blend"]
+    ]
+  },
+  "venomPhantom2": {
+    "why": "one shot, played five times at 0.3 + 0.22 i (Until :22018; the SEQ steps): PhantomShot@0x1BD21D0 (:35882-35979): myCommand venomPhantomShot, the hero turned to the foe, PlayAnimation(venomPhantom2, 0.05) (:35954), Row6Sound rightStride_fire1 (:35957); Later(0.06) (:35965) = <PhantomShot>b__1@0x1BF5870 (:160-484): from = mount_Hand_L (:213; venomPhantom2 at 0.06 s: 0.585 m left, 1.109 up, 0.39 ahead, checks/fx_chameleon_research/tto/bones.py), to = Row6Chest(foe) = its collider centre, the target body 0.6 m up 10 m ahead (:263; Row6Chest@0x1BD69E0 :39735; Bat decisions 3-4), venomPhantom_shot at from, LookRotation(to - from) (:288) + RabbitTracer.Set(from, to) (:309), venomPhantom_hit at to, identity (:324), Row6Sound bow_hit2 (:326), venomPhantom_ghost at the hero, hero rotation (:341), ChameleonAfterimage.Bake(hero, from) (:364), SlideTo(Row6Ground(hero.TransformPoint(GhostSlots[ghosts % 5])), LookRotation(vFlat(to - spot)), 0.18) (:385-423; GhostSlots from the .cctor@0x1BD9650 :39953: (1.5, 0, -0.3), (-1.5, 0, -0.3), (2.8, 0, -1.1), (-2.8, 0, -1.1), (0, 0, 1.6), hero-local x right / z forward); ShotHit at +0.06 (:21998) draws nothing; left out: the poison look on the foe (a status look on its body, Sheep decision 4)",
+    "cues": [
+    [0, "sound", "rightStride_fire1"],
+    [0.06, "fx", "tto/venomPhantom_shot", {"x": -0.585, "y": 1.109, "d": 0.39, "rot": [3.03, 3.48, 0], "to": [0, 0.6, 10]}],
+    [0.06, "fx", "tto/venomPhantom_hit", {"y": 0.6, "d": 10}],
+    [0.06, "sound", "bow_hit2"],
+    [0.06, "fx", "tto/venomPhantom_ghost", {"bow": [-0.585, 1.109, 0.39], "face": [0, 0.6, 10], "slide": 0.18, "slots": [[1.5, 0, -0.3], [-1.5, 0, -0.3], [2.8, 0, -1.1], [-2.8, 0, -1.1], [0, 0, 1.6]]}]
+    ]
+  },
+  "venomPhantom3": {
+    "why": "the finale: at 0.3 + 1.1 = 1.4 (Until :22032, capstone 0x1C58A6B-0x1C58A75) PhantomFinale@0x1BD1E90 starts TTO1102:Chameleon.<RPC_phantomRequiem>d__301::MoveNext@0x1C1B140 (:12606-12957): Row6Begin(venomPhantom, clip venomPhantom3) = PlayAnimation(venomPhantom3, 0.1) (:12707); Until(+0.55) = 1.95 (:12713): venomPhantom_requiem at the hero, hero rotation (:12741), Row6Sound venomShock_ring (:12743), per afterimage k (5, in shot order) Fire() (:12802; its fireFx venomPhantom_ghostFire at its bow point) and venomPhantom_beam from its BowPoint (:12774; the slot + its turn x the bow's local spot, calc.txt) to its foe's chest, LookRotation + RabbitTracer.Set (:12824-12846), then Row6Sound poisonVolley (:12753); Until(+0.67) = 2.07 (:12758): venomPhantom_rupture at each struck foe's chest, identity (:12910; the target 0.6 m up 10 m ahead), Row6Sound venomShock (:12925, struck > 0), ClearGhosts(shatter) (:12927; each afterimage's Shatter(): venomPhantom_ghostShatter, gone after shatterTime 0.35); Until(+1.2) = 2.6: Row6End (:12932-12947), the clip is 1.2 s; Row6Shake 0.25 left out (Bison decision 35); left out: the phantomVenom look on the foe and the poison burst (status / Effect Damage on its body, Sheep decision 4)",
+    "cues": [
+    [0.55, "fx", "tto/venomPhantom_requiem"],
+    [0.55, "sound", "venomShock_ring"],
+    [0.55, "fx", "tto/venomPhantom_beam", {"x": 0.865, "y": 1.109, "d": 0.002, "rot": [2.91, -4.95, 0], "to": [0, 0.6, 10], "ghost": 0}],
+    [0.55, "fx", "tto/venomPhantom_beam", {"x": -2.022, "y": 1.109, "d": 0.17, "rot": [2.91, 11.63, 0], "to": [0, 0.6, 10], "ghost": 1}],
+    [0.55, "fx", "tto/venomPhantom_beam", {"x": 2.138, "y": 1.109, "d": -0.865, "rot": [2.63, -11.13, 0], "to": [0, 0.6, 10], "ghost": 2}],
+    [0.55, "fx", "tto/venomPhantom_beam", {"x": -3.272, "y": 1.109, "d": -0.579, "rot": [2.63, 17.18, 0], "to": [0, 0.6, 10], "ghost": 3}],
+    [0.55, "fx", "tto/venomPhantom_beam", {"x": -0.585, "y": 1.109, "d": 1.99, "rot": [3.63, 4.18, 0], "to": [0, 0.6, 10], "ghost": 4}],
+    [0.55, "sound", "poisonVolley"],
+    [0.67, "fx", "tto/venomPhantom_rupture", {"y": 0.6, "d": 10, "shatterGhosts": true}],
+    [0.67, "sound", "venomShock"]
+    ],
+    "builds": ["tto/venomPhantom_ghostFire", "tto/venomPhantom_ghostShatter"]
+  },
+  "apexHunt": {
+    "why": "TTO1102:Chameleon.<RPC_apexHunt>d__304::MoveNext@0x1BF8FB0 (pseudo/Chameleon.c:3204-3645; plans/fx_chameleon/tto.md 2.2; the hero lifted along the 4.5 m jump, decisions.md 34; the lone target 10 m ahead): 0: Row6Begin(apexHunt) = PlayAnimation(apexHunt, 0.1) (:3265), ClearApexLocks (:3269), apexHunt_crouch at the cast spot, hero rotation (:3303), Row6Sound slayerCharge (:3304); Until 0.22 (:3308, capstone 0x1BF9C6E): apexHunt_takeoff there (:3330), Row6Sound massShot (:3331), the lift to 4.5 m by 0.55 (:3287-3290, :3425: u = (t - 0.22) / 0.33, 1 - (1 - u)^2; the lift, LIFTS apexHunt, from 0.22 s; cue spots relative to the lifted hero (Fx, index.html)); hover 0.55-2.45 (+ 0.08 sin(5 (t - 0.55)) up, :3489) with apexHunt_hang owned at the hero whenever none lives (:3517; EffectControl 0.6 + 0.3, followPosition + followState, myCommand unchanged: respawned at 0.55, 1.45, 2.35); 0.55: ApexLock(target) (:3531; ApexLock@0x1BCE270 :36531-36665): CharacterControl::AddApexLockFx@0x24AB5A0 (CharacterControl.c:6140) = preyFx, lockOnly, at the foe's collider centre (the target body 0.6 m up), scale clamp(2 x 0.3, 1, 4) = 1 (SpawnChameleonRow6Fx@0x24C50F0), Row6Sound markOfSlayer_hit (:36628); the lock tries at 0.85 ... 2.05 find no other foe (:3525-3545); 2.35 (:3618): ApexVolley@0x1BCE570 (:36853-37188): from = mount_Hand_L (:36928; apexHunt at 2.35 s: 0.229 m left, 0.95 up, 0.745 ahead), apexHunt_loose there, LookRotation(chest - from) (:37119), Row6Sound slayerFire (:37121), ClearApexLocks = the reticle's Release (:37147; 0.1 s, then fadeOut 0.25: ChameleonPreyReticle Update@0x1C4EF10 subss 0.1, gone at release + 0.35 = kill 2.15), ApexArrow with delay 0.04 x 0 (:37157): <ApexArrow>d__312@0x1BEC9D0 (:485-715): apexHunt_arrow at from, lerped to the chest over 0.12 s (:565-591), Destroy(arrow, 0.3) (:660): kill 0.42; 2.47: ImpactFx@0x1BD05B0 at Row6Ground(chest) = the ground 10 m ahead (:675-680): apexHunt_impact, identity, Row6Sound allSlain_hit; 2.75: Destroy(hang) (:3355), apexHunt_land at the cast spot (:3381); Until 3.1 (:3387, capstone 0x1BF9A75): Row6End (:3633), the clip is 3.1 s; Row6Shake left out (Bison decision 35); left out: the Prey look on the hit foe (a status look, Sheep decision 4) and the kill's apexHunt_trophy + allSlain_ring (TrophyFx@0x1BD9270: needs a kill, TTO1106)",
+    "cues": [
+    [0, "fx", "tto/apexHunt_crouch"],
+    [0, "sound", "slayerCharge"],
+    [0.22, "lift", "apexHunt"],
+    [0.22, "fx", "tto/apexHunt_takeoff"],
+    [0.22, "sound", "massShot"],
+    [0.55, "fx", "tto/preyFx", {"y": -3.9, "d": 10, "lockOnly": true, "release": 1.8, "kill": 2.15}],
+    [0.55, "sound", "markOfSlayer_hit"],
+    [0.55, "fx", "tto/apexHunt_hang"],
+    [1.45, "fx", "tto/apexHunt_hang"],
+    [2.35, "fx", "tto/apexHunt_hang", {"kill": 0.4}],
+    [2.35, "fx", "tto/apexHunt_loose", {"x": -0.229, "y": 0.95, "d": 0.745, "rot": [27.81, 1.42, 0]}],
+    [2.35, "sound", "slayerFire"],
+    [2.35, "fx", "tto/apexHunt_arrow", {"x": -0.229, "y": 0.95, "d": 0.745, "rot": [27.81, 1.42, 0], "to": [0, -3.933, 10], "kill": 0.42}],
+    [2.47, "fx", "tto/apexHunt_impact", {"y": -4.48, "d": 10}],
+    [2.47, "sound", "allSlain_hit"],
+    [2.75, "fx", "tto/apexHunt_land"]
+    ]
+  },
+  "chainLightning": {
+    "why": "TTO1102:Chameleon::DoRow6Skill@0x1BCF640 (pseudo/Chameleon.c:34817-34890): the coroutine, then RPC_AddStatus(stormCharge 0x268, 1, 8 s) on the Chameleon (:34875) and StormWatch; TTO1102:Chameleon.<RPC_chainLightning>d__317::MoveNext@0x1BFF820 (:6895-7022; plans/fx_chameleon/tto.md 2.3): 0: Row6Begin(chainLightning) = PlayAnimation(chainLightning, 0.1) (:6935), chainLightning_draw owned at the hero, hero rotation (:6954; EffectControl 0.36 + 0.3, followPosition + followState: cut at Row6End 0.5), Row6Sound cAttack_bow (:6955); the stormCharge look on her (<addStatus>d__481 0x24EE9B9 -> AddChameleonRow6Fx@0x24AC040: stormChargeFx at her collider centre, 0.98 m up (CharacterController m_Center, TTO bundle), scale 1, removed with the status at 8 s); Until 0.3 (:6960): OverloadFx@0x1BD18B0 at Row6Ground(hero) (:6980-6983; chainLightning_overload, identity, Row6Sound thunderDragon_ring2, :38799-38801), chainLightning_zapHot at Row6Chest(hero), identity (:6997), StormDragonForm (:7000; <StormDragonForm>d__328@0x1C5B820 :23687-24081): chainLightning_stormDragon parented to her (:23896), chainLightning_muzzle at her chest (:23917), every renderer of hers darkened toward StormBlack (0.07, 0.07, 0.09) over 0.25 s (:23959; StormDarken@0x1BD8C90, .cctor :39953) while stormCharge lasts; Until 0.5 (:7002): Row6End (:7013); 8.0 (stormCharge gone): zapHot at her chest (:23990), the aura's particles stopped and Destroy(aura, 1) (:24010-24017), the darkening undone over 0.6 s; StormWatch@0x1C5C3C0 (:24098-24185; a check 0.2 s after the cast, then every 0.1 s): the first check after 8.0 s (8.0-8.1, cued 8.05) puts staticDrain (0x269, 4 s) on her (:24156; staticDrainFx at her chest, AddChameleonRow6Fx) and Row6Sound rightStride_fire2 (:24159); the cues after the 0.9 s clip run on in the idle tail; Row6Shake left out (Bison decision 35); not cued: the storm arrows' fork and chain (StormArrow@0x1BD8290, HopFx@0x1BD0370: they come with Combo / Clear Arrow / Left Stride arrows while the buff lasts, none in this tile)",
+    "cues": [
+    [0, "fx", "tto/chainLightning_draw", {"cut": 0.5}],
+    [0, "sound", "cAttack_bow"],
+    [0, "fx", "tto/stormChargeFx", {"y": 0.98, "kill": 8}],
+    [0.3, "fx", "tto/chainLightning_overload"],
+    [0.3, "sound", "thunderDragon_ring2"],
+    [0.3, "fx", "tto/chainLightning_zapHot", {"y": 0.98}],
+    [0.3, "fx", "tto/chainLightning_stormDragon", {"stop": 7.7, "kill": 8.7}],
+    [0.3, "skin", "Chameleon.StormDarken", {"kill": 8.3}],
+    [0.3, "fx", "tto/chainLightning_muzzle", {"y": 0.98}],
+    [8.0, "fx", "tto/chainLightning_zapHot", {"y": 0.98}],
+    [8.05, "fx", "tto/staticDrainFx", {"y": 0.98, "kill": 4}],
+    [8.05, "sound", "rightStride_fire2"]
+    ]
+  },
+  "wave": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486; the rip has hi, wave, ty, bow, cheer, cry, sleep, chat1-7); no effect, no sound; emo_hi (:40540) and emo_wave (:40547) both play the wave clip (:40981): voice hi or wave",
+    "cues": [
+    [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486; the rip has hi, wave, ty, bow, cheer, cry, sleep, chat1-7); no effect, no sound; emo_ty (:40556) and emo_bow (:40563) both play the bow clip (:40974): voice ty or bow",
+    "cues": [
+    [0, "voice", "ty|bow"]
+    ]
+  },
+  "sleep": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486; the rip has hi, wave, ty, bow, cheer, cry, sleep, chat1-7); no effect, no sound; emo_sleep (:40602-40608): voices/sleep",
+    "cues": [
+    [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486; the rip has hi, wave, ty, bow, cheer, cry, sleep, chat1-7); no effect, no sound; emo_cheer (:40614-40620)",
+    "cues": [
+    [0, "voice", "cheer"]
+    ]
+  },
+  "cry": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486; the rip has hi, wave, ty, bow, cheer, cry, sleep, chat1-7); no effect, no sound; emo_cry (:40638-40644)",
+    "cues": [
+    [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Chameleon.cs RPC_emotion (:40223): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40474, PlayOneShot :40486); no effect, no sound; emo_chat (:40659) plays the talk clip (:40952) with chat1-5 at random (Random.Range(1, 6), :40466; chat6 / chat7 in the rip are never drawn); emo_talk (:40652) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+    [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvents playLeftFootEvent at 0.1 s and playRightFootEvent at 0.4 s (checks/fx_chameleon_research/attacks_emotes/probe_events.txt) -> Chameleon.cs :101-155: the hero's audio.PlayOneShot(footStep_left) = step_light2 / (footStep_right) = step_light3 (the fields :14841-14844, probe_fields.txt; Resources/sound/fx/), own hero or anyone in a mission (mGameType > 4, :108-117, :137-146); every cycle of the run (the events fire each loop: everyCycle, as the Bat's wing flap)",
+    "everyCycle": true,
+    "cues": [
+    [0.1, "sound", "step_light2"],
+    [0.4, "sound", "step_light3"]
+    ]
+  },
+  "ko": {
+    "why": "Chameleon.cs RPC_ko (:46150) and RPC_dead (:46526) both play the ko clip (:46364, :46723); their voices ko1 / ko2 / dead1 / dead2 (:46409, :46440, :46770, :46801) are not in BB's data (the rip's heroes/chameleon/voices/ has none: silent in the game); RPC_dead always puts deadEffect at the hero's position and rotation (:46825-46842; EffectControl life 3), RPC_ko nothing (getUp after 3 s, :46482): one of the two at random, even chance (Sheep decision 11)",
+    "cues": [
+    [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

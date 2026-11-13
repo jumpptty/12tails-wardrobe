@@ -37,6 +37,9 @@ CLIP_SKILLS = {
     # the Cat's pillagePlunge clip is Pillage Plunge, card pillage (2026-11-13, plans/fx_cat/decisions.md 15, skills_b.md
     # item 3, Q10: the tile had no icon)
     "cat": {"pillage": ["pillagePlunge"]},
+    # the Chameleon's backStep is Perfect Blend, cast4 Fatal Strike, rainOfArrow Torment Rain (2026-11-13,
+    # plans/fx_chameleon/decisions.md 14, skills_a.md item 2, skills_b.md "Page changes")
+    "chameleon": {"backStep": ["perfectBlend"], "cast4": ["fatalStrike"], "rainOfArrow": ["tormentRain"]},
 }
 
 
@@ -53,7 +56,11 @@ EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"],
 # gamble clip and Nine Lives' ko then getUp, plans/fx_cat/effect_only.md block 4, decisions.md 8, 11, 12)
 OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "edenSanctuary": ["cast3"]},
             "bat": {"nightmare": ["cast3", "channel"], "mindControl": ["cast3", "channel"]},
-            "cat": {"evenOdds": ["gamble"], "nineLives": ["ko", "getUp"]}}
+            "cat": {"evenOdds": ["gamble"], "nineLives": ["ko", "getUp"]},
+            # the Chameleon's cast3 skills with no channel, Tent's channel then sleep, Critical Plus and Clear Arrow on the
+            # Normal Attack's clip (2026-11-13, plans/fx_chameleon/decisions.md 5, 6, 12-14)
+            "chameleon": {"immunity": ["cast3"], "venomShock": ["cast3"], "bloodBurn": ["cast3"], "rustyDecay": ["cast3"],
+                          "tent": ["cast3", "sleep"], "criticalPlus": ["nAttack1"], "clearArrow": ["nAttack1"]}}
 
 
 def bible_icons():

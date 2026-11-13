@@ -160,6 +160,27 @@ SKILL_FX = {
         # (dealersMark: none of the released skills applies it)
         "eclipsed", "dealersMark",
     ],
+    # plans/fx_chameleon/tto.md section 5 and Verification 1 (decisions.md 61): all 31 Chameleon TTO-only prefabs (no
+    # arcana style); the ghost's own venomPhantom_ghostFire / _ghostShatter (ChameleonAfterimage fireFx / shatterFx, named
+    # only by the part: an entry's "builds" never builds a tto/ name, so they must be here), the foe status looks, the kill
+    # reward and the storm arrows (not cued) are built too
+    "chameleon": [
+        # Venom Phantom: TTO1102:Chameleon.<RPC_venomPhantom>d__294::MoveNext@0x1C581A0, <PhantomShot>b__1@0x1BF5870,
+        # <RPC_phantomRequiem>d__301::MoveNext@0x1C1B140, EchoFx@0x1BCFE00; AddChameleonRow6Fx (phantomVenom)
+        "venomPhantom_coil", "venomPhantom_shot", "venomPhantom_hit", "venomPhantom_ghost", "venomPhantom_ghostFire",
+        "venomPhantom_ghostShatter", "venomPhantom_requiem", "venomPhantom_beam", "venomPhantom_rupture",
+        "venomPhantom_echo", "phantomVenomFx",
+        # Apex Hunt: <RPC_apexHunt>d__304::MoveNext@0x1BF8FB0, ApexVolley@0x1BCE570, <ApexArrow>d__312@0x1BEC9D0,
+        # ImpactFx@0x1BD05B0, TrophyFx@0x1BD9270, CharacterControl::AddApexLockFx@0x24AB5A0 (preyFx)
+        "apexHunt_crouch", "apexHunt_takeoff", "apexHunt_hang", "apexHunt_loose", "apexHunt_arrow", "apexHunt_impact",
+        "apexHunt_land", "apexHunt_trophy", "preyFx",
+        # Chain Lightning: <RPC_chainLightning>d__317::MoveNext@0x1BFF820, OverloadFx@0x1BD18B0,
+        # <StormDragonForm>d__328@0x1C5B820, StormArrow@0x1BD8290, StormArrowHit@0x1BD8120, HopFx@0x1BD0370;
+        # AddChameleonRow6Fx (stormCharge, staticDrain)
+        "chainLightning_draw", "chainLightning_overload", "chainLightning_zapHot", "chainLightning_stormDragon",
+        "chainLightning_muzzle", "stormChargeFx", "staticDrainFx", "chainLightning_arrow", "chainLightning_zap",
+        "chainLightning_bolt", "chainLightning_boltHot",
+    ],
 }
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
@@ -220,6 +241,10 @@ CODE_MOVERS = {
     # 0.35 s to its `to` on a 12u(1 - u) (3 m) arc with one 360 deg flip about its right axis, then upright there, the
     # inactive Leash node's Edge / Pull RingEmitters held back until that landing (wardrobe/fxparts/tto_cat.js)
     "dropAnchor_anchor": "Cat.DropAnchorFlight",
+    # TTO1102:Chameleon.<ApexArrow>d__312@0x1BEC9D0 (Chameleon.c:565-591; plans/fx_chameleon/tto.md 6 P5, parts.md
+    # Verification 7): from the spawn to its `to` (hero-relative at the spawn, so it works under Apex Hunt's lift) in
+    # 0.12 s, a straight lerp, turned along it; Destroy(arrow, 0.3) after the arrival (wardrobe/fxparts/tto_chameleon.js)
+    "apexHunt_arrow": "Chameleon.ApexArrow",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,
@@ -412,8 +437,12 @@ class Build:
         sh = self.tto.deref(o.assets_file, t["m_Shader"])
         shn = sh.read_typetree().get("m_ParsedForm", {}).get("m_Name", "?") if sh is not None else "?"
         props = t["m_SavedProperties"]
-        tex, scale, offset = None, [1, 1], [0, 0]
+        tex, scale, offset, scale_tex = None, [1, 1], [0, 0], None
         for k, v in props["m_TexEnvs"]:
+            if k == "_ScaleTex":                   # TTO/ChameleonSpirit's scale pattern (2026-11-13, plans/fx_chameleon/parts.md T2:
+                to = self.tto.deref(o.assets_file, v["m_Texture"])   # chmRow6_phantomSpirit / _goldSpirit -> chmRow6_scalesTile)
+                if to is not None:
+                    scale_tex = self.texture(to)
             if k == "_MainTex":
                 to = self.tto.deref(o.assets_file, v["m_Texture"])
                 if to is not None:
@@ -423,6 +452,8 @@ class Build:
         colors = {k: [num(v[c]) for c in "rgba"] for k, v in props["m_Colors"]}
         self.mats[n] = {"blend": SHADER_BLEND.get(shn, "shader:" + shn), "tex": tex, "scale": scale, "offset": offset,
                         "tint": colors.get("_TintColor"), "color": colors.get("_Color")}
+        if scale_tex:                              # exported like _MainTex (data/fx/tex/<name>.webp; fxparts/tto_chameleon.js)
+            self.mats[n]["scaleTex"] = scale_tex
         if not shn.startswith("Legacy Shaders/"):  # TTO's own shaders, Standard, Particles/Standard Unlit: every number
             self.mats[n]["props"] = {**{k: num(v) for k, v in props["m_Floats"]}, **colors}
         return n

@@ -609,6 +609,7 @@ const stage = document.getElementById("stage");
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.localClippingEnabled = true;          // a material's own clippingPlanes (Fx: the floor under a moving child, 2026-11-13)
 stage.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 1000);   // far 1000 (was 100): the further zoom-out keeps the stage in view
@@ -1165,8 +1166,9 @@ function buildClip(name) {
 // at rank 3, 1 → 2 → 3 → 2, the clip changing right after each hit at 0.2 / 0.5 / 0.8 s (:26402, :26640, :26063, the
 // bladeFang_count >= sLv checks :26055, :26627); the Bison's Charge Attack at rank 2 with Improved Swing 3: full charge
 // 8 s, then cAttack6 (the spin by Improved Swing rank, Bison.cs:20318) for 8 hits × 2 × (0.2 − 0.033 × 3) = 1.6 s; Quick
-// Fire at rank 4 with Added Fire #402 (user 2026-11-09: "want it"): quickFire2 from the opening shot (0.4 s) through
-// 4 × 4 shots 0.1 s apart = 1.7 s, quickFire3 on the closing shot (Chameleon.cs:19660, :20061, :19787). LOWER_RANK = clips only lower ranks
+// Fire at rank 4 with Added Fire #402 (user 2026-11-09: "want it"): quickFire2 from 0.6 s (the opening shot at 0.4, its
+// ray at 0.5, Chameleon.cs:20313; plans/fx_chameleon/skills_b.md item 1) through 4 × 4 shots 0.1 s apart = 1.7 s,
+// quickFire3 on the closing shot (Chameleon.cs:19660, :20061, :19787). LOWER_RANK = clips only lower ranks
 // play, kept out of the move list. After the last step the sequence starts again with a 0.2 s crossfade.
 const SEQ = {
   // the Bat (plans/fx_bat, 2026-11-13, decisions.md 27-33): Normal Attack's stage 2 at 0.6 s and stage 3 at 1.2 s after
@@ -1226,9 +1228,25 @@ const SEQ = {
     "Heart Ripper: heartRipper1@0.4 heartRipper2", "Finishing Blow: finishingBlow1@0.4 finishingBlow2",
     "Crescent Eclipse: crescentEclipse1! crescentEclipse2^", "Drop Anchor: dropAnchor! root*~@5.65 anchorYank",
     "Awareness: root*@3", "Damage Roulette: root*@10.2", "Treasure Hunt: root*@1", "Even Odds: gamble", "Nine Lives: ko@3 getUp"],
-  chameleon: ["Charge Attack: cAttack1 cAttack2*@9 cAttack3*@3.6 cAttack4", "Cast: cast1 cast2*@0 cast3~",
-    "Quick Fire: quickFire1@0.4 quickFire2*@1.7 quickFire3", "Slayer: slayer1 slayer2*~@0 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0 allSlayer3",
-    "Thunder Dragon: thunderDragon1@0.8 thunderDragon2*@3", "Focus Fire: focusFire1 focusFire2", "Venom Phantom: venomPhantom1 venomPhantom2 venomPhantom3"],
+  // the Chameleon (plans/fx_chameleon, 2026-11-13, decisions.md 1-17): Normal Attack one shot (decision 3; a sequence of its
+  // own since Critical Plus and Clear Arrow play its clip too, so its tile stays listed); Charge Attack's clip change at
+  // swing 2n - 1: cAttack4 at the 18th swing, 3.4 s into cAttack3 (attacks_emotes.md item 1; full charge); Quick Fire's
+  // quickFire2 from 0.6 s, Slayer's slayer2 at a fixed 1.0 s (Time.time >= actionTime + 1, Chameleon.cs:30367) held for
+  // the bar's 0.1 s floor (CharacterControl.cs:20584-20588), All Slayer's allSlayer2 the same floor (skills_b.md item 1,
+  // skills_a.md Q1); Tent through the cast channel, then sleep with the game's own 0.5 s crossfade at 0.4 s of cast3
+  // (PlayAnimation(sleep, 0.5f) :36063), held 0.7 s at high INT (skills_a.md Verification 1, Q4); Immunity, Venom Shock,
+  // Blood Burn and Rusty Decay play cast3 from the key press with no channel (:8288, :8020, :7620, :6986; decision 6);
+  // Torment Rain's rain lands 2.0-2.6 s into its 2.0 s clip, so the step lasts 2.7 s (decision 9); Venom Phantom's
+  // coroutine fires five shots at 0.3 + 0.22 i, each venomPhantom2 with the game's 0.05 s crossfade written as ^
+  // (TTO1102:Chameleon.<RPC_venomPhantom>d__294, plans/fx_chameleon/tto.md 2.1; decision 10); Apex Hunt and Chain
+  // Lightning stay single clips (decision 11); Critical Plus (a passive) and Clear Arrow (#263) are their own tiles on
+  // nAttack1 (decisions 12, 13); Focus Fire (focusFire1 / 2, played by no BB or TTO code) is gone: NEVER_PLAYED
+  chameleon: ["Normal Attack: nAttack1", "Charge Attack: cAttack1 cAttack2*@9 cAttack3*@3.4 cAttack4", "Cast: cast1 cast2*@0 cast3~",
+    "Quick Fire: quickFire1@0.6 quickFire2*@1.7 quickFire3", "Slayer: slayer1@1 slayer2*~@0.1 slayer3~", "All Slayer: allSlayer1 allSlayer2*@0.1 allSlayer3",
+    "Thunder Dragon: thunderDragon1@0.8 thunderDragon2*@3", "Tent: cast1 cast2*@0 cast3~@0.4 sleep*~0.5@0.7",
+    "Immunity: cast3", "Venom Shock: cast3", "Blood Burn: cast3", "Rusty Decay: cast3", "Torment Rain: rainOfArrow@2.7",
+    "Venom Phantom: venomPhantom1@0.3 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom3^",
+    "Critical Plus: nAttack1", "Clear Arrow: nAttack1"],
   mole: ["Normal Attack: nAttack1 nAttack2", "Assemble: assemble1 assemble2*@0", "Flame Turret: flameTurret1 flameTurret2*@3",
     "Barrel Railgun: barrelRailgun1 barrelRailgun2*@6 barrelRailgun3@0.65 barrelRailgun4"],
   monkey: ["Normal Attack: nAttack1 nAttack2~", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*~@0 cast3~",
@@ -1290,8 +1308,9 @@ const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeS
 // copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile"); the Bison's volcanicRam: no code in BB
 // or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent); the Cat's
 // shikifujin: no TTO or BB code plays it (the string is in neither TTO1102's GameAssembly.dll nor BB's Cat.cs;
-// 2026-11-13, plans/fx_cat/decisions.md 14, tto.md 2.4)
-const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"] };
+// 2026-11-13, plans/fx_cat/decisions.md 14, tto.md 2.4); the Chameleon's focusFire1 / 2: BB data no code plays (no BB
+// file names them, nor TTO's, no Bible card; 2026-11-13, plans/fx_chameleon/decisions.md 16, skills_a.md item 9)
+const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"], chameleon: ["focusFire1", "focusFire2"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // A step's alternatives (2026-11-13, the Bison's Normal Attack: its third stage is the game's roll, RPC_nAttack4 the spin
@@ -3323,7 +3342,12 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
     "@DoubleCast": "doubleCast", "@TripleCast": "tripleCast", "@FrostSpike": "frostSpike" },
   sheep: { "@QuickHeal": "quickHeal", "@SealofAttack": "sealOfAttack", "@SealofDefense": "sealOfDefense", "@EdenSanctuary": "edenSanctuary" },
   bat: { "@Nightmare": "nightmare", "@MindControl": "mindControl", "@MassCast": "massCast", "@ShadowGaze": "shadowGaze",
-    "@Switch": "switch", "@ShadowSacrifice": "shadowSacrifice" } };
+    "@Switch": "switch", "@ShadowSacrifice": "shadowSacrifice" },
+  // the Chameleon (2026-11-13, plans/fx_chameleon/decisions.md 14): the cast3 skills with no channel, Tent, and Critical
+  // Plus / Clear Arrow on the Normal Attack's clip (a skill with a tile of its own shows on that tile only: the Normal
+  // Attack tile keeps its own icon, moveSkillIcons)
+  chameleon: { "@Immunity": "immunity", "@VenomShock": "venomShock", "@BloodBurn": "bloodBurn", "@RustyDecay": "rustyDecay",
+    "@Tent": "tent", "@CriticalPlus": "criticalPlus", "@ClearArrow": "clearArrow" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -3331,7 +3355,9 @@ function moveSkillIcons(name) {
     return hd ? [hd] : sk.length ? [`icons/skills/${C.cls}/${sk[sk.length - 1]}.webp`] : [];
   }
   const ch = chainOf(name), clips = ch ? ch.steps.flatMap(stepClips) : [name];
-  const pooled = new Set(chains().filter(c => c.skill).map(c => c.skill));   // a pool member shows on its own tile only
+  // a pool member shows on its own tile only; so does a SEQ_SKILL tile's skill (2026-11-13, the Chameleon's Critical Plus
+  // and Clear Arrow on nAttack1: not on the Normal Attack tile; no other class's listed tile showed one)
+  const pooled = new Set([...chains().filter(c => c.skill).map(c => c.skill), ...Object.values(SEQ_SKILL[C?.cls] || {})]);
   const hd = Object.entries(HDI[C?.cls] || {}).filter(([s, v]) => !pooled.has(s) && v.clips.some(c => clips.includes(c))).map(([, v]) => v.icon);
   return (hd.length ? hd : [moveIcon(name)].filter(Boolean)).slice(0, 5);
 }
@@ -3834,6 +3860,7 @@ const Sound = {                          // Web Audio: started by the first pick
 const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: {}, missing: {} };   // spawned / missing: tallies for the checks
 FX.json = {};      // the class's fx.json once loaded (api.spawn reads it at once); gen: counts the picks (fxClear), for late spawns
 FX.gen = 0; FX.cycle = null;   // cycle: an "everyCycle" entry's playing action (fxStart, fxTick)
+FX.stepGen = 0;                // counts the sequence steps started (fxStart; Fx.stepGen: the step an effect was made in)
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
 // (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
@@ -3886,6 +3913,29 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // its move each frame, p = { p (position: the effect's Unity world when world, else the node's local space), v
 // (velocity, the same space), age, energy (its life), size, ... }, return false to remove it (Unity 3.5's
 // WorldParticleCollider: fxparts/worldcollider.js)
+// 2026-11-13, the Chameleon (plans/fx_chameleon/parts.md "Interfaces" 1-4, decisions.md 48-50, 57, 60): api.propModel(
+// slot | { item, kind }, fallback) = a fresh Object3D of the prop worn in that slot ("R", "L", "Head", "Back"), or of the
+// named item ({ item: "noviceArrow" }; kind "weapons" unless given), built as setProp builds a worn one (buildProp +
+// finishProp + skinProp: a visitor's skin and the AdditiveAlpha glow twin come along, its own clip posed at its start; a
+// weapon's weapon_fx particles follow it, an Fx of their own that goes when the model leaves the stage), its root at
+// position 0, rotation identity, the prefab's root scale: Unity space as the prop nodes are, so it hangs in an effect's
+// mirror group as it is (Chameleon_nAttack's arrow copy, fxparts/chameleon.js); userData.rootMesh = { geometry, maxY }
+// when the prefab's root node has a mesh (maxY = its bounds' top in the root's own space: Unity's mesh.bounds.max.y), else
+// null. An empty slot: fallback (an item name, or true = the class's starter piece for that slot, PROP_STARTER: the
+// Chameleon's noviceArrow / noviceBow, decision 50), else null; null too while the slot's prop list is still loading (asked
+// for then) or for a hero-skinned piece. Its geometry and materials are its own (fresh per call): the effect's
+// Fx.dispose frees the geometry with the rest of its group (a part that puts rootMesh.geometry on its own node shares it
+// safely: three uploads a freed geometry again if it is drawn again); none of it is the worn prop's.
+// api.shellMaterial({ color: [r, g, b] (gamma), alpha, k, blend }) = the hero looks' outline shell (FX/CosmicRift's vertex
+// program with its own k: each vertex pushed along its view normal by k x clip z, BackSide = the game's Cull Front),
+// constant colour; blend "srcColor" (FX/Blend, FX/Invisible: Blend SrcAlpha SrcColor, the alpha a constant: rgb = colour x
+// alpha + what is drawn x colour; on the canvas alpha One / OneMinusSrcAlpha with alpha = its brightest channel x alpha, so
+// over the transparent canvas it shows as the additive blends do), else "alpha" (SrcAlpha / OneMinusSrcAlpha). Transparent,
+// ZWrite on; material.userData.shellK.value is k (a uniform: a part may change it). HERO_SKINS' FX/Blend and FX/Invisible,
+// fxparts/fxinvisible.js's effect mesh. A cue's life: the root EffectControl read as { ...ec, life } (Final Entrapment's
+// cage, effectControl.life = mDuration, Chameleon.cs:9161-9167); a cue's stop (seconds after the spawn): every emitter's
+// stop?.() then (Shuriken stops emitting, its live particles finish: chainLightning_stormDragon's Stop(StopEmitting)),
+// the effect lives on to its kill or its life
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
@@ -3897,12 +3947,17 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   // fx:grandCasinoArcade, Cat_supportFire, fx:supportFire_cannon; WorldParticleCollider (the collide hook above);
   // Transparent/AdditiveAlpha (api.shader); TTO's Cat_royalCard, Cat_royalHandBanner, Cat_eclipseFx, Cat.RoyalSwordFall,
   // Cat.DropAnchorFlight, Unlit/Color, Unlit/Texture
-  "cat", "worldcollider", "additivealpha", "tto_cat"];
+  "cat", "worldcollider", "additivealpha", "tto_cat",
+  // the Chameleon's (2026-11-13, plans/fx_chameleon/parts.md "Who builds what", decisions.md 55-59): Chameleon_nAttack (the
+  // arrow, a copy of the worn arrow: api.propModel), Chameleon_needlePrison; Self-Illumin/DoubleTexture (api.shader); FX/Invisible
+  // on an effect mesh (api.shader, api.shellMaterial); TTO's ChameleonLightning, ChameleonAfterimage + TTO/ChameleonSpirit,
+  // ChameleonPreyReticle, Chameleon.ApexArrow
+  "chameleon", "doubletexture", "fxinvisible", "tto_chameleon"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
     fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null,
-    spawn: fxSpawn, pointLight, releaseLight };
+    spawn: fxSpawn, pointLight, releaseLight, propModel, shellMaterial };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
@@ -4079,6 +4134,10 @@ class Fx {
       }
     });
     this.root = this.nodes[0];
+    // a cue's life (2026-11-13, the Chameleon's Final Entrapment cage: effectControl.life = mDuration, Chameleon.cs:9161-9167;
+    // plans/fx_chameleon/parts.md Interfaces 4): the root EffectControl read with that life (the data's own stays as it is)
+    if (this.ec && at.life != null) this.ec = { ...this.ec, life: at.life };
+    this.stepGen = FX.stepGen;                 // the sequence step it was made in (fxStart: a followState cut across a step change)
     this.bone = at.bone || null;
     // a cue with both bone and rot: rot is the localRotation under the bone (2026-11-13, the Bison's Over Power horn on
     // Head, localRotation Euler(-90, 0, 0), CharacterControl.cs:35010-35022; plans/fx_bison/decisions.md 33, parts.md
@@ -4096,10 +4155,27 @@ class Fx {
     // (2026-11-09; user: Resonance Claw's waves "should go 3 directions, but now it only go one direction": the -45 / +45
     // waves flew straight ahead); the hero's facing is the group's, above
     if (this.ec && (this.ec.velocity || []).some(x => x)) this.vel = vA(this.ec.velocity).applyQuaternion(this.root.quaternion);
+    // a child's own EffectControl velocity the same way, by the child's own world turn at the spawn (2026-11-13, the
+    // Chameleon's QA: the bolts of All Slain / All Slayer / Thunder Dragon ring1 hung 12-36 m up and never struck; the
+    // Wolf's dualBrand_slash3 vortex flies ahead at 12 m/s; EffectControl.cs:71-73 Awake, :167-173 Update)
+    // A moving child sinks through the floor there (the bolts fall 7-38 m in their life, ending under it), and the game's
+    // floor hides what is under it; the page has no floor that hides (the camera may look from below), so every mesh under
+    // such a child gets its own copy of its material clipped at the floor (world y of the hero's ground; renderer
+    // localClippingEnabled), drawing only what is above it, as the game shows
+    for (const s of this.subs) if ((s.ec.velocity || []).some(x => x)) {
+      s.vel = vA(s.ec.velocity).applyQuaternion(this.uQuat(s.node));
+      const floor = [new THREE.Plane(V(0, 1, 0), -(this.group.position.y - this.liftY))];
+      s.node.traverse(o => { if (o.isMesh && o.material && !o.material.clippingPlanes) {
+        const m0 = o.material, m = m0.clone();     // clone() leaves out the shader hooks fxMaterial's blends put on
+        m.onBeforeCompile = m0.onBeforeCompile; m.customProgramCacheKey = m0.customProgramCacheKey;
+        m.clippingPlanes = floor; o.material = m; o.userData.ownMaterial = true; } });
+    }
     scene.add(this.group);
     this.group.updateMatrixWorld(true);
   }
   attached(o) { for (; o; o = o.parent) if (o === this.mirror) return true; return false; }
+  // followState's cut: straight to the after-life, the "destroy" clip played (update; fxStart at a step change)
+  cutNow() { this.age = this.ec.life; this.root.userData.fxAnim?.play("destroy"); }
   // a node's matrix in Unity's world (the mirror group's space) and its rotation (no scale), for TransformPoint and
   // InverseTransformDirection
   uMatrix(o) { return this.mirrorInv.clone().multiply(o.matrixWorld); }
@@ -4125,7 +4201,11 @@ class Fx {
     // followState: the hero's action changed (the skill ended): straight to the after-life (EffectControl.cs:194-300)
     // and its Animation plays its "destroy" clip, if it has one (EffectControl.cs:252-291: animation.Play("destroy"), wrapMode
     // Once; castRing's 0.53 s shrink, 2026-11-10)
-    if (ec?.followState && this.cutAt != null && FX.t >= this.cutAt && this.age < ec.life) { this.age = ec.life; this.root.userData.fxAnim?.play("destroy"); }
+    if (ec?.followState && this.cutAt != null && FX.t >= this.cutAt && this.age < ec.life) this.cutNow();
+    // a cue's stop (2026-11-13, the Chameleon's chainLightning_stormDragon: ParticleSystem.Stop(true, StopEmitting), then
+    // Destroy(aura, 1), TTO1102 Chameleon.c:24010-24017; plans/fx_chameleon/tto.md P7): every emitter stops emitting, the
+    // effect lives on (its live particles finish)
+    if (this.at.stop != null && !this.stopEmit && this.age >= this.at.stop) { this.stopEmit = true; for (const e of this.emitters) e.stop?.(); }
     if (ec) {
       if (this.age >= ec.life + ec.afterLife) return this.dispose();
       // live phase: the hero never moves here, so following is a no-op; after-life: legacy emitters and ImageEmitters stop
@@ -4137,11 +4217,21 @@ class Fx {
     // starting at the spawn, as the root's), and its emitters stop at its life (the after-life, :421-512). The Penguin's
     // giantComet_tri (the comet body, 0.6 s of the effect's 4 s: it lay on the ground as a dark multiply blob to the end)
     // and meteora's rock (2 s of 3); the Sheep's divinitySpear (1 s of 2, faded out by its AlphaTimer at 0.7 s already).
-    // A child outliving the root goes with it, as in the game. Not done: a child's own velocity (the Wolf's
-    // dualBrand_slash3 VortexEmitter, (0, 12, 0)) and followState (none on a child that ends before its root)
+    // A child outliving the root goes with it, as in the game. A child's own velocity (2026-11-13, the Chameleon's QA):
+    // transform.position += velocity x dt every frame, life and after-life (EffectControl.cs:167-173), in Unity's world,
+    // put back into its parent's space (APPROXIMATED: uniform scales up the chain; every such child has scale 1). Not
+    // done: a child's followState (none on a child that ends before its root)
     for (const s of this.subs) {
       if (!this.attached(s.node)) continue;
-      if (this.age >= s.ec.life + (s.ec.afterLife || 0)) { s.node.parent?.remove(s.node); continue; }
+      if (s.vel && dt) {
+        const p = s.node.parent, d = s.vel.clone().multiplyScalar(dt).applyQuaternion(this.uQuat(p).invert());
+        for (let o = p; o && o !== this.mirror; o = o.parent) d.divide(o.scale);
+        s.node.position.add(d);
+      }
+      if (this.age >= s.ec.life + (s.ec.afterLife || 0)) {
+        s.node.traverse(o => { if (o.userData.ownMaterial) o.material.dispose(); });
+        s.node.parent?.remove(s.node); continue;
+      }
       if (this.age >= s.ec.life && !s.stopped) {
         s.stopped = true;
         for (const e of this.emitters) for (let o = e.node; o && o !== this.mirror; o = o.parent) if (o === s.node) { e.stop?.(); break; }
@@ -4152,7 +4242,7 @@ class Fx {
     if (this.follow) {
       const f = this.follow;
       let shown = vfxOn; for (let o = f; o && shown; o = o.parent) shown = o.visible;
-      this.group.visible = shown;
+      this.group.visible = shown && !wfxHidden(f);
       f.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
       this.mirror.matrixWorld.clone().invert().multiply(f.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, this.root.scale);
     }
@@ -4193,7 +4283,7 @@ class Fx {
     for (const s of this.loops) s.h?.stop();
     this.alive = false; scene.remove(this.group);
     for (const e of this.emitters) try { e.dispose?.(); } catch (x) { console.warn("effect part dispose", this.name, x); }
-    this.group.traverse(o => o.geometry?.dispose());
+    this.group.traverse(o => { o.geometry?.dispose(); if (o.userData.ownMaterial) o.material.dispose(); });
   }
 }
 
@@ -4538,7 +4628,19 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         worn weapon's MeshRenderers while the card / dice / dagger flies): [t, "hideProp", slot ("R" the main hand, "L",
 //         "Head", "Back"), {"kill": s}]: that prop's meshes off the camera's layers from t for s seconds (its weapon_fx
 //         particles keep drawing, as in the game), back at the end, on a new pick or a class change; nothing when no prop
-//         is worn there (HeroPropHide, lookSync)
+//         is worn there (HeroPropHide, lookSync); no kill: hidden until the next pick (2026-11-13, the Chameleon's hand
+//         arrow after a cast-bar skill, plans/fx_chameleon/decisions.md 48); option all (true: the prop's weapon_fx
+//         particles hidden too, the Chameleon's arrow: her code switches off every Renderer under it); slot "hero" (the
+//         whole hero, her props and their weapon_fx particles, through heroHide: Thunder Dragon, decision 49)
+// 2026-11-13, the Chameleon (plans/fx_chameleon/decisions.md 30, 32, 55, 56, 59, 60, 62): life (the root EffectControl's life,
+//         Fx: Final Entrapment's cage, 7), stop (seconds after the spawn: every emitter stops emitting, the effect lives
+//         on: chainLightning_stormDragon), a followState cut at or after its step's end comes at the step change (fxStart:
+//         venomPhantom_coil); the parts' (fx.at): strafe (m/s along the effect's own right: the Double Strider clone),
+//         speed (the arrow's m/s), fatal (Fatal Strike's blood on the arrow), slot (the prop the arrow copies), r or radius
+//         (Needle Prison's ring) (fxparts/chameleon.js); bow, face, slide, slots (Venom Phantom's ghosts), ghost (a beam's
+//         ghost: its Fire()), shatterGhosts (the rupture), lockOnly, release, tint (Apex Hunt's prey reticle), from (a bolt's
+//         start) (fxparts/tto_chameleon.js, plans/fx_chameleon/tto.md 7); "skin" looks FX/Blend, FX/Invisible,
+//         Chameleon.StormDarken (HERO_SKINS); "lift" apexHunt (LIFTS)
 // An entry may also carry "builds": [names] (effects a part spawns, api.spawn, and "sound:<name>" / "voice:<name>" for
 // what it plays, that no cue names: wardrobe_fx.py builds them; the guardian's blade, hits and swing) and
 // "everyCycle": true (a looped clip's cues again on each cycle, against the clip's own time: the run's wing flap, fxTick)
@@ -4569,7 +4671,8 @@ const cueOf = c => {
 // (an original under a skin goes on LOOK_LAYER alone: no camera draws it, the piece menu's ray still finds it, pieceAt)
 // LOOK.props (2026-11-13, the Cat's throws: a "hideProp" cue, HeroPropHide): while one holds a slot, the meshes under
 // that worn prop (C.props[slot], a weapon put on meanwhile too) are off the layers the same way (VFX on only, as a
-// hiding); the prop's weapon_fx particles are another Fx, not under the hero, so they keep drawing
+// hiding); the prop's weapon_fx particles are another Fx, not under the hero, so they keep drawing, unless the cue says
+// all (2026-11-13, the Chameleon: wfxHidden; the "hero" one hides them all, through heroHide's LOOK.hides)
 const LOOK = { hides: new Set(), skin: null, off: new Map(), lift: null, props: new Set() }, LOOK_LAYER_MASK = 1 << LOOK_LAYER;   // lift: HeroLift
 function heroHide(key, on) { if (on) LOOK.hides.add(key); else LOOK.hides.delete(key); lookSync(); }
 function lookSync() {
@@ -4638,7 +4741,32 @@ const HERO_SKINS = {
   // 0.8 - 0.05 x 5, 0.8 - 0.05 x 5) (:34713-34729); Titan Form 2: + (0.3 x 2 + 0.2), setColor(0.6, 0.7, 1) (:35209-35225)
   "enrage": () => ({ grow: 1.25, tint: [1.05 / 0.86, 0.55 / 0.86, 0.55 / 0.86] }),
   "titanForm": () => ({ grow: 1.8, tint: [0.6 / 0.86, 0.7 / 0.86, 1 / 0.86] }),
+  // the Chameleon's own-team looks (2026-11-13, plans/fx_chameleon/parts.md part 10, decisions.md 45-46): the blend status
+  // (Charge Attack's charge, Perfect Blend, Silent Walk; CharacterControl.cs:36850-36935) gives every Diffuse renderer
+  // FX/Blend with its mainTexture, the invisible status (True / Mass Invisibility, Clear Arrow's condition; :32630-32690,
+  // 0.2 s after the status) FX/Invisible. Both compiled shaders (checks/fx_chameleon_research/parts/shaders.txt): pass 1
+  // the texture unlit at alpha 0.35 (Cull Back, ZWrite on), pass 2 drawn after it, the shell (api.shellMaterial: Cull
+  // Front, Blend SrcAlpha SrcColor, pushed out by k x clip z): only its rim outside the silhouette shows. ghostFirst:
+  // HeroSkin makes the ghost copy first, both transparent at one spot, so three draws it first (its sort falls back to
+  // the object's id). APPROXIMATED as FX/CosmicRift: every page mesh taken as Diffuse. The enemy view (FX/Camaflage, or
+  // nothing with Erase Senses) is not drawn
+  "FX/Blend": () => ({ shell: shellMaterial({ color: [0.8, 0.8, 0.3], alpha: 0.5, k: 0.002, blend: "srcColor" }), ghostFirst: true, ghost: chameleonGhost }),
+  "FX/Invisible": () => ({ shell: shellMaterial({ color: [0.3, 0.6, 1], alpha: 0.75, k: 0.003, blend: "srcColor" }), ghostFirst: true, ghost: chameleonGhost }),
+  // Chain Lightning's storm (2026-11-13, plans/fx_chameleon/tto.md P6, decisions.md 47): StormDarken@0x1BD8C90 lerps every
+  // renderer's colour under her (props too) to StormBlack (0.07, 0.07, 0.09) by k = clamp01(4 t) from the cue (StormInTime
+  // 0.25), held, and back over StormFadeTime 0.6 s (TTO1102 Chameleon.c:23959, :24020-24060): a body look's darken, its
+  // fade back ending at the cue's kill (none: held to the next pick). The page's hero colour stands for the game's 0.86,
+  // so the target is StormBlack / 0.86 (as the Bison's tints; a prop's own colour taken the same way: APPROXIMATED)
+  "Chameleon.StormDarken": () => ({ darken: { to: [0.07 / 0.86, 0.07 / 0.86, 0.09 / 0.86], in: 0.25, out: 0.6 } }),
 };
+// FX/Blend's and FX/Invisible's pass 1: the texture unlit, its alpha the constant 0.35 (SetTexture combine texture,
+// constant alpha), Cull Back; the page's cut-out alpha test kept (as FX/CosmicRift's ghost)
+function chameleonGhost(m) {
+  const g = new THREE.MeshBasicMaterial({ map: m?.map || null, transparent: true, side: THREE.FrontSide, depthWrite: true, alphaTest: m?.alphaTest || 0 });
+  g.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <alphatest_fragment>", "#include <alphatest_fragment>\n\tdiffuseColor.a = 0.35 * opacity;"); };
+  g.customProgramCacheKey = () => "chameleon-ghost";
+  return g;
+}
 // a "skin" cue's look, kept with the effects (FX.live: a new pick or a class change ends it, its kill too; Fx's shape for
 // the checks: name, emitters, attached, group, loops); a newer skin replaces it (the game's status refreshed)
 // A body look (HERO_SKINS' { grow, tint }, 2026-11-13, the Bison's Enrage / Titan Form: decisions.md 31): this.body; the
@@ -4650,7 +4778,7 @@ class HeroSkin {
   constructor(name, make) {
     this.name = "skin:" + name; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
     this.look = make(); this.ghosts = new Map(); this.copies = new Map();     // original material -> its pass 2; mesh -> its two copies
-    this.body = !this.look.shell && (this.look.grow != null || this.look.tint) ? this.look : null;
+    this.body = !this.look.shell && (this.look.grow != null || this.look.tint || this.look.darken) ? this.look : null;
     this.bodyOn = false; this.tinted = new Map(); this.bodyRoot = null;       // material -> its own colour
     if (LOOK.skin?.alive) LOOK.skin.dispose();
     LOOK.skin = this; lookSync();
@@ -4672,30 +4800,42 @@ class HeroSkin {
       this.tinted.clear();
       return;
     }
-    if (!on || !b.tint) return;
+    if (!on || !(b.tint || b.darken)) return;
     const t = b.tint, s = { r: 1, g: 1, b: 1 };
     C.root.traverse(o => {
       if (!o.isMesh || o.userData.hoverOverlay || o.userData.lookCopy) return;
       for (const m of [].concat(o.material)) {
         if (!m?.color || this.tinted.has(m)) continue;
         this.tinted.set(m, m.color.clone());
+        if (!t) continue;
         m.color.getRGB(s, THREE.SRGBColorSpace);
         m.color.setRGB(s.r * t[0], s.g * t[1], s.b * t[2], THREE.SRGBColorSpace);
       }
     });
+    // a darken (2026-11-13, Chameleon.StormDarken): each colour lerped to the target as gamma values by k, in over D.in s
+    // from the cue, out over the D.out s before its kill (every frame: lookSync calls this while the look lives)
+    if (b.darken) {
+      const D = b.darken, k = Math.min(clamp01(this.age / D.in), this.killAt != null ? clamp01((this.killAt - this.age) / D.out) : 1);
+      for (const [m, c] of this.tinted) {
+        c.getRGB(s, THREE.SRGBColorSpace);
+        m.color.setRGB(s.r + (D.to[0] - s.r) * k, s.g + (D.to[1] - s.g) * k, s.b + (D.to[2] - s.b) * k, THREE.SRGBColorSpace);
+      }
+    }
   }
   attached() { return false; }
   sync(meshes) {                               // a copy for every original mesh shown now (an outfit or a prop put on meanwhile too)
     const ghost = m => { if (!this.ghosts.has(m)) this.ghosts.set(m, this.look.ghost(m)); const g = this.ghosts.get(m); if (g.map !== (m?.map || null)) { g.map = m?.map || null; g.needsUpdate = true; } return g; };
     for (const o of meshes) {
       if (this.copies.has(o)) { const [, gm] = this.copies.get(o); gm.material = Array.isArray(o.material) ? o.material.map(ghost) : ghost(o.material); continue; }
-      const xs = [this.look.shell, Array.isArray(o.material) ? o.material.map(ghost) : ghost(o.material)].map(mat => {
+      // [shell, ghost] (the copies' order); made ghost first for a ghostFirst look (FX/Blend, FX/Invisible: drawn in that order)
+      const mats = [this.look.shell, Array.isArray(o.material) ? o.material.map(ghost) : ghost(o.material)];
+      const made = (this.look.ghostFirst ? [...mats].reverse() : mats).map(mat => {
         const x = o.isSkinnedMesh ? new THREE.SkinnedMesh(o.geometry, mat) : new THREE.Mesh(o.geometry, mat);
         if (o.isSkinnedMesh) { x.bindMode = o.bindMode; x.bind(o.skeleton, o.bindMatrix); }
         Object.assign(x.userData, { lookCopy: true, hoverOverlay: true }); x.raycast = () => {}; x.frustumCulled = false;
         o.add(x); return x;
       });
-      this.copies.set(o, xs);
+      this.copies.set(o, this.look.ghostFirst ? made.reverse() : made);
     }
   }
   update(dt) { this.age += dt; if (this.killAt != null && this.age >= this.killAt) this.dispose(); }
@@ -4717,8 +4857,14 @@ class HeroSkin {
 // Time.time - start: [0, "lift", "titanDrop"]); a cue at t s shifts them all t s later. Titan Drop: TitanDropPath's
 // height, TTO1102:Bison::TitanDropPath@0x1B47610 (Bison.c:29824-30082): 0 m at 0.4 s rising (out 13.68889), 2.8 m at
 // 0.85 s, 3 m at 1.2 s, down to 0 at 1.5 s (in -20); its ground track (forward 6.1 m) left out, the page's hero stays put
+// Apex Hunt (2026-11-13, plans/fx_chameleon/decisions.md 34, tto.md Verification 2): the game's 4.5 m jump, timed from
+// the cue at 0.22 s (TTO1102:Chameleon.<RPC_apexHunt>d__304@0x1BF8FB0, :3425-3489): up to 4.5 m by 0.33 s on 1 - (1 - u)^2
+// (out 27.27 m/s), the hover 0.08 sin(5 (t - 0.55)) keyed at its peaks and zeros, the fall 4.5 (1 - s^2) to the floor by
+// 2.53 s (in -30); the game's 6 mm step at 2.45 s left out; its ground track left out as Titan Drop's
 const LIFTS = {
   titanDrop: [[0.4, 0, 0, 13.68889], [0.85, 2.8, 0.5142857, 0.5142857], [1.2, 3, 0, 0], [1.5, 0, -20, 0]],
+  apexHunt: [[0, 0, 0, 27.2727], [0.33, 4.5, 0, 0.4], [0.6442, 4.58, 0, 0], [0.9584, 4.5, -0.4, -0.4], [1.2726, 4.42, 0, 0],
+    [1.5867, 4.5, 0.4, 0.4], [1.9009, 4.58, 0, 0], [2.23, 4.494, -0.399, 0], [2.53, 0, -30, 0]],
 };
 function liftAt(keys, t) {
   if (t <= keys[0][0]) return keys[0][1];
@@ -4758,18 +4904,31 @@ class HeroLift {
 // Verification 2): while it lives, LOOK.props holds it and lookSync takes the meshes under C.props[slot] off the camera's
 // layers; kill seconds after the cue (none: until the next pick). Kept with the effects (FX.live: a new pick, a class
 // change or its kill ends it; Fx's shape for the checks: name, emitters, attached, group, loops)
+// 2026-11-13, the Chameleon (plans/fx_chameleon/decisions.md 48, 49; skills_b.md Verification 3): all = the slot's weapon_fx
+// particles hidden too (her code switches off every Renderer under mWep2, ChameleonEquipment.cs:1646-1715, the Cat's only
+// its MeshRenderers); slot "hero" = the whole hero, her props and their weapon_fx particles, through heroHide (Thunder
+// Dragon: every Renderer under her off 0.6-3.8 s, Chameleon.cs:38018-38052, :38305-38332)
 class HeroPropHide {
-  constructor(slot, kill) {
+  constructor(slot, kill, all = false) {
     this.name = "hideProp:" + slot; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
-    this.slot = slot; this.killAt = kill;
-    LOOK.props.add(this); lookSync();
+    this.slot = slot; this.killAt = kill; this.all = !!all || slot === "hero";
+    if (slot === "hero") heroHide(this, true); else { LOOK.props.add(this); lookSync(); }
   }
   attached() { return false; }
   update(dt) { this.age += dt; if (this.killAt != null && this.age >= this.killAt) this.dispose(); }
   dispose() {
     if (!this.alive) return;
-    this.alive = false; LOOK.props.delete(this); lookSync();
+    this.alive = false;
+    if (this.slot === "hero") heroHide(this, false); else { LOOK.props.delete(this); lookSync(); }
   }
+}
+// a worn weapon's weapon_fx particles (Fx.follow = the prop's root) hidden while a HeroPropHide with all holds its slot, or
+// the whole hero (VFX on only, as every hiding)
+function wfxHidden(root) {
+  if (!vfxOn || !C) return false;
+  for (const h of LOOK.props) if (h.all && C.props[h.slot] === root) return true;
+  for (const k of LOOK.hides) if (k instanceof HeroPropHide) for (let o = root; o; o = o.parent) if (o === C.root) return true;
+  return false;
 }
 // a "clone" cue's copy of the hero (2026-11-13, the Bat's Shadow Illusion: plans/fx_bat/parts.md part 6, decisions.md
 // 21, 22). Bat_illusion.summon (Bat_illusion.cs:60-410) dresses the clone as the Bat is (her weapon, accessory and trinket
@@ -4843,6 +5002,66 @@ class HeroClone {
     this.mats.clear();
   }
 }
+// api.propModel (2026-11-13, the Chameleon's arrow: plans/fx_chameleon/parts.md Interfaces 1, decisions.md 50; the comment
+// above FX_PART_FILES). The starter pieces a fallback of true stands for (item_map.json: w_chm1 = noviceBow + noviceArrow)
+const PROP_STARTER = { chameleon: { R: "noviceBow", L: "noviceArrow" } };
+function propModel(which, fallback) {
+  if (!C) return null;
+  const slot = typeof which === "string" ? which : null, kind = slot ? SLOTS[slot] : which?.kind || "weapons";
+  let item = slot ? C.state?.[slot] : which?.item;
+  if (!item && slot && fallback) item = fallback === true ? PROP_STARTER[C.cls]?.[slot] : fallback;
+  if (!item || !kind) return null;
+  const list = C.propLists[kind];
+  if (!list) { propList(kind).catch(() => {}); return null; }   // asked for now: the next call has it (buildSets loads every list at a class's show)
+  const p = list.find(x => x.name === item);
+  if (!p || p.heroSkin) return null;
+  const o = buildProp(p);
+  o.position.set(0, 0, 0); o.quaternion.identity(); o.scale.fromArray(p.nodes[0].s);
+  finishProp(o);
+  o.userData.mixer?.update(0);                   // an animated prop: its clip's first pose (nothing advances a copy's mixer)
+  skinProp(o, kind, p.name);
+  if (o.isMesh) {
+    o.geometry.computeBoundingBox();
+    o.userData.rootMesh = { geometry: o.geometry, maxY: o.geometry.boundingBox.max.y };
+  } else o.userData.rootMesh = null;
+  o.userData.propModel = p.name;
+  if (kind === "weapons") weaponFx(o, p.name);  // its weapon_fx particles follow it (WFX.live), gone once it leaves the stage
+  return o;
+}
+// api.shellMaterial (2026-11-13, plans/fx_chameleon/parts.md Interfaces 3, part 10; the comment above FX_PART_FILES): the
+// shell pass of FX/Blend / FX/Invisible (CharacterControl's own-team looks; their compiled pass 2, checks/fx_chameleon_
+// research/parts/shaders.txt: Cull Front, Blend SrcAlpha SrcColor, ColorMask RGB, ZWrite on, the vertex pushed out along
+// its view normal by k x clip z: FX/CosmicRift's vertex program, HERO_SKINS, with its own k, here a uniform). The constant
+// alpha is the material's blendAlpha (a ConstantAlpha factor), so the output alpha is free for the canvas: its brightest
+// channel x alpha (fxMaterial's additive trick). FX/CosmicRift keeps its own shell (One / OneMinusSrcAlpha, opaque)
+function shellMaterial({ color = [1, 1, 1], alpha = 1, k = 0.008, blend = "alpha" } = {}) {
+  const m = new THREE.MeshBasicMaterial({ side: THREE.BackSide, transparent: true, depthWrite: true });
+  m.color.setRGB(color[0], color[1], color[2], THREE.SRGBColorSpace);
+  const kU = { value: k }, src = blend === "srcColor";
+  if (src) Object.assign(m, { blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ConstantAlphaFactor,
+    blendDst: THREE.SrcColorFactor, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor, blendAlpha: alpha });
+  else m.opacity = alpha;
+  m.userData.shellK = kU;
+  m.onBeforeCompile = sh => {
+    sh.uniforms.fxShellK = kU;
+    sh.vertexShader = "uniform float fxShellK;\n" + sh.vertexShader.replace("#include <project_vertex>", `#include <project_vertex>
+	{
+	#ifdef USE_SKINNING
+		vec3 crN = objectNormal;
+	#else
+		vec3 crN = normal;
+	#endif
+		vec3 crV = normalMatrix * crN;
+		float crL = length( crV );
+		crV = crL > 0.0 ? crV / crL : crV;
+		gl_Position.xy += vec2( crV.x * projectionMatrix[ 0 ][ 0 ], crV.y * projectionMatrix[ 1 ][ 1 ] ) * gl_Position.z * fxShellK;
+	}`);
+    if (src) sh.fragmentShader = sh.fragmentShader.replace("#include <dithering_fragment>", "#include <dithering_fragment>\n"
+      + `\tgl_FragColor.a = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b)) * ${alpha.toFixed(4)};`);
+  };
+  m.customProgramCacheKey = () => "fxShell-" + (src ? "srcColor" + alpha.toFixed(4) : "alpha");
+  return m;
+}
 // api.spawn (2026-11-13, plans/fx_bat/parts.md Interfaces 4; the comment above FX_PART_FILES)
 function fxSpawn(name, at = {}, opts = {}) {
   const cls = C?.cls, d = opts.data || FX.json[cls], ns = String(name).split("|"), n = ns[Math.floor(Math.random() * ns.length)];
@@ -4875,6 +5094,19 @@ function wearing(w) {
   return items.includes(it);
 }
 function fxStart(clip, step = 0) {
+  // a followState cut at the end of the step now ending (2026-11-13, the Chameleon's venomPhantom_coil, cut 0.3 at
+  // venomPhantom1's 0.3 s end: the hero's action changes there, EffectControl.cs:226-232; plans/fx_chameleon/tto.md P8):
+  // FX.t starts again below, before it reached the cut, so the cut would come at the wrong time in a later step; it comes
+  // now, as the sequence moves to its next step (step > 0; a new round or a new pick is not a step change). Only the
+  // effects made in the step now ending (Fx.stepGen) whose cut is not past that step (its length, C.seq.dur until
+  // startStep sets the next one's, or the clock reached): a cut written in a later step's clock (the Bison's trample2 cut
+  // 2.4 from trample1's 0.9 s, the Cat's supportFire_ring, the Sheep's holylight_ring) is left as it was
+  if (step > 0) {
+    const d = C?.seq?.dur, end = Math.max(Number.isFinite(d) ? d : 0, FX.t) + 1e-6;
+    for (const f of FX.live) if (f instanceof Fx && f.alive && f.stepGen === FX.stepGen && f.ec?.followState && f.cutAt != null
+      && f.cutAt <= end && f.age < f.ec.life) f.cutNow();
+  }
+  FX.stepGen++;
   FX.t = 0;
   const tab = FX.cueTab[C?.cls] || {}, ch = chainOf(C?.cur);
   const e = (ch && (tab[ch.id + ":" + clip] ?? tab["@" + ch.name + ":" + clip])) ?? tab[clip];
@@ -4978,12 +5210,12 @@ function fxDue(t, inclusive) {
       }).catch(x => { FX.missing["clone:" + c.name] = 1; console.error(x); });
     }
     else if (c.kind === "hideProp") {           // the worn prop's meshes hidden for kill seconds (HeroPropHide); none worn: nothing
-      if (!C.props[c.name]) continue;
-      const f = new HeroPropHide(c.name, c.kill); FX.live.push(f);
+      if (c.name !== "hero" && !C.props[c.name]) continue;   // ("hero": the whole hero, heroHide)
+      const f = new HeroPropHide(c.name, c.kill, c.all); FX.live.push(f);
       FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
     }
     else if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
-    else fxData(cls).then(d => {
+    else { const gen = FX.stepGen; fxData(cls).then(d => {   // gen: the step this cue fired in (the spawn comes a tick later)
       if (C?.cls !== cls) return;
       if (!d?.effects[c.name]) { FX.missing[c.name] = 1; return; }      // a cue the data lacks (wardrobe_fx_check.py fails on it)
       // single (2026-11-13, the Cat's damagePlus, plans/fx_cat/decisions.md 37: the game makes the hand glow only when none
@@ -4996,9 +5228,9 @@ function fxDue(t, inclusive) {
         FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
         return;
       }
-      const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; FX.live.push(f);
+      const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; f.stepGen = gen; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
-    }).catch(console.error);
+    }).catch(console.error); }
   }
 }
 function fxTick(dt) {

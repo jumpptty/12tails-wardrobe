@@ -165,6 +165,13 @@ LAYOUTS.update({
     "Cat_grandCasinoArcade": [("mRenderer", "r")],        # Cat_grandCasinoArcade.cs:144 (8 bytes: its own SMR; fxparts/cat.js)
     "Cat_supportFire": [("mVelocity", "v3")],             # Cat_supportFire.cs:240 (12 bytes; (0, 0, 30): fxparts/cat.js)
 })
+# the Chameleon's parts (plans/fx_chameleon/parts.md "LAYOUTS", 2026-11-13; checks/fx_chameleon_research/parts/probe.txt:
+# each instance's bytes are the listed fields exactly; Chameleon_nAttack keeps every field private, 0 bytes)
+LAYOUTS.update({
+    "Chameleon_campFire": [("mLv", "i")],              # Chameleon_campFire.cs:219 (4 bytes: campFire1 1, campFire2 2; draws nothing)
+    "Chameleon_needlePrison": [("mPrisonArrow", "r")], # Chameleon_needlePrison.cs:47 (8 bytes: -> needlePrison_arrow; fxparts/chameleon.js)
+    "Chameleon_nAttack": [],                           # Chameleon_nAttack.cs: all private (the arrow mover, fxparts/chameleon.js)
+})
 # BB effects whose Unity 3.5 Shuriken (ParticleSystem + ParticleSystemRenderer) this file does not decode, grafted from
 # TTO's client copy of the same prefab (2026-11-13, plans/fx_bison/decisions.md 40, parts.md part 5): magmaClutter_ring2's
 # TrailEmitter node carries the swing's puffs; TTO's copy has them decoded but loses the node's Animation `cleave` (the
@@ -176,7 +183,17 @@ LAYOUTS.update({
 # Unity 3.5 Shuriken only (12 puffs at 0 in a 25 deg cone); TTO's re-serialised copy matches BB's values field for field
 # (checks/fx_cat_research/parts/tto_probe.json, ps_sum.txt), so it is grafted the same way, its material BB's Bomb2 (206,
 # multiply2) read from supportFire_hit's own Shuriken renderer (bb_material: effect() skips a ParticleSystemRenderer)
-SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]}
+# The Chameleon's thunderDragon_ring2 (2 systems) and zeroShot_ring (3) (2026-11-13, plans/fx_chameleon/parts.md part 7
+# and its Verification 4, decisions.md 58): four BB materials (spark3, thunderDragon_particle, zeroShot1 / 2 multiply2,
+# zeroShot3), repeated node names (two "ParticleSystem", three "Particle System", two at one spot) and TTO's node order
+# not BB's, so a class with no SHURIKEN_MAT entry is grafted otherwise: effect()'s walk keeps each BB
+# ParticleSystemRenderer's own materials (node["mats"], node["ps"] = True; only for these listed effects, so every other
+# effect's data stays as it was), and graft_shuriken matches each such BB node to the TTO node of the same name whose
+# renderer's first material is "tto_" + BB's mats[0] (the next unused one in TTO's order on a tie), its ParticleSystem and
+# ParticleSystemRenderer dicts going on the BB node itself with BB's materials (no TTO texture ships). The Bison's and the
+# Cat's grafts (SHURIKEN_MAT) are made as before, by node path, onto a "_shuriken" child
+SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"],
+                     "chameleon": ["thunderDragon_ring2", "zeroShot_ring"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
@@ -373,6 +390,11 @@ def effect(game, cls, name, mats, texs, sounds):
                 node["mats"] = [material(game, m, c.assets_file, mats, texs) for m in t["m_Materials"]]
                 if ty == "ParticleRenderer":
                     node["comps"].append({"type": ty, **{k: v for k, v in t.items() if not k.startswith("m_") or k in ("m_StretchParticles", "m_LengthScale", "m_VelocityScale", "m_MaxParticleSize", "m_CameraVelocityScale", "UV Animation")}})
+            elif ty == "ParticleSystemRenderer" and name in SHURIKEN_FROM_TTO.get(cls, []) and cls not in SHURIKEN_MAT:
+                # a Unity 3.5 Shuriken's own materials (2026-11-13, the Chameleon's thunderDragon_ring2 / zeroShot_ring:
+                # SHURIKEN_FROM_TTO's comment): graft_shuriken matches TTO's node by them and keeps them
+                node["mats"] = [material(game, m, c.assets_file, mats, texs) for m in c.read_typetree()["m_Materials"]]
+                node["ps"] = True
             # Unity built-ins: their fields as stored (+ a trail's materials); WorldParticleCollider since 2026-11-13
             # (plans/fx_cat/parts.md part 5, decisions.md 53: the Cat's luckyDice / treasureHunt legacy particles bounce on
             # the floor: m_BounceFactor, m_CollisionEnergyLoss, m_CollidesWith {m_Bits}, m_SendCollisionMessage,
@@ -451,7 +473,7 @@ def graft_shuriken(game, cls, effects, mats, texs):
     whose name path matches a TTO node carrying a ParticleSystem, a new child node at local identity (pos 0, rot identity,
     scale 1) holding that node's ParticleSystem and ParticleSystemRenderer dicts, its mats (and the renderer's
     m_Materials) = SHURIKEN_MAT's BB material, added to mats. Only where TTO's bundles are (home): elsewhere a warning, and
-    BB's effect stays as it is (no puffs)."""
+    BB's effect stays as it is (no puffs). A class with no SHURIKEN_MAT entry (the Chameleon, 2026-11-13): graft_by_material."""
     names = [n for n in SHURIKEN_FROM_TTO.get(cls, []) if n in effects]
     if not names:
         return
@@ -468,6 +490,9 @@ def graft_shuriken(game, cls, effects, mats, texs):
         got = {n: T.effect(tto, b, n) for n in names}
     except (Exception, SystemExit) as ex:             # noqa: BLE001 (the office without TTO's bundles: BB's version stays)
         print(f"warning: {cls}: no Shuriken graft for {names} ({type(ex).__name__}: {ex}); BB's version kept", file=sys.stderr)
+        return
+    if cls not in SHURIKEN_MAT:                       # the Chameleon's: by (name, material), BB's own materials kept
+        graft_by_material(cls, names, effects, got)
         return
     mat, src = SHURIKEN_MAT[cls]
     if mat not in mats:                               # BB's material of the same shader, read from a BB effect that has it
@@ -493,6 +518,43 @@ def graft_shuriken(game, cls, effects, mats, texs):
             bb_nodes.append({"name": node["name"] + "_shuriken", "parent": i, "pos": [0, 0, 0], "rot": [0, 0, 0, 1],
                              "scale": [1, 1, 1], "comps": comps, "mats": [mat]})
             print(f"{cls}: {n}/{path}: TTO's ParticleSystem grafted (node {len(bb_nodes) - 1}, material {mat})", file=sys.stderr)
+
+
+def graft_by_material(cls, names, effects, got):
+    """graft_shuriken for a class with no SHURIKEN_MAT entry (2026-11-13, the Chameleon: SHURIKEN_FROM_TTO's comment,
+    plans/fx_chameleon/parts.md part 7, Verification 4): each BB node effect() marked "ps" (a Unity 3.5
+    ParticleSystemRenderer, its materials in node["mats"]) takes the TTO node of the same name carrying a ParticleSystem
+    whose renderer's first material is "tto_" + mats[0], the next unused one in TTO's order on a tie; that node's
+    ParticleSystem and ParticleSystemRenderer dicts go on the BB node itself, the renderer's m_Materials = BB's mats. A BB
+    node with no such TTO node: a warning, nothing grafted."""
+    import sys
+
+    def first_mat(t):
+        r = next((c for c in t["comps"] if c["type"] == "ParticleSystemRenderer"), None)
+        m = (r or {}).get("m_Materials") or t.get("mats") or []
+        return m[0] if m and isinstance(m[0], str) else None
+
+    for n in names:
+        bb_nodes, tto_nodes, used = effects[n]["nodes"], got[n]["nodes"], set()
+        for i, node in enumerate(bb_nodes):
+            if not node.get("ps") or not node.get("mats"):
+                continue
+            want = "tto_" + node["mats"][0]
+            j = next((k for k, t in enumerate(tto_nodes) if k not in used and t["name"] == node["name"]
+                      and any(c["type"] == "ParticleSystem" for c in t["comps"]) and first_mat(t) == want), None)
+            if j is None:
+                print(f"warning: {cls}: {n}/{node['name']} (node {i}): no TTO node {node['name']!r} with material {want}; "
+                      "no Shuriken grafted", file=sys.stderr)
+                continue
+            used.add(j)
+            comps = json.loads(json.dumps([c for c in tto_nodes[j]["comps"]
+                                           if c["type"] in ("ParticleSystem", "ParticleSystemRenderer")]))
+            for c in comps:
+                if c["type"] == "ParticleSystemRenderer":
+                    c["m_Materials"] = list(node["mats"])
+            node["comps"].extend(comps)
+            print(f"{cls}: {n}/{node['name']} (node {i}): TTO's ParticleSystem grafted from TTO node {j} "
+                  f"(material {node['mats'][0]})", file=sys.stderr)
 
 
 def rip_wav(cls, name, folder=None):

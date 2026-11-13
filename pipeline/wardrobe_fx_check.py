@@ -21,7 +21,8 @@ alternatives is played once per alternative (the page's test hook window.__seqAl
 are checked; a "lift" cue (the hero raised along a curve, index.html LIFTS / HeroLift) names one of the page's LIFTS and
 must take hold (FX.spawned "lift:<name>"). 2026-11-13, the Cat (plans/fx_cat/decisions.md 47, 58): a "hideProp" cue
 names a prop slot (R, L, Head, Back) and carries a kill; it is not expected in the tally (it takes hold only while a prop
-is worn there: FX.spawned "hideProp:<slot>"); SEQ tokens such as root*~@5.65, dropAnchor! and crescentEclipse2^ give their
+is worn there: FX.spawned "hideProp:<slot>"); since the Chameleon (2026-11-13, plans/fx_chameleon/decisions.md 13, 48, 49)
+it may name "hero" (the whole hero hidden) and may leave out its kill (hidden until the next pick); SEQ tokens such as root*~@5.65, dropAnchor! and crescentEclipse2^ give their
 clip names (seqs)."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
@@ -160,12 +161,24 @@ def expected(entries):
 # index.html fxDue), anims (fx:grandCasinoArcade's clip schedule, fxparts/cat.js); the TTO parts' (fxparts/tto_cat.js,
 # plans/fx_cat/tto.md 2.1-2.3): flip, pulse, gather, gatherTo, hand (Royal Flush's cards and banner), eclipse, recall,
 # home (Crescent Eclipse's moon and blades)
+# 2026-11-13, the Chameleon (plans/fx_chameleon/decisions.md 30, 32, 48, 55, 56, 59, 60, 62): strafe (the Double Strider
+# clone's m/s along its right), speed (the arrow's m/s, fxparts/chameleon.js), fatal (Fatal Strike's blood on the arrow),
+# slot (the prop the arrow copies), r (Needle Prison's ring), life (the root EffectControl's life, index.html Fx), stop
+# (seconds after the spawn: every Shuriken system stops emitting), all (a hideProp's weapon_fx particles hidden too); the TTO
+# parts' (fxparts/tto_chameleon.js, plans/fx_chameleon/tto.md 7): bow, face, slide, slots (the ghosts), ghost, shatterGhosts
+# (a beam's and the rupture's), lockOnly, release, tint (the prey reticle: its race colour), from (a lightning bolt's
+# start); radius (Needle Prison's ring, as r: skills_a.md's block)
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
-        "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home"}
+        "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home",
+        "strafe", "speed", "fatal", "slot", "r", "life", "stop", "all", "bow", "face", "slide", "slots", "ghost", "shatterGhosts",
+        "lockOnly", "release", "from", "tint", "radius"}
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
-# ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47)
+# ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
+# (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
+# Dragon), and no kill = hidden until the next pick (after a cast-bar skill, Clear Arrow's hand arrow)
 KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp")
 PROP_SLOTS = ("R", "L", "Head", "Back")                          # index.html C.props' keys
+HIDE_TARGETS = PROP_SLOTS + ("hero",)                            # index.html fxDue's hideProp (HeroPropHide, heroHide)
 ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle"}, {"why", "cues", "builds", "everyCycle"}
 
 
@@ -209,10 +222,13 @@ def file_errors(cls):
                     errs += [f"{cls}: {key}: lift {n} is not one of index.html's LIFTS {sorted(LIFT_NAMES)}"
                              for n in c[2].split("|") if LIFT_NAMES and n not in LIFT_NAMES]
                 elif c[1] == "hideProp":                    # the worn prop's meshes hidden (index.html HeroPropHide)
-                    errs += [f"{cls}: {key}: hideProp {n} is not a prop slot (R, L, Head, Back)" for n in c[2].split("|")
-                             if n not in PROP_SLOTS]
-                    if not (len(c) > 3 and isinstance(c[3], dict) and isinstance(c[3].get("kill"), (int, float))):
-                        errs.append(f"{cls}: {key}: hideProp {c[2]} needs a kill (the seconds the prop stays hidden)")
+                    errs += [f"{cls}: {key}: hideProp {n} is not a prop slot (R, L, Head, Back) or hero" for n in c[2].split("|")
+                             if n not in HIDE_TARGETS]
+                    o = c[3] if len(c) > 3 and isinstance(c[3], dict) else {}
+                    if "kill" in o and not isinstance(o["kill"], (int, float)):
+                        errs.append(f"{cls}: {key}: hideProp {c[2]}: kill must be the seconds it stays hidden (none: until the next pick)")
+                    if "all" in o and not isinstance(o["all"], bool):
+                        errs.append(f"{cls}: {key}: hideProp {c[2]}: all must be true or false")
     return errs
 
 

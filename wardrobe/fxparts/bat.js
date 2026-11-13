@@ -436,10 +436,11 @@ export default function register(api) {
   // (Bat.cs:29968-29973 Guardian of the Night, :42864-42869 Nefarious Whip, :44323-44328 Black Servant; cast1's :23102-23107,
   // where the cut at 0.65 s comes first) (skills_a.md Parts 3, decisions.md 43): 0.2 + 0.5 = 0.7 s into bigCast1, the ring
   // then turning on its 2 s root loop until the release cuts it. Not after a cut (followState already played "destroy").
-  // The Bat's only: the hook is keyed by the effect's name, and the Sheep's / Penguin's castRing (their own prefabs, their
-  // own code) are not traced here.
+  // The Bat's and the Chameleon's only (2026-11-13, plans/fx_chameleon/parts.md part 8: RPC_cast1 spawns castRing at 0,
+  // Chameleon.cs:18544, waits 0.4 + 0.1 s, then Play("root") looped, :17939-17944: the same 0.5 s restart): the hook is
+  // keyed by the effect's name, and the Sheep's / Penguin's castRing (their own prefabs, their own code) are not traced here.
   api.part("fx:castRing", (fx, node) => {
-    if (fx.cls !== "bat") return null;
+    if (fx.cls !== "bat" && fx.cls !== "chameleon") return null;
     let t = 0, done = false;
     return { node, update(dt) {
       if (done || (t += dt) < 0.5) return;

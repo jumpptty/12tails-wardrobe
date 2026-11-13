@@ -584,6 +584,27 @@
   }
  },
  "chameleon": {
+  "allBugSlayer": {
+   "icon": "icons/hd/chameleon/allBugSlayer.webp",
+   "clips": [
+    "allSlayer2",
+    "allSlayer3"
+   ]
+  },
+  "allElementalSlayer": {
+   "icon": "icons/hd/chameleon/allElementalSlayer.webp",
+   "clips": [
+    "allSlayer2",
+    "allSlayer3"
+   ]
+  },
+  "allMachineSlayer": {
+   "icon": "icons/hd/chameleon/allMachineSlayer.webp",
+   "clips": [
+    "allSlayer2",
+    "allSlayer3"
+   ]
+  },
   "allSlain": {
    "icon": "icons/hd/chameleon/allSlain.webp",
    "clips": [
@@ -598,10 +619,31 @@
     "allSlayer3"
    ]
   },
+  "allTailSlayer": {
+   "icon": "icons/hd/chameleon/allTailSlayer.webp",
+   "clips": [
+    "allSlayer2",
+    "allSlayer3"
+   ]
+  },
   "apexHunt": {
    "icon": "icons/hd/chameleon/apexHunt.webp",
    "clips": [
     "apexHunt"
+   ]
+  },
+  "bloodBurn": {
+   "icon": "icons/hd/chameleon/bloodBurn.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "bugSlayer": {
+   "icon": "icons/hd/chameleon/bugSlayer.webp",
+   "clips": [
+    "slayer1",
+    "slayer2",
+    "slayer3"
    ]
   },
   "cAttack": {
@@ -613,16 +655,80 @@
     "cAttack4"
    ]
   },
+  "campFire": {
+   "icon": "icons/hd/chameleon/campFire.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "chainLightning": {
    "icon": "icons/hd/chameleon/chainLightning.webp",
    "clips": [
     "chainLightning"
    ]
   },
+  "clearArrow": {
+   "icon": "icons/hd/chameleon/clearArrow.webp",
+   "clips": [
+    "nAttack1"
+   ]
+  },
+  "criticalPlus": {
+   "icon": "icons/hd/chameleon/criticalPlus.webp",
+   "clips": [
+    "nAttack1"
+   ]
+  },
+  "elementalSlayer": {
+   "icon": "icons/hd/chameleon/elementalSlayer.webp",
+   "clips": [
+    "slayer1",
+    "slayer2",
+    "slayer3"
+   ]
+  },
+  "fatalStrike": {
+   "icon": "icons/hd/chameleon/fatalStrike.webp",
+   "clips": [
+    "cast4"
+   ]
+  },
+  "finalEntrapment": {
+   "icon": "icons/hd/chameleon/finalEntrapment.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "immunity": {
+   "icon": "icons/hd/chameleon/immunity.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "leftStride": {
    "icon": "icons/hd/chameleon/leftStride.webp",
    "clips": [
     "leftStride"
+   ]
+  },
+  "machineSlayer": {
+   "icon": "icons/hd/chameleon/machineSlayer.webp",
+   "clips": [
+    "slayer1",
+    "slayer2",
+    "slayer3"
+   ]
+  },
+  "markOfSlayer": {
+   "icon": "icons/hd/chameleon/markOfSlayer.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "massInvisibility": {
+   "icon": "icons/hd/chameleon/massInvisibility.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "massShot": {
@@ -641,6 +747,12 @@
    "icon": "icons/hd/chameleon/needlePrison.webp",
    "clips": [
     "needlePrison"
+   ]
+  },
+  "perfectBlend": {
+   "icon": "icons/hd/chameleon/perfectBlend.webp",
+   "clips": [
+    "backStep"
    ]
   },
   "poisonVolley": {
@@ -663,6 +775,12 @@
     "rightStride"
    ]
   },
+  "rustyDecay": {
+   "icon": "icons/hd/chameleon/rustyDecay.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "silentWalk": {
    "icon": "icons/hd/chameleon/silentWalk.webp",
    "clips": [
@@ -683,11 +801,38 @@
     "slayer3"
    ]
   },
+  "tailSlayer": {
+   "icon": "icons/hd/chameleon/tailSlayer.webp",
+   "clips": [
+    "slayer1",
+    "slayer2",
+    "slayer3"
+   ]
+  },
+  "tent": {
+   "icon": "icons/hd/chameleon/tent.webp",
+   "clips": [
+    "cast3",
+    "sleep"
+   ]
+  },
   "thunderDragon": {
    "icon": "icons/hd/chameleon/thunderDragon.webp",
    "clips": [
     "thunderDragon1",
     "thunderDragon2"
+   ]
+  },
+  "tormentRain": {
+   "icon": "icons/hd/chameleon/tormentRain.webp",
+   "clips": [
+    "rainOfArrow"
+   ]
+  },
+  "trueInvisibility": {
+   "icon": "icons/hd/chameleon/trueInvisibility.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "venomPhantom": {
@@ -696,6 +841,12 @@
     "venomPhantom1",
     "venomPhantom2",
     "venomPhantom3"
+   ]
+  },
+  "venomShock": {
+   "icon": "icons/hd/chameleon/venomShock.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "zeroShot": {

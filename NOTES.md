@@ -95,7 +95,8 @@ copies the loadout line. CSS `saturate(1.15)` on the canvas = the V07 saturation
     Medical Shot gilShot / medicalShot and the Mole's superDig / dig1 by a learned skill.
   - Normal-attack combos (nAttack1 → 2 → ...) are one tile, each stage cut where the next press can come when its clip
     runs long (Sheep nAttack1 at 0.8 s of its 5 s clip, Wolf nAttack1 0.8 s, nAttack2 0.96 s). TTO-only sequences (Crescent
-    Eclipse, Focus Fire, Venom Phantom, Barrel Railgun, Tempest Dance) are by name; a sequence shows only when all its clips
+    Eclipse, Venom Phantom, Barrel Railgun, Tempest Dance) are by name (Focus Fire, once listed here, is BB data that no BB
+    or TTO code plays: hidden since 2026-11-13, NEVER_PLAYED, plans/fx_chameleon/decisions.md 16); a sequence shows only when all its clips
     are in the copy, so the online copy (no TTO clips) loses nothing. The Cat's and Wolf's `walk` moved to ท่าพื้นฐาน (เดิน).
   - **Timings (2026-11-09; user: "look at their timings referring to skill-details tool", "Blade song 1-4 merge them
     all", "castbar is lessened by INT, don't touch them, assume high INT, no cast bar"):** a step's `@t` comes from the
@@ -1523,7 +1524,7 @@ run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, M
   the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
   it in another session, re-create it from this description (the research of one class overlaps the build of the one
   before; builds never overlap, they share index.html).
-- Progress (updated as it goes): Penguin, Bat, Bison DONE + deployed; Cat DONE (49 cue keys, 91 effects, 129 sounds; gates cat + the other five pass), committed + deployed below; Chameleon research DONE, its build next; Mole research running (started at 61 %: usage rose only 1 % an hour during the Cat's build). (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
+- Progress (updated as it goes): Penguin, Bat, Bison, Cat DONE + deployed; Chameleon DONE (51 cue keys, 93 effects, 112 sounds; a child EffectControl's velocity now applied, every class's gate passes), committed + deployed below; Mole research DONE + committed (6a166de), its build next; Monkey, Panda, Rabbit, Whale not started. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
 - **Bat build, page_pipeline builder (2026-11-13):** the game's Particles/MultiplyOffset, AlphaOffset and AdditiveOffset
   shaders (fxparts/particles.js) and built-in 205 = Particles/Multiply (`BUILTIN_BLEND[205] = "multiply"`) are now built for
   every class. That changes the look of effects already cued and published: the Wolf's Double Art banner (doubleArt),
@@ -1844,3 +1845,128 @@ user's review). One editor after four builders (cat, generic = worldcollider + a
     frame, as for the other classes (not shot with the default camera here); the white stage's faint additive glows;
     the Royal Flush cards' left-to-right order as dealt (Q J 10 K A in the shots); decisions.md's overnight calls
     (listed in the editor's paragraph above).
+
+## 2026-11-13 (overnight, home), the Chameleon's effects: built and cued
+
+From plans/fx_chameleon/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for
+the user's review). One editor after four builders (chameleon, shaders = doubletexture + fxinvisible, tto_chameleon,
+page_pipeline).
+- **Parts (new):** fxparts/chameleon.js (Chameleon_nAttack: 40 m/s along the spawn turn, life 0.8 s, ends on the floor or,
+  with `to`, at the trigger box's contact with the target body; the flying arrow is api.propModel's copy of the worn L
+  piece (R with snookerBall; nothing worn: noviceArrow) at Euler(0, 270, 270); clearArrow draws the worn arrow's root
+  mesh in the node's FX/Invisible material; `fatal` spawns Fatal Strike's blood (built, not cued: decision 43);
+  Chameleon_needlePrison: 16 needles 0.05 s apart, 67.5 degrees, r = `r` 0.6; fx:doubleStrider_left / _right: the clone
+  faces `to` on the flat and strafes `strafe` m/s along its right on a 0.02 s step), fxparts/doubletexture.js
+  (Self-Illumin/DoubleTexture, the texel squared in gamma space: the builder measured three's piecewise sRGB making the
+  spec's linear square up to 7.4/255 too dark), fxparts/fxinvisible.js (FX/Invisible on an effect mesh: the 35 % pass +
+  api.shellMaterial's blue rim), fxparts/tto_chameleon.js (ChameleonLightning, ChameleonAfterimage + TTO/ChameleonSpirit
+  with its depth prepass, the ghost hooks fx:tto/venomPhantom_coil / _beam / _rupture, ChameleonPreyReticle with
+  `release`, the Chameleon.ApexArrow mover). index.html (the page_pipeline builder): api.propModel, api.shellMaterial,
+  HERO_SKINS FX/Blend, FX/Invisible (ghost drawn first) and Chameleon.StormDarken, hideProp "hero" / `all` / no kill
+  (until the next pick), cue `life` and `stop`, the P8 cut at a step change (only effects of the ending step whose cut is
+  not past that step: the Bison's trample2, the Cat's supportFire_ring and the Sheep's holylight_ring, whose cuts are
+  written in a later step's clock, keep their old timing), LIFTS.apexHunt, SEQ / SEQ_SKILL / NEVER_PLAYED chameleon
+  (focusFire1 / 2 hidden), FX_PART_FILES += chameleon, doubletexture, fxinvisible, tto_chameleon; moveSkillIcons: a
+  SEQ_SKILL skill shows on its own tile only (as a pool member does), so Critical Plus' and Clear Arrow's icons stay off
+  the Normal Attack tile. SEQ chameleon gains "Normal Attack: nAttack1" (a clip used by a visible sequence leaves the
+  ท่าสกิล list, so without it the tile would vanish; as a one-step sequence it plays once and repeats with วนซ้ำ; its cue
+  key stays the plain nAttack1). bat.js: fx:castRing lets the Chameleon through. wardrobe_fx.py: LAYOUTS
+  Chameleon_campFire / _needlePrison / _nAttack; graft_by_material for SHURIKEN_FROM_TTO.chameleon = thunderDragon_ring2,
+  zeroShot_ring (matched by node name and BB's first PSR material, BB's materials kept; the Bison's magmaClutter_ring2 and
+  the Cat's supportFire_hit probed byte-identical to their committed data, not rebuilt). wardrobe_fx_tto.py: _ScaleTex
+  saved as scaleTex, SKILL_FX.chameleon (31), CODE_MOVERS apexHunt_arrow. wardrobe_fx_check.py: hideProp "hero", optional
+  kill, `all`, 19 new OPTS. wardrobe_fx_inventory.py BUILT += Chameleon_nAttack / _needlePrison / _campFire (the Chameleon
+  55 / 57 ready; the 2 left are the grafted ParticleSystems, noted as drawn). Nothing the video repo reads was renamed.
+- **Cues** (wardrobe/fx_cues/chameleon.json, 51 keys, 336 cues: 204 fx, 57 sound, 40 voice, 27 hideProp, 7 skin, 1 lift;
+  86 effect names, 24 of them TTO; assembled from the reports' blocks by checks/fx_chameleon_build/editor/make_cues.py,
+  git-ignored): the Combo shot (the worn arrow to the 10 m ground point, hit at 0.4281 s, the hand arrow hidden 0.2-1.8 s,
+  bow_fire1 / plunger with the Plunger Bow, Critical Plus' 20 % roll), its own tiles @CriticalPlus:nAttack1 (the crit on
+  every play) and @ClearArrow:nAttack1 (the FX/Invisible look and the hidden hand arrow until the next pick, clearArrow in
+  place of nAttack), Charge Attack (blend + FX/Blend 9 s, rings each second, the full ring at 8 s cut 8.95, 18 volley
+  fires, cAttack4 at 3.4 s), Silent Walk (FX/Blend 1.6 s), the cast channel (castRing cut 0.35, the hand arrow hidden until
+  the next pick) and its five pool members (True / Mass Invisibility with the FX/Invisible look 0.2 s after the puff,
+  Final Entrapment's cage life 7, Camp Fire 2 m ahead kill 10, Mark of Slayer), Tent, Immunity (y 1.16, scale 0.7), Venom
+  Shock, Blood Burn, Rusty Decay, Perfect Blend, Needle Prison (kill 5, builds needlePrison_arrow), Mass Shot, Fatal
+  Strike (both hands, kill 10), Left Stride (five hero + five clone arrows, hits at the box contact), Quick Fire (18
+  shots, hits {d 9.7, y 0.63}), Poison Volley, Torment Rain (the cage it needs from 0, the rain at 2.0 s; TTO's
+  tormenrRain1|2 voice), Right Stride (the clone at -5.02 m/s, its shots from skills_b Verification 4's table), Slayer x 4
+  and All Slayer x 4 (one tile per member; TTO's unnumbered All Slayer voices), All Slain, Skin Shift, Zero Shot, Thunder
+  Dragon (the whole hero hidden 0.6-3.8 s), the emotes, run's footsteps (everyCycle), KO (deadEffect p 0.5); TTO
+  (released): Venom Phantom (five ghosts at the GhostSlots, five beams, the rupture shattering them; builds ghostFire /
+  ghostShatter), Apex Hunt (lifted along the 4.5 m jump, decision 34), Chain Lightning (StormDarken, the tail to 12.05 s).
+  Applied on top of the blocks: every hand-arrow hideProp is "L" with `all: true` (decision 48; skills_b's "R" turned
+  round, its whys now say slot L); Needle Prison's `radius` written as `r` (decision 56); Right Stride's why says 5.02 m/s.
+- **Tiles / icons:** wardrobe_skill_icons.py rerun: chameleon 41 HD icons for 66 clips (23 new webp; index.json
+  chameleon only).
+- **Data:** `wardrobe_fx_tto.py chameleon`: 31 TTO effects, 18 materials, 13 textures (two "written by name only"
+  warnings for the ghost's fire / shatter references: those come in through SKILL_FX); `wardrobe_fx.py chameleon`: 62
+  effects, 74 materials, 70 textures, 112 sounds (five graft lines printed). data/chameleon/fx.json 93 effects (2.6 MB),
+  sfx/ 112 files, 54 new textures in data/fx/tex: all new files, to commit with the run; the other PC pulls.
+- **Judgement calls (mine):** the tto_chameleon builder's preyFx kill 2.15, not 2.05 (the reticle's 0.1 s hold before
+  its 0.25 s fade, ChameleonPreyReticle Update@0x1C4EF10); the thunderDragon2 entry kept with no cues (it records the
+  clip's timeline); Clear Arrow's tile with no `invisible` puff (the status is its precondition, not cast there). The
+  builders' calls kept: Fatal Strike's blood at maxY 0.8 with no root mesh (Chameleon_nAttack.cs:241), riding the
+  projectile root.
+- **Gate:** files-only chameleon and every class with cues "no problems"; `wardrobe_fx_check.py ... checks/fx_chameleon
+  dark --cls chameleon` exit 0, errors [], 46 tile plays, every expected effect spawned (the sleep emote's voice key is
+  routed by the checker to the Tent tile, which plays sleep with @Tent:sleep: the emote's own play is not sampled); unit
+  tests 65 OK, node 8 pass, node --check on the four new part files and bat.js. The page code and fxparts changed for every class (P8 cut, hideProp, shellMaterial, bat.js), so also `--cls wolf,sheep,penguin,bat,bison,cat` in one run (checks/fx_chameleon_regress): exit 0, errors [], 254 tile plays. Not committed.
+- **For the QA pass:** no screenshot has been looked at yet for the new shaders (DoubleTexture, FX/Invisible on a mesh,
+  TTO/ChameleonSpirit, the shells; the gate saw no console error, so they compiled); the arrow copy's turn in flight, the
+  needles' fall, the clone's path, the ghosts' slots and the lifted Apex Hunt want wardrobe_fx_shots.py's virtual clock.
+  Rolled procs the gate does not expect: Critical Plus' crits (p 0.2), KO's deadEffect (p 0.5).
+- **For the Bible (offer, not written):** decisions.md's last section; also, from the builders: with the Snooker set the
+  flying copy is the ball while the hand's cue is hidden; Clear Arrow never carries Fatal Strike's blood.
+- **QA pass (2026-11-13, the run's Chameleon QA step).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_chameleon_qa/jobs.json, 57 jobs, every Chameleon tile: Normal Attack (nothing worn: the starter arrow; Cupid,
+  Plunger and the Snooker set worn), Critical Plus, Clear Arrow (bare and with Cupid), Charge Attack to 14.5 s, Silent Walk,
+  the five cast pool members, Tent, Immunity, Venom Shock, Blood Burn, Rusty Decay, Perfect Blend, Needle Prison, Mass
+  Shot, Fatal Strike, Left / Right Stride (side, behind, top), Quick Fire, Poison Volley, Torment Rain, the four Slayer
+  and four All Slayer members, All Slain, Skin Shift, Zero Shot, Thunder Dragon (bare and with Cupid), the three TTO
+  tiles (Venom Phantom with side, behind and front views, Apex Hunt from the side and far, Chain Lightning to 12.8 s,
+  with and without Cupid), KO (dead forced, and as rolled), the six emotes with voices and run) on the dark and the
+  white stage: 639 shots each. Sheets: checks/fx_chameleon_qa/sheets_dark, sheets_white (git-ignored; shots and logs
+  under run/). No page error, no stalled render loop, no failed job (the only console lines: swiftshader's
+  glBlitFramebuffer feedback warning). Boxes in the hero's frame (+x = her left) match the reports: the Combo arrow from
+  (0, 1.5, 1) to the 10 m ground point, tip first (the starter noviceArrow, the worn arrow, the Snooker ball, the plunger
+  head first), the hand arrow hidden from 0.2 s; nAttack_hit at 0.43 s at (0, 0, 10); Clear Arrow's FX/Invisible hero
+  and arrow; the charge's FX/Blend 0.8-9.8 s, a ring each second, the full ring at 8.8 s, the volley fans from 9.8 s and
+  cAttack4's at 13.2 s; the castRing cut into its 0.5 s shrink at 0.4 s (the same age-60 jump as the Bat's); the
+  invisible puff at 0.8 s and the FX/Invisible look from 1.0 s, kept (props too, the hand arrow hidden); the Final
+  Entrapment cage at the 10 m target to 7.8 s (life 7); Camp Fire 2 m ahead to 10.8 s; the Tent at 0.8 s, the heal at 1.3 s;
+  Immunity's cross at y 1.16 to 10.2 s; the detonations at the target; the 16 needles falling one every 0.05 s onto
+  their ring at the target, standing point down to 5.8 s; Fatal Strike's blood on both hands to 10.3 s; the Double
+  Strider clone strafing round the target (Left Stride to her right, Right Stride to her left; gone at the 2.3 s cut),
+  every shot at its table spot and flying to the target; Quick Fire's 18 flashes at (0, 0.63, 9.7); the Torment Rain cage
+  from 0 and the rain at 2.0 s; Thunder Dragon hiding the hero and her props 0.6-3.8 s; the five Venom Phantom ghosts at
+  their slots (x +-1.5 / +-2.8 / 0, her right first), aiming, the five beams from their bow points to the target at 1.95
+  s, the rupture and the shatters at 2.07 s; Apex Hunt's crouch, the lift (the takeoff and the reticle stay on the
+  ground, the hang rides her), the arrow and the impact at the target at 2.47 s, the land at 2.75 s; Chain Lightning's
+  darkened hero to 8.0 s, back by 8.6 s, staticDrainFx 8.05-12.05 s; KO's deadEffect.
+  - **Bug found and fixed (index.html, shared Fx code):** a child node's own EffectControl velocity was never applied
+    (the page's comment said "Not done"), so the falling bolts of All Slain (allSlain_bolt, -48 m/s), the four All
+    Slayer hits (allSlayer_bolt, -24 m/s) and Thunder Dragon's thunderDragon_ring1 (thunderBolt, -48 m/s) hung 12-36 m
+    up and never struck (All Slain's and the dragon's out of every default view). Now Fx applies it as the game does
+    (EffectControl.cs:71-73: TransformDirection by the child's own world turn at the spawn; :167-173: position +=
+    velocity x dt every frame, life and after-life), put back into the parent's space. Those bolts end under the floor,
+    which the game's ground hides and the page cannot (the camera may orbit below): every mesh under such a moving child
+    gets its own copy of its material (fxMaterial's shader hooks copied: clone() leaves them out) clipped at the hero's
+    ground (`renderer.localClippingEnabled = true`, freed with the effect). The only other such child in the data is the
+    **Wolf's dualBrand_slash3 vortex** ((0, 12, 0) under a 90-degree turn): it now flies ahead at 12 m/s (about 4 m by
+    0.27 s), as the game's code says: **for the user's eye**. Shots: checks/fx_chameleon_qa/bolts_fixed3.png,
+    wolf_vortex.png.
+  - Looked into, not bugs: the needles' boxes read flat (the box script turns only two corners) while they stand;
+    massHouseShot draws nothing until 0.6 s (its rain's own 0.4-0.6 s delay); Skin Shift's decoy is the prefab's static
+    chameleon mesh (life 1 + after-life 1); bugSlayer_fire's streaks fly back past her (the prefab's own particles);
+    staticDrainFx is faint by design (a 0.08 s arc every 0.5 s, a few sparks and smoke); the long apexHunt_arrow trail
+    behind the hand at its spawn; allSlayer_ring cut at 0.65 s (cued so, not the game's 0.8 s: the step edge, as
+    castRing's).
+  - Gates: `wardrobe_fx_check.py ... checks/fx_chameleon_qa/gate_chameleon2 dark --cls chameleon` exit 0, errors []
+    (46 tile plays, on the final code); the page's Fx code changed (and the builders' shared code), so also `--cls
+    wolf,sheep,penguin,bat,bison,cat` (every other class with cues; mole, monkey, panda, rabbit, whale are empty):
+    exit 0, errors [] (254 tile plays); unit tests 65 OK, node 8 pass, test_adopt_from_video.ps1 fails 0;
+    `wardrobe_weapon_fx_check.py` OK. Not committed.
+  - For the user's eye: the Wolf vortex above; the dragon skeleton's DoubleTexture reads dark teal inside its green glow
+    (checks/fx_chameleon_qa/skeleton_near.png); the Venom Phantom ghosts are pale grey-white with green on the white
+    stage; the target-point effects sit outside the default camera's frame, as for the other classes; decisions.md's
+    overnight calls and the editor's judgement calls above.
