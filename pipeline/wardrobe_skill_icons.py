@@ -56,6 +56,11 @@ CLIP_SKILLS = {
     # the Rabbit's maim clip is Maim Shot (2026-11-13, plans/fx_rabbit/decisions.md 13, skills_a.md Verification 4; the
     # pools gilShot / mix3 / mix4 / medicalShot give their members their icons through the cue file)
     "rabbit": {"maim": ["maimShot"]},
+    # the Whale's divingWave clip is Whale Wave and divingStorm Mal Storm (Diving Press #443 on, Whale.cs:32111-32125,
+    # :32775-32789), gobble Gobble Up, the TTO leviathanCall Leviathan Breach (2026-11-13, plans/fx_whale/decisions.md 12,
+    # 17, skills_a.md "Page lines, as corrected", tto.md S3; the pools cast3 / flyingShield give their members their icons
+    # through the cue file)
+    "whale": {"divingWave": ["whaleWave"], "divingStorm": ["malStorm"], "gobble": ["gobbleUp"], "leviathanCall": ["leviathanBreach"]},
 }
 # pool members that are one skill's ranks, each a cast of its own (the Mole's TNT 1-4, decisions.md 12): the Bible key of
 # their own rank's icon
@@ -69,7 +74,10 @@ RANK_ICONS = {"mole": {f"tnt{n}": f"mole_tnt{n}" for n in range(1, 5)},
                          "acidicField": "rabbit_acidicField2", "rapidTrance": "rabbit_rapidTrance1",
                          "statScan": "rabbit_statScan1", "shootingArray": "rabbit_shootingArray2",
                          "millionaire": "rabbit_millionaire2", "truceTrading": "rabbit_truceTrading2",
-                         "cAttack": "rabbit_cAttack3", "customizedShotgun": "rabbit_customizedShotgun2"}}
+                         "cAttack": "rabbit_cAttack3", "customizedShotgun": "rabbit_customizedShotgun2"},
+              # the Whale's 12th Kingdom Knight: its Bible key starts with a digit, which the icon pattern below cannot read
+              # (2026-11-13, plans/fx_whale/decisions.md 17, parts.md Verification 1: the top rank's)
+              "whale": {"12thKingdomKnight": "whale_12thKingdomKnight2"}}
 
 
 # skills the game plays with no body animation, shown as idle-stance tiles (index.html SEQ "<Name>: root@<t>", 2026-11-10;
@@ -86,7 +94,9 @@ EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"],
                # effect_only.md Verification 3: Fire Avatar - Fireball takes the Fireball's icon through SEQ_SKILL)
                "monkey": ["instantCast", "fireRune", "earthRune", "blazingFire"],
                # the Panda's Mystic Sage and Safe Guard (2026-11-13, plans/fx_panda/decisions.md 11, 60, effect_only.md)
-               "panda": ["mysticSage", "safeGuard"]}
+               "panda": ["mysticSage", "safeGuard"],
+               # the Whale's Auto Shield (2026-11-13, plans/fx_whale/effect_only.md block 4, decisions.md 7)
+               "whale": ["autoShield"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip (the Bat's
 # Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3; the Cat's Even Odds on the
 # gamble clip and Nine Lives' ko then getUp, plans/fx_cat/effect_only.md block 4, decisions.md 8, 11, 12)
@@ -112,7 +122,13 @@ OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "ed
             # the Rabbit's Customized Shotgun on the Normal Attack's clip, From the Above on Bounce's clips, Contract on Truce
             # Trading's clip and the bow (2026-11-13, plans/fx_rabbit/decisions.md 13, attacks_emotes.md Verification 3,
             # effect_only.md Verification 4, skills_b.md Verification 6)
-            "rabbit": {"customizedShotgun": ["nAttack"], "fromTheAbove": ["bounce1", "bounce2"], "contract": ["truceTrading", "bow"]}}
+            "rabbit": {"customizedShotgun": ["nAttack"], "fromTheAbove": ["bounce1", "bounce2"], "contract": ["truceTrading", "bow"]},
+            # the Whale's cast3 skills with no channel (Honor, 12th Kingdom Knight, Bubble Burst), Knight of the Deep and
+            # Shield Reflect on the Charge Attack's clips, Wall Puncture on Peninsula Impale's (2026-11-13,
+            # plans/fx_whale/decisions.md 5, 6, 8, 10, 17, attacks_emotes.md Verification 3-5)
+            "whale": {"honor": ["cast3"], "12thKingdomKnight": ["cast3"], "bubbleBurst": ["cast3"],
+                      "knightOfTheDeep": ["cAttack1", "cAttack2", "shieldBash"], "shieldReflect": ["cAttack1", "cAttack2", "root"],
+                      "wallPuncture": ["peninsulaImpale"]}}
 
 
 def bible_icons():

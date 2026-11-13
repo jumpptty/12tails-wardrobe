@@ -3034,3 +3034,241 @@ bible hub, some might be there already".
   Storm (5bb4936, committed at home and not yet deployed: meta.json, panda/clips.json, panda/fx.json, fx_cues/panda.json,
   icons/hd/index.json), which went live with it. Live: icons 128 px (portraits 150 px), `icons/hd/panda/wind&cloud.webp`
   200, every class 33 faces, /api/community answering, `upscaled.json` not there.
+
+## 2026-11-13 (home), the Whale's build started
+
+User: "why is Whale skills not in the wardrobe?" (only its research existed: the build was dropped that day on
+"delete Whale build"), then "build the Whale". `pipeline/workflow_class_fx.js` (scriptPath) with args `{mode: "build",
+cls: "whale", Cls: "Whale", released: ["clap", "leviathanCall", "wai"], regress: the eleven built classes, pc: "home"}`,
+run wf_4847b2c5-182: planner (no decisions.md existed), builders, editor, QA. The script's prompts now name all
+eleven built classes as models, the new unit test, and the Bat skin session's files as off limits.
+
+## 2026-11-13 (home), the Whale's effects: built and cued
+
+From plans/fx_whale/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review: 67 decisions). One editor after three builders (whale, tto_whale, page_pipeline), on the home PC.
+- **Parts (new):** fxparts/whale.js (`Whale_javelin`: a copy of the worn lance, api.propModel slot R, the starter
+  noviceLance with nothing worn, thrown at 24 m/s under gravity on the 0.02 s step, nose along its velocity, stuck when
+  its box's lowest point meets the floor, gone at 3 s, no hit drawn; `Whale_flyingShield`: a copy of the worn shield on
+  the clip-driven node, its 1 m sphere tested against the target body each frame; `Whale_homingShield`: the copy at
+  Euler(0, 0, 90) spun 1200 deg/s, 12 m/s, RotateTowards 4 rad/s with the heading's y x 0.2, a flyingShield_hit on every
+  entry of its 0.5 m sphere, gone at 3 s; `whale_kingdomKnight`: options `slot`, `end`, `standing`, `guard`, `attack`,
+  the rise y = -e^(-4 t), its kingdomKnight_ring2 spawned at the slot, the unsummon clip and gone 1 s later;
+  `fx:grandTide`: root looped at age 1.0, fx.cutNow() at the cue's `release`); one target body for all of them, the Bat's
+  capsule. fxparts/bat.js, fx:castRing only: the Whale let through its class gate, a cue's `animLoop` played looped from
+  the first update with the 0.5 s restart skipped. fxparts/tto_whale.js (TTO's `WhaleDolphin`: the lane from the cue's
+  spot to `to` in `hops` hops, the 1.4 m sink and the arc, tail and fins, a fresh splash copy at every landing and a
+  fresh trail copy per hop; `WhaleLeviathan`: the keyed rise, breach and dive on a Catmull-Rom path, tail flex, fade,
+  the geyser / trail / crash / pool children switched on at their times with fresh clocks). index.html (page_pipeline):
+  SEQ.whale (15 lines), SEQ_SKILL.whale (9 ids), LOWER_RANK.whale malStorm, PROP_STARTER.whale, FX_PART_FILES += whale,
+  tto_whale, cue options `around: [lo, hi]` (a whole-metre radius at a whole angle, cueOf), a rot element `[lo, hi]`
+  (rotOf), `withRot` beside `atBone` (the bone's rotation too, once), `fx.clipFloor(node)` for the parts (clips in place
+  what is already the mesh's own material, copies a shared one). wardrobe_fx.py: LAYOUTS whale_kingdomKnight
+  (`kingdomKnight_ring2`) and the four field-less Whale scripts, SHURIKEN_FROM_TTO whale grandTide (matched by material,
+  no SHURIKEN_MAT). wardrobe_fx_tto.py: SKILL_FX whale (5). No NEVER_PLAYED / LIFTS for the Whale. Nothing the video repo
+  reads was renamed.
+- **Editor fix, shared data (found by `git status` after the build): textures of one name replaced one another.** Every
+  class's effect textures land in data/fx/tex under the texture's own name, and BB has different pictures under one
+  name in different classes' files. The Whale's build wrote its nAttack_hit1 / nAttack_hit2 over the Cat's (other
+  pictures, mean difference 93 / 29 of 255). An audit of all 471 textures of the twelve classes' cued BB effects
+  (checks/fx_whale_build/editor/tex_audit.py, git-ignored) found two older cases, both live since those classes'
+  builds: **the Sheep's castRing texture (the pink ring, 128 px) had been replaced by the Penguin's (the blue ring,
+  256 px)**, so the Sheep's cast ring, Revert and Revive drew the Penguin's ring; **the Bat's shadowRay (the zigzag ray
+  of Phantom Bane, its hit and Soul Eater's hit) differs only in case from the shared ShadowRay (the smoke)**: one file
+  on Windows, so the smoke was drawn (and on a case-sensitive host only one of the two names has a file: not looked at
+  on the live site). Now wardrobe_fx.py's `TEX_FILES` gives those four
+  texture objects (by assets file + pathID) a file name of their own (whale_nAttack_hit1 / 2, sheep_castRing,
+  bat_shadowRay; the material's "tex" and an emblem's imageTex follow, `tex_name`), and `save_texture` (both builders
+  use it) refuses to replace a file that holds another picture or differs only in case: the build stops and names the
+  clash; a file that already holds the same picture is left byte for byte; `--retex` writes over it where the game's
+  own picture changed. Data: the Cat's two files restored from git; `wardrobe_fx.py sheep --fx castRing` and
+  `wardrobe_fx.py bat --fx phantomBane` (each changes one material's "tex" in that class's fx.json and adds one texture
+  file; effects, order and every other material identical to the committed data). Tests: pipeline/
+  test_wardrobe_fx_textures.py (8, new). TTO's textures audited too (tex_audit_tto.py: 323 checked, no clash between
+  classes; at home the Monkey's tto_RuneGolem is another size and three Monkey textures are missing from the
+  2026-11-04 bundles: its TTO data is the office's 2026-11-09 build, so a Monkey TTO rebuild belongs to the office, or
+  needs `--retex` here). Not audited: the weapons' own effects (wardrobe_weapon_fx.py writes a texture only when no
+  file of that name exists; it reads its names through the same `tex_name` at its next run). **For the user's eye:**
+  the Sheep's cast ring is pink again and the Bat's Phantom Bane ray is the zigzag.
+- **Cues** (wardrobe/fx_cues/whale.json, 41 keys, 267 cues: 168 fx, 53 sound, 43 voice, 3 hideProp; 54 effect names, 5
+  of them TTO; assembled from the reports' blocks by checks/fx_whale_build/editor/assemble.py, git-ignored):
+  attacks_emotes' block with its Verification's `@KnightoftheDeep:cAttack1` (the six standing knights, `guard`) and
+  `:cAttack2` (the ring + TTO's roundTable1|roundTable2 sound), `@ShieldReflect:cAttack2` and
+  `@WallPuncture:peninsulaImpale`; effect_only's `@AutoShield:root`; skills_a's block (cast1, the cast3 pool of eight,
+  `@Honor:cast3`, `@BubbleBurst:cast3`, divingWave, divingStorm, gobble, bowlingWhale1) with its Verification's
+  `@12thKingdomKnight:cast3` and flyingShield pool; skills_b's block (sweep, javelin, shieldRush, swallow,
+  peninsulaImpale, peninsulaRound) with its Verification's grandTide1 and no grandTide2; tto section 7's
+  `@LeviathanBreach:cast1`, the empty `:cast2`, leviathanCall. Applied on top: decision 28 (`replace` on the bubble),
+  38 (`replace` on the slot-0 knight), 32 (every `boneAt` written `atBone` + `withRot`); each of the three whys says so.
+- **Tiles / icons:** wardrobe_skill_icons.py CLIP_SKILLS whale (divingWave -> whaleWave, divingStorm -> malStorm, gobble
+  -> gobbleUp, leviathanCall -> leviathanBreach), OWN_TILE whale (honor, 12thKingdomKnight, bubbleBurst on cast3;
+  knightOfTheDeep and shieldReflect on the charge's clips; wallPuncture on peninsulaImpale), EFFECT_ONLY whale
+  autoShield, RANK_ICONS whale 12thKingdomKnight (its Bible key starts with a digit); rerun: whale 32 HD icons for 43
+  clips (19 new webp: 12thKingdomKnight, autoShield, bubbleBurst, bubbleShield, callToArm, gobbleUp, heavyWeight,
+  homingShield, honor, hydroBlast, knightOfTheDeep, leviathanBreach, megalodon, rejuvenate, revitalize, salvation,
+  shieldReflect, wallPuncture, whaleWave); index.json whale only, no other class changed.
+- **Check / inventory:** wardrobe_fx_check.py OPTS += guard, attack, around, withRot, animLoop, hops; a cue's rot is now
+  checked (`rot_ok`: three angles, each a number, "random" or a [lo, hi] pair of whole numbers, or the words), around is
+  [lo, hi] whole metres, withRot only beside atBone (every class's cues pass). wardrobe_fx_inventory.py BUILT += the
+  five Whale scripts and TTO's WhaleDolphin / WhaleLeviathan, NOTES whale grandTide (grafted: drawn), CLASS_NOTES whale
+  (the status looks CharacterControl loads, kingdomKnight_ring2, overPresence, the unused divingStorm prefab, the
+  missing javelin_hit / bowlingWhale_hit); rerun: the Whale 50 / 51 ready (the 1 left: grandTide's grafted
+  ParticleSystems, drawn), 688 / 699 over all classes.
+- **Data:** `wardrobe_fx_tto.py whale`: 5 TTO effects, 19 materials, 16 textures, 0 sounds (no warning);
+  `wardrobe_fx.py whale`: 49 effects, 45 materials, 46 textures, 115 sounds (the two grandTide graft lines printed:
+  Water2, Splash3; heavy's `reduce` found in the Rabbit's sounds by the rip walk). data/whale/fx.json 54 effects
+  (2.5 MB), sfx/ 115 files (75 voices, 40 sounds), 35 new textures in data/fx/tex for the Whale (15 tto_) + the two
+  fixes' sheep_castRing and bat_shadowRay: all new files, to commit with the run; the office PC pulls.
+- **Gotcha (this PC's Git Bash):** `grep -c $'\r$' <file>` prints 0 for a CRLF file (grep reads it as text and drops
+  the CR): the page's LF check needs `grep -c -U $'\r$' wardrobe/index.html` or `py -3 -c "print(open('wardrobe/
+  index.html','rb').read().count(b'\r\n'))"` (both 0 now). The pipeline's .py files are CRLF in this working tree (git's
+  autocrlf; LF in the index): an edit by script must keep that.
+- **Judgement calls (mine):** the texture fix above reaches the Sheep's and the Bat's committed data (two materials'
+  texture names: a correction, not a rebuild); the check validates rot / around / withRot (decision 66 asked only for
+  the words); the three decisions applied on top of the blocks were written into the whys; TEX_FILES names by class
+  prefix (`<cls>_<name>`). The builders' calls kept: the Homing Shield's 2e-6 m nudge to a random side (without it the
+  shield locks onto its aim's line, passes once and flies off: one hit, not decision 26's hit per pass), the knights'
+  guard never rewinding cAttack, the Leviathan's fade by the material's saved tint / colour, a fresh trail copy per
+  hop, fx.clipFloor clipping own materials in place.
+- **Gate:** files-only (every class with cues) "no problems"; `wardrobe_fx_check.py D:/12tails-wardrobe checks/fx_whale dark
+  --cls whale` exit 0, errors [], 43 tile plays, every expected effect spawned, 82 sounds loaded (run again on the
+  final code: the same). The page and shared parts changed (index.html's cue options, withRot, fx.clipFloor; bat.js;
+  the check; the two builders' texture names), so also the regression over the eleven other classes
+  (checks/fx_whale_regress). **In one run the headless page crashed** ("Page crashed") at its 326th tile play, the
+  Mole's War Capital, eight classes into one page, at 23:38, with nothing wrong logged before it (not explained: the
+  page's memory after eight classes, or the PC's load then, the user finding it "really laggy" and the lead's
+  pipeline/throttle_headless.ps1 coming in at 23:50; the same tile passes in a fresh page, and the office ran ten
+  classes in one page for the Rabbit). In two runs: `--cls
+  wolf,sheep,penguin,bat,bison,cat,chameleon` exit 0, errors [], 300 tile plays; `--cls mole,monkey,panda,rabbit`
+  exit 0, errors [], 205 tile plays. Unit tests 73 OK (81 with the new test_wardrobe_fx_textures), node 9 pass,
+  test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py checks/fx_whale_build/editor/weapon_fx_check.png`
+  OK; a trial `wardrobe_publish.py --out` into a scratch folder (removed after): "check: no problems", the Whale's
+  fx.json, 115 sounds, 32 HD icons and the renamed textures in it (its one warning, whale/talk's TTO keys, is about
+  the clip, not the effects). index.html LF (0 CR, counted in bytes). The gates ended after midnight (the 14th).
+  Not committed.
+- **Left out:** decisions 22, 39, 56-58 (hits out of reach, the knights' volley, camera effects, looks that need a foe
+  or an attacker, the unreleased TTO passives' looks, the Reborn-only and supplement skills, the unused divingStorm
+  prefab and orphan voices, the missing javelin_hit / bowlingWhale_hit). Nothing else: every skill decided is cued.
+  Built, not cued: the knights' `attack` option, kingdomKnight1 (rank 1's look: its layout reads, no cue names it),
+  overPresence.
+- **For the QA pass:** the gate's wall-clock samples and my own probe (checks/fx_whale_build/editor/probe.py, every
+  frame recorded in the page) agree with the cues on what spawns, where and for how long: the knights at slots
+  (+-1.6, +-1.6), (+-2.2, 0) rising from 1 m under the floor, their rings 1 s, unsummon at 10 s, gone at 11 s; Knight of
+  the Deep's six from 0 to 3.8 s with the ring 0.7-4.0 s; the bubble 10 s at y 1.3; heavy, spiralBlast, megalodon_ring
+  (7 s) and megalodon (at 4.0 s of cast3) at the 10 m point; the javelin from (1.2 right, 2.2, 1) to rest at (0.33
+  left, 0.44, 12.44), 3 s; the Homing Shield's hits at (0, 0.87, 9.4) and (+-0.7, 0.71, 10.29), gone at 3.0 s; the
+  Flying Shield spawning no hit; grandTide alive 1.0-6.0 s of the tile; bowlingWhale 0.5-7.95 s; Leviathan Breach's
+  warn 0-4.25 s, raise cut at 0.75 s, slam 0.75 m left / 0.9 m ahead, 24 dolphin effects (3 dolphins + 12 splashes + 9
+  trails), the Leviathan 8 s from 1.95 s of leviathanCall. A few sanity shots on the virtual clock
+  (checks/fx_whale_build/editor/shots/sheet1-4.png) read right; nothing else has been looked at. To look at: the lance
+  copy's orientation in flight and stuck (its tip under the floor clipped), the shield copies' orientation and spin,
+  the knights' look, rise and guard turns (their floor clip while rising), the 28 asunderRound rings following the
+  lance hand's pose (`withRot`), Mal Storm's bolts 12-22 m up (above most frames), grandTide's grafted spray and a pale
+  square sheet under her at 1.5 s of the tile (the wave's create clip or the grafted Water2 box: unjudged), honor_cast
+  (an emblem, a GUI picture: no mesh, it shows 2 m up over her face from the near camera), the bubble's size, the
+  dolphins' hops, splashes and trails, the Leviathan's rise, breach, roll and dive at the 10 m point (pivot to 9.6 m:
+  far outside the default frame), its fade and floor clip, the cast ring's `animLoop` in its 0.1 s. In the headless
+  real-time runs the first frame after a pick can stall 0.3-0.6 s with dt unclamped, so a t = 0 cue's effect starts
+  that late while the step clock runs on (the Normal Attack's stage-2 wave came 0.2 s after stage 1's in one probe
+  run): the known headless stall, to be judged on the virtual clock only. Rolled procs the gate does not expect: KO's
+  deadEffect (p 0.5), Peninsula Impale's wallPuncture_hit / nAttack_hit pairs (p 0.4 a stab).
+- **For the Bible (offer, not written):** decisions.md's last section; from the builders: the Homing Shield hits a 10 m
+  target twice (0.70 s and about 2.5 s after its spawn) and which side it returns on is chance; the knights' guard never
+  restarts cAttack; the javelin slides about 0.5 m after sticking; the Flying Shield's nearest pass is 1.64 m from the
+  body's side; the Leviathan's pivot overshoots to 9.6 m (the Catmull-Rom over key 3's 9 m); the fins' signs; the
+  dolphin's clamped heading samples; the fade reaching the trail's renderers.
+- **QA pass (2026-11-14, home).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_whale_qa/jobs.json, 51 jobs, every Whale tile: Normal Attack, Charge Attack, Shield Bash, Knight of the
+  Deep, Shield Reflect, Auto Shield, the eight cast pool members, Honor, 12th Kingdom Knight to 12 s, Bubble Burst,
+  Whale Wave, Mal Storm, Flying Shield and Homing Shield (nothing worn: the starter shield; and with timeShield +
+  poseidonSpear worn), Gobble Up, Bowling Whale to 8.2 s, Sweep, Javelin (nothing worn: the starter lance; with
+  poseidonSpear; with starMicrophone), Shield Rush, Swallow, Peninsula Impale, Wall Puncture, Peninsula Round, Grand
+  Tide to 6.5 s, Leviathan Breach to 10.6 s (side, behind, far, and near for the cast ring), the eight emotes with
+  voices, clap, wai, run, KO (dead forced, and as rolled), getUp) on the dark and the white stage: 883 shots each.
+  Sheets: checks/fx_whale_qa/sheets_dark, sheets_white (git-ignored; shots and logs under run/). No page error, no
+  stalled render loop, no failed job (the only console line: swiftshader's glBlitFramebuffer feedback warning). Four
+  camera views added to the shot and sheet scripts: `tall` (the floor to 23 m up, from far in front: Mal Storm's
+  bolts), `wide` (from 50 m on her left: the Leviathan whole), `ground` / `groundfar` (level with the floor at her
+  spot / at the 10 m target: whatever draws under the picture's middle line is under the floor).
+  Boxes in the hero's frame (+x = her left) match the reports and decisions: extendedWave1-3 4 m ahead from 0 / 0.8 /
+  1.8 s; shieldBash_ring at 3.2 s; the six standing knights at (+-1.6, +-1.6), (+-2.2, 0) turning every 0.5 s, back to
+  her facing by 3.5 s, gone at 3.8 s, roundTable_ring 0.7-3.0 s; shieldReflect at 0.7 s 0.7 m ahead, shield 1 m ahead;
+  castRing 0.1-0.55 s; the bubble 0.9-10.9 s; heavy, spiralBlast, megalodon_ring (to 7.6 s) and megalodon (4.6-7.6 s)
+  at the 10 m point; rejuvenate_hit at 2.9 / 6.9 s (Revitalize 3.1 / 7.1 s); callToArm_ring at her and 8 m behind;
+  honor_cast 0.4-0.9 s; the knights rising from 1 m under the floor with their rings from 0.5 s, the unsummon at
+  10.5 s, gone at 11.5 s; malStorm 0.7 s and 24 bolts falling from 12-22 m up at 35 m/s; the Flying Shield's loop out
+  on her left to 11.9 m ahead and back on her right, lying flat, the worn shield hidden 0.5-1.5 s, no hit; the Homing
+  Shield through the target at 1.22 s and again at 3.03 s, gone at 3.5 s, the worn shield hidden to 3.5 s; the lance
+  copy from (1.2 right, 2.2, 1), tip first, stuck at 11.6-14.1 m ahead from 0.5 s after the throw, gone 3 s after it,
+  the worn lance hidden 0.5-1.0 s; bowlingWhale 0.5-7.95 s; Peninsula Impale's spikes every 0.3 s and one hit each at
+  (0, 1, 10); the 28 asunderRound rings round the lance hand; grandTide 1.0-6.0 s with the hero riding it; Leviathan
+  Breach: the cast ring 0-0.1 s, the warn at the target to 4.25 s, the raise cut at 0.85 s, the slam at 0.7 s, the
+  three dolphins' hops with a splash at each landing, the Leviathan from 2.05 s (geyser 2.55 s, breach, roll, dive,
+  crash 4.25 s, body gone 5.35 s, pool to 9.25 s, all gone at 10.05 s); KO's deadEffect.
+  - **Bug found and fixed: parts under the floor were drawn** (decision 45's rule, "what is under the floor is
+    hidden", was applied to the knights, the javelin, the dolphins' and the Leviathan's bodies only). Seen from the
+    floor-level views (checks/fx_whale_qa/sheets_ground before, sheets_fix after):
+    - **Mal Storm's bolts** fell on through the floor to 5.5 m under it (the prefab's root EffectControl velocity
+      (0, -35, 0) over its 0.5 s life; the page clips a moving CHILD by itself, not a moving root). Fixed in
+      wardrobe/fx_cues/whale.json: `"floor": true` on the 24 bolt cues (the Panda's option).
+    - **Megalodon's shark** showed its body from 9 m under the floor while rising and sinking. Fixed: `"floor":
+      ["Megalodon"]` on its cue.
+    - **Grand Tide's wave** (five meshes hung 4.8 m under the prefab's root, boxes to 11 m under the floor) drew its
+      whole underside, and **grandTide_ring's 24 water sheets** (its ImageEmitter, 3 m tall, centred on the floor)
+      drew their buried halves: the editor's "pale square sheet under her at 1.5 s". Fixed: `"floor": true` on
+      grandTide, `"floor": ["ImageEmitter"]` on grandTide_ring.
+    - **Leviathan Breach's drops** (TTO's ParticleSystems, no Collision module) fell through the floor: the crash's
+      `rain` (up at 10-20 m/s under 2.2 g for 1.4-2.2 s) made a blue column to 30 m under the pool, the slam's, the
+      geyser's and the dolphin splashes' drops the same on a smaller scale. Fixed: `"floor": ["splash"]` on the slam's
+      cue; in wardrobe/fxparts/tto_whale.js `clipDrops` clips every ParticleSystem node of the Leviathan and of a
+      dolphin's splash copy at the floor (the ground discs and bands stay whole).
+    - For these, **the cue option `floor` now also takes a node's name or a list of names** (wardrobe/index.html, class
+      Fx: only those nodes of the effect and what hangs under them; `true` is the whole effect, as before), because a
+      flat ring lying exactly on the floor must not be cut along it. pipeline/wardrobe_fx_check.py checks that each
+      name is a node of the cued effect.
+  - Looked into, not bugs: the knights' lance trails draw long straight zigzags during the guard (each 0.5 s turn
+    moves the lance tip at once and the TrailRenderer joins the two places, as Unity's does); honor_cast shows over
+    her face (the code puts it 2 m over her feet and she is 2.4 m tall); the Flying Shield draws no hit (decision
+    25); megalodon_ring is faint on the white stage (additive on white); megalodon's and the bolts' boxes read under
+    the floor in the logs (the box is the geometry's, not the clipped picture); the cast ring cut at 0.55 s with no
+    shrink shown between samples; a step can start one frame late on the virtual clock (Normal Attack's stage 2 at
+    0.83 s for its 0.8, Leviathan Breach's call at 0.12 s for its 0.1: float sums of the 1/30 s frames); with a weapon worn its own effect (poseidonSpear's purple trail,
+    starMicrophone's ribbon) keeps drawing on the hand while the thrown piece is hidden (decision 54: meshes only).
+    Left as they are, as for the other classes: rings and bursts centred on her body that dip under the floor by
+    less than 2 m (Peninsula Round's rings, rejuvenate_hit, the bubble's underside, flyingShield_hit) and a
+    camera-facing flash on the floor (the Leviathan's crash).
+  - Gates (on the final code): `wardrobe_fx_check.py D:/12tails-wardrobe checks/fx_whale_qa/gate dark --cls whale` exit 0, errors [] (43 tile
+    plays, 82 sounds loaded); files-only over the twelve classes "no problems"; the page's Fx code changed (the `floor`
+    option), so also the regression, in two runs as the editor's (one page for all eleven crashed for the editor; not
+    tried again): `--cls wolf,sheep,penguin,bat,bison,cat,chameleon` exit 0, errors [] (300 tile plays), `--cls
+    mole,monkey,panda,rabbit` exit 0, errors [] (205 tile plays); unit tests 81 OK (the six modules, the new
+    test_wardrobe_fx_textures among them), node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py
+    checks/fx_whale_qa/weapon_fx_check.png` OK (it needs `--with pillow` beside playwright); a trial
+    `wardrobe_publish.py --out` into a scratch folder (removed after): "check: no problems". index.html LF (0 CR,
+    counted in bytes). Not committed.
+  - For the user's eye: Megalodon, Mal Storm, Grand Tide and Leviathan Breach now end at the floor (compare
+    checks/fx_whale_qa/sheets_ground with sheets_fix); the knights' zigzag lance trails while guarding; Honor's
+    emblem over her face; Peninsula Round's rings pass under the floor (not clipped); the target-point effects (Heavy
+    Weight, Hydro Blast, Megalodon, the Leviathan) sit outside the default camera's frame, as for the other classes;
+    Mal Storm's bolts start 12-22 m up; decisions.md's overnight calls and the editor's judgement calls above (the
+    Sheep's cast ring pink again, the Bat's Phantom Bane ray).
+- **The lead's pass (2026-11-14, home):** the editor's and the QA's reports read; 81 unit tests, the Worker's 9,
+  `wardrobe_icons_upscale.py --check` 0; index.html, whale.js, tto_whale.js, bat.js and whale.json 0 CR by byte count;
+  two QA sheets looked at (Leviathan Breach wide after the floor fix, 12th Kingdom Knight). CLAUDE.md's test line and
+  the workflow script's now carry `pipeline.test_wardrobe_fx_textures`; the script's weapon check line has
+  `--with pillow`. With the Whale the effects run is complete (twelve classes): `plans/goal_fx_all_classes.md` is
+  deleted and HANDOFF's "Next up" is narrowed to what is left for the user's eye.
+- **`pipeline/throttle_headless.ps1`** (user during the build: "reduce PC power consumption to 30%, everything is really
+  laggy"): one chrome-headless-shell (the regression gate: SwiftShader draws on the CPU, at AboveNormal priority) held
+  69% of the 20 logical cores; put on the last 6 cores at Idle priority it measured 17%. A workflow's agents cannot be
+  messaged mid-run, so it is done from outside: the script repeats it every 3 s for every such process (`-Percent`,
+  `-Hours`, `-Once`). The checks run slower under it. The editor's one-page regression crash (23:38) came before it
+  (23:50), so it is not the cause.
+- **The send dialog: looked into, left as it is** (user: "no one has been able to send me skins because no cloudfare
+  pop-up to verify", then "the cloudfare tick didn't appear cuz by PC is too slow that's all, no need for fix"). On the
+  live site Turnstile loads and draws its box at 1366x768, 1280x600, 390x844 and 360x640 (headless, and a separate real
+  Chrome). Seen and not changed, for a later day if wanted: (1) when Cloudflare wants a click the box shows a checkbox
+  while SEND_ERR.wait says to wait for the tick; (2) at about 600 px of height the box starts below the dialog's fold
+  (the form is 676 px in 566); (3) the widget's error-callback says nothing. Cloudflare's test key that always asks
+  for a click is `3x00000000000000000000FF` (`?submitkey=`). `pipeline/wardrobe_send_live_probe.py` still drives the
+  old piece-menu send (the toolbar's #sendlook replaced it).

@@ -2216,11 +2216,35 @@
   }
  },
  "whale": {
+  "12thKingdomKnight": {
+   "icon": "icons/hd/whale/12thKingdomKnight.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "autoShield": {
+   "icon": "icons/hd/whale/autoShield.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "bowlingWhale": {
    "icon": "icons/hd/whale/bowlingWhale.webp",
    "clips": [
     "bowlingWhale1",
     "bowlingWhale2"
+   ]
+  },
+  "bubbleBurst": {
+   "icon": "icons/hd/whale/bubbleBurst.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "bubbleShield": {
+   "icon": "icons/hd/whale/bubbleShield.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "cAttack": {
@@ -2230,10 +2254,22 @@
     "cAttack2"
    ]
   },
+  "callToArm": {
+   "icon": "icons/hd/whale/callToArm.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "flyingShield": {
    "icon": "icons/hd/whale/flyingShield.webp",
    "clips": [
     "flyingShield"
+   ]
+  },
+  "gobbleUp": {
+   "icon": "icons/hd/whale/gobbleUp.webp",
+   "clips": [
+    "gobble"
    ]
   },
   "grandTide": {
@@ -2244,16 +2280,61 @@
     "grandTide2"
    ]
   },
+  "heavyWeight": {
+   "icon": "icons/hd/whale/heavyWeight.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "homingShield": {
+   "icon": "icons/hd/whale/homingShield.webp",
+   "clips": [
+    "flyingShield"
+   ]
+  },
+  "honor": {
+   "icon": "icons/hd/whale/honor.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "hydroBlast": {
+   "icon": "icons/hd/whale/hydroBlast.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "javelin": {
    "icon": "icons/hd/whale/javelin.webp",
    "clips": [
     "javelin"
    ]
   },
+  "knightOfTheDeep": {
+   "icon": "icons/hd/whale/knightOfTheDeep.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "shieldBash"
+   ]
+  },
+  "leviathanBreach": {
+   "icon": "icons/hd/whale/leviathanBreach.webp",
+   "clips": [
+    "leviathanCall"
+   ]
+  },
   "malStorm": {
    "icon": "icons/hd/whale/malStorm.webp",
    "clips": [
+    "divingStorm",
     "malStorm"
+   ]
+  },
+  "megalodon": {
+   "icon": "icons/hd/whale/megalodon.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "nAttack": {
@@ -2276,10 +2357,36 @@
     "peninsulaRound"
    ]
   },
+  "rejuvenate": {
+   "icon": "icons/hd/whale/rejuvenate.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "revitalize": {
+   "icon": "icons/hd/whale/revitalize.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "salvation": {
+   "icon": "icons/hd/whale/salvation.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
   "shieldBash": {
    "icon": "icons/hd/whale/shieldBash.webp",
    "clips": [
     "shieldBash"
+   ]
+  },
+  "shieldReflect": {
+   "icon": "icons/hd/whale/shieldReflect.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2",
+    "root"
    ]
   },
   "shieldRush": {
@@ -2298,6 +2405,18 @@
    "icon": "icons/hd/whale/sweep.webp",
    "clips": [
     "sweep"
+   ]
+  },
+  "wallPuncture": {
+   "icon": "icons/hd/whale/wallPuncture.webp",
+   "clips": [
+    "peninsulaImpale"
+   ]
+  },
+  "whaleWave": {
+   "icon": "icons/hd/whale/whaleWave.webp",
+   "clips": [
+    "divingWave"
    ]
   }
  },

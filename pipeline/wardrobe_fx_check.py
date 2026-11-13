@@ -23,7 +23,9 @@ must take hold (FX.spawned "lift:<name>"). 2026-11-13, the Cat (plans/fx_cat/dec
 names a prop slot (R, L, Head, Back) and carries a kill; it is not expected in the tally (it takes hold only while a prop
 is worn there: FX.spawned "hideProp:<slot>"); since the Chameleon (2026-11-13, plans/fx_chameleon/decisions.md 13, 48, 49)
 it may name "hero" (the whole hero hidden) and may leave out its kill (hidden until the next pick); SEQ tokens such as root*~@5.65, dropAnchor! and crescentEclipse2^ give their
-clip names (seqs)."""
+clip names (seqs). 2026-11-13, the Whale (plans/fx_whale/decisions.md 31, 32, 66): a cue's rot is checked (rot_ok: three
+angles, each a number, "random" or a [lo, hi] pair of whole numbers; or the words "random" / "randomYaw"), around is
+[lo, hi] whole metres, withRot is true and only beside atBone."""
 import argparse, asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
 
@@ -224,12 +226,18 @@ OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", 
         "tune", "firePoint", "tilt", "pick", "playAudio", "clip", "host", "pair", "trigger", "finish", "ride", "shots",
         "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg",
         "alpha", "standing", "hide", "moves", "turn", "attach", "lavu", "unsummon", "boost", "rise", "head", "top", "dive", "alt",
-        "enable", "atBone", "k", "off", "floor",   # floor: the Panda's QA (index.html Fx, clipped at the ground)
+        "enable", "atBone", "k", "off", "floor",   # floor: the Panda's QA (index.html Fx, clipped at the ground; a node name or a list of them: the Whale's QA)
         # 2026-11-13, the Rabbit (plans/fx_rabbit/decisions.md 20, 22-24, 29, 31, 56): yaw (one random angle per play per name,
         # index.html cueOf), sphere (a random flat offset within r), replace (an older live copy disposed at the spawn), owner
         # (the root EffectControl's followPosition owner, fxparts/control.js), ally / delay (fxparts/tto_rabbit.js's turret and
         # coins); a rot list may hold "random" (Random.Range(0, 360) per spawn); kind rides api.spawn only, never a cue
-        "yaw", "sphere", "replace", "owner", "ally", "delay"}
+        "yaw", "sphere", "replace", "owner", "ally", "delay",
+        # 2026-11-13, the Whale (plans/fx_whale/decisions.md 31, 32, 40, 43, 66): around ([lo, hi] whole metres at a random
+        # whole angle about the cue's spot, index.html cueOf: Mal Storm's bolts), withRot (with atBone: the bone's rotation
+        # too, index.html Fx: Peninsula Round's rings); the knights' guard ([from, to] ages) and attack ([ages], built, not
+        # cued) (fxparts/whale.js); animLoop (fx:castRing's clip looped from the spawn, fxparts/bat.js); hops (a Leviathan
+        # Breach dolphin's, fxparts/tto_whale.js); a rot list may hold a [lo, hi] pair of whole numbers (rot_ok)
+        "guard", "attack", "around", "withRot", "animLoop", "hops"}
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
 # ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
 # (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
@@ -242,6 +250,16 @@ HIDE_TARGETS = PROP_SLOTS + ("hero",)                            # index.html fx
 # order ("cycle": a pool whose plays take its members in turn), a member's standby (its step's end) and name (its tile's):
 # 2026-11-13, the Mole's War Factory and TNT 1-4 (plans/fx_mole/decisions.md 12, 13)
 ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle", "order"}, {"why", "cues", "builds", "everyCycle", "standby", "name"}
+
+
+def rot_ok(r):
+    """A cue's rot as index.html rotOf reads it: "random" / "randomYaw", or three angles, each a number, "random" (a whole
+    angle 0 ... 359 per cue, the Rabbit's coins) or a [lo, hi] pair of whole numbers (a whole angle lo ... hi per cue:
+    2026-11-13, the Whale's Peninsula Round rings [0, 0, [-30, 29]])."""
+    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+    whole = lambda v: isinstance(v, int) and not isinstance(v, bool)
+    return r in ("random", "randomYaw") or (isinstance(r, list) and len(r) == 3 and all(
+        num(v) or v == "random" or (isinstance(v, list) and len(v) == 2 and all(map(whole, v)) and v[0] <= v[1]) for v in r))
 
 
 def file_errors(cls):
@@ -279,8 +297,20 @@ def file_errors(cls):
                     num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
                     ok = all(num(v) or (isinstance(v, list) and len(v) == 2 and all(map(num, v)) and v[0] <= v[1])
                              for o, v in c[3].items() if o in ("x", "y", "d"))
+                    # rot (rot_ok); around: [lo, hi] whole metres; withRot: true, only beside atBone (the Whale's)
+                    whole = lambda v: isinstance(v, int) and not isinstance(v, bool)
+                    ok = (ok and ("rot" not in c[3] or rot_ok(c[3]["rot"]))
+                          and ("around" not in c[3] or (isinstance(c[3]["around"], list) and len(c[3]["around"]) == 2
+                                                        and all(map(whole, c[3]["around"])) and c[3]["around"][0] <= c[3]["around"][1]))
+                          and ("withRot" not in c[3] or (c[3]["withRot"] is True and isinstance(c[3].get("atBone"), str))))
                 if not ok:
                     errs.append(f"{cls}: {key}: bad cue {c}")
+                elif c[1] == "fx" and len(c) > 3 and isinstance(c[3], dict) and c[3].get("floor") not in (None, True, False):
+                    # floor: true, or the names of the effect's nodes to clip at the ground (2026-11-14, the Whale's QA; index.html Fx)
+                    want = c[3]["floor"] if isinstance(c[3]["floor"], list) else [c[3]["floor"]]
+                    for n in c[2].split("|"):
+                        have = {x.get("name") for x in effects.get(n, {}).get("nodes", [])}
+                        errs += [f"{cls}: {key}: floor node {w!r} is not a node of {n}" for w in want if n in effects and w not in have]
                 elif c[1] == "skin":
                     errs += [f"{cls}: {key}: skin {n} is not one of index.html's HERO_SKINS {sorted(SKINS)}"
                              for n in c[2].split("|") if n not in SKINS]

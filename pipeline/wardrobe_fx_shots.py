@@ -5,7 +5,7 @@ clip time asked, however slowly swiftshader draws (the probe's real-time samples
 The tile is played once first at a coarse step so its files and textures are loaded, then again for the shots. Each
 sample also prints how many hero meshes are drawn / hidden (heroHide, a skin's copies) and the live effects' opacity.
   uv run --no-project --with playwright python -I pipeline/wardrobe_fx_shots.py <repo> <out dir> <cls> <tile>
-      <t1,t2,...> [side|front|back|far|top|near|book|spot|bookside|bookback|behind, several joined by ,] [<cue key>=<skill> | <cue key>!<roll> | <cue key>%<effect> | <cue key>^<option>=<JSON>, several joined by +] [<props JSON>]
+      <t1,t2,...> [side|front|back|far|top|near|book|spot|bookside|bookback|behind|tall|wide|ground|groundfar, several joined by ,] [<cue key>=<skill> | <cue key>!<roll> | <cue key>%<effect> | <cue key>^<option>=<JSON>, several joined by +] [<props JSON>]
 (<cue key>!<roll>: that roll always comes up, e.g. ko!dead for the KO tile's deadEffect; cast3=iceBlock+cast3!doubleSpell.)
 (<cue key>%<effect>: that effect's chance cues (a "p" with no roll) always fire, e.g. anchorYank%tto/dropAnchor_shrapnel; 2026-11-13, the Cat's QA.)
 (<cue key>^<option>=<JSON>: that option set on every fx cue of the entry, e.g. missilePad^egg=1; props {"_color": n}: the outfit's colour
@@ -45,7 +45,12 @@ URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html" + ("" if o
 CAMS = {"side": ([20, 6, 5], [0, 1, 0]), "front": ([0, 3, 18], [0, 1, 0]), "back": ([0, 4, -10], [0, 1, 0]), "far": ([-8, 4, 20], [0, 1, 0]),
         "book": ([3, 3.5, 15.5], [0, 1, 0]), "bookside": ([8, 3.5, 11], [0, 1, 0]), "bookback": ([-2, 4, 5], [0, 1, 0]),
         "spot": ([5, 3, 17], [0, 1, 0]), "top": ([0.01, 22, 5], [0, 0, 5]), "near": ([4, 2, 4], [0, 1, 0]),
-        "behind": ([0, 11, -10], [0, 0, 9])}   # behind and above: the 10 m target area and +-10 m around it
+        "behind": ([0, 11, -10], [0, 0, 9]),   # behind and above: the 10 m target area and +-10 m around it
+        "tall": ([10, 11.5, 48], [0, 11.5, 0]),   # from far in front: the floor to 23 m up (the Whale's Mal Storm bolts, 2026-11-14)
+        "wide": ([50, 9, 9], [0, 5, 9]),          # from far on her left: 15 m behind her to 30 m ahead, 13 m up (the Whale's Leviathan)
+        # level with the floor, from her left: whatever draws under the picture's middle line is under the floor (the game's
+        # ground hides it): at her spot and at the 10 m target (the Whale's QA: the bolts, Megalodon, the knights, the Leviathan)
+        "ground": ([40, 0.02, 0], [0, 0.02, 0]), "groundfar": ([40, 0.02, 10], [0, 0.02, 10])}
 CLOCK = """() => { const { THREE } = wardrobe.debug(), P = THREE.Clock.prototype;
   if (P.__virtual) return; P.__virtual = true; const real = P.getDelta;
   window.__v = { t: 0, target: 0, step: 1 / 30 };

@@ -86,14 +86,19 @@ NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the
 
 ## Next up (either PC)
 
-- **Effects + sounds: the run continues at the office (2026-11-13)** (`plans/goal_fx_all_classes.md`, NOTES.md "the run
-  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda,
-  Rabbit (the Panda's Wind & Cloud and Rain & Storm added at home 2026-11-13). Researched (reports committed): Whale.
-  Left: the Whale build (started at home 2026-11-13). For the user's ear: the Monkey's
-  sounds come from BB's resources container (every WAV in the rip's monkey/sounds is zero-filled). The workflow is
-  `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; args `pc: "home"` for D:/ paths, office by default). For the user's review: every
-  class's `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
-  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: Mole to Rabbit's are on the office PC).
+- **Effects + sounds: the run is complete (2026-11-14)**: all twelve classes are built, committed and live (Wolf,
+  Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda, Rabbit, and the Whale, built at home; NOTES.md "the
+  Whale's effects: built and cued"). Nothing to rebuild on either PC: pull. For the user's review: every class's
+  `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
+  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: Mole to Rabbit's are on the office PC, the Whale's
+  on the home PC, with `sheets_ground` before and `sheets_fix` after its floor clip). The Whale, for the user's eye:
+  the texture fix that came with it (the Sheep's cast ring is pink again, the Bat's Phantom Bane ray is the zigzag);
+  the knights' lance trails zigzag while guarding; Honor's emblem sits over her face; Peninsula Round's rings pass
+  under the floor unclipped; megalodon_ring is faint on the white stage. A Monkey TTO rebuild belongs to the office
+  (the home PC's 2026-11-04 bundles lack three of its textures; `wardrobe_fx_tto.py` stops on a clash unless
+  `--retex`). For the user's ear: the Monkey's sounds come from BB's resources container (every WAV in the rip's
+  monkey/sounds is zero-filled). The workflow for another class or a rebuild is `pipeline/workflow_class_fx.js`
+  (Workflow tool, scriptPath; args `pc: "home"` for D:/ paths, office by default).
 - Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);
   effects on an enemy go to the target point 10 m ahead; the user declined the Sheep's Bible findings (2026-11-10: "no need to
   offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched

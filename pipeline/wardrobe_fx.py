@@ -298,6 +298,18 @@ LAYOUTS.update({
     "Gadina_AI": [("AI_state", "s")], "Ja_AI": [("AI_state", "s")], "Phoenix_AI": [("AI_state", "s")],
     "Gaos_AI": [("AI_state", "s")],                    # *_AI.cs (8 bytes: "none"; Gaos_AI.cs:1626)
 })
+# the Whale's parts (plans/fx_whale/parts.md, 2026-11-13; checks/fx_whale_research/parts/probe.txt: each instance's bytes are
+# the listed fields exactly; TTO's re-serialised copies name the same one field, checks/fx_whale_research/parts/
+# tto_bbcopies.json); the other four Whale scripts keep every field private (0 field bytes). Proved again at home by
+# --probe (plans/fx_whale/decisions.md 59): kingdomKnight1 / kingdomKnight2 decode with 8 bytes used of 8
+LAYOUTS.update({
+    # whale_kingdomKnight.cs:312 (8 bytes: [16, 295] = sharedassets4's kingdomKnight_ring2, the Resources prefab itself,
+    # probe_ps.py; Init spawns it at the knight's slot, :126-132): kingdomKnight1 / kingdomKnight2 (fxparts/whale.js
+    # spawns the ring by name, api.spawn: the cue entry's "builds")
+    "whale_kingdomKnight": [("kingdomKnight_ring2", "r")],
+    # Whale_flyingShield.cs:244-256, Whale_homingShield.cs:491-518, Whale_javelin.cs:349-373, Whale_overPresence.cs:208-217
+    "Whale_flyingShield": [], "Whale_homingShield": [], "Whale_javelin": [], "Whale_overPresence": [],
+})
 # the scripts whose AudioClip references are written as the clip's name (and the clip exported to sfx/ as any effect's
 # sound, wardrobe/data/<cls>/sfx/<name>.mp3): the summons' own sounds their parts play (2026-11-13, plans/fx_mole/
 # decisions.md 54: AutoGyroGun's nAttack_fx / create_fx, BarrelBot's, KingKaiser's kaiser_createFx ...; fxparts/robots.js)
@@ -363,7 +375,11 @@ SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]
                      # the Rabbit's (2026-11-13, plans/fx_rabbit/parts.md part 4, decisions.md 49): extravagance_ring's two
                      # Unity 3.5 ParticleSystems (BB node 3 Gil alpha: the 16 coins at 0.7 s; node 4 star5 addsoft: the stars
                      # drawn in) <- TTO nodes 1 / 4, matched by name and material, by the Chameleon's route (no SHURIKEN_MAT)
-                     "rabbit": ["extravagance_ring"]}
+                     "rabbit": ["extravagance_ring"],
+                     # the Whale's (2026-11-13, plans/fx_whale/parts.md Read this first 3, decisions.md 59): BB Water2 /
+                     # Splash3 -> TTO tto_Water2 / tto_Splash3 on the two "ParticleSystem" nodes, one match each by
+                     # material, the Chameleon's route (no SHURIKEN_MAT)
+                     "whale": ["grandTide"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
@@ -402,6 +418,53 @@ ALIASES = {"bat": {"guardian_hit": "gameassets/characters/elementals/shade4/effe
 SOUND_ALIASES = {"bat": {"guardian_nAttack": "characters/elementals/shade4/sounds/nAttack"},
                  "monkey": {"lavu_summon": "characters/elementals/lavu/sounds/lavu_summon",
                             **{n: f"characters/elementals/gaos/sounds/{n}" for n in ("summon_ring", "nAttack2_ring")}}}
+# Texture files (2026-11-13, found by the Whale's build): every class's textures land in one folder, data/fx/tex, named by
+# the texture's own name, and BB has different pictures under one name in different classes' files (or names that differ
+# only in case, one file on Windows and two on the site). The later build silently replaced the earlier class's picture:
+# the Whale's nAttack_hit1 / nAttack_hit2 over the Cat's, the Penguin's castRing (the blue ring) over the Sheep's (the pink
+# one), the Bat's shadowRay (the zigzag ray of Phantom Bane / Soul Eater's hit) lost to the shared ShadowRay (the smoke).
+# So: the textures below, by their object (assets file, pathID), are saved under a name of their own (the material's
+# "tex" follows), and save_texture() refuses to replace a file that holds another picture: a new clash stops the build
+# and names itself, to be added here. (checks/fx_whale_build/editor/tex_audit.py compared all 471 textures of the twelve
+# classes' cued effects with their files: these four objects were the only ones that differed.)
+TEX_FILES = {("sharedassets4.assets", 48): "whale_nAttack_hit1", ("sharedassets4.assets", 39): "whale_nAttack_hit2",
+             ("sharedassets11.assets", 62): "sheep_castRing", ("sharedassets12.assets", 55): "bat_shadowRay"}
+TEX_SAME = 4.0     # mean difference (0-255, premultiplied RGBA) under which two WebP encodings count as one picture
+
+
+def tex_name(o):
+    """The file name (no extension) a texture object is saved under in data/fx/tex: its own name, or TEX_FILES'."""
+    return TEX_FILES.get((o.assets_file.name, o.path_id)) or o.read().m_Name
+
+
+def save_texture(tdir, name, image, replace=False):
+    """Write data/fx/tex/<name>.webp (quality 90, as always), unless the folder already holds that name with another
+    picture or in another case: then the build stops (two textures share a name: TEX_FILES). A file that already holds
+    this picture is left as it is (its bytes stay the same whatever this PC's WebP encoder). replace (the builds'
+    --retex): a same-named file with another picture is written over, for a picture the game itself changed (a TTO
+    patch; the two PCs' TTO bundles differ in date: the Monkey's tto_RuneGolem is another size in 2026-11-04's)."""
+    from PIL import Image, ImageChops, ImageStat
+    buf = io.BytesIO()
+    image.save(buf, "WEBP", quality=90, method=6)
+    twin = next((f for f in os.listdir(tdir) if f.lower() == (name + ".webp").lower()), None)
+    if twin and twin != name + ".webp":
+        raise SystemExit(f"texture {name}: data/fx/tex already has {twin}, a name that differs only in case (one file on "
+                         f"Windows, two on the site): give one of them its own name in wardrobe_fx.py TEX_FILES")
+    if twin:
+        pm = lambda im: Image.frombytes("RGBA", im.size, im.convert("RGBA").convert("RGBa").tobytes())
+        with Image.open(os.path.join(tdir, twin)) as have, Image.open(io.BytesIO(buf.getvalue())) as new:
+            diff = None if have.size != new.size else sum(ImageStat.Stat(ImageChops.difference(pm(have), pm(new))).mean) / 4
+        if (diff is None or diff > TEX_SAME) and not replace:
+            raise SystemExit(f"texture {name}: data/fx/tex/{twin} holds another picture (" + ("another size" if diff is None
+                             else f"mean difference {diff:.1f}") + "): two textures share the name (give this one its own in "
+                             "wardrobe_fx.py TEX_FILES), or, if the game's picture itself changed, run again with --retex")
+        if diff is not None and diff <= TEX_SAME:
+            return False
+    with open(os.path.join(tdir, name + ".webp"), "wb") as f:
+        f.write(buf.getvalue())
+    return True
+
+
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -549,7 +612,7 @@ def material(game, pptr, base, mats, texs):
         if key(k) == "_MainTex":
             to = game.obj(v["m_Texture"], own)
             if to is not None:
-                tex = to.read().m_Name
+                tex = tex_name(to)                    # (its own name, or TEX_FILES' where two textures share one)
                 if tex not in texs:
                     texs[tex] = to
             scale = [v["m_Scale"]["x"], v["m_Scale"]["y"]]; offset = [v["m_Offset"]["x"], v["m_Offset"]["y"]]
@@ -652,7 +715,7 @@ def effect(game, cls, name, mats, texs, sounds):
                     to = game.obj(entry["image"], c.assets_file)
                     if to is not None:
                         img = to.read()
-                        entry["imageTex"] = img.m_Name
+                        entry["imageTex"] = tex_name(to)
                         entry["imageSize"] = [img.m_Width, img.m_Height]   # the emblem's pixel size (fxparts/emblem.js)
                         texs.setdefault(entry["imageTex"], to)
                 node["comps"].append(entry)
@@ -1001,6 +1064,7 @@ def main():
     ap.add_argument("--voices", default="", help="Voices/ clips -> sfx/v_<name>.mp3")
     ap.add_argument("--sounds", default="", help="Sounds/ clips the hero's code plays -> sfx/<name>.mp3")
     ap.add_argument("--probe", default="", help="print these effects' nodes and components as JSON; writes nothing")
+    ap.add_argument("--retex", action="store_true", help="write over a same-named texture file that holds another picture (save_texture)")
     a = ap.parse_args()
     if a.probe:                          # read only (the research agents' ask: --fx writes the shared data)
         game = Game()
@@ -1032,7 +1096,7 @@ def main():
     # textures -> data/fx/tex (shared by every class), sounds -> data/<cls>/sfx
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)
     for n, o in texs.items():
-        o.read().image.save(os.path.join(tdir, n + ".webp"), "WEBP", quality=90, method=6)
+        save_texture(tdir, n, o.read().image, a.retex)
     fonts = {}
     for fname, fpath in sorted(FONTS_USED):          # FONTS: the bitmap fonts the effects' scripts draw with
         fonts[fname], img = font(game, fname, fpath)

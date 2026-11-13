@@ -436,19 +436,26 @@ export default function register(api) {
   // (Bat.cs:29968-29973 Guardian of the Night, :42864-42869 Nefarious Whip, :44323-44328 Black Servant; cast1's :23102-23107,
   // where the cut at 0.65 s comes first) (skills_a.md Parts 3, decisions.md 43): 0.2 + 0.5 = 0.7 s into bigCast1, the ring
   // then turning on its 2 s root loop until the release cuts it. Not after a cut (followState already played "destroy").
-  // The Bat's and the Chameleon's only (2026-11-13, plans/fx_chameleon/parts.md part 8: RPC_cast1 spawns castRing at 0,
-  // Chameleon.cs:18544, waits 0.4 + 0.1 s, then Play("root") looped, :17939-17944: the same 0.5 s restart): the hook is
-  // keyed by the effect's name, and the Sheep's / Penguin's castRing (their own prefabs, their own code) are not traced here.
+  // The Bat's, the Chameleon's and the Whale's only (the Chameleon: 2026-11-13, plans/fx_chameleon/parts.md part 8: RPC_cast1
+  // spawns castRing at 0, Chameleon.cs:18544, waits 0.4 + 0.1 s, then Play("root") looped, :17939-17944: the same 0.5 s
+  // restart; the Whale: 2026-11-13, plans/fx_whale/parts.md part 7, decisions.md 61: $RPC_cast1 spawns castRing 0.1 s in,
+  // Whale.cs:20409-20421, waits 0.5 s, then Play("root") looped, :20474-20479: the same again): the hook is keyed by the
+  // effect's name, and the Sheep's / Penguin's castRing (their own prefabs, their own code) are not traced here.
+  // A cue's animLoop (2026-11-13, the Whale's Leviathan Breach, plans/fx_whale/tto.md P3 and its Verification 4, decisions.md
+  // 43: TTO1102 Whale::Row6Spawn@0x1EC1660 plays the named clip looped as it spawns the ring): that clip played looped at
+  // the ring's first update, in place of the default "create", and no 0.5 s restart after it. Read for the classes let
+  // through the gate only; without the option the hook is as it was.
   api.part("fx:castRing", (fx, node) => {
-    if (fx.cls !== "bat" && fx.cls !== "chameleon") return null;
+    if (fx.cls !== "bat" && fx.cls !== "chameleon" && fx.cls !== "whale") return null;
+    const loop = typeof fx.at?.animLoop === "string" && fx.at.animLoop ? fx.at.animLoop : null;
     let t = 0, done = false;
     return { node, update(dt) {
-      if (done || (t += dt) < 0.5) return;
+      if (done || (!loop && (t += dt) < 0.5)) return;
       done = true;
       if (fx.stopped || (fx.cutAt != null && api.FX.t >= fx.cutAt)) return;
-      const a = node.userData.fxAnim;
+      const a = node.userData.fxAnim, clip = loop || "root";
       if (!a?.play) warnOnce("ring:" + fx.name, "effect part fx:castRing: no Animation play() on", fx.name, "(fxparts/mesh.js)");
-      else if (!a.play("root", 0, LOOP)) warnOnce("ringclip:" + fx.name, "effect part fx:castRing: no root clip on", fx.name);
+      else if (!a.play(clip, 0, LOOP)) warnOnce("ringclip:" + fx.name + (loop ? clip : ""), "effect part fx:castRing: no", clip, "clip on", fx.name);
     } };
   });
 }

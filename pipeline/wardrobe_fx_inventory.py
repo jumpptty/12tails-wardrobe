@@ -99,7 +99,16 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # extravagance_ring's ParticleSystems are grafted from TTO's copy (NOTES below)
          "Rabbit_potion", "Rabbit_sniperCamera", "Rabbit_acidicField", "Rabbit_healingField", "Rabbit_stickyGum", "Rabbit_mall",
          "LightGolem", "LightGolemAI", "RabbitMedicTurret", "RabbitSpin", "Rabbit.TurretCapsule", "Rabbit.PosterFly",
-         "Rabbit.CoinRise", "PowerUpRotation"}
+         "Rabbit.CoinRise", "PowerUpRotation",
+         # 2026-11-13, the Whale (plans/fx_whale/parts.md "Rank by value", decisions.md 60, 62, 65): fxparts/whale.js
+         # (Whale_javelin: a copy of the worn lance thrown at 24 m/s under gravity, stuck in the floor; Whale_flyingShield:
+         # a copy of the worn shield on the clip-driven node; Whale_homingShield: the copy spinning, homing 12 m/s with a hit
+         # per pass; whale_kingdomKnight: the six knights' rise, guard, attack and unsummon); Whale_overPresence draws
+         # nothing (data only: an aura's trigger, never cued); TTO's WhaleDolphin / WhaleLeviathan (fxparts/tto_whale.js; TTO
+         # prefabs, not scanned here); fx:grandTide and fx:castRing's animLoop are the hero's code, not scripts.
+         # grandTide's two ParticleSystems are grafted from TTO's copy (NOTES below)
+         "Whale_javelin", "Whale_flyingShield", "Whale_homingShield", "whale_kingdomKnight", "Whale_overPresence",
+         "WhaleDolphin", "WhaleLeviathan"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -131,6 +140,9 @@ NOTES = {
                                     "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material: Gil, "
                                     "star5; BB's own materials): drawn"},
     "mole": {n: "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn" for n in ("bazooka_ring", "napalm_ring", "warCapital")},
+    "whale": {"grandTide": "its two ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are "
+                           "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material: Water2, "
+                           "Splash3; BB's own materials): drawn"},
 }
 CLASS_NOTES = {
     "bison": ["Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so not scanned above; every one "
@@ -174,6 +186,17 @@ CLASS_NOTES = {
                "Characters/Elementals/LightGolem/LightGolem (EXTRA_FOLDERS; LightGolem + LightGolemAI). Every one ready. Missing "
                "from both games' data (the code logs \"Cannot find\"; nothing drawn): snipeShot_hit, kneeShot_hit, herbFinder, "
                "contract_ring, fourShot_hit, circleShot_hit, tenShot_hit, mall, mall0, mall6."],
+    "whale": ["Effects this scan does not see (2026-11-13, plans/fx_whale/skills_a.md \"What is ready\", decisions.md 65): status "
+              "looks `CharacterControl.cs` loads for the Whale, built by name: bubbleShield (`:35969-36019`, at the collider "
+              "centre, scale 1.2), salvation (`:36029-36048`, on allies only: not cued), heavy (`:35924-35934`), honor_cast "
+              "(`:35554-35564`, 2 m over the receiver), rejuvenate_hit (`:8874-8925`, the heal tick), shield (`:4563-4595` "
+              "Auto Shield, `:30989` a hit blocked while charging) and shieldReflect (`:30920`, Shield Reflect); "
+              "kingdomKnight_ring2, held only in the knight's script field (`whale_kingdomKnight.cs:126-132`; spawned by the "
+              "part, the entry's `builds`); overPresence (`Whale.cs:9903` createOverPresence: one node with the "
+              "Whale_overPresence script, draws nothing, never cued). Every one ready. In the rip, loaded by no BB or TTO "
+              "code (never cued): the divingStorm effect prefab (Mal Storm creates malStorm with or without Diving Press, "
+              "`Whale.cs:32480`). Missing from both games' data (the code logs \"Cannot find\"; nothing drawn): javelin_hit, "
+              "bowlingWhale_hit."],
 }
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it

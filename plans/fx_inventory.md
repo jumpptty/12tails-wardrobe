@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, HelixRibbonEmitter, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LightGolem, LightGolemAI, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, PowerUpRotation, ProjectileControl, Rabbit.CoinRise, Rabbit.PosterFly, Rabbit.TurretCapsule, RabbitMedicTurret, RabbitSpin, Rabbit_acidicField, Rabbit_healingField, Rabbit_mall, Rabbit_potion, Rabbit_sniperCamera, Rabbit_stickyGum, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, HelixRibbonEmitter, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LightGolem, LightGolemAI, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, PowerUpRotation, ProjectileControl, Rabbit.CoinRise, Rabbit.PosterFly, Rabbit.TurretCapsule, RabbitMedicTurret, RabbitSpin, Rabbit_acidicField, Rabbit_healingField, Rabbit_mall, Rabbit_potion, Rabbit_sniperCamera, Rabbit_stickyGum, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WhaleDolphin, WhaleLeviathan, Whale_flyingShield, Whale_homingShield, Whale_javelin, Whale_overPresence, WorldParticleCollider, rotationControl, whale_kingdomKnight) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -21,7 +21,7 @@ like a Sheep's heal): counted apart, never this class's skills.
 | penguin | 48 | 48 | 0 |  | 28 |
 | rabbit | 84 | 83 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
-| whale | 51 | 45 | 6 | whale_kingdomKnight 2, Whale_flyingShield 1, ParticleSystemRenderer 1, ParticleSystem 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
+| whale | 51 | 50 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | wolf | 69 | 69 | 0 |  | 28 |
 
 ## Per missing part
@@ -31,10 +31,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 
 | part | effects | blocks alone | classes |
 |---|---|---|---|
-| whale_kingdomKnight | 2 | 2 | whale |
-| Whale_javelin | 1 | 1 | whale |
-| Whale_homingShield | 1 | 1 | whale |
-| Whale_flyingShield | 1 | 1 | whale |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 
@@ -45,13 +41,9 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 683 | 683 / 699 |
-| 1 | whale_kingdomKnight | 2 | 685 / 699 |
-| 2 | Whale_javelin | 1 | 686 / 699 |
-| 3 | Whale_homingShield | 1 | 687 / 699 |
-| 4 | Whale_flyingShield | 1 | 688 / 699 |
-| 5 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 6 | ParticleSystem | 11 | 699 / 699 |
+| 0 | (built today) | 688 | 688 / 699 |
+| 1 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 2 | ParticleSystem | 11 | 699 / 699 |
 
 ## Per effect
 
@@ -676,6 +668,8 @@ Effects this scan does not see (2026-11-13, plans/fx_rabbit/parts.md "Read this 
 
 ### whale
 
+Effects this scan does not see (2026-11-13, plans/fx_whale/skills_a.md "What is ready", decisions.md 65): status looks `CharacterControl.cs` loads for the Whale, built by name: bubbleShield (`:35969-36019`, at the collider centre, scale 1.2), salvation (`:36029-36048`, on allies only: not cued), heavy (`:35924-35934`), honor_cast (`:35554-35564`, 2 m over the receiver), rejuvenate_hit (`:8874-8925`, the heal tick), shield (`:4563-4595` Auto Shield, `:30989` a hit blocked while charging) and shieldReflect (`:30920`, Shield Reflect); kingdomKnight_ring2, held only in the knight's script field (`whale_kingdomKnight.cs:126-132`; spawned by the part, the entry's `builds`); overPresence (`Whale.cs:9903` createOverPresence: one node with the Whale_overPresence script, draws nothing, never cued). Every one ready. In the rip, loaded by no BB or TTO code (never cued): the divingStorm effect prefab (Mal Storm creates malStorm with or without Diving Press, `Whale.cs:32480`). Missing from both games' data (the code logs "Cannot find"; nothing drawn): javelin_hit, bowlingWhale_hit.
+
 - `asunderImpale` (Whale.cs:27157): ready
 - `asunderRound` (Whale.cs:28013): ready
 - `bowlingWhale` (Whale.cs:36680): ready
@@ -690,17 +684,17 @@ Effects this scan does not see (2026-11-13, plans/fx_rabbit/parts.md "Read this 
 - `extendedWave1` (Whale.cs:16554): ready
 - `extendedWave2` (Whale.cs:16850): ready
 - `extendedWave3` (Whale.cs:18045): ready
-- `flyingShield` (Whale.cs:24795): needs Whale_flyingShield
+- `flyingShield` (Whale.cs:24795): ready
 - `flyingShield_hit` (Whale.cs:8955): ready
 - `gobbleUp_hit` (Whale.cs:9072): ready
 - `gobbleUp_ring` (Whale.cs:26461): ready
-- `grandTide` (Whale.cs:37424): needs ParticleSystem, ParticleSystemRenderer
+- `grandTide` (Whale.cs:37424): needs ParticleSystem, ParticleSystemRenderer (its two ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material: Water2, Splash3; BB's own materials): drawn)
 - `grandTide_ring` (Whale.cs:37896): ready
-- `homingShield` (Whale.cs:10401): needs Whale_homingShield
+- `homingShield` (Whale.cs:10401): ready
 - `hydroBlast` (Whale.cs:10037): ready
-- `javelin` (Whale.cs:8781): needs Whale_javelin
-- `kingdomKnight1` (Whale.cs:28433): needs whale_kingdomKnight
-- `kingdomKnight2` (Whale.cs:28468): needs whale_kingdomKnight
+- `javelin` (Whale.cs:8781): ready
+- `kingdomKnight1` (Whale.cs:28433): ready
+- `kingdomKnight2` (Whale.cs:28468): ready
 - `kingdomKnight_ring1` (Whale.cs:28755): ready
 - `malStorm` (Whale.cs:32480): ready
 - `malStorm_bolt` (Whale.cs:10188): ready

@@ -1,1 +1,526 @@
-{}
+{
+  "nAttack1": {
+    "why": "Whale.cs RPC_nAttack1 (:15863-16690), Combo stage 1 (doNormalAttack :8234-8240): at 0 actionState attack, actionTime, myCommand nAttack1, the clip cut in (PlayAnimation(nAttack1, 0) :16524), Once; Entended Wave #401 learned (passives rule, :16536) and a mission / arena (mGameType > 4 :16542, kept as the Sheep / Penguin precedent): extendedWave1 at the hero's position and rotation (load :16554, Instantiate :16564; EffectControl life 1, its RingEmitter and two dust LineEmitters 4 m ahead after Delay 0.5, the 7 m reach's impact); Yield(2, 0.2) (:16616); 0.2 s, still attacking (case 2 :15991-15999): the voice nAttack1 (own hero or a mission teammate :16002-16031, load :16039, PlayOneShot :16606); Yield(3, 0.1) (:16597); 0.3 s: moveSpeed 4 (:16075; the step forward, no hero mover: Penguin decision 8); Yield(4, 0.2) (:16604); 0.5 s: moveSpeed 0, the hero's PlayOneShot of Sounds/nAttack1 on every client in every mode (load :16105, PlayOneShot :16117), then own hero only the hit box FindRecTarget(1.5, 1.5, 4 + 3, 2) (:16444) whose RPC_nAttack_hit / wall puncture land on enemies hit (:16238-16434): none at the 10 m target (Cat decision 19); Yield(5, 0.2) (:16613); standby at 0.7 s (case 5 :16452-16491) unless stage 2 was pressed",
+    "cues": [
+      [0, "fx", "extendedWave1"],
+      [0.2, "voice", "nAttack1"],
+      [0.5, "sound", "nAttack1"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Whale.cs RPC_nAttack2 (:16691-17813), Combo stage 2 (#101, pressed after stage 1 + 0.3 and before + 0.8, doNormalAttack :8130-8156): the entry sets only actionState and myCommand (:17760-17763), so the clip starts at stage 1 + 0.8 s (Yield(2, actionTime - Time.time + 0.8) :17775; stage 1's standby, the only other actionTime write, is skipped once myCommand is nAttack2, :16461): at 0 the clip cut in (PlayAnimation(nAttack2, 0) :16808), Once; #401 + mission: extendedWave2 at the hero's position and rotation (:16828-16862; life 1, two RingEmitters 4 m ahead after Delay 0.3 and 0.5); Yield(3, 0.2) (:17803); 0.2 s: moveSpeed 4 (:16891), Sounds/nAttack2 on every client (load :16902, PlayOneShot :16914), the voice nAttack2 (own hero or a mission teammate :16928-16958, load :16965, PlayOneShot :17797); Yield(4, 0.2) (:17777); 0.4 s: moveSpeed 0, swing 1's hit (:17001-17334); Yield(5, 0.1) (:17781); 0.5 s: moveSpeed 4 (:17353), Sounds/nAttack2 again (:17364, :17376); Yield(6, 0.2) (:17785); 0.7 s: swing 2's hit (:17405-17698); Yield(7, 0.1) (:17811); standby at 0.8 s (case 7 :17706-17750) unless stage 3 was pressed; the hits reach no target at 10 m",
+    "cues": [
+      [0, "fx", "extendedWave2"],
+      [0.2, "sound", "nAttack2"],
+      [0.2, "voice", "nAttack2"],
+      [0.5, "sound", "nAttack2"]
+    ]
+  },
+  "nAttack3": {
+    "why": "Whale.cs RPC_nAttack3 (:17890-18603), Combo stage 3 (#102, pressed while myCommand is nAttack2 and after stage 1 + 1.0, doNormalAttack :8186-8212): the clip at stage 1 + 1.8 s (Yield(2, actionTime - Time.time + 1.8) :18589; the entry sets only actionState / myCommand :18571-18574): at 0 the clip cut in (PlayAnimation(nAttack3, 0) :18007), Once; #401 + mission: extendedWave3 at the hero's position and rotation (:18027-18057; life 1, the tideCutter LineEmitter 3 m ahead after Delay 0.4, two dust LineEmitters 4 m ahead after 0.5); the voice nAttack3 at 0 (:18073-18131, load :18110, PlayOneShot :18584); Yield(3, 0.3) (:18596); 0.3 s: moveSpeed 4 (:18146), Sounds/nAttack3 on every client (load :18157, PlayOneShot :18169); Yield(4, 0.2) (:18598); 0.5 s: moveSpeed 0, the hit (:18198-18509; no target at 10 m); Yield(5, 0.2) (:18594); standby at 0.7 s (case 5 :18517-18561)",
+    "cues": [
+      [0, "fx", "extendedWave3"],
+      [0, "voice", "nAttack3"],
+      [0.3, "sound", "nAttack3"]
+    ]
+  },
+  "cAttack1": {
+    "why": "Whale.cs RPC_cAttack1 (:18669-19247; doBeginCharge :8376-8482: standby or run, #111, no noShield, the cAttack timeout free, 1 s since the last action :8451, RPC_cAttack1 :8457): at 0 (IL_CE9 :18966-18991) actionState attack, actionTime, myCommand cAttack1, the clip cut in (PlayAnimation(cAttack1, 0) :18988), Once; the voice (own hero or a mission teammate :19040-19068, at most once a second :19069-19075): with no kingdomKnight status (the plain charge) Random.Range(0, 2) (:19121): Voices/cAttack1 (:19131, PlayOneShot :19209) or Voices/cAttack2 (:19162, PlayOneShot :19212); Yield(2, 0.7) (:19214): the change to the looped cAttack2 at 0.7 s (case 2 :18785-18868: PlayAnimation(cAttack2, 0) :18827, the shield status :18843, which draws nothing: CharacterControl.cs has no look for it, only :4415, :12289, :30855)",
+    "cues": [
+      [0, "voice", "cAttack1|cAttack2"]
+    ]
+  },
+  "shieldBash": {
+    "why": "Whale.cs doReleaseCharge (:8486-8643): released while attack / cAttack1 (:8526-8532), at least 1 s (:8538) and at least 3 s after the press (actionTime + 3 <= Time.time :8557), Shield Bash #114 learned (:8545; passives rule), a mission / arena (mGameType > 4 :8569, kept): RPC_shieldBash(..., 1) (:8575) instead of the plain RPC_cAttack2 (:8597); RPC_shieldBash (:19653-20180): at 0 actionState attack, myCommand shieldBash (ends the charge loop and its shield status, :18884, :18948-18954), PlayAnimation(shieldBash, 0.2) (:20040), Once; the voice (own hero or a mission teammate :20052-20079) Random.Range(0, 2) (:20081): shieldBash1 (:20091, PlayOneShot :20171) or shieldBash2 (:20122, PlayOneShot :20158); Yield(2, 0.2) (:20176); 0.2 s: moveSpeed 2 (:19800), shieldBash_ring created at the hero's position and rotation (load :19811, createEffect :19823; EffectControl life 1, plays its own Sounds/shieldBash_ring, a Smoke1 puff and a Dust5 ring 0.2 m up), then own hero the 3 m FindAreaTarget (:19850) whose shieldBash_hit lands on enemies hit (:19893-19909): none at the 10 m target (Cat decision 19); Yield(3, 0.2) (:20174); 0.4 s moveSpeed 0 (:19952); Yield(4, 0.2) (:20161); standby at 0.6 s (case 4 :19960-20017)",
+    "cues": [
+      [0, "voice", "shieldBash1|shieldBash2"],
+      [0.2, "fx", "shieldBash_ring"]
+    ]
+  },
+  "@KnightoftheDeep:cAttack1": {
+    "why": "Whale.cs RPC_cAttack1 (:18669-19247) with Knight of the Deep #273 (passive; WhaleSkill.cs:2748-2752) and the kingdomKnight status on (the 12th Kingdom Knight's knights out, rank 2: 2 + 2 x 2 = 6 kingdomKnight2, Whale.cs:28414-28511): at 0 the hero's PlayOneShot of Sounds/roundTable1 on every client (kingdomKnight :18994, #273 :19000, load :19012, PlayOneShot :19024) and, in place of cAttack1 / cAttack2, Voices/roundTable (:19078-19106, load :19096, PlayOneShot :19199; own hero or a mission teammate, the 1 s gate :19069); the clip as the plain charge's (PlayAnimation(cAttack1, 0) :18988, Yield(2, 0.7) :19214); the six knights already standing at their slots (the precondition shown: Chameleon decision 13; whale.js 'standing': no rise, no kingdomKnight_ring2), each guarding from the press: its standby sees the owner attack / cAttack1 with #273 (whale_kingdomKnight.cs:202-220) and starts knightGuard (:260, coroutine :631-763): a first wait of 0.1 x slot (:761), then every 0.5 s (:756) a random flat facing (LookRotation(vFlat(Random.onUnitSphere)) :682) with its cAttack clip looped (:687-692), until the first tick at or after the release at 3.0 s (Shield Bash, passives on), which sends it back to root looped (:700-710): 3.0 / 3.1 / 3.2 / 3.3 / 3.4 / 3.0 s for slots 0-5; each knight killed at 3.8 s, the tile's end (0.7 + 2.3 + 0.8), so the next play's standing knights take their place",
+    "cues": [
+      [0, "sound", "roundTable1"],
+      [0, "voice", "roundTable"],
+      [0, "fx", "kingdomKnight2", {"slot": 0, "standing": true, "guard": [0, 3.0], "kill": 3.8}],
+      [0, "fx", "kingdomKnight2", {"slot": 1, "standing": true, "guard": [0, 3.1], "kill": 3.8}],
+      [0, "fx", "kingdomKnight2", {"slot": 2, "standing": true, "guard": [0, 3.2], "kill": 3.8}],
+      [0, "fx", "kingdomKnight2", {"slot": 3, "standing": true, "guard": [0, 3.3], "kill": 3.8}],
+      [0, "fx", "kingdomKnight2", {"slot": 4, "standing": true, "guard": [0, 3.4], "kill": 3.8}],
+      [0, "fx", "kingdomKnight2", {"slot": 5, "standing": true, "guard": [0, 3.0], "kill": 3.8}]
+    ]
+  },
+  "@KnightoftheDeep:cAttack2": {
+    "why": "Whale.cs RPC_cAttack1 case 2 (0.7 s in, :18785-18868): the looped cAttack2 cut in (:18827-18832), the shield status (:18843), and with #273 RPC_roundTable (:18849-18855; coroutine :29121-29480): with knights out (zcKmUWwWZx non-empty :29227-29242) roundTable_ring at the hero's position and rotation (load :29251, createEffect :29263; EffectControl life 999, afterLife 1, followPosition, followState; its repeating WaterWave2 RingEmitter; it loops its own Sounds/roundTable2 from its AudioSource): followState ends it at the release (myCommand shieldBash, 2.3 s into this step: cut 2.3); then the coroutine's voice, Random.Range(0, 2) (:29308): BB loads Voices/roundTable1 | roundTable2 (:29320 / :29352), missing from BB's data ('Cannot find roundTable1 voice' :29336), so TTO's fix is played (Sheep decision 10, Mole decision 47): TTO1102 loads sounds/roundTable1 | roundTable2 there (pseudo/Whale.c:17541-17544), both in BB's own sounds/ (a 'sound' cue, the hero's PlayOneShot); then every 0.5 s (Yield(2, 0.5) :29474, Yield(3, 0.5) :29478) the 4 m pulse (FindAreaTarget(pos, 4, 3) :29412, hit :29434) on enemies only, nothing drawn",
+    "cues": [
+      [0, "fx", "roundTable_ring", {"cut": 2.3}],
+      [0, "sound", "roundTable1|roundTable2"]
+    ]
+  },
+  "@ShieldReflect:cAttack2": {
+    "why": "Shield Reflect #411 (passive, passives on; Bible card whale_shieldReflect) has no clip of its own: it acts when a direct hit lands while the Whale holds the Charge Attack's shield status (RPC_cAttack1 case 2 :18843, from 0.7 s): in AddDamage's status loop (CharacterControl.cs:30855) the own hero with #411 (:30869) reflects min(damage, floor(10 + 10 x sLv + 0.25 x Lv)) to the attacker as Effect Damage 411 (nothing drawn there) and Instantiates Effects/shieldReflect at position + TransformDirection(0, 1, 0.7), the hero's rotation (:30920; without #411 Effects/shield at the same spot :30989); the hit shown at this step's 0, the first moment the stance blocks (a hit-started passive's tile procs on every play: effect_only.md's Auto Shield, the Penguin's Frost Spike); shieldReflect: EffectControl life 1, no follow, its AudioSource plays sounds/shieldReflect, a LineEmitter and a RingEmitter 1 m on in its own frame; the release as the Charge Attack tile's (2.29 s into this step, RPC_cAttack2's root crossfade)",
+    "cues": [
+      [0, "fx", "shieldReflect", {"d": 0.7, "y": 1}]
+    ]
+  },
+  "@AutoShield:root": {
+    "why": "Auto Shield 3 (#263, passive, top rank; passives on) has no clip: it is a roll inside RPC_AddDamage, the receiver's side of a direct hit (CharacterControl.cs:3680; the attacker from nAttackerID :3774-3792). For a Whale (:4299) not in Peninsula Round's attack (:4305-4315 -> IL_3264 :4406), with #261 (:4407), not holding the charge's shield status (:4415) and not asleep / snowMan / snowBall / petrified / paralysed (:4423-4455): rank 3 (:4468-4490), Random.Range(0, 100) >= lckAdjust(3 x 6 + 6) skips (:4492), so lckAdjust(24) = 24 % at LCK 1 (:20658); on success +6 SP (RPC_AddHeal(264, 0, 0, 6) :4500, nothing drawn), the hit cut by 10 + 10 x Charge Attack rank 3 = 40 (:4510-4546), and Effects/shield Instantiated at the hero + the flat unit direction to the attacker + 1 m up, LookRotation(that direction) (:4563-4595; no attacker: hero + TransformDirection(0, 1, 1), the facing); every junk predicate on the path false (:4299-4600, worked by hand). The attacker is the 10 m target point ahead (the standing rule), so 1 m ahead, 1 m up, the hero's facing. The tile plays the proc on every play (no p: the Penguin's Frost Spike, Bison decision 6). Effects/shield: EffectControl life 1, afterLife 0, no followState; one RingEmitter (0.2 -> 1.6 m, blue, life 0.3) 1 m ahead in its own frame; its AudioSource plays sounds/shield (the clip's pathID 188 = the container's whale/sounds/shield, not voices/shield; 0.475 s). No voice (Auto Shield loads none)",
+    "cues": [
+      [0, "fx", "shield", {"d": 1, "y": 1}]
+    ]
+  },
+  "cast1": {
+    "why": "Whale.cs RPC_cast1 (:20229-21440), the cast channel the dispatcher starts for the eight cast-time skills (sType :21098-21231: bubbleShield, heavyWeight, hydroBlast, rejuvenate, callToArm, salvation, megalodon, revitalize): at 0: clip cast1 (0.2 fade, Once, :21270-21273) and voice cast (Voices/cast, one file, :21311-21376); Yield 0.1 (:21357): castRing at the hero's position, Quaternion.Euler(270, 90, 0) (createEffect :20403-20421; EffectControl life 60, followPosition, followState; Animation create; plays its own looping Sounds/cast1); Yield 0.5 (:21381): at 0.6 s cast2 cut in and looped and the ring's root clip (:20458-20479), the cast bar magAdjust(castTime) (Reduced Cast #373 halves it first, :21237-21249; 0.1 s at the highest MAG, the page's cast2*@0), then the skill's RPC_<skill>_cast, which sets myCommand: the ring's followState cut at the step edge 0.6 s, cued 0.55 (the page restarts FX.t at each step, as the Sheep's)",
+    "cues": [
+      [0, "voice", "cast"],
+      [0.1, "fx", "castRing", {"rot": [270, 90, 0], "cut": 0.55}]
+    ]
+  },
+  "cast3": {
+    "why": "The cast3 clip after the RPC_cast1 channel: 8 Whale skills, one per play, even chance, picked anew on every play: Bubble Shield (:29835), Heavy Weight (:30364), Hydro Blast (:30850; Spiral Blast #423 on), Rejuvenate (:31469; Revitalize #433 on), Call To Arm (:33329), Salvation (:33883), Megalodon (:34317), Revitalize (:36329), started from RPC_cast1's dispatch (:20572-21085); Honor (:23704), 12th Kingdom Knight (:28640) and Bubble Burst (:35653) play cast3 from the key press with no channel: their own tiles (@Honor, @12thKingdomKnight, @BubbleBurst)",
+    "skills": {
+      "bubbleShield": {
+        "why": "Whale.cs RPC_bubbleShield_cast (:29518-30055), rank 4, Bubble Burst #403 on (status Lv + 1, more burst damage: no look change), ally target shown as a self-cast (Penguin decision 1): at 0: clip cast3 (0.2 fade, :29835-29838), voice bubbleShield1 / bubbleShield2 (Random.Range(0, 2) :29870-29929), Sounds/cast2 (PlayOneShot :29955-29971; the screen warp :29949 left out); Yield 0.3 (:29997): bubbleShield_cast at the target's collider centre, identity (tChar.createEffect :29682-29700; the Whale's CharacterController centre y 1.3, Whale.prefab:655; life 1 + 1, followPosition; plays its own Sounds/bubbleShield) and the bubbleShield status for chaAdjust(12) = 12 s (:29722), whose apply puts Effects/bubbleShield at the collider centre, parented, scale Clamp(radius 0.8 + 0.4, 0.5, 1.5) = 1.2 (CharacterControl.cs:35969-36019; m_Radius 0.8, Whale.prefab:650; no EffectControl: removed with the status, CharacterControl.cs:16085-16098): cut at 10 s (kill 10); Yield 0.2 (:29999): moveSpeed 0; Yield 0.5 (:30011): standby at 1.0 s; replace: a recast renews the one status, so the older bubble goes as the new one comes (plans/fx_whale/decisions.md 28)",
+        "cues": [
+          [0, "voice", "bubbleShield1|bubbleShield2"],
+          [0, "sound", "cast2"],
+          [0.3, "fx", "bubbleShield_cast", {"y": 1.3}],
+          [0.3, "fx", "bubbleShield", {"y": 1.3, "scale": 1.2, "kill": 10, "replace": true}]
+        ]
+      },
+      "heavyWeight": {
+        "why": "Whale.cs RPC_heavyWeight_cast (:30055-30581), rank 2, Over Weight #413 on (status Lv + 1: weight only); target mode 'all' (WhaleSkill.cs:1741-1766), taken as an enemy at the 10 m target point (the enemy branch :30237-30250, getDebuff 15 s): at 0: clip cast3 (0.2 fade, :30364-30367), voice heavyWeight1 / heavyWeight2 (Random.Range(0, 2) :30416-30475), Sounds/cast2 (:30483-30500); Yield 0.3 (:30536): the heavy status on the target (:30228 / :30250), whose apply Instantiates Effects/heavy at the target's position, identity, and InitEffectControl(target) (CharacterControl.cs:35924-35934; EffectControl life 1, followPosition; plays its own Sounds/reduce); Yield 0.2 (:30526), Yield 0.5 (:30534): standby at 1.0 s (:30305)",
+        "cues": [
+          [0, "voice", "heavyWeight1|heavyWeight2"],
+          [0, "sound", "cast2"],
+          [0.3, "fx", "heavy", {"d": 10}]
+        ]
+      },
+      "hydroBlast": {
+        "why": "Whale.cs RPC_hydroBlast_cast (:30581-31145), rank 4, Spiral Blast #423 on (passives on), enemy target: the 10 m target point: at 0: clip cast3 (0.2 fade, :30850-30853), with #423 the voice spiralBlast1 / spiralBlast2 (hasSkill(423) :30859, Random.Range(0, 2) :30894-30953; hydroBlast1 / 2 only without it, :30963-31051), Sounds/cast2 (:31059-31076); Yield 0.6 (:31105): RPC_hydroBlast_fire at the target's position (:30751; :9974-10142): with #423 Effects/spiralBlast Instantiated there, identity, scale 0.9 + 0.1 x 4 = 1.3 (:9985-10014; EffectControl life 2; plays its own Sounds/hydroBlast); Yield 0.4 (:31109): standby at 1.0 s (:30791)",
+        "cues": [
+          [0, "voice", "spiralBlast1|spiralBlast2"],
+          [0, "sound", "cast2"],
+          [0.6, "fx", "spiralBlast", {"d": 10, "scale": 1.3}]
+        ]
+      },
+      "rejuvenate": {
+        "why": "Whale.cs RPC_rejuvenate_cast (:31145-31694), rank 4, Revitalize #433 on (status Lv 4 + 1 = 5, :31336-31342: the heal only), ally target shown as a self-cast: at 0: clip cast3 (0.2 fade, :31469-31472), Sounds/cast2 (:31498-31510), voice rejuvenate1 / rejuvenate2 (Random.Range(0, 2) :31553-31638); Yield 0.3 (:31644): Effects/rejuvenate at the target's position, identity (tChar.createEffect :31310-31322; life 2, followPosition; plays its own Sounds/rejuvenate) and the rejuvenate status for chaAdjust(18) = 18 s (:31356); its tick (CharacterControl.cs:8874-8925) heals and draws Effects/rejuvenate_hit at the collider centre (y 1.3), identity, when Math.mod(2 x tickTime, 8) == 1 on the game's 0.5 s status clock (:8667-8676): once every 4 s at a phase the cast does not set, cued at the mean, 2 s after the status, then every 4 s within the 10 s (as the Bat's Phantom Bane, plans/fx_bat/skills_b.md); Yield 0.2 (:31653), Yield 0.5 (:31632): standby at 1.0 s (:31410)",
+        "cues": [
+          [0, "sound", "cast2"],
+          [0, "voice", "rejuvenate1|rejuvenate2"],
+          [0.3, "fx", "rejuvenate"],
+          [2.3, "fx", "rejuvenate_hit", {"y": 1.3}],
+          [6.3, "fx", "rejuvenate_hit", {"y": 1.3}]
+        ]
+      },
+      "callToArm": {
+        "why": "Whale.cs RPC_callToArm_cast (:32999-33553), one rank; RPC_cast1 sends it only with a teammate (the lowest-HP Player-tagged member other than herself, :20792-20889) to getSpawnPos(ally - 2 x unit direction) (:20901-20924), else 'Cannot find target possible position' and cast0 (:20946-20951): the tile assumes an ally at the 10 m target point, so she lands 8 m ahead: at 0: clip cast3 (0.2 fade, :33329-33332), voice callToArm1 / callToArm2 (Random.Range(0, 2) :33370-33429), Sounds/cast2 (:33437-33456); Yield 0.5 (:33499): callToArm_ring Instantiated where she stands, her rotation (:33141), the teleport to the landing spot (:33155), callToArm_ring again there (:33171; EffectControl life 1; each plays its own Sounds/callToArm), the 12 m hit (:33193-33221: hit effects on enemies only); in the hero-stays frame (the Bat's Switch, decision 8: each effect with its owner) the first ring is 8 m behind her, the second at her; Yield 0.5 (:33504): standby at 1.0 s (:33258)",
+        "cues": [
+          [0, "voice", "callToArm1|callToArm2"],
+          [0, "sound", "cast2"],
+          [0.5, "fx", "callToArm_ring", {"d": -8}],
+          [0.5, "fx", "callToArm_ring"]
+        ]
+      },
+      "salvation": {
+        "why": "Whale.cs RPC_salvation_cast (:33553-34096), rank 2: at 0: clip cast3 (0.2 fade, :33883-33886), voice salvation1 / salvation2 (Random.Range(0, 2) :33935-33990), Sounds/cast2 (:34002-34019); Yield 0.5 (:34052): salvation_ring at the hero, hero rotation (createEffect :33689-33701; life 1, followPosition; plays its own Sounds/salvation), and the salvation status (chaAdjust(2 x 2 + 2) = 6 s) on every living Player-tagged teammate except herself (:33754 gameObject != self, :33788; Bible whale-skill-reference.md:245): the bubble (CharacterControl.cs:36029-36048) is on allies only, none in the wardrobe (the Mole's Barrel Cannon precedent: the game's own look with nobody to receive it); Yield 0.5 (:34045): standby at 1.0 s (:33824)",
+        "cues": [
+          [0, "voice", "salvation1|salvation2"],
+          [0, "sound", "cast2"],
+          [0.5, "fx", "salvation_ring"]
+        ]
+      },
+      "megalodon": {
+        "why": "Whale.cs RPC_megalodon_cast (:34096-34567), rank 2, enemy target: the 10 m target point (its ground, Physics.Raycast down :34464-34476): at 0: clip cast3 (0.2 fade, :34317-34320), voice megalodon1 / megalodon2 (Random.Range(0, 2) :34352-34407; no cast2 sound, BB and TTO alike), the motion blur (:34431) left out, and RPC_megalodon_fire started (:34482; :34567-35040): megalodon_ring Instantiated at the target, identity, at once (:34738-34756; EffectControl life 4 + 3; plays its own Sounds/megalodon), four pulls 1 s apart (i < 4, Yield(2, 1) :34973, :34684-34685, the pull only), at 4 s Effects/megalodon at the target, identity, scale 1.5 at sLv 2 (:34784-34813; life 3; Animation root), the camera shake (:34834) left out, the bite, Yield 1.5 (:34971) and the second bite at 5.5 s (hits only); the cast's own standby: Yield 0.5 (moveSpeed 0, :34231), Yield 0.5: 1.0 s (:34258); floor [Megalodon]: the shark's skinned body comes up from 9 m under the ground and sinks back into it (its root clip), drawn only above the floor as the game's ground shows it; its water rings lie on the floor and are left whole (the QA pass 2026-11-14)",
+        "cues": [
+          [0, "voice", "megalodon1|megalodon2"],
+          [0, "fx", "megalodon_ring", {"d": 10}],
+          [4, "fx", "megalodon", {"d": 10, "scale": 1.5, "floor": ["Megalodon"]}]
+        ]
+      },
+      "revitalize": {
+        "why": "Whale.cs RPC_revitalize_cast (:36064-36538), one rank: at 0: clip cast3 (0.2 fade, :36329-36332), voice revitalize1 / revitalize2 (Random.Range(0, 2) :36381-36436), revitalize_ring at the hero, hero rotation (createEffect :36448-36465; life 1 + 1, followPosition; plays its own Sounds/revitalize_ring); Yield 0.5 (:36492): rejuvenate Lv 3 for chaAdjust(18) on every Player-tagged teammate, herself included (no self check, :36214-36236): its tick's rejuvenate_hit at her collider centre once every 4 s on the status clock (CharacterControl.cs:8874-8925), cued at the mean, 2 s after the status, then 4 s on; Yield 0.5 (:36496): standby at 1.0 s (:36270)",
+        "cues": [
+          [0, "voice", "revitalize1|revitalize2"],
+          [0, "fx", "revitalize_ring"],
+          [2.5, "fx", "rejuvenate_hit", {"y": 1.3}],
+          [6.5, "fx", "rejuvenate_hit", {"y": 1.3}]
+        ]
+      }
+    }
+  },
+  "@Honor:cast3": {
+    "why": "Whale.cs RPC_honor (:23422-24000), rank 4 (Honor Stand #412: KO and hate only), from the key press with no channel: at 0: clip cast3 (0.2 fade, :23704-23707), voice honor1 / honor2 (Random.Range(0, 2) :23745-23804; honorStand1 / 2 in the rip are played by no BB or TTO code), the screen warp (:23824) left out, the honor status on every teammate within 15 m, herself included (own layer, :23836-23868), whose apply Instantiates Effects/honor_cast 2 m over the receiver, identity (CharacterControl.cs:35554-35564; an EmblemEmitter, delay 0.4 + life 0.5, no EffectControl: never destroyed, kill 1 once drawn); Yield 0.3 (:23947): Sounds/honor at volume 2 (PlayOneShot :23569-23587); Yield 0.2 (:23955): moveSpeed 0; Yield 0.5 (:23961): standby at 1.0 s (:23651)",
+    "cues": [
+      [0, "voice", "honor1|honor2"],
+      [0, "fx", "honor_cast", {"y": 2, "kill": 1}],
+      [0.3, "sound", "honor", {"vol": 2}]
+    ]
+  },
+  "@12thKingdomKnight:cast3": {
+    "why": "Whale.cs $RPC_kingdomKnight$28772 (:28262-28850), max rank sLv 2 (12thKingdomKnight1 / 2, whale-skill-reference.md:22), started by the dispatcher with no cast bar (:7482; Heavy Weight / Bubble Shield go through RPC_cast1, :7415, :7447): at 0 the clip cast3 (0.2 fade, :28640), voice kingdomKnight1 | kingdomKnight2 (Random.Range(0, 2) :28681; :28693 / :28724; PlayOneShot :28705 / :28736), kingdomKnight_ring1 by createEffect at the hero, hero rotation (:28755-28767), the old knights unsummoned (:28799); Yield(2, 0.5) (:28816): at 0.5 2 + 2 sLv = 6 knights (:28414), kingdomKnight2 for sLv 2 (:28468-28480), Init(owner, sLv, slot i) (:28506): each at hero + TransformDirection(slot) - up, slot 0-5 = (1.6, 0, 1.6), (-1.6, 0, 1.6), (1.6, 0, -1.6), (-1.6, 0, -1.6), (2.2, 0, 0), (-2.2, 0, 0) (whale_kingdomKnight.cs:54-120), kingdomKnight_ring2 at its slot on the floor (:126-132), rising to the slot (Lerp 4 / s, :229); the kingdomKnight status chaAdjust(60) (:28527-28538), cut at 10 s after the summon (Bat decision 25): end 10 = unsummon(), its clip unsummon then Destroy 1 s later (whale_kingdomKnight.cs:867-913, Whale.cs:9827-9868); Yield(3, 0.5) (:28820): 1.0 standby (:28570). No volley: KingdomKnight() sends them every 3 s, only while she is not attacking, at FindClosestTarget(the Whale, 8) (Whale.cs:9695-9729; the volley RPC :29062), and the target is 10 m away; replace on the slot-0 knight: a recast unsummons the older knights (:28799), so the older six go as the new six arrive, their 1 s unsummon on a recast not shown (plans/fx_whale/decisions.md 38)",
+    "builds": ["kingdomKnight_ring2"],
+    "cues": [
+      [0, "voice", "kingdomKnight1|kingdomKnight2"],
+      [0, "fx", "kingdomKnight_ring1"],
+      [0.5, "fx", "kingdomKnight2", {"slot": 0, "end": 10, "replace": true}],
+      [0.5, "fx", "kingdomKnight2", {"slot": 1, "end": 10}],
+      [0.5, "fx", "kingdomKnight2", {"slot": 2, "end": 10}],
+      [0.5, "fx", "kingdomKnight2", {"slot": 3, "end": 10}],
+      [0.5, "fx", "kingdomKnight2", {"slot": 4, "end": 10}],
+      [0.5, "fx", "kingdomKnight2", {"slot": 5, "end": 10}]
+    ]
+  },
+  "@BubbleBurst:cast3": {
+    "why": "Whale.cs RPC_bubbleBurst (:35464-36064), one rank, from the key press: at 0: clip cast3 (0.2 fade, :35653-35656), voice bubbleBurst1 / bubbleBurst2 (Random.Range(0, 2) :35694-35749), bubbleBurst_ring at the hero, hero rotation (createEffect :35761-35780; life 1; plays its own Sounds/cast2), the screen warp (:35805) left out; at once every teammate within 200 m holding a bubbleShield she cast (sID == her ActorNr, :35811-35863) has it removed (:35932; the bubble goes, CharacterControl.cs:16085-16098), the 12 m blast (hits only) and Effects/bubbleBurst at its collider centre, identity (:35937-35961; life 1, followPosition; plays its own Sounds/bubbleBurst): the tile assumes her own Bubble Shield on her (the Detonate precedent: the skill is the shields' pop), so the burst at her centre, y 1.3; Yield 1 (:35998): standby at 1.0 s (:35600)",
+    "cues": [
+      [0, "voice", "bubbleBurst1|bubbleBurst2"],
+      [0, "fx", "bubbleBurst_ring"],
+      [0, "fx", "bubbleBurst", {"y": 1.3}]
+    ]
+  },
+  "divingWave": {
+    "why": "divingWave is Whale Wave's clip with Diving Press #443 (passives on; without it the malStorm clip, :32111-32125): Whale.cs RPC_whaleWave (:31694-32315), rank 2: at 0: clip divingWave (0.2 fade, Once, :32117), voice whaleWave1 / whaleWave2 (Random.Range(0, 2) :32169-32252); Yield 0.7 (:32245): the camera shake (:31847) left out, with #443 Effects/divingWave at the hero, hero rotation (createEffect :31853-31877; whaleWave without it, :31900; EffectControl life 1 + 1; plays its own Sounds/whaleWave), the 9 m area hit (:31940-32011, hits only); Yield 0.3 (:32255): standby at 1.0 s (:32038)",
+    "cues": [
+      [0, "voice", "whaleWave1|whaleWave2"],
+      [0.7, "fx", "divingWave"]
+    ]
+  },
+  "divingStorm": {
+    "why": "divingStorm is Mal Storm's clip with Diving Press #443 (:32775-32789): Whale.cs RPC_malStorm (:32315-32999), rank 2: at 0: clip divingStorm (0.2 fade, Once, :32781), voice malStorm1 / malStorm2 (Random.Range(0, 2) :32833-32922); Yield 0.7 (:32912): the camera shake (:32468) left out, Effects/malStorm at the hero, hero rotation (createEffect :32474-32492; the rip's divingStorm prefab is loaded by no BB or TTO code; EffectControl life 3; plays its own Sounds/malStorm), the first of four 12 m area hits (i < 4, :32663-32749: 0.7, 1.0, 1.3, 1.6 s, hits only); then createMalstormBolt every 0.1 s (cases 3-5, Yields :32916, :32942, :32938, twelve times, 0.8 ... 1.9 s; :10175-10218): Effects/malStorm_bolt (the rip's malstorm_bolt) at the hero + Random.Range(3, 6) m (int: 3-5) along forward turned Random.Range(0, 360) deg, 12 m up, identity, and with #443 a second at Random.Range(5, 9) (5-8) m (BoltEmitter; EffectControl life 0.5, velocity (0, -35, 0): each bolt falls 17.5 m in its life, from 12-22 m up to 5.5 m under the ground, which hides what is under it: floor, the QA pass 2026-11-14); Yield 0.1 (:32944): standby at 2.0 s (:32611)",
+    "cues": [
+      [0, "voice", "malStorm1|malStorm2"],
+      [0.7, "fx", "malStorm"],
+      [0.8, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [0.8, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [0.9, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [0.9, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.0, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.0, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.1, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.1, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.2, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.2, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.3, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.3, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.4, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.4, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.5, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.5, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.6, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.6, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.7, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.7, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.8, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.8, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}],
+      [1.9, "fx", "malStorm_bolt", {"around": [3, 5], "y": 12, "floor": true}],
+      [1.9, "fx", "malStorm_bolt", {"around": [5, 8], "y": 12, "floor": true}]
+    ]
+  },
+  "flyingShield": {
+    "why": "The flyingShield clip: Flying Shield (RPC_flyingShield :25014) and Homing Shield (RPC_homingShield :35302), one tile each (poolChains)",
+    "skills": {
+      "flyingShield": {
+        "why": "Whale.cs RPC_flyingShield (:24642-25220), rank 2: at 0: clip flyingShield (0.2 fade, Once, :25014-25017), voice flyingShield1 / flyingShield2 (Random.Range(0, 2) :25055-25138); Yield 0.5 (:25143): Effects/flyingShield at the hero, hero rotation x Euler(270, 90, 0) (createEffect :24789-24807; EffectControl life 1; plays its own Sounds/javelin; its Animation flyingShield (1 s) carries the child node out on the left (x -3.5 at 0.25 s), to 11.98 m ahead at 0.50 s, 1.36 m up, and back on the right), Whale_flyingShield.Init (:24818-24840; Whale_flyingShield.cs:37-108: a copy of her worn shield mWep1 under the node: the part), her shield's MeshRenderers off (:24857-24879; mWep1 = the shield on mount_Hand_L, WhaleEquipment.cs:1640-1707: the page's L); on each enemy its 1 m trigger sphere enters (Whale_flyingShield.cs:126-210) RPC_flyingShield_hit: flyingShield_hit at the shield, LookRotation(its forward) (Whale.cs:8942-8965): at the standard 10 m body the path's closest pass is 1.64 m at 0.44 s (checks/fx_whale_research/verify_a/fs_check.py; parts' fs_path.txt), so no hit, as in the game (the part tests contact); Yield 1 (:25145): at 1.5 s the renderers back on (:24897-24923); Yield 0.2 (:25131): standby at 1.7 s (:24944)",
+        "cues": [
+          [0, "voice", "flyingShield1|flyingShield2"],
+          [0.5, "fx", "flyingShield", {"rot": [270, 90, 0]}],
+          [0.5, "hideProp", "L", {"kill": 1}]
+        ]
+      },
+      "homingShield": {
+        "why": "Whale.cs RPC_homingShield (:35040-35464), one rank (Homing Shield #422), enemy target: the 10 m target point: at 0: clip flyingShield (0.2 fade, Once, :35302-35305), voice homingShield1 / homingShield2 (Random.Range(0, 2) :35343-35425); Yield 0.5 (:35428): RPC_homingShield_fire at the hero + TransformDirection(0, 1, 1) (1 m up, 1 m ahead), LookRotation(forward) (:35194; :10371-10431): Effects/homingShield, Whale_homingShield.Init(chaAdjust(3) = 3 s, her, the target) (Whale_homingShield.cs:20-146: a copy of her shield at Euler(0, 0, 90), spun 1200 deg/s about its x, :324); each frame it turns towards the target's collider centre (the part's default, the body's (0, 0.6, 10)) at 4 rad/s, its heading flattened (y x 0.2), and flies 12 m/s (:257-284), hitting on each entry of its 0.5 m trigger sphere (:340-418: flyingShield_hit at it, LookRotation(forward), RPC_flyingShield_hit), destroyed at 3 s by the part (:225-249; plays its own Sounds/javelin); the noShield status for chaAdjust(3) = 3 s (:35211) turns her shield's MeshRenderers off (CharacterControl.cs:36060-36070, back at its end :16155): hideProp L 3 s; Yield 0.7 (:35430): standby at 1.2 s (:35232)",
+        "builds": ["flyingShield_hit"],
+        "cues": [
+          [0, "voice", "homingShield1|homingShield2"],
+          [0.5, "fx", "homingShield", {"y": 1, "d": 1}],
+          [0.5, "hideProp", "L", {"kill": 3}]
+        ]
+      }
+    }
+  },
+  "gobble": {
+    "why": "gobble is Gobble Up's clip (RPC_gobbleUp :26384): Whale.cs RPC_gobbleUp (:26006-26575), one rank; doSkill casts it only with a swallowed target (mSwallowObject, :6284: 'mouth is empty!'): the tile assumes Swallow's target held in her (the Detonate precedent): at 0: clip gobble (0.2 fade, Once, :26384-26387), voice gobbleUp (one file; the error names gobbleUp1, :26431-26447), gobbleUp_ring at the hero, hero rotation (createEffect :26454-26471; EffectControl life 2, followPosition; plays its own Sounds/gobble); Yield 0.5 (:26510): the target's renderers back on, gobble / swallow removed, pushed with 10 x forward (:26142-26233; the swallowed target stands at her, CharacterControl.cs:9040, after Swallow's pulls to 1 m ahead); Yield 0.1 (:26498): the 3 m hit round it (:26258-26286) and RPC_gobbleUp_hit at its position, LookRotation(her forward) (:26301; :9059-9082: gobbleUp_hit, life 1): 1 m ahead (APPROXIMATED: 0.1 s into its knockback); Yield 0.3 (:26502): standby at 0.9 s (:26331)",
+    "cues": [
+      [0, "voice", "gobbleUp"],
+      [0, "fx", "gobbleUp_ring"],
+      [0.6, "fx", "gobbleUp_hit", {"d": 1}]
+    ]
+  },
+  "bowlingWhale1": {
+    "why": "Whale.cs RPC_bowlingWhale (:36538-37250), Bowling Whale #434 (one rank): at 0: clip bowlingWhale1 (0.2 fade, Once, :37013-37016), voice bowlingWhale1 / bowlingWhale2 (Random.Range(0, 2) :37054-37109), bowlingWhale_ring at the hero, hero rotation (createEffect :37121-37140; life 1 + 1, followPosition; plays its own Sounds/bowlingWhale_ring), the screen warp (:37163) left out; Yield 0.5 (:37189): Effects/bowlingWhale at the hero, hero rotation (createEffect :36674-36692; EffectControl life 7 + 1, followPosition, followState; Animation root; its looping Sounds/bowlingWhale with AudioControl's fades), moveSpeed 7 (:36706); Yield 0.5 (:37187): at 1.0 s bowlingWhale2 cut in, looped, for 6 s (:36733-36743; the SEQ's bowlingWhale2*@6), the roll steered by the arrow keys and the 3 m hits every 0.25 s (:36779-36852; the hero does not travel: hits left out, the Chopper's rule); at 7.0 s standby (:36867, :36967): the effect's followState cut on bowlingWhale2's clock, 5.95 (the step's 6 s less the page's margin; a later step's cut, as the Mole's Flame Turret)",
+    "cues": [
+      [0, "voice", "bowlingWhale1|bowlingWhale2"],
+      [0, "fx", "bowlingWhale_ring"],
+      [0.5, "fx", "bowlingWhale", {"cut": 5.95}]
+    ]
+  },
+  "sweep": {
+    "why": "RPC_sweep :21464-22728 (rank 2, Tide Cutter #402 on: passives on): PlayAnimation(sweep, 0.2) (:22287), moveSpeed -0.5 (:22296); with #402 Effects/tideCutter_ring createEffect at the hero, hero rotation (:22299-22321; life 2, followPosition, followState: cut at the standby 1.6) and voice tideCutter1 / tideCutter2 (Random.Range(0, 2) :22364-22405, played :22610 / :22619), in place of sweep_ring and sweep1 / sweep2 (:22432-22534, without #402), at 0; Yield 0.2 (:22621): moveSpeed -0.3 (:21611); Yield 0.3 (:22601): moveSpeed 0 at 0.5 (:21638); Yield 0.5 (:22572): at 1.0 moveSpeed 9 and Sounds/sweep on the hero's AudioSource (:21665-21688, a 'sound' cue); Yield 0.1 (:22599): at 1.1 moveSpeed 6, hit 1 FindAreaTarget(hero, 4 + 2 (Tide Cutter), 3) (:21743); Yield 0.3 (:22580): at 1.4 moveSpeed 0, hit 2 FindAreaTarget(hero, 5, 3) (:21992); each hit is RPC_nAttack_hit at the foe or, on a Wall Puncture proc (lckAdjust(40) = 40 % at LCK 1, :9196-9215), RPC_wallPuncture_hit (:21839, :21930, :22088, :22179): the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) is out of the 6 / 5 m reach (the game's dash brings her 0.71 / 2.51 m closer, the Bible's movement table; the page has no hero mover), so nothing is drawn; the camera's WallPuncture blur left out (:21887); Yield 0.2 (:22615): standby 1.6 (:22217)",
+    "cues": [
+      [0, "voice", "tideCutter1|tideCutter2"],
+      [0, "fx", "tideCutter_ring", {"cut": 1.6}],
+      [1.0, "sound", "sweep"]
+    ]
+  },
+  "javelin": {
+    "why": "RPC_javelin :22728-23422 (rank 2): animation.Rewind, PlayAnimation(javelin, 0.2) (:23197-23200), voice javelin1 / javelin2 (Random.Range(0, 2) :23241-23282, played :23336 / :23333) at 0; Yield 0.4 (:23318): moveSpeed 2 at 0.4 (:22886); Yield 0.1 (:23324): at 0.5 RPC_javelin_fire(firePos = cast spot + TransformDirection(1.2, 2.2, 1), fireDir = Math.getTrajectoryVector(firePos, target collider.bounds.center, 24)) (:22919-22967; Math.cs:885-1006) = Effects/javelin Instantiated at firePos, LookRotation(fireDir) (:8781-8794): rot [2.878, -7.595, 0] at the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) (checks/fx_whale_research/skills_b/javelin_sim.txt), its ProjectileControl.life = 3 x rangeMod = 3 (:8803) and Whale_javelin.Init (:8809): a copy of the worn lance (mWep2 = getWeapon(code, 1) on mount_Hand_R, WhaleEquipment.cs:1631-1710: the page's slot R) parented at local identity, every renderer on (Whale_javelin.cs:82-118); it flies at 24 m/s (velocity = TransformDirection(0, 0, 24), :25, :50) under gravity -9.8 (Rigidbody useGravity, PhysicsManager: checks/fx_whale_research/skills_b/rb.py), nose along its velocity (:165), sticks in the ground on its trigger box's terrain contact (BoxCollider 0.25 x 0.25 x 3, centre z 0.5: gravity off, velocity eased to 0, :174, :191-198), destroyed at 3 s (:150-154); plays its own Sounds/javelin (AudioSource); its piercing hits on the target (OnTriggerStay :210-328, Wall Puncture's proc there too) draw nothing (no javelin_hit: RPC_javelin_hit has no local caller, Whale.cs:4213 is the remote dispatch, and the prefab is not in the rip); the lance in hand: its MeshRenderers off (:22985-23017) from 0.5 to 1.0 (:23049-23110; its weapon_fx particles keep drawing); Yield 0.1 (:23322): moveSpeed 0 at 0.6 (:23041); Yield 0.4 (:23328): standby 1.0 (:23127)",
+    "cues": [
+      [0, "voice", "javelin1|javelin2"],
+      [0.5, "fx", "javelin", {"x": 1.2, "y": 2.2, "d": 1, "rot": [2.878, -7.595, 0], "slot": "R"}],
+      [0.5, "hideProp", "R", {"kill": 0.5}]
+    ]
+  },
+  "shieldRush": {
+    "why": "RPC_shieldRush :24032-24642 (rank 2): PlayAnimation(shieldRush, 0.2) (:24445), voice shieldRush1 / shieldRush2 (Random.Range(0, 2) :24486-24527, played :24579 / :24574) at 0; Yield 0.2 (:24572): at 0.2 moveSpeed 6 x sLv = 12 (:24179) and Effects/shieldRush_ring createEffect at the hero's collider.bounds.center, hero rotation (:24190-24202; life 1, followPosition; plays its own Sounds/shieldRush): y 1.3 = the Whale prefab's CharacterController centre (checks/fx_whale_research/skills_b/body.py: height 2.4, radius 0.8, centre 1.3, Whale_tri scale 1, as the page draws her; 1.35 with Super Size 4 + Mega Size, Game.cs:2795-2825); Yield 0.1 (:24562): at 0.3 the hit box FindRecTarget(hero, forward, 1, 1, 2, 3) (:24252) with RPC_shieldRush_hit at the struck foe (:24311): the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) is out of reach (2.4 m of dash in the game; no hero mover on the page), so nothing is drawn; Yield 0.1 (:24585): moveSpeed 0 at 0.4 (:24354); Yield 0.2 (:24583): standby 0.6 (:24375)",
+    "cues": [
+      [0, "voice", "shieldRush1|shieldRush2"],
+      [0.2, "fx", "shieldRush_ring", {"y": 1.3}]
+    ]
+  },
+  "swallow": {
+    "why": "RPC_swallow :25218-26006 (rank 2, Gobble Up #233 learned, Wonder Belly #432 on): PlayAnimation(swallow, 0.2) (:25543), moveSpeed 0, voice swallow1 / swallow2 (Random.Range(0, 2) :25592-25647) and Effects/swallow_ring createEffect at the hero, hero rotation (:25666-25678; life 3, followPosition, followState: cut at the standby 2.9) at 0; Yield 1 (:25931): at 1.0 Sounds/swallow on the hero's AudioSource (:25382-25394, a 'sound' cue), then 9 pulls 0.1 s apart (i < 9 :25695, Yield 0.1 :25935) at 1.0 ... 1.8: RPC_AddDamage(230 + sLv, -1, ..., (sLv + 1) x unit toward hero + forward) on the locked target (:25885-25912; the Bible's 9 pulls), drawing nothing; at 1.9 the catch, only with Gobble Up (hasSkill(233) :25705): the target inside FindRecTarget(hero, forward, 1, 1, 2, 3) (:25726), the Whale's collider taller than its own (2.4 m against 1 m, :25766-25776) -> RPC_swallow_hit (:25791) = Effects/swallow_hit Instantiated at the target's collider.bounds.center, LookRotation(hero forward) (:9020-9030; life 1): drawn at d 1, y 0.6, the pull's goal hero + forward (:25885) inside the 2 m grab box, where the target is when it is caught (APPROXIMATED: the page's target does not move), then the swallow / gobble statuses (:25811-25839; the swallowed target's renderers go off, CharacterControl.cs:35573-35660); Yield 1 (:25927): standby 2.9 (:25478)",
+    "cues": [
+      [0, "voice", "swallow1|swallow2"],
+      [0, "fx", "swallow_ring", {"cut": 2.9}],
+      [1.0, "sound", "swallow"],
+      [1.9, "fx", "swallow_hit", {"d": 1, "y": 0.6}]
+    ]
+  },
+  "peninsulaImpale": {
+    "why": "RPC_peninsulaImpale :26574-27523 (rank 2, Peninsula Asunder #442 on, Wall Puncture 4 on): PlayAnimation(peninsulaImpale, 0.2) (:27274), voice peninsulaImpale1 / peninsulaImpale2 (Random.Range(0, 2) :27315-27370) and Effects/peninsulaImpale_ring createEffect at the hero, hero rotation (:27389-27399; life 2, followPosition, followState: its life ends before the standby 3.8, so no cut; plays its own Sounds/peninsular) at 0; Yield 0.8 (:27435): at 0.8 moveSpeed 3 and the locked target (#442, :26762-26785), i = 0 (:26787); each stab (while i < 2 + 4 x sLv = 10, :27076): with #442 Effects/asunderImpale Instantiated at the hero, hero rotation (:27151-27169; life 1, its own Sounds/impale; in place of peninsulaImpale :27213-27231) and LookAt the target (:27199, straight ahead here), Yield 0.2 (:27433); the hit: moveSpeed 2 (:26813), one getWallPuncture() roll (:26844; lckAdjust(10 x 4) = 40 % at LCK 1: p 0.4, one roll per stab) over FindRecTarget(hero, forward, 1.5, 1.5, 12, 3) (:26830): the 12 m box reaches the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3): a proc -> RPC_wallPuncture_hit(vFlat(target centre) + (0, hero y + 1, 0), vFlat(target - hero)) (:26899-26919) = wallPuncture_hit, LookRotation(hitDir), + Sounds/wallPuncture_hit (:9247-9288); else RPC_nAttack_hit(the same point, hero forward) (:27006-27016) = nAttack_hit, hero rotation, + Sounds/nAttack_hit (:8303-8354): both at d 10, y 1, the sounds 'sound' cues (the hero's PlayOneShot); then Yield 0.1 (:27447) and i++ (:27249): stabs at 0.8 + 0.3 k, hits at 1.0 + 0.3 k (k = 0 ... 9: 1.0 ... 3.7); at i = 10 moveSpeed 0 and standby 3.8 (:27082-27099); left out: the camera's WallPuncture blur (:26962)",
+    "cues": [
+      [0, "voice", "peninsulaImpale1|peninsulaImpale2"],
+      [0, "fx", "peninsulaImpale_ring"],
+      [0.8, "fx", "asunderImpale"],
+      [1.0, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp1"}],
+      [1.0, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp1"}],
+      [1.0, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp1"}],
+      [1.0, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp1"}],
+      [1.1, "fx", "asunderImpale"],
+      [1.3, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp2"}],
+      [1.3, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp2"}],
+      [1.3, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp2"}],
+      [1.3, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp2"}],
+      [1.4, "fx", "asunderImpale"],
+      [1.6, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp3"}],
+      [1.6, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp3"}],
+      [1.6, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp3"}],
+      [1.6, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp3"}],
+      [1.7, "fx", "asunderImpale"],
+      [1.9, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp4"}],
+      [1.9, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp4"}],
+      [1.9, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp4"}],
+      [1.9, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp4"}],
+      [2.0, "fx", "asunderImpale"],
+      [2.2, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp5"}],
+      [2.2, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp5"}],
+      [2.2, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp5"}],
+      [2.2, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp5"}],
+      [2.3, "fx", "asunderImpale"],
+      [2.5, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp6"}],
+      [2.5, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp6"}],
+      [2.5, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp6"}],
+      [2.5, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp6"}],
+      [2.6, "fx", "asunderImpale"],
+      [2.8, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp7"}],
+      [2.8, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp7"}],
+      [2.8, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp7"}],
+      [2.8, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp7"}],
+      [2.9, "fx", "asunderImpale"],
+      [3.1, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp8"}],
+      [3.1, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp8"}],
+      [3.1, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp8"}],
+      [3.1, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp8"}],
+      [3.2, "fx", "asunderImpale"],
+      [3.4, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp9"}],
+      [3.4, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp9"}],
+      [3.4, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp9"}],
+      [3.4, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp9"}],
+      [3.5, "fx", "asunderImpale"],
+      [3.7, "fx", "wallPuncture_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "impaleWp10"}],
+      [3.7, "sound", "wallPuncture_hit", {"p": 0.4, "roll": "impaleWp10"}],
+      [3.7, "fx", "nAttack_hit", {"d": 10, "y": 1, "p": 0.4, "roll": "!impaleWp10"}],
+      [3.7, "sound", "nAttack_hit", {"p": 0.4, "roll": "!impaleWp10"}]
+    ]
+  },
+  "@WallPuncture:peninsulaImpale": {
+    "why": "Wall Puncture 4 (#251-254, passive, top rank, passives on; Bible card whale_wallPuncture) has no clip: getWallPuncture() (Whale.cs:9196, lckAdjust(10 x 4) = 40 % at LCK 1) rolls on the hits of nAttack1-3, Sweep, Javelin and Peninsula Impale, and only Peninsula Impale's 12 m box (FindRecTarget(hero, forward, 1.5, 1.5, 12, 3) :26830, Peninsula Asunder #442 on) reaches the 10 m target point; its own tile shows the proc on every stab (the Chameleon's Critical Plus, decision 12): Peninsula Impale as skills_b.md's entry (RPC_peninsulaImpale :26574-27523: voice peninsulaImpale1 | peninsulaImpale2 and peninsulaImpale_ring at 0, asunderImpale at 0.8 + 0.3 k), each of the 10 hits (1.0 + 0.3 k, k = 0 ... 9) RPC_wallPuncture_hit at the target's flat centre 1 m up, LookRotation(the flat direction) = the hero's facing (:26899-26919): Effects/wallPuncture_hit + the hero's PlayOneShot of Sounds/wallPuncture_hit (:9247-9288), in place of the nAttack_hit pair; the camera's WallPuncture blur left out (:26962)",
+    "cues": [
+      [0, "voice", "peninsulaImpale1|peninsulaImpale2"],
+      [0, "fx", "peninsulaImpale_ring"],
+      [0.8, "fx", "asunderImpale"],
+      [1.0, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [1.0, "sound", "wallPuncture_hit"],
+      [1.1, "fx", "asunderImpale"],
+      [1.3, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [1.3, "sound", "wallPuncture_hit"],
+      [1.4, "fx", "asunderImpale"],
+      [1.6, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [1.6, "sound", "wallPuncture_hit"],
+      [1.7, "fx", "asunderImpale"],
+      [1.9, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [1.9, "sound", "wallPuncture_hit"],
+      [2.0, "fx", "asunderImpale"],
+      [2.2, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [2.2, "sound", "wallPuncture_hit"],
+      [2.3, "fx", "asunderImpale"],
+      [2.5, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [2.5, "sound", "wallPuncture_hit"],
+      [2.6, "fx", "asunderImpale"],
+      [2.8, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [2.8, "sound", "wallPuncture_hit"],
+      [2.9, "fx", "asunderImpale"],
+      [3.1, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [3.1, "sound", "wallPuncture_hit"],
+      [3.2, "fx", "asunderImpale"],
+      [3.4, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [3.4, "sound", "wallPuncture_hit"],
+      [3.5, "fx", "asunderImpale"],
+      [3.7, "fx", "wallPuncture_hit", {"d": 10, "y": 1}],
+      [3.7, "sound", "wallPuncture_hit"]
+    ]
+  },
+  "peninsulaRound": {
+    "why": "RPC_peninsulaRound :27523-28262 (rank 2, Peninsula Asunder #442 on): PlayAnimation(peninsulaRound, 0.2) (:27834), voice peninsulaRound1 / peninsulaRound2 (Random.Range(0, 2) :27883-27938) and Effects/peninsulaRound_ring createEffect at the hero, hero rotation (:27957-27969; life 4, followPosition, followState: cut at the standby 4.0; its looped Sounds/peninsularRound) at 0; Yield 0.8 (:28191): moveSpeed 3 at 0.8 (:27670); Yield 0.2 (:28189): at 1.0 moveSpeed 0, mHandMount = mount_Hand_R (:27719), i = 0; every 0.1 s (Yield 0.1 :28201, i++ :27733) while i < 12 + 8 x sLv = 28 (:27986): with #442 Effects/asunderRound Instantiated at mount_Hand_R's world position, its rotation x Euler(0, 0, Random.Range(-30, 30)) (int: -30 ... 29), not parented (:28007-28025; life 1, no follow; in place of peninsulaRound :28042-28060): 28 slash rings at 1.0 ... 3.7 left where the lance hand was; on i % 4 == 0 the hits FindRecTarget(hero - forward, forward, 3, 3, 5, 3) (:28081-28099): the 10 m target point (a Penguin-sized body: bounds centre 0.6 m up, height 1, radius 0.3) is out of the 4 m reach, so nothing is drawn; the redirect of damage taken (CharacterControl.cs:4299-4350) needs an attacker; at i = 28 Yield 0.2 (:28193): standby 4.0 (:27752); left out: the camera blur (:27713); on the page: atBone mount_Hand_R with withRot (the bone's position and rotation taken once at the spawn, the cue's rot after it, not parented) and the rot element [-30, 29] a whole number drawn per cue (plans/fx_whale/decisions.md 32)",
+    "cues": [
+      [0, "voice", "peninsulaRound1|peninsulaRound2"],
+      [0, "fx", "peninsulaRound_ring", {"cut": 4.0}],
+      [1.0, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.1, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.2, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.3, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.4, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.5, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.6, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.7, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.8, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [1.9, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.0, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.1, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.2, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.3, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.4, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.5, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.6, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.7, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.8, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [2.9, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.0, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.1, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.2, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.3, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.4, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.5, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.6, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}],
+      [3.7, "fx", "asunderRound", {"atBone": "mount_Hand_R", "withRot": true, "rot": [0, 0, [-30, 29]]}]
+    ]
+  },
+  "grandTide1": {
+    "why": "RPC_grandTide :37257-38002 (whl_grandTide5, single rank; Revised Skill #404 / Revised Magic #414 only lower its costs): PlayAnimation(grandTide1, 0.2) (:37781), moveSpeed 0, voice grandTide1 / grandTide2 (Random.Range(0, 2) :37822-37877) and Effects/grandTide_ring createEffect at the hero, hero rotation (:37896-37906; life 3 + 1, followPosition, followState: myCommand stays grandTide past its life, so no cut; its own Sounds/grandTide_ring) at 0; Yield 1 (:37936): at 1.0 moveSpeed 2, collisions ignored (:37398-37408), Effects/grandTide createEffect at the hero, hero rotation (:37424-37436; life 99 + 1, followPosition, followState, its looped Sounds/grandTide; five wave meshes + two BB ParticleSystems, the Shuriken graft) and its Animation Play(create) Once (:37449-37454; also its play-on-awake clip); Yield 1 (:37939): grandTide2 at 2.0 (the SEQ's grandTide1 step, 2.0 s); the wave: Play(root) Loop at grandTide2's start (:37509-37514) = age 1.0, played by the fx:grandTide part (plans/fx_whale/parts.md 6); its followState end when myCommand becomes grandTide0 (RPC_grandTide0 :38176; EffectControl.cs:226-291 plays its destroy clip, then the 1 s after-life; the coroutine's own Play(destroy) :37706 in the same frame) at grandTide0's start = age 4.0 with the SEQ's grandTide2*@3: the part's release option (fx.cutNow(): the step edge a cue's cut cannot cross; skills_b.md Verification 1); floor: the wave's five meshes hang 4.8 m under the prefab's root and rise through the ground (their boxes reach 11 m under it), and grandTide_ring's 24 water sheets (its ImageEmitter, from 1.0 s, 3 m tall, centred on the ground) stand half in it: the game's ground hides what is under it, so both are drawn only above the floor (the whole wave; of the ring only the sheets, its flat rings lie on the floor) (the QA pass 2026-11-14: the sheets' buried halves showed as pale squares)",
+    "cues": [
+      [0, "voice", "grandTide1|grandTide2"],
+      [0, "fx", "grandTide_ring", {"floor": ["ImageEmitter"]}],
+      [1.0, "fx", "grandTide", {"release": 4, "floor": true}]
+    ]
+  },
+  "@LeviathanBreach:cast1": {
+    "why": "TTO1102:Whale::DoRow6Skill@0x1EB8D80 (pseudo/Whale.c:33095-33251: whl_leviathanBreach5, a living enemy target, the aim = Row6Ground under it at the press, cooldown agiAdjust(120)) -> RPC_leviathanCast(mPos, off = spot - whale, tID); TTO1102:Whale.<RPC_leviathanCast>d__302::MoveNext@0x1EDFFB0 (:10488-10823; plans/fx_whale/tto.md 2.1): castTime 1.5, x 0.5 with Reduced Cast 0x175 = 373 (passives on), magAdjust (:10542-10550; high INT: magAdjust's 0.1 s floor, Mole decision 6); actionState attack, myCommand cast (:10553-10561); the Whale at mPos, LookAt the spot (:10566-10578); PlayAnimation(cast1, 0.2), Once (:10581-10583); no voice (no Row6Voice: the plain cast1 entry's BB cast voice is not played); the owner's DisplayCastBar(castTime) (:10616); castRing via Row6Spawn at the Whale, Euler rad (4.71239, 1.5708, 0) = (270, 90, 0), owned, its Animation 'root' played looped (Row6Spawn's loop argument, :10621-10634, Whale::Row6Spawn@0x1EC1660 :35214-35231; castRing: EffectControl life 60 + 0, followPosition + followState: cut when RPC_leviathanBreach's Row6Begin sets myCommand leviathanCall at 0.1, the step change); an older warn destroyed (:10635-10646); leviathanBreach_warn at mPos + off = the 10 m target point, LookRotation(flat off) = the hero's facing, not owned (:10647-10682), kept as mLeviathanWarn and destroyed by RPC_leviathanBreach at its start + CrashAt(3 hops) = 4.15 (:10236-10250, Whale::CrashAt@0x1EB8C90 :33047-33062): 0.1 + 4.15 = kill 4.25 (its own life 8 + 0.3 never reached); Row6Sound grandTide_ring (:10684; Whale::Row6Sound@0x1EC1420: sounds/, volume 1 for the owner). Each frame (state 1, :10694-10817): at min(0.6, castTime) cast2 (0.1 fade, looped, :10718-10730); at castTime the owner starts RPC_leviathanBreach (:10760-10781) in the same frame. The owner's iceRamp screen ramp and Row6Shake are the player's screen: left out (Bison decision 35)",
+    "cues": [
+      [0, "fx", "castRing", {"rot": [270, 90, 0], "cut": 0.1, "animLoop": "root"}],
+      [0, "fx", "tto/leviathanBreach_warn", {"d": 10, "kill": 4.25}],
+      [0, "sound", "grandTide_ring"]
+    ]
+  },
+  "@LeviathanBreach:cast2": {
+    "why": "TTO1102:Whale.<RPC_leviathanCast>d__302::MoveNext@0x1EDFFB0 (:10718-10730): cast2 at min(0.6, castTime) = 0.1, 0.1 fade, looped, and RPC_leviathanBreach starts in the same frame (castTime 0.1 reached): no cue of its own; this empty entry keeps the plain cast2 entry's BB cues off the Leviathan Breach tile",
+    "cues": []
+  },
+  "leviathanCall": {
+    "why": "TTO1102:Whale.<RPC_leviathanBreach>d__303::MoveNext@0x1EDF630 (:10155-10467; plans/fx_whale/tto.md 2.2), 0 = its start (cast + 0.1): state 0: mLeviathanStep + 1; dir = LeviathanDir(off) (@0x1EBB2A0 :34323-34371: flat, normalised); hops = LeviathanHops(mPos, spot, dir)@0x1EBB3F0 (:34496-34530) = WhaleDolphin::Hops(|flat(spot - whale - 2.5 dir)|)@0x1EF5AF0 = 2 + (len >= 7): 10 - 2.5 = 7.5 -> 3 hops; Row6Begin('leviathanCall', mPos, off) (@0x1EC0670 :35382-35450: attack, myCommand leviathanCall, LookAt, PlayAnimation(leviathanCall, 0.1), Once) (:10260); leviathanCall_raise via Row6Spawn at the Whale, the Whale's rotation, owned (:10276-10291; EffectControl 2.0 + 0.6, followPosition + followState: cut at Row6End 0.75); LeviathanRise(spot, dir, 3) started (:10297-10298, <LeviathanRise>d__304::MoveNext@0x1ECEEC0 :912-1050); the three DolphinLeap(start + DolphinAt[i], DolphinLane(mPos, spot, dir, i, 3)) (:10362-10380; DolphinAt [0.55, 0.65, 0.75], DolphinSide [0, -1, 1], Whale::.cctor@0x1EC27F0 :35880-35907): <DolphinLeap>d__308::MoveNext@0x1ECD580 (Ghidra run, checks/fx_whale_research/tto/annot/Whale.c:1-88): Until(at), leviathanBreach_dolphin via Row6Spawn at lane[0], identity, not owned, WhaleDolphin.Play(lane); DolphinLane@0x1EB91B0 (:34375-34490): from = whale + 1.5 dir + right x 1.43 side, to = spot - dir + right x 2.2 side (right = cross(up, dir)), WhaleDolphin::Lane@0x1EF5B10 (hops + 1 points, lerped), each on the ground (Row6Ground): middle (0, 1.5) -> (0, 9), left (-1.43, 1.5) -> (-2.2, 9), right (1.43, 1.5) -> (2.2, 9) (x right, d ahead; part P1 flies them: splashes 0.06 / 0.5 k - 0.06 after the spawn = the Bible's dives 0.99 ... 2.19, gone at 0.5 x 3 + 2.5 = 4.0 after it); the owner's LeviathanDamage(mPos, spot, dir, 3) (:10339-10349: hits only); Until(start + SlamAt 0.6) (capstone 0x1EDFF33, breach_movenext.asm). State 1 (0.6), still doing leviathanCall: leviathanCall_slam via Row6Spawn at the Whale + 0.9 forward - 0.75 right, the Whale's rotation, not owned (:10397-10426), Row6Sound shieldBash_hit (:10427); Until(start + DolphinAt[0] = 0.55) (capstone 0x1EDF9C7): already past, so state 2 runs at once: Row6Sound whaleWave (:10453) at 0.6; Until(start + CallLength = DolphinAt[2] = 0.75) (Whale::get_CallLength@0x1EC8720 :32960-32986); state 3 (0.75): Row6End (standby, :10446). The page plays the 2.4 s clip to its end (Chameleon decision 11); the later cues run in the idle tail. LeviathanRise: Until(start + LeviathanAt(3) = 0.5 x 3 + 0.75 - 0.3 = 1.95) (@0x1EBB160 :32993-33016): leviathanBreach via Row6Spawn at the spot, LookRotation(dir), not owned, WhaleLeviathan.Play(spot, dir) (:959-1005; part P2: geyser at +0.5, crash and pool at +2.2, pool off +7.2, gone +8 = 9.95); Until(start + BreachAt = 1.95 + 0.6 = 2.55) (@0x1EB8C40): Row6Sound grandTide (:1036), Row6Shake(spot, 0.4) left out; Until(start + CrashAt = 1.95 + 2.2 = 4.15): Row6Sound whaleWave and bowlingWhale (:1023-1024), Row6Shake 0.9 left out. Left out: the owner's CameraEffect.AddColorRamp('iceRamp') at 0 (:10316-10336, the player's screen), the dolphin / breach / tsunami / whirlpool hits and wet on the foe (LeviathanDamage, DolphinStrike@0x1EB9540: no effect; Sheep decision 4); floor [splash] on the slam: its drops (no Collision module, gravity 1.6) fall through the ground, which hides them; the dolphins' splashes and the Leviathan's geyser / crash / pool drops the same in fxparts/tto_whale.js (the QA pass 2026-11-14)",
+    "cues": [
+      [0, "fx", "tto/leviathanCall_raise", {"cut": 0.75}],
+      [0.55, "fx", "tto/leviathanBreach_dolphin", {"d": 1.5, "to": [0, 0, 9], "hops": 3}],
+      [0.6, "fx", "tto/leviathanCall_slam", {"x": -0.75, "d": 0.9, "floor": ["splash"]}],
+      [0.6, "sound", "shieldBash_hit"],
+      [0.6, "sound", "whaleWave"],
+      [0.65, "fx", "tto/leviathanBreach_dolphin", {"x": -1.43, "d": 1.5, "to": [-2.2, 0, 9], "hops": 3}],
+      [0.75, "fx", "tto/leviathanBreach_dolphin", {"x": 1.43, "d": 1.5, "to": [2.2, 0, 9], "hops": 3}],
+      [1.95, "fx", "tto/leviathanBreach", {"d": 10}],
+      [2.55, "sound", "grandTide"],
+      [4.15, "sound", "whaleWave"],
+      [4.15, "sound", "bowlingWhale"]
+    ]
+  },
+  "wave": {
+    "why": "Whale.cs RPC_emotion (:39843-40665): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (Substring(4) :40141, PlayOneShot :40153, only if it loads :40147; gates: the voice option :40075, more than 2 s since the last action :40081, own hero, game code 31 or a mission teammate :40087-40109); no effect, no Sounds/; BB's Whale voices have hi, wave, ty, bow, beg, cheer, cry, sleep, battle, chat1-5 and no laugh, sit, talk, pose, dance (checks/fx_whale_research/attacks_emotes/container_audio.txt); emo_hi (:40189) and emo_wave (:40196) both play the wave clip (:40630): voice hi or wave",
+    "cues": [
+      [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Whale.cs RPC_emotion (:39843): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (:40141, PlayOneShot :40153); emo_ty (:40205) and emo_bow (:40212) both play the bow clip (:40623), and both voices are in BB's data: voice ty or bow",
+    "cues": [
+      [0, "voice", "ty|bow"]
+    ]
+  },
+  "sleep": {
+    "why": "Whale.cs RPC_emotion (:39843): voice at 0, emo_<name> = Voices/<name> (:40141, PlayOneShot :40153); emo_sleep (:40251-40257)",
+    "cues": [
+      [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Whale.cs RPC_emotion (:39843): voice at 0, emo_<name> = Voices/<name> (:40141, PlayOneShot :40153); emo_cheer (:40263-40269)",
+    "cues": [
+      [0, "voice", "cheer"]
+    ]
+  },
+  "beg": {
+    "why": "Whale.cs RPC_emotion (:39843): voice at 0, emo_<name> = Voices/<name> (:40141, PlayOneShot :40153); emo_beg (:40275-40281); the Whale's data has Voices/beg (unlike the Mole's and the Chameleon's)",
+    "cues": [
+      [0, "voice", "beg"]
+    ]
+  },
+  "cry": {
+    "why": "Whale.cs RPC_emotion (:39843): voice at 0, emo_<name> = Voices/<name> (:40141, PlayOneShot :40153); emo_cry (:40287-40293)",
+    "cues": [
+      [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Whale.cs RPC_emotion (:39843): emo_chat (:40308) plays the talk clip (:40601) with Voices/chat + Random.Range(1, 6) = chat1-5 (:40127-40133, PlayOneShot :40153; all five in BB's data); emo_talk (:40301) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+      [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Whale.cs RPC_emotion (:39843): emo_battle (:40571-40577): voice battle (:40141, PlayOneShot :40153); RPC_activateIcon1 (the mission channel) plays the clip with activate1 instead (:45613, :45660-45672; no tile, Penguin decision 19): the tile takes the emote's voice",
+    "cues": [
+      [0, "voice", "battle"]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvents playLeftFootEvent at 0.1 s and playRightFootEvent at 0.6 s (checks/fx_whale_research/attacks_emotes/probe_events.txt; the only events on any Whale clip) -> Whale.cs playLeftFootEvent / playRightFootEvent (:113-167): the hero's audio.PlayOneShot(footStep_left / footStep_right) (:135, :164), both = step_heavy1 (the prefab's fields, :15300-15303, probe_fields.txt; Resources/sound/fx/step_heavy1.wav, as the Bison's), own hero or anyone in a mission (mGameType > 4, :120-129, :149-158); every cycle of the run (everyCycle, the Bat's page flag)",
+    "everyCycle": true,
+    "cues": [
+      [0.1, "sound", "step_heavy1"],
+      [0.6, "sound", "step_heavy1"]
+    ]
+  },
+  "ko": {
+    "why": "Whale.cs RPC_ko (:45778-46154): PlayAnimation(ko, 0.2) (:45992), voice ko1 or ko2 at 0 (Random.Range(0, 2) :46027, loads :46037 / :46068, PlayOneShot :46119 / :46109), getUp after 3 s (Yield(2, 3) :46115, :45894), standby 1 s later (:46117, :45918), no effect; RPC_dead (:46155-46510): Rewind + PlayAnimation(ko, 0) (:46349-46352), dead1 or dead2 at 0 (Random.Range(0, 2) :46387, :46399 / :46411, :46430 / :46442), and always deadEffect at the hero's position and rotation (Resources.Load :46461, Instantiate :46471; IL_7B4 :46454, reached by every voice path, the voice-off and town paths too :46358-46380; EffectControl life 3, the whale_dead ImageEmitter 2.4 m up after Delay 0.4): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / cat.json / the Mole's: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+      [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+      [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+      [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  },
+  "getUp": {
+    "why": "Whale.cs RPC_revive (:46540-46812): animation.Play(getUp) (:46734) and voice revive at 0 (own hero or a mission teammate :46746-46770, load :46775, PlayOneShot :46808; in BB's data), standby after 1 s (Yield(2, 1) :46810, :46656), no effect; RPC_ko's getUp 3 s into a KO (:45894) is silent: one of the two at random, even chance (decision 11's shape, as cat.json's getUp)",
+    "cues": [
+      [0, "voice", "revive", {"p": 0.5}]
+    ]
+  }
+}

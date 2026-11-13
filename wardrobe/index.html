@@ -1389,8 +1389,38 @@ const SEQ = {
     // Quick Heal plays no animation (RPC_quickHeal Sheep.cs:10201-10420 calls no PlayAnimation: the Sheep goes on with what
     // she was doing): its effect on the idle stance (2026-11-10, the user: effect-only tiles)
     "Quick Heal: root@1"],
-  whale: ["Normal Attack: nAttack1 nAttack2 nAttack3", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*@0 cast3~",
-    "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0"],
+  // the Whale (2026-11-13, plans/fx_whale/decisions.md 1-17): Normal Attack's stage 2 at 0.8 s and stage 3 at 1.8 s after
+  // stage 1 (only stage 1 writes actionTime, Whale.cs:16509: RPC_nAttack2's Yield(2, actionTime - Time.time + 0.8) :17775,
+  // RPC_nAttack3's + 1.8 :18589; every stage cuts in, :16524, :16808, :18007, the first step keeps the page's fade;
+  // attacks_emotes.md Read this first 1). The Charge Attack's cAttack1 for its own 0.7 s (Yield(2, 0.7) :19214), then the
+  // looped cAttack2 cut in (:18827); the release test is actionTime + 3 <= Time.time (:8557), so 2.99 s is the plain
+  // lowering (RPC_cAttack2's CrossFade(root, 0.2) :19416, standby 0.2 s later :19425) and 3.0 s is Shield Bash (#114,
+  // passive: RPC_shieldBash :8575, its clip with a 0.2 s fade :20040), a tile of its own (the Mole's Sky Drill mirrored;
+  // Read this first 2, decisions 3, 4); Knight of the Deep (#273) on the same hold with the six knights out and guarding
+  // (Read this first 3, Verification 2; decision 5); Shield Reflect (#411: a hit on the held charge,
+  // CharacterControl.cs:30869-30920) on the Charge Attack's steps (Verification 4; decision 6). Cast: the bar at
+  // magAdjust's 0.1 s floor (skills_a.md); Honor, 12th Kingdom Knight and Bubble Burst play cast3 from the key press with
+  // no channel (the dispatcher starts their RPCs straight, :4231-4285, :4591-4609, :7482; skills_a.md "Page lines, as
+  // corrected", parts.md Verification 1; decision 10). Bowling Whale and Grand Tide as the code (decision 13). Peninsula
+  // Impale a one-step line so its tile stays listed beside Wall Puncture (#251-254, a proc on its hits: the only host whose
+  // 12 m box reaches the 10 m target, :26830), which plays the same clip (attacks_emotes.md Verification 5; decision 8).
+  // Leviathan Breach (TTO, released): BB's cast1 for the bar (1.5 s x 0.5 with Reduced Cast, then magAdjust's 0.1 s
+  // floor), cast2 with its 0.1 s fade for one frame, then leviathanCall with Row6Begin's 0.1 s fade, played whole
+  // (TTO1102:Whale.<RPC_leviathanCast>d__302@0x1EDFFB0, <RPC_leviathanBreach>d__303@0x1EDF630; tto.md Read this first 1,
+  // S1; decision 14). Whale Wave (divingWave) and Mal Storm (divingStorm, Diving Press on) are single-clip tiles, no line
+  // (decision 12)
+  whale: ["Normal Attack: nAttack1@0.8 nAttack2@1.0 nAttack3", "Charge Attack: cAttack1 cAttack2*@2.29 root~@0.2",
+    "Shield Bash: cAttack1 cAttack2*@2.3 shieldBash~", "Knight of the Deep: cAttack1 cAttack2*@2.3 shieldBash~",
+    "Shield Reflect: cAttack1 cAttack2*@2.29 root~@0.2", "Cast: cast1 cast2*@0 cast3~",
+    "Honor: cast3", "12th Kingdom Knight: cast3", "Bubble Burst: cast3",
+    "Bowling Whale: bowlingWhale1@1 bowlingWhale2*@6", "Grand Tide: grandTide1 grandTide2*@3 grandTide0",
+    "Peninsula Impale: peninsulaImpale", "Wall Puncture: peninsulaImpale",
+    "Leviathan Breach: cast1@0.1 cast2*^@0 leviathanCall^",
+    // Auto Shield (passive #261-263) plays no animation: a direct hit on a Whale who is not charging rolls lckAdjust(24)
+    // in RPC_AddDamage (CharacterControl.cs:4406-4492) and draws Effects/shield 1 m toward the attacker, 1 m up
+    // (:4563-4595): its effect on the idle stance, every play, held 1 s (the shield's life) (2026-11-13,
+    // plans/fx_whale/effect_only.md; the Penguin's Frost Spike; decision 7)
+    "Auto Shield: root*@1"],
   // the Wolf's step times corrected from the code 2026-11-09 (plans/fx_wolf/attacks.md, checked by hand): stage 2 from 0.8 s,
   // stage 3 from 1.44 s after stage 1 (the dispatcher's windows, Wolf.cs:7540-7830); cAttack1 cut at 0.8 s (:19217
   // Yield(2, 0.8)) and the full-charge ring 5.0 s into cAttack2; Blade Fang's first slash 0.5 s after the press, its hit
@@ -1406,7 +1436,11 @@ const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chamel
   monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
 // (the Monkey's cast1 / cast2: with Damage Cast #102/#103 learned RPC_cast plays damageCast1 / 2, Monkey.cs:25472-25491;
 // plans/fx_monkey/decisions.md 6)
-const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"], monkey: ["cast1", "cast2"] };
+// (the Whale's malStorm: with Diving Press #443 learned (passives on) Whale Wave plays divingWave and Mal Storm
+// divingStorm; only without it do both play the malStorm clip, Whale.cs:32111-32125, :32775-32789; 2026-11-13,
+// plans/fx_whale/decisions.md 12)
+const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"], monkey: ["cast1", "cast2"],
+  whale: ["malStorm"] };
 // clips the class's code never plays, left out of the list (2026-11-09: no Wolf skill plays cast1-3, the Cast tile was
 // copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile"); the Bison's volcanicRam: no code in BB
 // or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent); the Cat's
@@ -3485,7 +3519,14 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
   // Above (passive) on Bounce's, Truce Trading and Contract (else the Truce Trading tile shows Contract's icon too: OWN_TILE
   // gives contract the truceTrading clip, skills_b.md Verification 6)
   rabbit: { "@CustomizedShotgun": "customizedShotgun", "@FromtheAbove": "fromTheAbove", "@TruceTrading": "truceTrading",
-    "@Contract": "contract" } };
+    "@Contract": "contract" },
+  // the Whale (2026-11-13, plans/fx_whale/decisions.md 17): the passives' own tiles on the Charge Attack's clips (Shield
+  // Bash, Knight of the Deep, Shield Reflect) and on Peninsula Impale's (Wall Puncture), the effect-only Auto Shield, the
+  // cast3 skills with no channel (Honor, 12th Kingdom Knight, Bubble Burst), and Leviathan Breach, which opens with the
+  // Cast's clips (attacks_emotes.md Verification 6, skills_a.md "Page lines, as corrected", tto.md S2, effect_only.md)
+  whale: { "@ShieldBash": "shieldBash", "@KnightoftheDeep": "knightOfTheDeep", "@ShieldReflect": "shieldReflect",
+    "@WallPuncture": "wallPuncture", "@AutoShield": "autoShield", "@Honor": "honor",
+    "@12thKingdomKnight": "12thKingdomKnight", "@BubbleBurst": "bubbleBurst", "@LeviathanBreach": "leviathanBreach" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -4099,6 +4140,17 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // fx.ec, null, the root's nodeDef, data) after every component (the root's own EffectControl is class Fx's, so the
 // "EffectControl" part never sees it); it turns the root while fx.age < ec.life (fxparts/control.js; statScan, bounce1,
 // bounce2), reading the cue's owner (fx.at.owner)
+// 2026-11-13, the Whale (plans/fx_whale/parts.md "Interfaces", Verification 3-5; decisions.md 45, 54, 61): fx.clipFloor(node)
+// = every mesh under `node` (a node of the effect, or an Object3D the part hung under one: a propModel copy) drawn only
+// above the hero's floor from then on, as the game's ground hides what is under it (the rising knights, the stuck
+// javelin's tip, the dolphins' and the Leviathan's bodies; never the ground discs: clip the body's node, not the root).
+// Callable at any time once the meshes exist (a part's first update), again too. A shared material is replaced by the
+// mesh's own clipped copy (userData.ownMaterial, freed by Fx.dispose), so a part that keeps material copies of its own
+// either flags its mesh userData.ownMaterial before the call (then they are clipped as they are) or calls this first and
+// takes mesh.material afterwards (class Fx). api.propModel("R" | "L", true) for the Whale: the worn lance / shield, else
+// the starter noviceLance / noviceShield (PROP_STARTER.whale). A cue's animLoop is fx:castRing's (fxparts/bat.js): that
+// clip of the ring's Animation looped from the spawn, the 0.5 s restart skipped (Leviathan Breach's ring,
+// TTO1102:Whale::Row6Spawn@0x1EC1660's loop)
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
@@ -4133,7 +4185,12 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   // the Rabbit's (2026-11-13, plans/fx_rabbit/parts.md "Who builds what", decisions.md 30-34, 51-52): Contract's LightGolem
   // (rabbit.js); TTO's RabbitSpin, Rabbit.PosterFly, Rabbit.CoinRise, Rabbit.TurretCapsule, RabbitMedicTurret,
   // PowerUpRotation (tto_rabbit.js). EffectControl(root), the root's rotation modes for every class, is control.js's
-  "rabbit", "tto_rabbit"];
+  "rabbit", "tto_rabbit",
+  // the Whale's (2026-11-13, plans/fx_whale/parts.md "Who builds what", decisions.md 60-62): Whale_javelin (the thrown
+  // lance, a copy of the worn one: api.propModel), Whale_flyingShield, Whale_homingShield (copies of the worn shield),
+  // whale_kingdomKnight (the six summoned knights), fx:grandTide (whale.js); fx:castRing's whale gate and a cue's animLoop
+  // are bat.js's; TTO's WhaleDolphin, WhaleLeviathan (tto_whale.js)
+  "whale", "tto_whale"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
@@ -4285,6 +4342,36 @@ class Fx {
     // the game's code places them from the cast's spot (mRailSpot); a height lift keeps its old way (Titan Drop, Apex Hunt)
     if (LOOK.lift?.alive && LOOK.lift.off && LOOK.lift.root === C.root) this.group.position.sub(LOOK.lift.off);
     this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
+    // the hero's floor as a clipping plane (the world y of her ground; why and where it is used: the comment at clipFloor
+    // below), and a material's copy clipped there
+    const floor = [new THREE.Plane(V(0, 1, 0), -(this.group.position.y - C.root.position.y))];
+    const clipMat = m0 => {                        // clone() leaves out the shader hooks fxMaterial's blends put on
+      if (!m0 || m0.clippingPlanes) return m0;
+      const m = m0.clone(); m.onBeforeCompile = m0.onBeforeCompile; m.customProgramCacheKey = m0.customProgramCacheKey;
+      m.clippingPlanes = floor; return m; };
+    // fx.clipFloor(node) (2026-11-13, the Whale: plans/fx_whale/decisions.md 45, parts.md Verification 5; the comment above
+    // FX_PART_FILES): the parts' way to that floor clip, for what the game's ground hides and the page's floor does not (the
+    // knights rising from 1 m under it, the stuck javelin's buried tip, the dolphins' and the Leviathan's bodies): every
+    // mesh under `node` (one of the effect's nodes, or an Object3D a part added under one: a propModel copy) draws only
+    // above the hero's floor from then on. Callable at any time, again too (a mesh already clipped is left alone); a
+    // part calls it once the meshes are there (its first update, not its build: later nodes' meshes are not made yet).
+    // A material the mesh shares with other effects (fxMaterial's cache) is replaced by a copy of its own, freed with the
+    // effect (userData.ownMaterial, Fx.dispose); one that is already the mesh's own is clipped as it is, so whoever
+    // drives it (a fade, a scroll) still does: every material of a mesh flagged userData.ownMaterial, a renderer's shared
+    // copies (userData.fxOwn.mats, alphatimer.js / uvscroll.js), and every material under a propModel copy (fresh per
+    // call; a clone would also lose its userData.map0 texture, Material.copy's JSON round trip)
+    this.clipFloor = node => node?.traverse(o => {
+      if (!o.isMesh || !o.material) return;
+      let own = !!o.userData.ownMaterial;
+      for (let p = o; p && !own && p !== this.mirror; p = p.parent) own = !!p.userData.propModel;
+      const mine = o.userData.fxOwn?.mats || [];
+      const clip = m => {
+        if (!m || m.clippingPlanes) return m;
+        if (!own && !mine.includes(m)) return clipMat(m);
+        m.clippingPlanes = floor; m.needsUpdate = true; return m; };
+      o.material = Array.isArray(o.material) ? o.material.map(clip) : clip(o.material);
+      o.userData.ownMaterial = true;
+    });
     this.nodes = def.nodes.map(() => new THREE.Object3D());
     def.nodes.forEach((n, i) => {
       const o = this.nodes[i];
@@ -4297,12 +4384,20 @@ class Fx {
         // Panda.cs:8757, :9791; plans/fx_panda/decisions.md 26, 41, skills_a.md P2): the root put once at that hero bone's
         // position now (Unity's world, the mirror's space) + x / y / d along her facing, her facing (+ rot); no such bone:
         // the normal spot
+        // withRot (true, with atBone; 2026-11-13, the Whale's Peninsula Round: Instantiate(asunderRound, hand.position,
+        // hand.rotation x Euler(0, 0, Random.Range(-30, 30))) at mount_Hand_R, not parented, Whale.cs:28013-28025;
+        // plans/fx_whale/decisions.md 32, skills_b.md Verification 2): the root takes that bone's rotation too, once, as
+        // Unity's in the mirror's space (the rotation of mirror^-1 x the bone's world x MIRROR_X: api.boneMatrix's, a cue's
+        // bone's), and the cue's rot turns after it (bone.rotation x Euler(rot)); without it her facing (+ rot), as before
         const ab = at.atBone && C?.byName?.[at.atBone];
+        let abQ = null;
         if (ab) { this.group.updateMatrixWorld(true); ab.updateWorldMatrix(true, false);
-          o.position.add(ab.getWorldPosition(V()).applyMatrix4(this.mirror.matrixWorld.clone().invert())); }
+          o.position.add(ab.getWorldPosition(V()).applyMatrix4(this.mirror.matrixWorld.clone().invert()));
+          if (at.withRot) this.mirror.matrixWorld.clone().invert().multiply(ab.matrixWorld).multiply(MIRROR_X).decompose(V(), abQ = new THREE.Quaternion(), V()); }
         if (Array.isArray(at.scale)) o.scale.multiply(vA(at.scale)); else o.scale.multiplyScalar(at.scale || 1);
         // Unity's Quaternion.Euler turns z, then x, then y: three's intrinsic "YXZ"; inside the mirror Unity's numbers apply as they are
         if (at.rot) o.quaternion.setFromEuler(new THREE.Euler(...at.rot.map(v => v * Math.PI / 180), "YXZ"));
+        if (abQ) o.quaternion.premultiply(abQ);
         this.mirror.add(o);
       }
       else { o.position.fromArray(n.pos); o.quaternion.fromArray(n.rot); o.scale.fromArray(n.scale); this.nodes[n.parent].add(o); }
@@ -4361,12 +4456,8 @@ class Fx {
     // A moving child sinks through the floor there (the bolts fall 7-38 m in their life, ending under it), and the game's
     // floor hides what is under it; the page has no floor that hides (the camera may look from below), so every mesh under
     // such a child gets its own copy of its material clipped at the floor (world y of the hero's ground; renderer
-    // localClippingEnabled), drawing only what is above it, as the game shows
-    const floor = [new THREE.Plane(V(0, 1, 0), -(this.group.position.y - this.liftY))];
-    const clipMat = m0 => {                        // clone() leaves out the shader hooks fxMaterial's blends put on
-      if (!m0 || m0.clippingPlanes) return m0;
-      const m = m0.clone(); m.onBeforeCompile = m0.onBeforeCompile; m.customProgramCacheKey = m0.customProgramCacheKey;
-      m.clippingPlanes = floor; return m; };
+    // localClippingEnabled), drawing only what is above it, as the game shows (floor and clipMat: above, with
+    // fx.clipFloor, the parts' own call)
     const clipFloor = node => node.traverse(o => { if (o.isMesh && o.material) {   // a material list too (the dragons' skins)
       o.material = Array.isArray(o.material) ? o.material.map(clipMat) : clipMat(o.material); o.userData.ownMaterial = true; } });
     for (const s of this.subs) if ((s.ec.velocity || []).some(x => x)) {
@@ -4375,8 +4466,12 @@ class Fx {
     }
     // a cue's floor (2026-11-13, the Panda's QA): every mesh of the effect clipped at the same floor, for a prefab whose own
     // Animation carries a mesh down through the ground (Rising Dragons' and Nine Dragons' kingRise dragons dive 14-24 m
-    // under it at their end, and rise out of it), which the game's ground hides
-    if (at.floor) clipFloor(this.group);
+    // under it at their end, and rise out of it), which the game's ground hides. A node's name or a list of names in
+    // place of true (2026-11-14, the Whale's QA): only those nodes of the effect, with what hangs under them, where the
+    // rest lies on the floor itself and must not be cut along it (Megalodon's shark comes up from 9 m under the ground,
+    // its water rings lie at y 0; Leviathan Breach's slam throws drops that fall through the ground beside its flat discs)
+    if (at.floor === true) clipFloor(this.group);
+    else if (at.floor) { const names = [].concat(at.floor); def.nodes.forEach((n, i) => { if (names.includes(n.name)) clipFloor(this.nodes[i]); }); }
     scene.add(this.group);
     this.group.updateMatrixWorld(true);
   }
@@ -4910,7 +5005,8 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         trails, fxparts/trail.js); the parts' (fx.at): k (the dragon's index 0-7, Panda.NineDragon), off (seconds after
 //         the spawn: Tempest Dance's limb trails stop emitting, fx:tto/tempestDance_trails) (fxparts/tto_panda.js); floor
 //         (true: every mesh of the effect clipped at the hero's ground, as the game's ground hides what dives under it: the
-//         rising dragons, Fx; the Panda's QA)
+//         rising dragons, Fx; the Panda's QA; a node's name or a list of names: only those nodes of the effect, 2026-11-14,
+//         the Whale's QA: Mal Storm's falling bolts whole, Megalodon's shark, the Leviathan slam's drops)
 // 2026-11-13, the Rabbit (plans/fx_rabbit/decisions.md 20, 22-24, 31-34, parts.md "Interfaces" 1-4): yaw (a name: one
 //         Random.Range(0, 360) per play per name, FX.yaws; x / d turned left about the hero by it and a rot list's yaw less
 //         it: the potions' and stars' ring, RPC_cast1's one draw), sphere (r: x / d moved by vFlat(r x Random.onUnitSphere),
@@ -4925,6 +5021,21 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         prop worn in the slot (api.propModel's build, its weapon_fx particles too) on that hero bone at local zero /
 //         identity from t for s seconds (none: until the next pick), gone on a new pick or a class change, hidden with the
 //         whole hero; nothing when no prop is worn there (HeroPropCopy; Ten Shot's second gun, Instantiate(mWep1))
+// 2026-11-13, the Whale (plans/fx_whale/decisions.md 24-26, 31, 32, 35, 37-41, 43; skills_a.md Verification 3, skills_b.md
+//         Verification 2, tto.md Verification 3): around ([lo, hi] whole metres: x and d moved by a whole number lo ... hi
+//         at a whole angle 0 ... 359 about the cue's spot, both drawn per cue when the clip starts, rot untouched: Mal
+//         Storm's bolts 3-5 m and 5-8 m out, Unity's int Range(3, 6) / Range(5, 9) and Range(0, 360), cueOf); a rot list
+//         may hold a [lo, hi] pair (that angle a whole number lo ... hi per cue: [0, 0, [-30, 29]] = Random.Range(-30, 30),
+//         rotOf); withRot (true, with atBone: the root takes the bone's rotation too, once at the spawn, the cue's rot
+//         after it: Instantiate(prefab, bone.position, bone.rotation x Euler(rot)), not parented: Peninsula Round's
+//         asunderRound rings at mount_Hand_R, Fx); the parts' (fx.at): slot (0-5, a knight's place round her), end (age: its
+//         unsummon), standing (true: already out at its slot, no rise, no ring), guard ([from, to] ages: Round Table's
+//         guard, a random facing and its cAttack clip every 0.5 s), attack ([ages]: its lunge at the target; built, not
+//         cued) (the knights); slot (the prop the javelin copies, "R"); to ([x, y, d]: the Homing Shield's aim, default the
+//         target body's centre); release (age: Grand Tide's wave ends, fx.cutNow()) (fxparts/whale.js); animLoop (a clip of
+//         the cast ring's own Animation looped from the spawn: Leviathan Breach's ring, fx:castRing in fxparts/bat.js); to
+//         ([x, y, d]: the end of a Leviathan Breach dolphin's lane, the cue's own spot its start), hops (its hop count, the
+//         hero's LeviathanHops) (fxparts/tto_whale.js)
 // An entry with "skills" may carry "order": "cycle" (the Mole's War Factory, decision 13): one skill, its members taken in
 // the file's order, one per play (the turn kept across plays and tiles, a new class starts again), no tile of their own
 // (poolChains); a member's "standby" (seconds) ends that play's step there; a member's "name" is its tile's name where the
@@ -4944,9 +5055,11 @@ const randRot = () => {
 // a cue's rot word (cueOf, api.spawn): "random" = Random.rotation; "randomYaw" = Euler(0, Random.Range(0, 360), 0), the int
 // Range (2026-11-13, the Mole's dig_dirt, Mole.cs:21792; plans/fx_mole/decisions.md 44); "random" inside a rot list = that
 // angle Random.Range(0, 360), the int Range, per cue (2026-11-13, the Rabbit's Millionaire coins [270, "random", 0],
-// plans/fx_rabbit/decisions.md 24, skills_b.md P2)
+// plans/fx_rabbit/decisions.md 24, skills_b.md P2); a [lo, hi] pair inside a rot list = that angle a whole number lo ... hi
+// drawn per cue, Unity's int Random.Range(lo, hi + 1) (2026-11-13, the Whale's Peninsula Round rings [0, 0, [-30, 29]] =
+// Euler(0, 0, Random.Range(-30, 30)), Whale.cs:28025; plans/fx_whale/decisions.md 32, skills_b.md Verification 2)
 const rotOf = r => r === "random" ? randRot() : r === "randomYaw" ? [0, randInt(0, 359), 0]
-  : Array.isArray(r) ? r.map(v => (v === "random" ? randInt(0, 359) : v)) : r || null;
+  : Array.isArray(r) ? r.map(v => (v === "random" ? randInt(0, 359) : Array.isArray(v) ? randInt(v[0], v[1]) : v)) : r || null;
 // a name list's pick: random, or by the outfit's colour number with pick "color" (the n-th name, 1 = the first; the
 // first when the outfit has no such number: 2026-11-13, the Mole's King Kaiser, Fire Barrage's planes and Bombardment's
 // bombers, Math.div(Skin, 100), Mole.cs:35709-35776, :29096-29163; plans/fx_mole/decisions.md 35, effect_only.md P1)
@@ -4961,6 +5074,15 @@ const cueOf = c => {
   if (Array.isArray(o.spread)) {
     q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
     if (!o.rot && (q.x || q.d)) q.rot = [0, Math.atan2(q.x, q.d) * 180 / Math.PI, 0];   // LookRotation(flat): yaw = atan2(x, z)
+  }
+  // around [lo, hi] (2026-11-13, the Whale's Mal Storm bolts: createMalstormBolt's hero + Random.Range(3, 6) x
+  // Math.rotateH(forward, Random.Range(0, 360)) (+ 12 up), Quaternion.identity, Whale.cs:10200-10215; plans/fx_whale/
+  // decisions.md 31, skills_a.md Verification 3): x and d moved by a whole number of metres lo ... hi (the int Range's top
+  // left out, so [3, 5]) at a whole angle 0 ... 359 about the cue's spot, both drawn per cue; rot is left as the cue gives
+  // it (spread draws a square and turns the effect; this draws rings and does not)
+  if (Array.isArray(o.around)) {
+    const r = randInt(o.around[0], o.around[1]), a = randInt(0, 359) * Math.PI / 180;
+    q.x += r * Math.sin(a); q.d += r * Math.cos(a);
   }
   // sphere r (2026-11-13, the Rabbit's Millionaire coins at hero + vFlat(2 x Random.onUnitSphere), plans/fx_rabbit/
   // decisions.md 24, skills_b.md P2): x and d moved by the flat part of a uniform point on a sphere of radius r, per cue
@@ -5382,7 +5504,11 @@ class HeroClone {
 // api.propModel (2026-11-13, the Chameleon's arrow: plans/fx_chameleon/parts.md Interfaces 1, decisions.md 50; the comment
 // above FX_PART_FILES). The starter pieces a fallback of true stands for (item_map.json: w_chm1 = noviceBow + noviceArrow)
 // (w_mnk1 = noviceMike: the Monkey's Mike Blink with nothing worn in R, plans/fx_monkey/decisions.md 3)
-const PROP_STARTER = { chameleon: { R: "noviceBow", L: "noviceArrow" }, monkey: { R: "noviceMike" } };
+// (w_whl1 = noviceLance + noviceShield: the Whale's thrown lance (slot R, on mount_Hand_R: BB's mWep2) and flying shields
+// (slot L: mWep1; WhaleEquipment.cs:1645, :1677, SWAP_HANDS) with nothing worn there, 2026-11-13,
+// plans/fx_whale/decisions.md 54, parts.md Read this first 4)
+const PROP_STARTER = { chameleon: { R: "noviceBow", L: "noviceArrow" }, monkey: { R: "noviceMike" },
+  whale: { R: "noviceLance", L: "noviceShield" } };
 function propModel(which, fallback) {
   if (!C) return null;
   const slot = typeof which === "string" ? which : null, kind = slot ? SLOTS[slot] : which?.kind || "weapons";

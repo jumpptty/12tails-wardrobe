@@ -247,6 +247,15 @@ SKILL_FX = {
         "medicTurret_cast", "medicTurret_deploy", "medicTurret", "medicTurret_beat", "medicTurret_shot",
         "medicTurret_capsule", "medicTurret_hit", "medicTurret_break",
     ],
+    # plans/fx_whale/tto.md Read this first 4, P4, parts.md Verification 5 (2026-11-13, decisions.md 64): the five prefabs of
+    # the released Leviathan Breach (Clap and Wai have none): the warning circle (TTO1102:Whale.<RPC_leviathanCast>d__302
+    # ::MoveNext@0x1EDFFB0), the raise and the slam (<RPC_leviathanBreach>d__303@0x1EDF630), the dolphins
+    # (<DolphinLeap>d__308@0x1ECD580, WhaleDolphin) and the Leviathan (<LeviathanRise>d__304@0x1ECEEC0, WhaleLeviathan). No
+    # TTO castRing: TTO's copy draws as BB's, so the cue names BB's castRing (wardrobe_fx.py builds it); no TTO sound: none
+    # of the five has an AudioSource, and Row6Sound's clips are BB's own whale/sounds ("sound" cues, wardrobe_fx.py). The
+    # two TTO passives' looks (armorShatter, impaler, oceanResilience, tidalPressure, sovereignImpale, sovereignImpale_rise)
+    # are not released: left out
+    "whale": ["leviathanBreach_warn", "leviathanCall_raise", "leviathanCall_slam", "leviathanBreach_dolphin", "leviathanBreach"],
 }
 # a class's effects outside heroes/<cls>/effects/ (Tto tries them after it, in this order; plans/fx_monkey/decisions.md 60,
 # tto.md P1, parts.md T1 and Verification 3): the boosted Ja's / Buiten's auras and the Rune Golem with its effects
@@ -917,6 +926,7 @@ def main():
     ap.add_argument("--fx", default="", help="prefabs to build instead of SKILL_FX[cls] + the cue file's tto/ names")
     ap.add_argument("--probe", nargs="?", const="*", default="", help="print the effects (all, or these) as JSON; writes nothing")
     ap.add_argument("--assets", default=ASSETS, help="TTO's tto_assets/<date> folder (dec/ + catalog.bin)")
+    ap.add_argument("--retex", action="store_true", help="write over a same-named texture file that holds another picture (after a TTO patch changed it; wardrobe_fx.save_texture)")
     a = ap.parse_args()
     if a.fx:
         names = [n.removeprefix("tto/") for n in a.fx.split(",") if n]
@@ -945,8 +955,10 @@ def main():
                           "hero_sounds": {n: o.read().m_Name for n, o in found.items()}}, indent=1))
         return
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)
+    # (wardrobe_fx.save_texture, 2026-11-13: never over another class's same-named file with a different picture; this
+    # run's own same-named assets are already apart, Build.out_name)
     for n, o in b.texs.items():
-        o.read().image.save(os.path.join(tdir, n + ".webp"), "WEBP", quality=90, method=6)
+        bb().save_texture(tdir, n, o.read().image, a.retex)
     # sounds: BB's rip WAV of the same name (TTO's default clips are BB's recordings to the millisecond, tto.md 4.3),
     # 64 kbps mono mp3 as wardrobe_fx.py writes them
     import imageio_ffmpeg

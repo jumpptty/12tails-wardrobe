@@ -17,7 +17,7 @@ A = ap.parse_args()
 A.out.mkdir(parents=True, exist_ok=True)
 
 # <cls>_<tile>_<view>_<t>[_rest].png  (wardrobe_fx_shots.py's names)
-NAME = re.compile(r"^(?P<cls>[a-z]+)_(?P<tile>.+?)_(?P<view>side|front|back|far|top|near|book|spot|bookside|bookback|behind)_(?P<t>\d\d\.\d\d)(?P<rest>.*)\.png$")
+NAME = re.compile(r"^(?P<cls>[a-z]+)_(?P<tile>.+?)_(?P<view>side|front|back|far|top|near|book|spot|bookside|bookback|behind|tall|wide|groundfar|ground)_(?P<t>\d\d\.\d\d)(?P<rest>.*)\.png$")
 groups = defaultdict(list)
 for p in sorted(A.shots.glob("*.png")):
     m = NAME.match(p.name)
