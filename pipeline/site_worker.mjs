@@ -19,7 +19,7 @@ const KINDS = { outfits: "ชุด", weapons: "อาวุธ", accessories: "
 // (Discord takes 10 attachments a message: the files + the preview + meta.json), their sum <= 9 MB (Discord's per-message
 // limit is believed to be 10 MB: unverified, a 502 "upstream" is what too much looks like) and a small preview picture
 export const LIMITS = { files: 8, pieces: 6, perPiece: 2, fileBytes: 4 << 20, setBytes: 9 << 20, previewBytes: 400 << 10, bodyBytes: 10 << 20,
-  side: 4096, name: 40, link: 200, perWindow: 5, windowSec: 600 };
+  side: 4096, name: 40, title: 60, link: 200, perWindow: 5, windowSec: 600 };
 const SLOT_KIND = { outfit: "outfits", R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
 const DEFAULT_SLOT = { outfits: "outfit", weapons: "R", accessories: "Head", trinkets: "Back" };
 const NAME_OK = /^[A-Za-z0-9_ .-]{1,64}$/, TEX_OK = /^[A-Za-z0-9_ .-]{0,80}$/;
@@ -71,7 +71,8 @@ export async function readSubmission(form) {
   const face = form.has("face") && form.get("face") !== "" ? Number(form.get("face")) : null;
   if (face !== null && !(Number.isInteger(face) && face >= 0 && face < 200)) return { error: "piece" };
   if (form.get("consent") !== "1") return { error: "consent" };
-  const name = clean(form.get("name"), LIMITS.name), link = cleanLink(form.get("link"));
+  // ชื่อผลงาน, the work's own title (user 2026-11-13), optional
+  const name = clean(form.get("name"), LIMITS.name), title = clean(form.get("title"), LIMITS.title), link = cleanLink(form.get("link"));
   if (!name) return { error: "name" };
   if (link === null) return { error: "link" };
   const pieces = [];
@@ -100,7 +101,7 @@ export async function readSubmission(form) {
     if (!ext) return { error: "png" };
     preview = { bytes, ext };
   }
-  return { cls, name, link, face, preview, pieces };
+  return { cls, name, title, link, face, preview, pieces };
 }
 
 // the token is Cloudflare's to judge; the site key is limited to the site's hostname in the Turnstile dashboard
@@ -128,12 +129,13 @@ async function overLimit(ip) {
 // meta.json the import reads (wardrobe_community.py), so nothing has to be parsed out of the message text
 export function discordBody(s, at) {
   let n = 0;                                                                       // skin<n>.png: one running number over every piece
-  const meta = { v: 2, cls: s.cls, name: s.name, link: s.link, face: s.face, at,
+  const meta = { v: 2, cls: s.cls, name: s.name, title: s.title || "", link: s.link, face: s.face, at,
     pieces: s.pieces.map(p => ({ slot: p.slot, kind: p.kind, item: p.item,
       textures: p.textures.map(t => ({ tex: t.tex, file: `skin${n++}.png`, w: t.w, h: t.h })) })) };
   const flat = s.pieces.flatMap(p => p.textures), pv = s.preview ? `preview.${s.preview.ext}` : null;
   const fields = [
     { name: "ตัวละคร", value: s.cls === "all" ? "ทุกอาชีพ" : CLASSES[s.cls], inline: true },
+    { name: "ชื่อผลงาน", value: s.title || "-", inline: true },
     { name: "ลายโดย", value: s.name, inline: true },
     { name: "ลิงก์", value: s.link || "-", inline: true },
     { name: "ชิ้น", value: s.pieces.map(p => `${KINDS[p.kind]}: ${p.item}`).join("\n"), inline: false },
@@ -145,7 +147,7 @@ export function discordBody(s, at) {
     // the meta again in the footer: the live list reads it from the message itself, one Discord call per 100 messages
     // (a meta.json download per skin hit the free plan's 50 calls at about 40 skins; meta.json stays for the PC import);
     // a footer holds 2048 characters: a long set leaves it out and the list falls back to meta.json
-    embeds: [{ title: s.pieces.length > 1 ? `ชุดลาย ${s.pieces.length} ชิ้น` : `${s.pieces[0].item} (${KINDS[s.pieces[0].kind]})`, fields,
+    embeds: [{ title: (s.title ? s.title + " · " : "") + (s.pieces.length > 1 ? `ชุดลาย ${s.pieces.length} ชิ้น` : `${s.pieces[0].item} (${KINDS[s.pieces[0].kind]})`), fields,
       image: { url: `attachment://${pv || "skin0.png"}` }, timestamp: at, ...(footer.length <= 2048 ? { footer: { text: footer } } : {}) }],
     attachments: [...flat.map((t, i) => ({ id: i, filename: `skin${i}.png` })),
       ...(pv ? [{ id: flat.length, filename: pv }] : []), { id: flat.length + (pv ? 1 : 0), filename: "meta.json" }] };
@@ -220,7 +222,7 @@ function setOf(m, meta, files) {
   }
   if (!pieces.length) return null;
   const prev = files["preview.jpg"] || files["preview.png"] || null;
-  return { id: m.id, cls: meta.cls, name: meta.name, link: meta.link || "", at: meta.at || m.timestamp,
+  return { id: m.id, cls: meta.cls, name: meta.name, ...(meta.title ? { title: String(meta.title) } : {}), link: meta.link || "", at: meta.at || m.timestamp,
     face: Number.isInteger(meta.face) ? meta.face : null, thumb: prev ? `api/community/${m.id}/preview` : null, pieces, src, prev };
 }
 async function approvedSets(env) {

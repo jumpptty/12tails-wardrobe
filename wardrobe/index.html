@@ -374,6 +374,8 @@ main.inset .cm-card { top: 96px; }
 .gal-pic img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gal-pic .gal-n { position: absolute; right: 5px; bottom: 5px; padding: 0 6px; border-radius: 4px; background: rgba(0, 0, 0, .6); color: var(--text); font-size: 11px; line-height: 18px; }
 .gal-by { font-size: 13px; font-weight: 600; line-height: 1.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gal-title { font-size: 14px; font-weight: 700; line-height: 1.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gal-title + .gal-by { font-weight: 400; color: var(--muted); }
 .gal-link { font-size: 12px; line-height: 1.45; color: var(--gold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
 .gal-link:hover { text-decoration: underline; }
 .gal-link.none { color: var(--muted); }
@@ -1697,7 +1699,7 @@ function setCommunity(x, team = TEAM) {
     pieces: [{ slot: SLOT_OF_KIND[s.kind], kind: s.kind, item: s.item, tex: s.tex }] }))), ...team]
     .filter(s => s?.pieces?.length).sort((a, b) => (a.at > b.at) - (a.at < b.at));
   COMMUNITY = SETS.flatMap(s => s.pieces.map((p, i) => ({ id: `${s.id}#${i}`, setId: s.id, cls: s.cls, kind: p.kind, item: p.item,
-    name: s.name, link: s.link || "", at: s.at, tex: p.tex })));
+    name: s.name, title: s.title || "", link: s.link || "", at: s.at, tex: p.tex })));
   syncCommunityBtn();
 }
 // this class's sets, newest first; a set none of whose pieces this copy can wear (TTO's, not published) is left out once
@@ -1896,7 +1898,7 @@ const Gallery = {
       const n = Object.keys(s.tex).length, worn = s.id === on;
       return `<div class="gal-card${worn ? " on" : ""}" data-cs="${esc(s.id)}"><div class="gal-pic"><img alt="ลายโดย ${esc(s.name)}">`
         + (n > 1 ? `<span class="gal-n"><span class="num">${n}</span> ลาย</span>` : "") + `</div>`
-        + `<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>`
+        + titleHTML(s) + `<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>`
         + (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "")
         + `<div class="gal-acts"><button type="button" class="sc-b sc-wear" data-a="wear"${worn ? " disabled" : " data-primary"}>${worn ? "ใส่อยู่" : "ใส่ในห้องแต่งตัว"}</button>`
         + `<button type="button" class="sc-b" data-a="dl">ดาวน์โหลด</button></div></div>`;
@@ -1992,6 +1994,7 @@ function setWorn2(set) {
     .every(t => SKINS.get(skinKey(p.kind, p.item, t))?.by?.setId === set.id));
 }
 const GAL_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const titleHTML = s => (s.title ? `<span class="gal-title" title="${esc(s.title)}">${esc(s.title)}</span>` : "");   // ชื่อผลงาน (2026-11-13)
 const linkHTML = s => (s.link ? `<a class="gal-link" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer" title="${esc(s.link)}">${esc(s.link.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "");
 const SetGallery = {
   el: null, back: null,
@@ -2010,7 +2013,7 @@ const SetGallery = {
       const w = worn(s), n = s.pieces.length;
       return `<div class="gal-card${w ? " on" : ""}" data-set="${esc(s.id)}"><div class="gal-pic tall"><img alt="ชุดลายโดย ${esc(s.name)}">`
         + `<span class="gal-n"><span class="num">${n}</span> ชิ้น</span></div>`
-        + `<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>${linkHTML(s)}`
+        + `${titleHTML(s)}<span class="gal-by" title="${esc(s.name)}">ลายโดย ${esc(s.name)}</span>${linkHTML(s)}`
         + `<div class="gal-acts"><button type="button" class="sc-b sc-wear" data-a="wear"${w ? " disabled" : " data-primary"}>${w ? "ใส่อยู่" : "ลองทั้งชุด"}</button>`
         + `<button type="button" class="sc-b" data-a="dl">ดาวน์โหลด</button></div></div>`;
     };
@@ -2110,9 +2113,10 @@ const Send = {
         <div class="look-list">${pieces.map((p, i) => `<label class="look-row"><input type="checkbox" name="p" value="${i}" checked>`
           + `<canvas width="88" height="88"></canvas><span>${nameHTML(p.item)}<small>${SLOT_TH[p.slot] || ""}${p.texs.length > 1 ? ` · <span class="num">${p.texs.length}</span> ลาย` : ""}</small></span></label>`).join("")}</div></div>
       <p>ทีมงานจะตรวจก่อน ถ้าผ่าน ทุกคนจะกด "ลองทั้งชุด" ได้ที่ปุ่ม ลายผู้เล่น พร้อมชื่อของคุณ</p>
+      <label>ชื่อผลงาน (ไม่บังคับ)<input type="text" name="title" maxlength="60" autocomplete="off"></label>
       <label>ชื่อที่จะให้เครดิต<input type="text" name="name" maxlength="40" autocomplete="nickname" value="${esc(me.name || "")}"></label>
       <label>ลิงก์ (ไม่บังคับ)<input type="url" name="link" maxlength="200" placeholder="https://" value="${esc(me.link || "")}"></label>
-      <label class="send-ok"><input type="checkbox" name="consent" value="1"><span>ลายนี้เป็นผลงานของฉัน และยินยอมให้แสดงบนเว็บไซต์ห้องแต่งตัว พร้อมชื่อและลิงก์ที่กรอก</span></label>
+      <label class="send-ok"><input type="checkbox" name="consent" value="1"><span>ลายนี้เป็นผลงานของฉัน และยินยอมให้แสดงบนเว็บไซต์ห้องแต่งตัว พร้อมชื่อผลงาน ชื่อ และลิงก์ที่กรอก</span></label>
       <div class="send-ts"></div>
       <p class="send-msg" role="alert"></p>
       <div class="send-acts"><button type="button" class="sc-b" data-a="cancel">ยกเลิก</button><button type="submit" class="sc-b" data-primary>${many ? "ส่งทั้งชุด" : "ส่งลาย"}</button></div></form>`;
@@ -2127,7 +2131,7 @@ const Send = {
     el.onpointerdown = e => { if (e.target === el) this.close(); };
     el.onkeydown = e => { e.stopPropagation(); if (e.key === "Escape") { e.preventDefault(); this.close(); } };   // the page's keys stay out
     el.querySelector("form").onsubmit = e => { e.preventDefault(); this.send(); };
-    el.querySelector('input[name="name"]').focus({ preventScroll: true });
+    el.querySelector('input[name="title"]').focus({ preventScroll: true });
     this.token = "";
     this.pv = null;
     capturePreview().then(b => {                                       // the character as it stands now
@@ -2163,7 +2167,7 @@ const Send = {
     if (this.busy || !this.cur) return;
     const f = this.el.querySelector("form"), E = f.elements;
     const chosen = [...f.querySelectorAll('input[name="p"]:checked')].map(x => this.cur.pieces[+x.value]);
-    const name = E.namedItem("name").value.trim(), link = E.namedItem("link").value.trim();
+    const name = E.namedItem("name").value.trim(), title = E.namedItem("title").value.trim(), link = E.namedItem("link").value.trim();
     if (!chosen.length) return this.say(SEND_ERR.none);
     if (!name) return this.say(SEND_ERR.name);
     if (link && !/^https:\/\/\S+$/i.test(link)) return this.say(SEND_ERR.link);
@@ -2188,7 +2192,7 @@ const Send = {
       }
       if (!defs.length) return this.say(SEND_ERR.none);
       if (total > SET_BYTES) return this.say(`ลายรวมกัน ${(total / 1048576).toFixed(1)} MB เกิน 9 MB\nเอาบางชิ้นออกแล้วส่งใหม่`);
-      for (const [k, v] of Object.entries({ token: this.token, cls: C.cls, name, link, consent: "1", face: String(C.state.face), pieces: JSON.stringify(defs) })) fd.append(k, v);
+      for (const [k, v] of Object.entries({ token: this.token, cls: C.cls, name, title, link, consent: "1", face: String(C.state.face), pieces: JSON.stringify(defs) })) fd.append(k, v);
       if (this.pv) fd.append("preview", this.pv, "preview.jpg");
       const r = await fetch("api/submit", { method: "POST", body: fd }), v = await r.json().catch(() => ({}));
       if (!r.ok || !v.ok) { this.resetTs(); return this.say(SEND_ERR[v.error] || "ส่งไม่สำเร็จ ลองอีกครั้ง"); }   // a Turnstile token works once

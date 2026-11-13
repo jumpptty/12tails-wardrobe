@@ -187,7 +187,9 @@ def apply(data, approved, dry=False):
         if preview:
             thumb = f"community/{cls}/{mid}_p.webp"
             writes[thumb] = lambda pv=preview: webp(pv, 85, 640)
-        sets.append({"id": mid, "cls": cls, "name": name, "link": link, "at": at, "face": face, "thumb": thumb, "pieces": out})
+        title = " ".join(str(meta.get("title") or "").split())[:60]          # ชื่อผลงาน (2026-11-13), optional
+        sets.append({"id": mid, "cls": cls, "name": name, **({"title": title} if title else {}), "link": link, "at": at,
+                     "face": face, "thumb": thumb, "pieces": out})
     sets.sort(key=lambda s: (s["at"], s["id"]))
     keep = {f for s in sets for p in s["pieces"] for f in p["tex"].values()} | {s["thumb"] for s in sets if s["thumb"]}
     added = [s["id"] for s in sets if s["id"] not in old]

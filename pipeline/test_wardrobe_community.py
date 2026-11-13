@@ -88,6 +88,15 @@ class Community(unittest.TestCase):
                          [("outfit", "standard", ["community/sheep/500_0.webp"]), ("R", "halloweenLantern", ["community/sheep/500_1.webp"])])
         with Image.open(self.d / s["thumb"]) as im:
             self.assertEqual(im.format, "WEBP")
+        self.assertNotIn("title", s)                        # ชื่อผลงาน is optional: none sent, none kept
+
+    def test_a_title_is_kept_as_one_line(self):
+        mid, meta, files, at = self.look("502", [("outfit", "outfits", "standard", [("", 16)])], preview=False)
+        meta["title"] = " อัศวิน\nแกะ " + "x" * 99
+        wc.apply(self.d, [(mid, meta, files, at)])
+        s = json.loads((self.d / "community.json").read_text(encoding="utf-8"))["sets"][0]
+        self.assertTrue(s["title"].startswith("อัศวิน แกะ x"))
+        self.assertEqual(len(s["title"]), 60)
 
     def test_a_look_drops_a_piece_it_cannot_carry_and_is_refused_when_none_is_left(self):
         added, _, refused = wc.apply(self.d, [self.look("501", [("outfit", "outfits", "standard", [("", 16)]), ("R", "weapons", "ttoStaff", [("Lantern.png", 8)])], preview=False)])

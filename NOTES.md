@@ -1970,3 +1970,17 @@ page_pipeline).
     (checks/fx_chameleon_qa/skeleton_near.png); the Venom Phantom ghosts are pale grey-white with green on the white
     stage; the target-point effects sit outside the default camera's frame, as for the other classes; decisions.md's
     overnight calls and the editor's judgement calls above.
+
+## 2026-11-13 (office), ชื่อผลงาน on the send form
+
+User: "when players are submitting the skins, add another text box field, ชื่อผลงาน" then "queue it and deploy this
+feature ASAP". Optional (my call: a required field would refuse looks sent the old way and adds friction; say so if it
+should be required), up to 60 characters, one plain line (the Worker's `clean`).
+- Page: the form's first field `ชื่อผลงาน (ไม่บังคับ)` (focused on open; not remembered in the browser, unlike the name and
+  link), sent as `title`; the consent line names it; the ลายผู้เล่น cards (sets and single pieces) show it above
+  "ลายโดย <name>" (`.gal-title`, the credit line then muted).
+- Worker (site_worker.mjs): LIMITS.title 60; meta.title (always, "" when empty); the Discord message's field ชื่อผลงาน and
+  its embed title "<title> · ..."; the live list carries `title` only when set. Import (wardrobe_community.py): community.json
+  sets keep `title` when set. Tests: node 9 pass (one new), unit tests 66 OK (one new).
+- Deployed from a clean worktree of 578705e (C:\work\12tails-wardrobe-hotfix, branch title-field), because the Mole
+  build was editing index.html in the main folder at the time; the same edits were made there too.

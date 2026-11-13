@@ -170,6 +170,23 @@ test("a whole look: every piece, the face and the preview reach Discord as one m
   assert.deepEqual(JSON.parse(payload.embeds[0].footer.text.slice(META_TAG.length)), meta);
 });
 
+test("ชื่อผลงาน: one plain line, cut at its limit, in the meta, the message and the live list", async () => {
+  const calls = stub();
+  const r = await worker.fetch(post(setForm(LOOK, { title: " อัศวิน\nแมว  " + "x".repeat(99) })), ENV);
+  assert.equal(r.status, 200);
+  const body = calls.find(c => c.url.startsWith(ENV.DISCORD_WEBHOOK)).init.body, payload = JSON.parse(body.get("payload_json"));
+  const meta = JSON.parse(await body.get("files[2]").text());
+  assert.ok(meta.title.startsWith("อัศวิน แมว x")); assert.equal(meta.title.length, LIMITS.title);
+  assert.ok(payload.embeds[0].title.startsWith(meta.title + " · "));
+  assert.equal(payload.embeds[0].fields.find(f => f.name === "ชื่อผลงาน").value, meta.title);
+  const env = { ...ENV, DISCORD_BOT_TOKEN: "bot", DISCORD_CHANNEL: "43" };
+  globalThis.fetch = async url => (String(url).startsWith("https://discord.com/") ? new Response(JSON.stringify([{ id: "201", webhook_id: "9",
+    timestamp: "2026-11-13T00:00:00Z", reactions: [{ emoji: { name: "✅" } }], attachments: [{ filename: "skin0.png", url: "https://cdn.discordapp.com/attachments/43/201/skin0.png" }],
+    embeds: [{ footer: { text: payload.embeds[0].footer.text } }] }])) : new Response("{}"));
+  const { sets } = await (await worker.fetch(new Request(HOST + "/api/community"), env)).json();
+  assert.equal(sets[0].title, meta.title);
+});
+
 test("a look is refused when it is too big, doubled, mis-slotted or its preview is not a picture", async () => {
   const code = async f => { stub(); const r = await worker.fetch(post(f), ENV); return [r.status, (await r.json()).error]; };
   const many = Array.from({ length: LIMITS.pieces + 1 }, (_, i) => ({ slot: "R", kind: "weapons", item: "w" + i, texs: [{ tex: "a.png" }] }));
@@ -196,7 +213,7 @@ test("an empty link is fine; text is one plain line", async () => {
   const r = await worker.fetch(post(form({ link: "", name: "a\nb\u0007  c" })), ENV);
   assert.equal(r.status, 200);
   const meta = JSON.parse(await calls.at(-1).init.body.get("files[1]").text());
-  assert.equal(meta.link, ""); assert.equal(meta.name, "a b c");
+  assert.equal(meta.link, ""); assert.equal(meta.name, "a b c"); assert.equal(meta.title, "");   // ชื่อผลงาน is optional
   assert.equal(clean("x".repeat(99), LIMITS.name).length, LIMITS.name);
   assert.equal(cleanLink("https://a.example/x?y=1"), "https://a.example/x?y=1");
   assert.equal(pngSize(png(3, 7)).h, 7);

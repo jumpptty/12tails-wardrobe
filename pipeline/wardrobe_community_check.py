@@ -33,14 +33,14 @@ def webp(size, color):
 LANTERN_TEX = "Sheep_mothLantern.png"                # the BB mothLatern's texture
 LANTERN_SIZE = Image.open(DATA / "props" / "tex" / LANTERN_TEX).size
 OUTFIT_SIZE = Image.open(DATA / "sheep" / "tex" / "standard1.webp").size
-def one(sid, slot, kind, item, name, link, at, tex):
-    return {"id": sid, "cls": "sheep", "name": name, "link": link, "at": at, "face": None, "thumb": None,
+def one(sid, slot, kind, item, name, link, at, tex, title=None):
+    return {"id": sid, "cls": "sheep", "name": name, **({"title": title} if title else {}), "link": link, "at": at, "face": None, "thumb": None,
             "pieces": [{"slot": slot, "kind": kind, "item": item, "tex": tex}]}
 
 
 FAKE = {
     "/wardrobe/data/community.json": json.dumps({"sets": [
-        one("900001", "R", "weapons", "mothLatern", "ทดสอบ ลายเขียว", "https://example.com/artist", "2026-11-11T00:00:00Z", {LANTERN_TEX: "community/sheep/900001_0.webp"}),
+        one("900001", "R", "weapons", "mothLatern", "ทดสอบ ลายเขียว", "https://example.com/artist", "2026-11-11T00:00:00Z", {LANTERN_TEX: "community/sheep/900001_0.webp"}, "โคมไฟป่าเขียว"),
         one("900002", "outfit", "outfits", "standard", "คนที่สอง", "", "2026-11-11T00:00:01Z", {"": "community/sheep/900002_0.webp"}),
         one("900003", "R", "weapons", "halloweenLantern", "ไม่ควรเห็น", "", "2026-11-11T00:00:02Z", {"Sheep_halloweenWeapon.png": "community/sheep/900001_0.webp"}),
         # a whole look (2026-11-12): the outfit and the lantern together, a face, the character's picture
@@ -133,13 +133,13 @@ async def main():
         await page.click('#pmenu .pm-item[data-a="gallery"]')
         await page.wait_for_selector(".gal-back:not([hidden]) .gal-card")
         await page.wait_for_function("() => document.querySelector('.gal-card img')?.naturalWidth > 0", timeout=15000)
-        g = await page.evaluate("""() => [...document.querySelectorAll('.gal-card')].map(c => ({ id: c.dataset.cs, by: c.querySelector('.gal-by').innerText,
+        g = await page.evaluate("""() => [...document.querySelectorAll('.gal-card')].map(c => ({ id: c.dataset.cs, title: c.querySelector('.gal-title')?.innerText || null, by: c.querySelector('.gal-by').innerText,
           link: c.querySelector('a.gal-link')?.href || null, rel: c.querySelector('a.gal-link')?.rel || null,
           wear: c.querySelector('[data-a="wear"]').innerText, dl: c.querySelector('[data-a="dl"]').disabled }))""")
         # the lantern's skins: the single one and the lantern of the whole look (each piece of a set is offered on its own here)
-        check(g == [{"id": "900001#0", "by": "ลายโดย ทดสอบ ลายเขียว", "link": "https://example.com/artist", "rel": "noopener noreferrer",
+        check(g == [{"id": "900001#0", "title": "โคมไฟป่าเขียว", "by": "ลายโดย ทดสอบ ลายเขียว", "link": "https://example.com/artist", "rel": "noopener noreferrer",
                      "wear": "ใส่ในห้องแต่งตัว", "dl": False},
-                    {"id": "900010#1", "by": "ลายโดย ชุดเต็ม", "link": None, "rel": None, "wear": "ใส่ในห้องแต่งตัว", "dl": False}], f"the pop-up's cards: {g}")
+                    {"id": "900010#1", "title": None, "by": "ลายโดย ชุดเต็ม", "link": None, "rel": None, "wear": "ใส่ในห้องแต่งตัว", "dl": False}], f"the pop-up's cards: {g}")
         await page.screenshot(path=str(OUT.resolve() / "gallery.png"))
         await page.keyboard.press("Escape")
         check(await page.locator(".gal-back").is_hidden(), "Esc closes the pop-up")
@@ -179,6 +179,7 @@ async def main():
         dlg = page.locator("form.send")
         await dlg.locator('button[type="submit"]').click()
         check(await page.locator(".send-msg").inner_text() == "กรอกชื่อที่จะให้เครดิตก่อน", "no name: asks for it")
+        await dlg.locator('input[name="title"]').fill("ลายทดสอบ ใหม่")       # ชื่อผลงาน (2026-11-13)
         await dlg.locator('input[name="name"]').fill("ผู้ทดสอบ")
         await dlg.locator('input[name="link"]').fill("http://plain.example")
         await dlg.locator('button[type="submit"]').click()
@@ -211,9 +212,9 @@ async def main():
         t = await page.evaluate("() => document.getElementById('toast').textContent")
         check("ส่งลายแล้ว" in t, f"success toast: {t!r}")
         f = POSTS[-1] if POSTS else {}
-        got = {k: f.get(k) for k in ("cls", "name", "link", "consent")}
+        got = {k: f.get(k) for k in ("cls", "name", "title", "link", "consent")}
         pieces = json.loads(f.get("pieces") or "[]")
-        check(got == {"cls": "sheep", "name": "ผู้ทดสอบ", "link": "https://example.com/me", "consent": "1"} and f.get("token")
+        check(got == {"cls": "sheep", "name": "ผู้ทดสอบ", "title": "ลายทดสอบ ใหม่", "link": "https://example.com/me", "consent": "1"} and f.get("token")
               and pieces == [{"slot": "R", "kind": "weapons", "item": "mothLatern", "textures": [{"tex": LANTERN_TEX, "field": "f0"}]}],
               f"the request: {got} {pieces}")
         size = Image.open(io.BytesIO(f["f0"])).size if f.get("f0") else None
