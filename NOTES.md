@@ -3272,3 +3272,11 @@ user's review: 67 decisions). One editor after three builders (whale, tto_whale,
   (the form is 676 px in 566); (3) the widget's error-callback says nothing. Cloudflare's test key that always asks
   for a click is `3x00000000000000000000FF` (`?submitkey=`). `pipeline/wardrobe_send_live_probe.py` still drives the
   old piece-menu send (the toolbar's #sendlook replaced it).
+- **Deployed** (user: "when done please commit push and deploy, then shut down this PC"): published from the main
+  folder at b4e05b3 (check: no problems; 9,569 -> 9,743 files, +4.5 MB; one warning, whale/talk's TTO keys differ from
+  BB's, BB's published), deployed from an empty folder with the Worker script: version
+  `cef73b79-837a-4547-be5d-586607703aa0`, `data-627300df13`. Live: 200, whale/fx.json, fxparts/whale.js and
+  tto_whale.js, fx_cues/whale.json, fx/tex/sheep_castRing.webp, /api/community answering, the old data folder 404, no
+  tot/. A headless pass on the live page: the Whale's 32 skill tiles; Leviathan Breach, 12th Kingdom Knight and Javelin
+  spawn their effects; no page or console errors. The PC was shut down after it, with the Bat skin session's work
+  still uncommitted on its disk (HANDOFF "Home PC: the Bat skin session's work is not committed").

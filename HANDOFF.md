@@ -55,6 +55,14 @@ NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the
 - No deploy from this work. A deploy from either PC: from the main folder at current main (NOTES.md "The opaque-outfit
   deploy d4adea35 had two side effects").
 
+## Home PC: the Bat skin session's work is not committed (2026-11-14)
+
+The home PC was shut down after the Whale's deploy with the Bat skin session's later passes only on its disk:
+plans/reskins/bat/eyes, pipeline/wardrobe_bat_enemies.py, wardrobe_bat_lashes.py, wardrobe_borrow.py,
+wardrobe_skin_upscale.py, wardrobe_skin_views.py, .claude/skills/reskin-from-image/SKILL.md, and that session's
+NOTES.md / HANDOFF.md text (in git, the Bat skin item above is older than the disk's). At home: commit and push them
+(that session's or the user's call) before the skin is continued on the other PC. Delete this item when done.
+
 ## Home PC
 
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
