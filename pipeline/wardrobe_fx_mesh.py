@@ -34,7 +34,9 @@ import struct
 
 from UnityPy.helpers.MeshHelper import MeshHandler
 
-r5 = lambda x: (1e30 if x > 0 else -1e30) if math.isinf(x) or abs(x) >= 1e29 else round(x, 5)
+# (a NaN, as some of warCapital's normals: 0, 2026-11-13; JSON has no NaN and the page's JSON.parse refused the whole
+# fx.json, so every Mole effect read as missing)
+r5 = lambda x: 0.0 if math.isnan(x) else (1e30 if x > 0 else -1e30) if math.isinf(x) or abs(x) >= 1e29 else round(x, 5)
 _trees = {}            # (file name, root Transform path id) -> {(file name, Transform path id): node index}
 
 

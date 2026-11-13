@@ -727,6 +727,7 @@ async function loadClass(cls) {
   // and the old move's cues still to come go with it (2026-11-13, the Bison's regression gate: the Bat's run, an
   // "everyCycle" entry, re-armed its step_fly1 and fired it once the Wolf was in, asking for data/wolf/sfx/step_fly1.mp3)
   if (C) { FX.cues = []; FX.cycle = null; }
+  FX.counters = {};                         // a cue's tune and a cycle pool's turn are the hero's: a new class starts them again
   fxData(cls);                              // its skill effects, if it has any yet
   const root = new THREE.Group();
   const tri = new THREE.Object3D();
@@ -1003,6 +1004,15 @@ function finishProp(root) {
   if (!a) return;
   const names = Object.keys(a.clips);
   const pick = names.find(k => /idle/i.test(k)) || (a.clips[a.default] ? a.default : names[0]);
+  const { clip, ends } = propClipOf(a, pick);
+  const mixer = new THREE.AnimationMixer(root), act = mixer.clipAction(clip);
+  if (ends) { act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; }
+  act.play();
+  root.userData.mixer = mixer;
+  root.userData.propAnim = { a, mixer, act, pick, ends, clips: { [pick]: clip } };   // a "propAnim" cue's (propAnimPlay)
+}
+// a prop's clip as a three AnimationClip on its p<i> nodes, sampled at 30 fps, and whether it ends away from its start
+function propClipOf(a, pick) {
   const c = a.clips[pick], fps = 30, dur = Math.max(c.len, 1 / fps), n = Math.max(2, Math.round(dur * fps) + 1);
   const times = Float32Array.from({ length: n }, (_, i) => Math.min(dur, i / fps));
   const tracks = [];
@@ -1032,10 +1042,29 @@ function finishProp(root) {
     let d = 0; for (let i = 0; i < k; i++) d = Math.max(d, Math.abs(v[i] - v[e + i]));
     if (k === 4) { let dot = 0; for (let i = 0; i < 4; i++) dot += v[i] * v[e + i]; d = 2 * Math.acos(Math.min(1, Math.abs(dot))) / 2.5; }
     return d > 0.1; });                         // 0.1 in position / scale, 14 degrees: the wings' loops drift up to 0.04
-  const mixer = new THREE.AnimationMixer(root), act = mixer.clipAction(new THREE.AnimationClip(pick, dur, tracks));
-  if (ends) { act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; }
-  act.play();
-  root.userData.mixer = mixer;
+  return { clip: new THREE.AnimationClip(pick, dur, tracks), ends };
+}
+// a "propAnim" cue (2026-11-13, the Mole's cannons, plans/fx_mole/decisions.md 43, attacks_emotes.md Q4: the hero's code
+// plays the worn weapon's own clip, mWep1.animation.Play("fire") at each shot, Mole.cs:20243, :21012; "root" at the
+// standby, :20514-20520): the prop in that slot plays the named clip once from its start, then its own clip again as it
+// ran before (looped, or held at its end: buildProp's pick); false when no prop is worn there or it has no such clip
+function propAnimPlay(slot, name) {
+  const pa = C?.props?.[slot]?.userData.propAnim;
+  if (!pa || !name || !pa.a.clips[name]) return false;
+  const act = pa.mixer.clipAction(pa.clips[name] ||= propClipOf(pa.a, name).clip);
+  if (act !== pa.act) pa.act.stop();
+  act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = false; act.play();
+  pa.mixer.removeEventListener("finished", pa.back);
+  pa.back = e => {
+    if (e.action !== act) return;
+    pa.mixer.removeEventListener("finished", pa.back);
+    if (act !== pa.act) act.stop();
+    const own = pa.act;
+    own.reset(); own.setLoop(pa.ends ? THREE.LoopOnce : THREE.LoopRepeat, pa.ends ? 1 : Infinity); own.clampWhenFinished = pa.ends;
+    own.play(); if (pa.ends) own.time = own.getClip().duration;
+  };
+  pa.mixer.addEventListener("finished", pa.back);
+  return true;
 }
 // where a prop goes on the hero (setProp; ชมชิ้นส่วน turns a floating piece the way it sits): TTO's own placement for
 // this hero + item code (wardrobe_placements.py: bone, pos, euler, scale), else the class's fallback, else BB's rule
@@ -1249,8 +1278,23 @@ const SEQ = {
     "Immunity: cast3", "Venom Shock: cast3", "Blood Burn: cast3", "Rusty Decay: cast3", "Torment Rain: rainOfArrow@2.7",
     "Venom Phantom: venomPhantom1@0.3 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom2^@0.22 venomPhantom3^",
     "Critical Plus: nAttack1", "Clear Arrow: nAttack1"],
-  mole: ["Normal Attack: nAttack1 nAttack2", "Assemble: assemble1 assemble2*@0", "Flame Turret: flameTurret1 flameTurret2*@3",
-    "Barrel Railgun: barrelRailgun1 barrelRailgun2*@6 barrelRailgun3@0.65 barrelRailgun4"],
+  // the Mole (plans/fx_mole, 2026-11-13, decisions.md 1-13): Normal Attack's five shells, one coroutine whose clips start
+  // 0.7 / 1.2 / 1.7 / 2.2 s after stage 1 (Combo 4; stages 2-5 cut in, the first keeps the page's fade; attacks_emotes.md
+  // Read this first 1); Charge Attack = the burrow (Super Dig on): superDig 0.7 s, the hidden dig2 held to the release
+  // at 3.0 s (the SEQ rule's 3 s for a hold), the plain surfacing root (key @ChargeAttack:root); Sky Drill (passive) its
+  // own tile, released at 3.01 s (the > 3 test true) into skyDrill; Assemble (Auto Gyro Gun, Barrel Bot: the pool's
+  // members) at magAdjust's 0.1 s floor, War Capital at its 8 s floor of the 24 s bar (decisions 6, 7); Bunker 3 s;
+  // Flame Turret's flameTurret2 for chaAdjust(5) = 5 s at CHA 1 (decision 8); King Kaiser's dig1 4.9 s, then the 240 s
+  // form cut at 10 s (decision 9); Barrel Railgun (TTO, released) through Assemble's two clips and the fixed 6 s bar,
+  // barrelRailgun1 from 0.55 s (Mole.c:3024: `>0.55`), the ride cut at 10 s (4 shots), each shot's barrelRailgun3 0.5 s,
+  // standby at 17.15 s (tto.md 2.1, S1; decision 10); the effect-only tiles on the idle stance, Reload, Fire Barrage,
+  // Bombardment, Synchro Mole (the dispatcher plays no clip for them; decision 11)
+  mole: ["Normal Attack: nAttack1@0.7 nAttack2@0.5 nAttack2@0.5 nAttack2@0.5 nAttack2",
+    "Charge Attack: superDig@0.7 dig2*@2.3 root~@0.2", "Sky Drill: superDig@0.7 dig2*@2.31 skyDrill",
+    "Assemble: assemble1 assemble2*@0.1", "War Capital: assemble1 assemble2*@8", "Bunker: bunker@3",
+    "Flame Turret: flameTurret1 flameTurret2*@4.5", "King Kaiser: dig1@4.9 root*@10",
+    "Barrel Railgun: assemble1@0.6 assemble2*@5.4 barrelRailgun1>0.55^@0.65 barrelRailgun2*^@2.2 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@0.1 barrelRailgun4^0.05@0.5",
+    "Reload: root*@1.1", "Fire Barrage: root*@5.3", "Bombardment: root*@8.2", "Synchro Mole: root*@10"],
   monkey: ["Normal Attack: nAttack1 nAttack2~", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*~@0 cast3~",
     "Damage Cast: damageCast1 damageCast2*~@0 cast3~", "Sentinel Guard: sentinalGuard1 sentinalGuard2* sentinalGuard0"],
   panda: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*@3",
@@ -1312,7 +1356,10 @@ const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeS
 // shikifujin: no TTO or BB code plays it (the string is in neither TTO1102's GameAssembly.dll nor BB's Cat.cs;
 // 2026-11-13, plans/fx_cat/decisions.md 14, tto.md 2.4); the Chameleon's focusFire1 / 2: BB data no code plays (no BB
 // file names them, nor TTO's, no Bible card; 2026-11-13, plans/fx_chameleon/decisions.md 16, skills_a.md item 9)
-const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"], chameleon: ["focusFire1", "focusFire2"] };
+// the Mole's dig2: only the clip loader names it, no BB or TTO code plays it (2026-11-13, plans/fx_mole/decisions.md 4,
+// attacks_emotes.md Verification 4); the burrow tiles play it as their hidden underground step
+const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"], chameleon: ["focusFire1", "focusFire2"],
+  mole: ["dig2"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // A step's alternatives (2026-11-13, the Bison's Normal Attack: its third stage is the game's roll, RPC_nAttack4 the spin
@@ -1325,13 +1372,16 @@ const HOLD_SECS = 1.5;
 // new round too) and kept for that play (C.seq.alt[step index]: drawAlts); startStep plays it (stepAt).
 // Test hook (the checks, pipeline/wardrobe_fx_check.py): window.__seqAlt = { <step index>: <alternative index> } forces
 // those picks on every draw while it is set (delete it, or set null, to go back to the roll)
-const SEQ_ALT = /^(\w+)(\*)?(?:([~^!])([\d.]+)?)?(?:@([\d.]+))?(?:%([\d.]+))?$/;
+// ">t" after the clip (and its "*") = the clip starts at t s into itself, not at 0 (2026-11-13, the Mole's Barrel Railgun:
+// PlayAnimation('barrelRailgun1', 0.1) then time = 0.55, TTO1102 Mole.c:3019-3026; plans/fx_mole/decisions.md 10, tto.md
+// P13): the step lasts its "@" time, else the rest of the clip; its cues count from the step's start, as every step's
+const SEQ_ALT = /^(\w+)(\*)?(?:>([\d.]+))?(?:([~^!])([\d.]+)?)?(?:@([\d.]+))?(?:%([\d.]+))?$/;
 function seqStep(tok) {
   const alts = tok.split("|").map(a => {
     const m = a.match(SEQ_ALT);
     if (!m) throw new Error("SEQ token " + tok);
-    const fade = m[3] === "~" ? (m[4] ? +m[4] : 0.2) : m[3] === "^" ? (m[4] ? +m[4] : 0.1) : 0;
-    return { clip: m[1], hold: !!m[2], fade, cut: m[3] === "!", t: m[5] ? +m[5] : null, p: m[6] ? +m[6] / 100 : null };
+    const fade = m[4] === "~" ? (m[5] ? +m[5] : 0.2) : m[4] === "^" ? (m[5] ? +m[5] : 0.1) : 0;
+    return { clip: m[1], hold: !!m[2], from: m[3] ? +m[3] : 0, fade, cut: m[4] === "!", t: m[6] ? +m[6] : null, p: m[7] ? +m[7] / 100 : null };
   });
   return { ...alts[0], alts, p: alts[0].p };
 }
@@ -1374,12 +1424,15 @@ function poolChains(base, tab) {
   C.poolClips = new Set();
   const own = (ch, clip) => tab[ch.id + ":" + clip] || tab["@" + ch.name + ":" + clip];
   for (const [key, e] of Object.entries(tab)) {
-    if (key.startsWith("@") || !e?.skills || !C.clipsData[key]) continue;
+    // (a cycle pool, "order": "cycle", is one skill whose plays take its members in turn: its clip's own tile, fxStart)
+    if (key.startsWith("@") || !e?.skills || !C.clipsData[key] || e.order === "cycle") continue;
     const hosts = base.filter(ch => ch.steps.some(s => stepClips(s).includes(key)) && !own(ch, key));
     const host = hosts.find(ch => ch.name === "Cast") || hosts[0];
     const steps = host ? host.steps : [{ clip: key, hold: playMode(key) === "loop", fade: 0.2, cut: false, t: null }];
     for (const m of Object.keys(e.skills)) {
-      const name = m.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, x => x.toUpperCase()), id = "@" + name.replace(/\s+/g, "");
+      // a member's "name": its tile's name where the key's own spelling is not the skill's (2026-11-13, the Mole's TNT
+      // ranks tnt1-4, plans/fx_mole/decisions.md 12: the Bible's names, not "Tnt1")
+      const name = e.skills[m].name || m.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, x => x.toUpperCase()), id = "@" + name.replace(/\s+/g, "");
       if (taken.has(id)) continue;
       taken.add(id);
       out.push({ id, name, steps, pick: m, skill: m, tto: host ? host.tto : !!C.clipsData[key].tto });
@@ -1462,16 +1515,18 @@ function startStep(i, fade) {
   if (act === C.action) act = C.mixer.clipAction(twinClip(st.clip));
   const loop = st.hold || S.mode === "loop";
   act.reset(); act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); act.clampWhenFinished = !loop;
-  act.play();
+  act.play(); act.time = st.from || 0;     // a ">t" step starts into its clip (seqStep)
   if (C.action && C.action !== act) { if (fade > 0) C.action.crossFadeTo(act, fade, false); else C.action.stop(); }   // the game's CrossFade, or a cut
   C.action = act;
   S.i = i; S.t = 0;
   // its effects and voice, every time the clip starts (the loop too); the way back to idle keeps the skill's cues running
   // on (FX.t goes on from the skill's clip). An emote or a basic move replayed says its line once per pick, as the game
   // plays it once (user 2026-11-10: the Wolf's emote voices; cry's 0.8 s clip would say it again and again)
+  FX.stepDur = null;
   if (!S.tail && (!S.round || isSkillMove(C.cur))) fxStart(st.clip, i);
+  // a cycle pool's member may end the step at its own standby (FX.stepDur, fxStart: War Factory's weapons)
   S.dur = S.mode === "loop" || S.mode === "hold" ? Infinity
-    : st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration);
+    : FX.stepDur ?? st.t ?? (st.hold ? Math.max(1, Math.round(HOLD_SECS / clip.duration)) * clip.duration : clip.duration - (st.from || 0));
 }
 // advanced by the render loop: the next step, the sequence again, or (ลุกขึ้น) idle; an open move picker follows (F9)
 function seqTick(dt) {
@@ -3351,7 +3406,12 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
   // Plus / Clear Arrow on the Normal Attack's clip (a skill with a tile of its own shows on that tile only: the Normal
   // Attack tile keeps its own icon, moveSkillIcons)
   chameleon: { "@Immunity": "immunity", "@VenomShock": "venomShock", "@BloodBurn": "bloodBurn", "@RustyDecay": "rustyDecay",
-    "@Tent": "tent", "@CriticalPlus": "criticalPlus", "@ClearArrow": "clearArrow" } };
+    "@Tent": "tent", "@CriticalPlus": "criticalPlus", "@ClearArrow": "clearArrow" },
+  // the Mole (2026-11-13, plans/fx_mole/decisions.md 14): the burrow (the Charge Attack's own icon, cattack3), Sky Drill
+  // (its passive) on the same clips, War Capital on Assemble's, King Kaiser on dig1, the effect-only tiles, Barrel Railgun
+  mole: { "@ChargeAttack": "cAttack", "@SkyDrill": "skyDrill", "@WarCapital": "warCapital", "@KingKaiser": "kingKaiser",
+    "@Reload": "reload", "@FireBarrage": "fireBarrage", "@Bombardment": "bombardment", "@SynchroMole": "synchroMole",
+    "@BarrelRailgun": "barrelRailgun" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -3865,10 +3925,14 @@ const FX = { live: [], data: {}, mats: {}, cues: [], t: 0, cueTab: {}, spawned: 
 FX.json = {};      // the class's fx.json once loaded (api.spawn reads it at once); gen: counts the picks (fxClear), for late spawns
 FX.gen = 0; FX.cycle = null;   // cycle: an "everyCycle" entry's playing action (fxStart, fxTick)
 FX.stepGen = 0;                // counts the sequence steps started (fxStart; Fx.stepGen: the step an effect was made in)
+FX.counters = {};              // a cue's tune and a cycle pool's turn, by key, across plays and tiles (fxDue, fxStart; loadClass resets)
+FX.stepDur = null;             // the step's length a cycle pool's member gives (its standby: fxStart, read by startStep)
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
 // (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
-  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null)).catch(() => null)
+  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null))
+  // (said, not swallowed: 2026-11-13, a NaN in the Mole's fx.json made JSON.parse refuse it and every effect read as missing)
+  .catch(e => (console.error("effects data", cls, e), null))
   .then(d => (d && (FX.json[cls] = d), d));
 // Effect parts in modules of their own (2026-11-09, the Wolf's missing effects: plans/fx_wolf/parts.md, tto.md), so each
 // part is written apart from this page: wardrobe/fxparts/<file>.js default-exports register(api) and calls
@@ -3940,6 +4004,18 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // cage, effectControl.life = mDuration, Chameleon.cs:9161-9167); a cue's stop (seconds after the spawn): every emitter's
 // stop?.() then (Shuriken stops emitting, its live particles finish: chainLightning_stormDragon's Stop(StopEmitting)),
 // the effect lives on to its kill or its life
+// 2026-11-13, the Mole (plans/fx_mole/parts.md "Interfaces", decisions.md 19, 37, 46, 55): api.fontText(name, text, { color:
+// [r, g, b] (0-1, gamma), box: [w, h] (pixels, default 30 x 30: GUI.Label's Rect), canvas (a canvas to draw into again) })
+// = a canvas of that box with the text in the class's fx.json bitmap font `name` (data.fonts[name]: { tex, ascent, line,
+// chars: { "<char>": { uv: [x, y, w, h] (the texture's 0-1 space, origin bottom left), vert: [x, y, w, h] (pixels from
+// the pen, y up: the glyph's box), width (the advance) } } }, wardrobe_fx.py FONTS; its texture data/fx/tex/<tex>.webp, the
+// glyphs in its alpha), tinted with color, its measured ink (the drawn pixels, not the line box) centred in the box; null
+// while the texture is still loading (ask again next frame) or when the data has no such font (the Time Nuke's GMO24
+// countdown, fxparts/mole.js). api.propPoint(slot, name, fx) = the Unity-space position, in fx's mirror group, of the
+// prefab node `name` under the prop worn in that slot, or null (BB's "firePoint" child of a cannon). A cue's clip is the
+// parts' (fx.at.clip: fxparts/robots.js's King Kaiser plays it, then root). A cue's host + bone: the bone is that node of the newest
+// living Fx whose name starts with host (else the hero's bone). A cue's playAudio: the first playOnAwake-off AudioSource
+// starts that many seconds after the spawn (in fx.sounds / fx.loops: Fx.dispose stops it)
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
@@ -3956,12 +4032,17 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   // arrow, a copy of the worn arrow: api.propModel), Chameleon_needlePrison; Self-Illumin/DoubleTexture (api.shader); FX/Invisible
   // on an effect mesh (api.shader, api.shellMaterial); TTO's ChameleonLightning, ChameleonAfterimage + TTO/ChameleonSpirit,
   // ChameleonPreyReticle, Chameleon.ApexArrow
-  "chameleon", "doubletexture", "fxinvisible", "tto_chameleon"];
+  "chameleon", "doubletexture", "fxinvisible", "tto_chameleon",
+  // the Mole's (2026-11-13, plans/fx_mole/parts.md "Who builds what", decisions.md 18-37, 53-56): the shells, homing missiles,
+  // the cart, Mole_timeNuke's countdown (api.fontText), fx:detonate, Mole_warCapital, fx:flameCarnival; rotationControl
+  // (also the Monkey's lavu); the summons AutoGyroGun, BarrelBot, KingKaiser; TTO's MoleRailTurret, MoleRailgun,
+  // MoleRailBeam, MoleRailArc, MoleRailShock, MoleLaunchPad, MoleLockReticle, KaiserArsenalPod, KaiserWarhead, TTO's Mole_missile
+  "mole", "rotationcontrol", "robots", "tto_mole"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
     fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null,
-    spawn: fxSpawn, pointLight, releaseLight, propModel, shellMaterial };
+    spawn: fxSpawn, pointLight, releaseLight, propModel, shellMaterial, fontText, propPoint };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
@@ -4104,6 +4185,9 @@ class Fx {
     this.sounds = [];                          // every AudioSource it starts: { node, comp, h } (the loops are these too)
     this.group = new THREE.Group(); this.group.visible = vfxOn;
     C.root.getWorldPosition(this.group.position); C.root.getWorldQuaternion(this.group.quaternion);
+    // during a three-axis lift (LIFTS' { end, at }: Barrel Railgun's seat) an effect is placed from her spot before it, as
+    // the game's code places them from the cast's spot (mRailSpot); a height lift keeps its old way (Titan Drop, Apex Hunt)
+    if (LOOK.lift?.alive && LOOK.lift.off && LOOK.lift.root === C.root) this.group.position.sub(LOOK.lift.off);
     this.mirror = new THREE.Group(); this.mirror.scale.set(-1, 1, 1); this.group.add(this.mirror);
     this.nodes = def.nodes.map(() => new THREE.Object3D());
     def.nodes.forEach((n, i) => {
@@ -4134,6 +4218,7 @@ class Fx {
           this.sounds.push(s);
           if (c.loop) this.loops.push(s);         // lullaby_ring, edenSanctuary, divinityAxe, cAttack_charge ...
         }
+        else if (c.type === "AudioSource" && !this.idleAudio) this.idleAudio = { node: o, comp: c };   // a cue's playAudio starts it
         else if (FXPARTS[c.type]) { const em = FXPARTS[c.type](this, o, c, mat, n, d); if (em) this.emitters.push(em); }   // wardrobe/fxparts/
       }
     });
@@ -4210,6 +4295,15 @@ class Fx {
     // Destroy(aura, 1), TTO1102 Chameleon.c:24010-24017; plans/fx_chameleon/tto.md P7): every emitter stops emitting, the
     // effect lives on (its live particles finish)
     if (this.at.stop != null && !this.stopEmit && this.age >= this.at.stop) { this.stopEmit = true; for (const e of this.emitters) e.stop?.(); }
+    // a cue's playAudio (2026-11-13, the Mole's Chopper, plans/fx_mole/decisions.md 46, skills_a.md P3: its looping engine
+    // has playOnAwake off and the hero's code starts it, mChopper.audio.Play(), Mole.cs:33663): seconds after the spawn when
+    // the effect's first playOnAwake-off AudioSource plays (looped per its loop), stopped with the effect (Fx.dispose)
+    if (this.at.playAudio != null && this.idleAudio && !this.audioOn && this.age >= this.at.playAudio) {
+      this.audioOn = true;
+      const { node, comp } = this.idleAudio, s = { node, comp, h: Sound.play(this.cls, comp.clip, comp.volume, comp.loop) };
+      this.sounds.push(s);
+      if (comp.loop) this.loops.push(s);
+    }
     if (ec) {
       if (this.age >= ec.life + ec.afterLife) return this.dispose();
       // live phase: the hero never moves here, so following is a no-op; after-life: legacy emitters and ImageEmitters stop
@@ -4252,11 +4346,16 @@ class Fx {
     }
     if (this.followNode && !this.followSnap()) return this.dispose();
     if (this.bone) {                             // a cue's bone: parented to it, localPosition 0, localRotation identity
-      const b = C?.byName?.[this.bone];
+      // a cue's host (2026-11-13, the Mole's Kaiser Arsenal pods on the King Kaiser's own Arm_R / Arm_L, TTO1102
+      // KingKaiser::SpawnPods@0x1CB19A0; plans/fx_mole/decisions.md 37): the bone is the node of that name in the living
+      // effect whose name starts with host (the newest), looked up every frame (it may come later or go first), else the
+      // hero's bone. Its matrix is Unity's already (mirror^-1 x its world, both inside a mirror group: no MIRROR_X)
+      const h = this.at.host ? hostNode(this.at.host, this.bone) : null, b = h || C?.byName?.[this.bone];
       // Unity's transform = mirror^-1 x the three bone's world x the mirror (the hero's rig is Unity's, mirrored the same way
       // as the effect, wardrobe_data.py); the scale stays the spawned one (Unity keeps the world scale on a reparent)
       if (b) { b.updateWorldMatrix(true, false); this.mirror.updateWorldMatrix(true, false);
-        this.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld).multiply(MIRROR_X).decompose(this.root.position, this.root.quaternion, V());
+        const m = this.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld);
+        (h ? m : m.multiply(MIRROR_X)).decompose(this.root.position, this.root.quaternion, V());
         if (this.boneRot) this.root.quaternion.multiply(this.boneRot); }   // Unity's localRotation under the bone
     }
     else if (ec?.followPosition && !this.follow && !this.followNode && C && this.age < ec.life) {   // rides a lifted hero
@@ -4291,6 +4390,14 @@ class Fx {
   }
 }
 
+// a cue's host node (Fx.update's bone): the node named `bone` in the newest living Fx whose name starts with `host`
+function hostNode(host, bone) {
+  for (let i = FX.live.length - 1; i >= 0; i--) {
+    const f = FX.live[i];
+    if (f instanceof Fx && f.alive && f.name.startsWith(host)) { const n = f.nodes.find(o => o.name === bone); if (n && onStage(n)) return n; }
+  }
+  return null;
+}
 // RingEmitter.cs (spec 2026-11-09): rings in the node's XZ plane, every one made at once and shown from Delay + k x
 // EmissionPeriod for Life; radius / width / height / colour linear over life; velocity = the whole drift over life;
 // UV scrolls uvRotation turns a second; x / z also times the node's own scale (RE:499, :504)
@@ -4645,6 +4752,27 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         ghost: its Fire()), shatterGhosts (the rupture), lockOnly, release, tint (Apex Hunt's prey reticle), from (a bolt's
 //         start) (fxparts/tto_chameleon.js, plans/fx_chameleon/tto.md 7); "skin" looks FX/Blend, FX/Invisible,
 //         Chameleon.StormDarken (HERO_SKINS); "lift" apexHunt (LIFTS)
+// 2026-11-13, the Mole (plans/fx_mole/decisions.md 13, 19, 22-26, 35, 37, 41-46, 55, 59): rot "randomYaw" (Euler(0,
+//         Random.Range(0, 360), 0), drawn when the clip starts: dig_dirt); pick "color" (the name list's n-th name by the
+//         outfit's colour number, 1 = the first, the first for an outfit with none: KingKaiser_r|_g|_b|_k|_w, Fire Barrage's
+//         and Bombardment's planes); tune ([names]: one per firing, in order, the turn kept across plays and tiles for each
+//         list, a new class starts again: the Trumpet's notes; the cue's own name lists every note so the build makes them);
+//         playAudio (seconds after the spawn: the effect's playOnAwake-off AudioSource starts, stopped with the effect: the
+//         Chopper's engine); clip (the summon plays that clip once, then "root": the King Kaiser in Kaiser Arsenal,
+//         fxparts/robots.js); host (with bone: the bone of the newest living effect whose name starts with host, else the hero's:
+//         the arsenal pods on the Kaiser's Arm_R / Arm_L); the parts' (fx.at): firePoint (the slot whose prop's "firePoint"
+//         node is the muzzle: api.propPoint), tilt ([lo, hi] degrees drawn per grenade), pair (a twin missile's pair id),
+//         trigger (Flame Carnival's), finish, ride, shots, rideEnd, tier (the rail turret's and beam's clock), sink, kicks
+//         (the missile pad), fold (the arsenal pods) (fxparts/mole.js, tto_mole.js, robots.js); "lift" barrelRailgun (a
+//         three-axis lift, LIFTS' { end, at }: onto the turret's seat and off it, decision 40)
+//   kind  "propAnim" (2026-11-13, the Mole's cannons, decisions.md 43): [t, "propAnim", slot, {"clip": name}]: the prop worn
+//         there plays its own clip once from its start, then its own loop again (propAnimPlay); nothing when no prop is
+//         worn there or it lacks the clip (the recoil "fire" at each shot, "root" at the standby where a prop has one)
+// An entry with "skills" may carry "order": "cycle" (the Mole's War Factory, decision 13): one skill, its members taken in
+// the file's order, one per play (the turn kept across plays and tiles, a new class starts again), no tile of their own
+// (poolChains); a member's "standby" (seconds) ends that play's step there; a member's "name" is its tile's name where the
+// key is not the skill's own spelling (the TNT ranks tnt1-4, decision 12)
+// A SEQ step may start into its clip: "clip>t" (seqStep: Barrel Railgun's barrelRailgun1 from 0.55 s)
 // An entry may also carry "builds": [names] (effects a part spawns, api.spawn, and "sound:<name>" / "voice:<name>" for
 // what it plays, that no cue names: wardrobe_fx.py builds them; the guardian's blade, hits and swing) and
 // "everyCycle": true (a looped clip's cues again on each cycle, against the clip's own time: the run's wing flap, fxTick)
@@ -4656,10 +4784,17 @@ const randRot = () => {
   const e = new THREE.Euler().setFromQuaternion(new THREE.Quaternion(s * Math.sin(a), s * Math.cos(a), t * Math.sin(b), t * Math.cos(b)), "YXZ");
   return [e.x, e.y, e.z].map(r => r * 180 / Math.PI);
 };
+// a cue's rot word (cueOf, api.spawn): "random" = Random.rotation; "randomYaw" = Euler(0, Random.Range(0, 360), 0), the int
+// Range (2026-11-13, the Mole's dig_dirt, Mole.cs:21792; plans/fx_mole/decisions.md 44)
+const rotOf = r => r === "random" ? randRot() : r === "randomYaw" ? [0, randInt(0, 359), 0] : r || null;
+// a name list's pick: random, or by the outfit's colour number with pick "color" (the n-th name, 1 = the first; the
+// first when the outfit has no such number: 2026-11-13, the Mole's King Kaiser, Fire Barrage's planes and Bombardment's
+// bombers, Math.div(Skin, 100), Mole.cs:35709-35776, :29096-29163; plans/fx_mole/decisions.md 35, effect_only.md P1)
+const pickOf = (ns, pick) => pick === "color" ? ns[(+C?.state?.color || 1) - 1] ?? ns[0] : ns[Math.floor(Math.random() * ns.length)];
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
-  const q = { ...o, at: c[0], kind: c[1], name: ns[Math.floor(Math.random() * ns.length)], d: o.d || 0, x: o.x || 0, y: o.y || 0,
-    rot: o.rot === "random" ? randRot() : o.rot || null, vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
+  const q = { ...o, at: c[0], kind: c[1], name: pickOf(ns, o.pick), d: o.d || 0, x: o.x || 0, y: o.y || 0,
+    rot: rotOf(o.rot), vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
   if (Array.isArray(o.spread)) {
     q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
     if (!o.rot && (q.x || q.d)) q.rot = [0, Math.atan2(q.x, q.d) * 180 / Math.PI, 0];   // LookRotation(flat): yaw = atan2(x, z)
@@ -4869,6 +5004,20 @@ const LIFTS = {
   titanDrop: [[0.4, 0, 0, 13.68889], [0.85, 2.8, 0.5142857, 0.5142857], [1.2, 3, 0, 0], [1.5, 0, -20, 0]],
   apexHunt: [[0, 0, 0, 27.2727], [0.33, 4.5, 0, 0.4], [0.6442, 4.58, 0, 0], [0.9584, 4.5, -0.4, -0.4], [1.2726, 4.42, 0, 0],
     [1.5867, 4.5, 0.4, 0.4], [1.9009, 4.58, 0, 0], [2.23, 4.494, -0.399, 0], [2.53, 0, -30, 0]],
+  // a lift on three axes: { end, at(t) -> [x right, y up, z ahead] } in the hero's own frame, Unity's metres (2026-11-13,
+  // the Mole's Barrel Railgun, plans/fx_mole/decisions.md 40, tto.md 2.1, Q2), timed from the cast: the hop onto the seat
+  // (SeatAnchor: 0.63 m up, 0.55 m ahead) in barrelRailgun1 from its 0.55 s, lerp(start, seat, s) + up x 0.5 sin(pi s),
+  // s = SmoothStep(clamp01((ct - 0.85) x 4)) at clip time ct = 0.55 + (t - 6.0): 6.3-6.55 s (TTO1102 Mole.c:3029-3104);
+  // seated through the 10 s ride to 16.65 s (RailSeat); the hop off in barrelRailgun4 to 0.8 m left / 0.97 m ahead on the
+  // ground, lerp + up x 0.4 sin(pi s), s = SmoothStep(clamp01((u - 0.08) / 0.32)), u = t - 16.65: 16.73-17.05 s
+  // (:3533-3575); held there to the standby at 17.15 s, the sequence's end, where the page's hero goes back to her spot
+  // (the page never moves her along the ground for good: Titan Drop's ground track left out the same way)
+  barrelRailgun: { end: 17.15, at(t) {
+    const ss = x => { x = clamp01(x); return x * x * (3 - 2 * x); }, seat = [0, 0.63, 0.55], land = [-0.8, 0, 0.97];
+    const hop = (a, b, s, h) => [0, 1, 2].map(i => a[i] + (b[i] - a[i]) * s + (i === 1 ? h * Math.sin(Math.PI * s) : 0));
+    if (t < 16.65) return hop([0, 0, 0], seat, ss((0.55 + t - 6.0 - 0.85) * 4), 0.5);
+    return hop(seat, land, ss((t - 16.65 - 0.08) / 0.32), 0.4);
+  } },
 };
 function liftAt(keys, t) {
   if (t <= keys[0][0]) return keys[0][1];
@@ -4887,19 +5036,28 @@ class HeroLift {
   constructor(name, keys) {
     this.name = "lift:" + name; this.alive = true; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
     if (LOOK.lift?.alive) LOOK.lift.dispose();
-    LOOK.lift = this; this.keys = keys; this.root = C.root; this.y0 = C.root.position.y;
-    this.end = keys[keys.length - 1][0];
-    this.root.position.y = this.y0 + liftAt(keys, 0);
+    LOOK.lift = this; this.keys = keys; this.root = C.root; this.y0 = C.root.position.y; this.p0 = C.root.position.clone();
+    this.end = Array.isArray(keys) ? keys[keys.length - 1][0] : keys.end;
+    this.place(0);
+  }
+  // a height curve sets y; a three-axis lift (LIFTS' { end, at }) puts the root at its spot before + the offset in the
+  // hero's frame (Unity x right = the page's -x under her turn: the effects' mirror)
+  place(t) {
+    if (Array.isArray(this.keys)) { this.root.position.y = this.y0 + liftAt(this.keys, t); return; }
+    const [x, y, z] = this.keys.at(t);
+    this.off = V(-x, y, z).applyQuaternion(this.root.quaternion);   // (Fx: an effect made meanwhile stands at her spot before)
+    this.root.position.copy(this.p0).add(this.off);
   }
   attached() { return false; }
   update(dt) {
     this.age += dt;
     if (this.age >= this.end || this.root !== C?.root) return this.dispose();
-    this.root.position.y = this.y0 + liftAt(this.keys, this.age);
+    this.place(this.age);
   }
   dispose() {
     if (!this.alive) return;
-    this.alive = false; this.root.position.y = this.y0;
+    this.alive = false;
+    if (Array.isArray(this.keys)) this.root.position.y = this.y0; else this.root.position.copy(this.p0);
     if (LOOK.lift === this) LOOK.lift = null;
   }
 }
@@ -5066,11 +5224,60 @@ function shellMaterial({ color = [1, 1, 1], alpha = 1, k = 0.008, blend = "alpha
   m.customProgramCacheKey = () => "fxShell-" + (src ? "srcColor" + alpha.toFixed(4) : "alpha");
   return m;
 }
+// api.fontText (2026-11-13, the Mole's Time Nuke countdown, plans/fx_mole/decisions.md 55, parts.md part 6 and Interfaces 3;
+// the comment above FX_PART_FILES): text in one of the class's fx.json bitmap fonts (wardrobe_fx.py FONTS: the game's GUI
+// font, its glyphs in the texture's alpha), tinted, its measured ink centred in the box
+const FONT_IMG = {};
+function fontText(name, text, { color = [1, 1, 1], box = [30, 30], canvas = null } = {}) {
+  const f = C && FX.json[C.cls]?.fonts?.[name];
+  if (!f) return null;
+  const im = FONT_IMG[f.tex] ||= Object.assign(new Image(), { src: `${DATA}fx/tex/${f.tex}.webp` });
+  if (!im.complete || !im.naturalWidth) return null;
+  const W = im.naturalWidth, H = im.naturalHeight, gs = [...String(text)].map(ch => f.chars[ch]).filter(Boolean);
+  const tmp = document.createElement("canvas");
+  tmp.width = Math.max(1, Math.ceil(gs.reduce((s, g) => s + Math.max(g.width, g.vert[0] + g.vert[2]), 0)) + 2);
+  tmp.height = Math.max(1, Math.ceil(f.line || f.ascent * 1.4));
+  const t = tmp.getContext("2d", { willReadFrequently: true });
+  let pen = 1;
+  for (const g of gs) {                          // the glyph's uv (origin bottom left) -> the image's rows (top first)
+    const [u, v, uw, uh] = g.uv, [vx, vy, vw, vh] = g.vert;
+    const sw = Math.round(uw * W), sh = Math.round(uh * H);
+    if (sw && sh) t.drawImage(im, Math.round(u * W), Math.round((1 - v - uh) * H), sw, sh, pen + vx, -vy, Math.abs(vw), Math.abs(vh));
+    pen += g.width;
+  }
+  const px = t.getImageData(0, 0, tmp.width, tmp.height).data;
+  let x0 = tmp.width, y0 = tmp.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < tmp.height; y++) for (let x = 0; x < tmp.width; x++) if (px[(y * tmp.width + x) * 4 + 3] > 8) {
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  const out = canvas || document.createElement("canvas");
+  out.width = box[0]; out.height = box[1];
+  const o = out.getContext("2d");
+  o.clearRect(0, 0, out.width, out.height);
+  if (x1 < 0) return out;
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+  o.drawImage(tmp, x0, y0, bw, bh, Math.round((box[0] - bw) / 2), Math.round((box[1] - bh) / 2), bw, bh);
+  o.globalCompositeOperation = "source-in";
+  o.fillStyle = `rgb(${color.map(c => Math.round(255 * clamp01(c))).join(",")})`;
+  o.fillRect(0, 0, out.width, out.height);
+  o.globalCompositeOperation = "source-over";
+  return out;
+}
+// api.propPoint (2026-11-13, the Mole's shells from the worn cannon's muzzle, plans/fx_mole/decisions.md 19: BB's
+// firePoint child, Mole.cs:20396-20418): the Unity-space position, in that effect's mirror group, of the node with that
+// name (the prefab's, userData.label) under the prop worn in the slot; null when none is worn or it has no such node
+function propPoint(slot, name, fx) {
+  const p = C?.props?.[slot];
+  let n = null;
+  p?.traverse(o => { if (!n && o.userData.label === name) n = o; });
+  if (!n || !fx?.mirror) return null;
+  n.updateWorldMatrix(true, false); fx.mirror.updateWorldMatrix(true, false);
+  return n.getWorldPosition(V()).applyMatrix4(fx.mirror.matrixWorld.clone().invert());
+}
 // api.spawn (2026-11-13, plans/fx_bat/parts.md Interfaces 4; the comment above FX_PART_FILES)
 function fxSpawn(name, at = {}, opts = {}) {
-  const cls = C?.cls, d = opts.data || FX.json[cls], ns = String(name).split("|"), n = ns[Math.floor(Math.random() * ns.length)];
+  const cls = C?.cls, d = opts.data || FX.json[cls], ns = String(name).split("|"), n = pickOf(ns, at.pick);
   if (!cls || !d?.effects?.[n]) { FX.missing[n] = 1; return null; }
-  const q = { ...at, kind: "fx", name: n, d: at.d || 0, x: at.x || 0, y: at.y || 0, rot: at.rot === "random" ? randRot() : at.rot || null };
+  const q = { ...at, kind: "fx", name: n, d: at.d || 0, x: at.x || 0, y: at.y || 0, rot: rotOf(at.rot) };
   const f = new Fx(cls, n, d, q); f.cutAt = q.cut; f.killAt = q.kill;
   if (opts.followNode) {
     const l = opts.local || {}, lq = new THREE.Quaternion();
@@ -5119,8 +5326,17 @@ function fxStart(clip, step = 0) {
   if (e?.skills) {
     const names = Object.keys(e.skills);
     if (ch?.pick && e.skills[ch.pick]) FX.pick = ch.pick;   // a skill's own tile (poolChains): always that skill
+    // "order": "cycle" (2026-11-13, the Mole's War Factory, plans/fx_mole/decisions.md 13, skills_b.md Q2: one skill
+    // whose counter steps through its five weapons and wraps): each play takes the next member in the file's order, the
+    // turn kept across plays and tiles (FX.counters, a new class starts again); a member's "standby" (seconds) ends the
+    // step there (FX.stepDur, startStep: the weapon's standby, then the page's 0.2 s fade to idle)
+    if (e.order === "cycle" && step === 0) {
+      const k = "cycle:" + clip;
+      FX.pick = names[(FX.counters[k] = ((FX.counters[k] ?? -1) + 1) % names.length)];
+    }
     if (!e.skills[FX.pick]) FX.pick = names[Math.floor(Math.random() * names.length)];
     cues = e.skills[FX.pick].cues || [];
+    if (e.skills[FX.pick].standby != null) FX.stepDur = e.skills[FX.pick].standby;
   }
   if (step === 0 || !FX.rolls) FX.rolls = {};
   const rolled = c => {                          // roll "!name": the cue plays exactly when "name"'s roll failed
@@ -5142,7 +5358,8 @@ function fxStart(clip, step = 0) {
   FX.cycle = (own?.everyCycle || e?.everyCycle) && C.action ? { act: C.action, last: C.action.time } : null;
   for (const c of FX.cues) {
     if (c.kind === "clone") skeletonUtils().catch(() => {});   // the copy's module, ahead of its time
-    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && c.kind !== "hideProp" && Sound.ctx) Sound.get(C.cls, sfxFile(c)).catch(() => {});
+    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && c.kind !== "hideProp" && c.kind !== "propAnim" && Sound.ctx)
+      for (const n of c.tune || [c.name]) Sound.get(C.cls, sfxFile({ ...c, name: n })).catch(() => {});
   }
 }
 // (every hiding goes with the effects: a part that forgot its heroHide(key, false) never leaves the next hero hidden)
@@ -5192,7 +5409,18 @@ function fxDue(t, inclusive) {
   for (const c of FX.cues) {
     if (c.done || (inclusive ? c.at > t : c.at >= t)) continue;
     c.done = true;
-    if (c.kind === "skin") {                    // the hero's own look (HERO_SKINS), not an effect file
+    // tune (2026-11-13, the Mole's Trumpet, plans/fx_mole/decisions.md 42, attacks_emotes.md part 2): the names played in
+    // order, one per firing of any cue carrying that same list, the turn kept across plays and tiles (FX.counters, a new
+    // class starts again: the hero's own counter, Mole.cs:19418, :20293); the list as the firings play it (the Trumpet's
+    // written from the game's 2nd note, its pre-increment)
+    if (Array.isArray(c.tune) && c.tune.length) {
+      const k = "tune:" + c.tune.join(",");
+      c.name = c.tune[(FX.counters[k] = ((FX.counters[k] ?? -1) + 1) % c.tune.length)];
+    }
+    if (c.kind === "propAnim") {                // the worn prop's own clip, once (propAnimPlay); no such prop or clip: nothing
+      if (propAnimPlay(c.name, c.clip)) { const k = "propAnim:" + c.name + ":" + c.clip; FX.spawned[k] = (FX.spawned[k] || 0) + 1; }
+    }
+    else if (c.kind === "skin") {               // the hero's own look (HERO_SKINS), not an effect file
       const make = HERO_SKINS[c.name];
       if (!make) { FX.missing["skin:" + c.name] = 1; continue; }
       const f = new HeroSkin(c.name, make); f.killAt = c.kill; FX.live.push(f);

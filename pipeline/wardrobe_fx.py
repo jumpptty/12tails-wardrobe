@@ -192,8 +192,86 @@ LAYOUTS.update({
 # renderer's first material is "tto_" + BB's mats[0] (the next unused one in TTO's order on a tie), its ParticleSystem and
 # ParticleSystemRenderer dicts going on the BB node itself with BB's materials (no TTO texture ships). The Bison's and the
 # Cat's grafts (SHURIKEN_MAT) are made as before, by node path, onto a "_shuriken" child
+# the Mole's parts (plans/fx_mole/parts.md, 2026-11-13; checks/fx_mole_research/parts/probe.txt: each instance's bytes are
+# the listed fields exactly; TTO's re-serialised copies name the same fields, checks/fx_mole_research/parts/tto_sum.txt);
+# the other Mole scripts keep every field private (0 field bytes)
+LAYOUTS.update({
+    "Mole_mine": [("mLv", "i")],                     # Mole_mine.cs:239 (4 bytes; mine1-4 = 1-4: the damage rank only)
+    "Mole_stunMine": [("mLv", "i")],                 # Mole_stunMine.cs:239 (4; stunMine1-2 = 1-2)
+    "Mole_stunGrenade": [("mLv", "i")],              # Mole_stunGrenade.cs:355 (4; 1; RPC_stunGrenade_fire sets it, Mole.cs:11319)
+    # Mole_timeNuke.cs:341, :344, :350 (16 bytes: 1 / 2, true, the timeNuke_explosion prefab [24, 386])
+    "Mole_timeNuke": [("mLv", "i"), ("isVisible", "b"), ("timeNuke_explosion", "r")],
+    "Mole_missile": [("mTarget", "r")],              # Mole_missile.cs:433 (8; [0, 0]: the hero's code sets it, Mole.cs:13189)
+    "Mole_warMissile": [("mTarget", "r")],           # Mole_warMissile.cs:345 (8; [0, 0]; Mole.cs:14563)
+    # rotationControl.cs:75-84 (16 bytes; flameCarnival_fire/fire_ctrl (0, 180, 0), false; also the Monkey's lavu)
+    "rotationControl": [("mRotation_x", "f"), ("mRotation_y", "f"), ("mRotation_z", "f"), ("useWorldRotation", "b")],
+    "Mole_bazooka": [], "Mole_cartBomb": [], "Mole_flameCarnival": [], "Mole_grenadeCluster": [], "Mole_mortarShot": [],
+    "Mole_napalm": [], "Mole_nAttack": [], "Mole_warCapital": [],
+})
+# the Mole's summons (Resources characters/robots/<robot>/<prefab>, EXTRA_FOLDERS; plans/fx_mole/decisions.md 32, 34, 53,
+# parts.md part 11): data only (fxparts/robots.js plays their clips); every public field in declaration order, all
+# references but the ints, BarrelBot's bool and the AIs' string ("s": an int length, the bytes, aligned to 4)
+LAYOUTS.update({
+    # AutoGyroGun.cs:1056-1089 (36 bytes)
+    "AutoGyroGun": [("mChar", "r"), ("mLv", "i"), ("autoGyroGun_fire", "r"), ("nAttack_fx", "r"), ("create_fx", "r")],
+    # BarrelBot.cs:1958-2045 (208 bytes)
+    "BarrelBot": [("mChar", "r")] + [(n, "i") for n in ("BarrelBotLv", "PunchLv", "HammerLv", "ChopperLv", "MissileLv",
+                                                        "CannonLv", "DrillLv")]
+                 + [(n, "r") for n in ("nAttack_fx", "nAttack_hit", "punch", "punch_hit", "hammer", "hammer_hit", "chopper",
+                                       "chopper_startDust", "chopper_forwardDust", "chopper_hit", "missile_fire",
+                                       "missile_hit", "drill_ring", "drill_hit", "cannon", "cannon_fire", "cannon_hit",
+                                       "cannonForm_ring")]
+                 + [("isCreate", "b"), ("mCreator", "r"), ("mCreatorChar", "r"), ("create_fx", "r")],
+    "BarrelBotAI": [("AI_state", "s")],              # BarrelBotAI.cs:1690
+    # KingKaiser.cs:1430-1466 (100 bytes)
+    "KingKaiser": [("mChar", "r"), ("mLv", "i")] + [(n, "r") for n in (
+        "footStep_left", "footStep_right", "nAttack_hit", "kaiserMissile", "kaiserMissile_hit", "kaiserBeam_charge",
+        "kaiser_openFx", "kaiserBeam", "kaiser_createFx", "kaiser_box", "kaiser_cryFx")],
+    "KingKaiserAI": [("AI_state", "s")],             # KingKaiserAI.cs:1314
+    # the hero prefab's own script (heroes/mole/mole, Mole.cs:19403-20084: its 15 public fields, all references, 120
+    # bytes), read only for FIELD_PREFABS (the prefabs it holds that no Resources path names)
+    "Mole": [(n, "r") for n in ("mChar", "nAttack_fireFx", "nAttack_fire", "nAttack_hit", "skyDrill_hit", "Mole_chopper",
+                                "chopper_startDust", "chopper_forwardDust", "chopper_hit", "missileBase", "missile_fire",
+                                "missile_hit", "kaiser_dust", "kaiser_box", "deadEffect")],
+})
+# the scripts whose AudioClip references are written as the clip's name (and the clip exported to sfx/ as any effect's
+# sound, wardrobe/data/<cls>/sfx/<name>.mp3): the summons' own sounds their parts play (2026-11-13, plans/fx_mole/
+# decisions.md 54: AutoGyroGun's nAttack_fx / create_fx, BarrelBot's, KingKaiser's kaiser_createFx ...; fxparts/robots.js)
+# The clip's own bytes, not a rip WAV by name: these clips live outside Resources, and the rip's Assets/AudioClip holds
+# several recordings under one name (create, create_0, create_1; nAttack, nAttack_0 ... _14), so a name says nothing. The
+# sound is named "<script, first letter lower case>_<clip>" (autoGyroGun_create, barrelBot_nAttack,
+# kingKaiser_kaiser_create: two robots' "create" may differ), which the field then holds
+SOUND_REFS = {"AutoGyroGun", "BarrelBot", "KingKaiser"}
+FIELD_SOUNDS = {}                 # that name -> its AudioClip object (main() writes its samples)
+# prefabs a script holds only in a field (no Resources path of their own), built under the field's name: effect name ->
+# (the holder prefab's Resources container path, its script, the field) (2026-11-13, plans/fx_mole/decisions.md 54,
+# skills_a.md "Read this first" 4: King Kaiser's kaiser_dust / kaiser_box are the Mole prefab's, sharedassets8 path ids 387
+# / 379; the Auto Gyro Gun's shot autoGyroGun_fire is AutoGyroGun4's)
+FIELD_PREFABS = {"mole": {
+    "kaiser_dust": ("gameassets/characters/heroes/mole/mole", "Mole", "kaiser_dust"),
+    "kaiser_box": ("gameassets/characters/heroes/mole/mole", "Mole", "kaiser_box"),
+    "autoGyroGun_fire": ("gameassets/characters/robots/autogyrogun/autogyrogun4", "AutoGyroGun", "autoGyroGun_fire"),
+}}
+# the bitmap fonts a script draws with (OnGUI's GUIStyle font), exported when a built effect carries the script:
+# script -> (name, its Resources path) (2026-11-13, plans/fx_mole/decisions.md 55, parts.md part 6 and Interfaces 3: the Time
+# Nuke's countdown, Mole_timeNuke.cs:65 GameGui/Fonts/GMO24) -> fx.json "fonts": {name: {tex, ascent, line, chars: {char:
+# {uv: [x, y, w, h], vert: [x, y, w, h], width}}}}, Unity's numbers as stored: uv in the texture's 0-1 space with its
+# origin at the bottom left (the webp's rows are top first, so a pixel row = (1 - uv.y - uv.h) x height), vert the glyph's
+# box in pixels from the pen (x right, y up: y -10 and height -9 = the box from 10 px below the line's top, 9 px tall),
+# width the pen's advance; the texture data/fx/tex/<name>.webp (Alpha8: the glyphs in its alpha, white rgb)
+FONTS = {"Mole_timeNuke": ("GMO24", "gamegui/fonts/gmo24")}
+FONTS_USED = set()                # the FONTS entries the run's effects need (effect() adds, main() exports)
+# a hero clip another rig plays, added to the effect's root Animation under its name (add_hero_clips): Kaiser Arsenal is
+# the King Kaiser's move, TTO's mole/animations/kaiserArsenal crossfaded on the Kaiser's own Animation
+# (TTO1102:KingKaiser.<RPC_kaiserArsenal>d__72, KingKaiser.c:308-329; 2026-11-13, plans/fx_mole/decisions.md 37, 56): its 22
+# tracks are the Kaiser's bones (Root, Body, Lid ... footTarget_R), which wardrobe_data.py keeps in clips.json from TTO's
+# bundle; effect name prefix -> clips
+HERO_CLIPS = {"mole": {"KingKaiser_": ["kaiserArsenal"]}}
 SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"],
-                     "chameleon": ["thunderDragon_ring2", "zeroShot_ring"]}
+                     "chameleon": ["thunderDragon_ring2", "zeroShot_ring"],
+                     # the Mole's (2026-11-13, plans/fx_mole/parts.md part 8, decisions.md 53): BB Cloud1 / Bomb1_a / Smoke1
+                     # -> TTO tto_Cloud1 / tto_Bomb1_a / tto_Smoke1, one system each, by the Chameleon's route
+                     "mole": ["bazooka_ring", "napalm_ring", "warCapital"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
@@ -202,7 +280,11 @@ NOT_DRAWN = {"CharacterControl"}
 # effects the hero's code takes from another folder than heroes/<cls>/effects (tried in this order after it): Nova Flare's
 # blast is the Mana Vortex's field (ManaVortex.cs:540, Resources characters/elementals/manavortex/effects/novaFlare;
 # plans/fx_penguin/own_skills.md "Read this first" 1); the Mana Vortex summon itself (the cue name manaVortex)
-EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effects", "gameassets/characters/elementals/manavortex"]}
+# The Mole's summons (2026-11-13, plans/fx_mole/decisions.md 32, 34, 53): AutoGyroGun1-4, BarrelBot1-4, KingKaiser_<colour>
+# (Mole.cs:11902-12031, :12472-12601, :35720-35794)
+EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effects", "gameassets/characters/elementals/manavortex"],
+                 "mole": ["gameassets/characters/robots/autogyrogun", "gameassets/characters/robots/barrelbot",
+                          "gameassets/characters/robots/kingkaiser"]}
 # an effect the page names otherwise than its prefab, because the class's own folder has a prefab of that name too: the
 # name -> its Resources container path, tried before the class's folder (2026-11-13, plans/fx_bat/parts.md Interfaces 6:
 # Guardian of the Night's hits are Shade4's Effects/nAttack_hit, Bat.cs:12606-12619, not the Bat's own nAttack_hit)
@@ -226,6 +308,9 @@ def decode(raw, layout, off):
             out[name] = struct.unpack_from("<i", raw, off)[0]; off += 4
         elif ty == "r":
             out[name] = list(struct.unpack_from("<ii", raw, off)); off += 8
+        elif ty == "s":                  # a string: its byte length, the UTF-8 bytes, aligned to 4
+            n = struct.unpack_from("<i", raw, off)[0]
+            out[name] = raw[off + 4:off + 4 + n].decode("utf-8"); off = (off + 4 + n + 3) & ~3
         else:
             n = SIZES[ty] // 4
             v = struct.unpack_from(f"<{n}f", raw, off); off += 4 * n
@@ -289,7 +374,40 @@ def mesh_module():
         spec = importlib.util.spec_from_file_location("wardrobe_fx_mesh", os.path.join(HERE, "wardrobe_fx_mesh.py"))
         _mesh = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(_mesh)
+        _mesh.clip_dict = clip_dict                    # its Animation reader takes this file's clip reader (below)
     return _mesh
+
+
+def clip_dict(game, clip_obj, anim_tr):
+    """wardrobe_fx_mesh.clip_dict, which every Animation of an effect goes through, plus a clip's AnimationEvents
+    (2026-11-13, plans/fx_mole/decisions.md 34, parts.md part 11: the King Kaiser's clips did not extract, "compressed /
+    float curves / events are not read yet"; probed on this PC: none of KingKaiser_<colour>'s clips is compressed or has
+    float curves, its run carries two events, the footsteps, KingKaiser.cs footStep_left / _right): the events as
+    "events": [[time, functionName, stringParameter], ...] (data: nothing on the page fires them), the rest as that
+    reader's. A compressed clip or float curves still raise (none in any effect or summon the cue files name)."""
+    tt = clip_obj.read_typetree()
+    if tt.get("m_Compressed") or tt.get("m_CompressedRotationCurves") or tt.get("m_FloatCurves"):
+        raise ValueError(f"clip {tt['m_Name']}: compressed / float curves are not read yet")
+    M = mesh_module()
+    tracks, length, lost = {}, 0.0, []
+    for field, slot, comps in (("m_RotationCurves", "q", "xyzw"), ("m_PositionCurves", "p", "xyz"),
+                               ("m_ScaleCurves", "s", "xyz")):
+        for cv in tt.get(field) or []:
+            ks = cv["curve"]["m_Curve"]
+            if not ks:
+                continue
+            t = M._find(game, anim_tr, cv["path"])
+            if t is None:
+                lost.append(cv["path"]); continue
+            tr = tracks.setdefault(str(M._node_of(game, t)), {"path": cv["path"]})
+            tr[slot] = M._keys(ks, comps)
+            length = max(length, float(ks[-1]["time"]))
+    out = {"len": round(length, 4), "wrap": int(tt["m_WrapMode"]), "tracks": tracks}
+    if lost:
+        out["lost"] = lost
+    if tt.get("m_Events"):
+        out["events"] = [[round(float(e["time"]), 5), e["functionName"], e.get("data", "")] for e in tt["m_Events"]]
+    return tt["m_Name"], out
 
 
 def material(game, pptr, base, mats, texs):
@@ -338,11 +456,31 @@ def material(game, pptr, base, mats, texs):
     return name
 
 
+def field_prefab(game, holder, script, field):
+    """The root GameObject of the prefab the holder prefab's `script` keeps in `field` (FIELD_PREFABS): the script's bytes
+    decoded with its LAYOUTS entry, the reference read against the component's own file."""
+    go_obj = game.obj(game.container[holder], game.files["mainData"])
+    for comp in go_obj.read_typetree()["m_Component"]:
+        c = game.obj(comp[1] if isinstance(comp, (list, tuple)) else comp.get("second", comp.get("component")), go_obj.assets_file)
+        if c is None or c.type.name != "MonoBehaviour":
+            continue
+        raw = c.get_raw_data()
+        if game.script_name(raw, c.assets_file) == script:
+            o = game.obj(decode(raw, LAYOUTS[script], header_len(raw))[field], c.assets_file)
+            if o is None or o.type.name != "GameObject":
+                raise ValueError(f"{holder} {script}.{field}: no prefab")
+            return o
+    raise ValueError(f"{holder}: no {script} script")
+
+
 def effect(game, cls, name, mats, texs, sounds):
     key = ALIASES.get(cls, {}).get(name, f"gameassets/characters/heroes/{cls}/effects/{name.lower()}")
     if key not in game.container:                    # another folder the class's code loads it from (EXTRA_FOLDERS)
         key = next((k for k in (f"{f}/{name.lower()}" for f in EXTRA_FOLDERS.get(cls, [])) if k in game.container), key)
-    root = game.obj(game.container[key], game.files["mainData"])
+    if key not in game.container and name in FIELD_PREFABS.get(cls, {}):
+        root = field_prefab(game, *FIELD_PREFABS[cls][name])
+    else:
+        root = game.obj(game.container[key], game.files["mainData"])
     nodes, at = [], {}                                # at: (file, GameObject pathID) -> node index (a script's GameObject reference)
 
     def walk(go_obj, parent):
@@ -370,13 +508,22 @@ def effect(game, cls, name, mats, texs, sounds):
                 entry = {"type": sname}
                 if lay is not None:
                     entry.update(decode(raw, lay, header_len(raw)))
-                    if sname == "BoltEmitter":             # its TargetObject: a node of this prefab (BoltTarget), by index
+                    if sname in SOUND_REFS:            # its AudioClips by name (SOUND_REFS), exported from the game's bytes
+                        for fname, fty in lay:
+                            o = game.obj(entry[fname], c.assets_file) if fty == "r" and entry[fname][1] else None
+                            if o is not None and o.type.name == "AudioClip":
+                                entry[fname] = f"{sname[0].lower()}{sname[1:]}_{o.read().m_Name}"
+                                FIELD_SOUNDS[entry[fname]] = o
+                                sounds.add(entry[fname])
+                    if sname == "BoltEmitter":            # its TargetObject: a node of this prefab (BoltTarget), by index
                         ref = game.obj(entry["TargetObject"], c.assets_file) if entry["TargetObject"][1] else None
                         refs.append((entry, ref))
                 elif sname in NOT_DRAWN:
                     pass
                 elif len(raw) > header_len(raw):
                     raise ValueError(f"{name}/{node['name']}: no layout for {sname} ({len(raw) - header_len(raw)} field bytes)")
+                if sname in FONTS:
+                    FONTS_USED.add(FONTS[sname])
                 if sname == "EmblemEmitter":           # its picture: a Texture2D reference, exported like a material's
                     to = game.obj(entry["image"], c.assets_file)
                     if to is not None:
@@ -431,7 +578,57 @@ def effect(game, cls, name, mats, texs, sounds):
     walk(root, -1)
     for entry, ref in refs:                           # resolved once every node is known (the target may come later)
         entry["TargetNode"] = at.get((ref.assets_file.name, ref.path_id), -1) if ref is not None else -1
+    for prefix, clips in HERO_CLIPS.get(cls, {}).items():
+        if name.startswith(prefix):
+            add_hero_clips(cls, nodes, clips)
     return {"nodes": nodes}
+
+
+def font(game, name, path):
+    """A FONTS entry: (its fx.json "fonts" dict, the texture as a PIL RGBA image: white, the glyphs in its alpha). The
+    Resources container lists the Font and its texture under one path (ResourceManager's m_Container keeps both pairs:
+    Game.container keeps only the last), so the pairs are walked for the Font."""
+    from PIL import Image
+    md = game.files["mainData"]
+    rm = next(o for o in md.objects.values() if o.type.name == "ResourceManager").read_typetree()
+    fo = next(o for o in (game.obj(v, md) for k, v in rm["m_Container"] if k == path) if o is not None and o.type.name == "Font")
+    t = fo.read_typetree()
+    img = game.obj(t["m_Texture"], fo.assets_file).read().image.convert("RGBA")
+    a = img.getchannel("A")
+    img = Image.new("RGBA", img.size, (255, 255, 255, 0)); img.putalpha(a)
+    r = lambda d: [round(d[k], 6) for k in ("x", "y", "width", "height")]
+    chars = {chr(c["index"]): {"uv": r(c["uv"]), "vert": r(c["vert"]), "width": c["width"]}
+             for c in t["m_CharacterRects"] if 32 <= c["index"] < 127}
+    return {"tex": name, "ascent": t["m_Ascent"], "line": round(t["m_LineSpacing"], 4), "chars": chars}, img
+
+
+def add_hero_clips(cls, nodes, clips):
+    """HERO_CLIPS: the class's hero clips (wardrobe/data/<cls>/clips.json, wardrobe_data.py's: a track per bone name, x
+    mirrored: q (x, -y, -z, w), p (-x, y, z), the slopes too) put back into Unity's space on the effect's root Animation,
+    each track on the first node of that name (walk order), its path the names below the root; a bone the effect lacks is
+    listed in the clip's "lost"."""
+    path = os.path.join(DATA, cls, "clips.json")
+    anim = next((c for c in nodes[0]["comps"] if c["type"] == "Animation"), None)
+    if anim is None or not os.path.exists(path):
+        raise ValueError(f"{nodes[0]['name']}: no root Animation, or no {path}, for the hero clips {clips}")
+    data = json.load(open(path, encoding="utf-8"))
+    paths = node_paths(nodes)
+    first = {}
+    for i, n in enumerate(nodes):
+        first.setdefault(n["name"], i)
+    sign = {"q": (1, -1, -1, 1), "p": (-1, 1, 1), "s": (1, 1, 1)}
+    for clip in clips:
+        c = data[clip]
+        tracks, lost = {}, []
+        for bone, tr in c["tracks"].items():
+            i = first.get(bone)
+            if i is None or i == 0:
+                lost.append(bone); continue
+            out = tracks.setdefault(str(i), {"path": paths[i]})
+            for slot, rows in tr.items():
+                s = sign[slot]; n = len(s)
+                out[slot] = [[r[0]] + [x * s[k % n] for k, x in enumerate(r[1:])] for r in rows]
+        anim["clips"][clip] = {"len": c["len"], "wrap": 2 if c.get("loop") else 0, "tracks": tracks, **({"lost": lost} if lost else {})}
 
 
 def node_paths(nodes):
@@ -573,11 +770,23 @@ def rip_wav(cls, name, folder=None):
         if os.path.exists(p):
             return p
     # an effect's sound kept elsewhere: anywhere under gameassets, then anywhere under Resources (Blade Fang's ring plays
-    # Resources/sound/fx/aura1.wav, 2026-11-09)
+    # Resources/sound/fx/aura1.wav, 2026-11-09), a .wav first, then an .ogg; then the rip's Assets/AudioClip (the clips no
+    # Resources path names: 2026-11-13, plans/fx_mole/decisions.md 48, megaDrill_ring's gallonDrill.ogg, kaiser_box.wav)
     for top in (RIP, os.path.dirname(RIP)):
-        for root, _, fs in os.walk(top):
-            if name + ".wav" in fs:
-                return os.path.join(root, name + ".wav")
+        for ext in (".wav", ".ogg"):
+            for root, _, fs in os.walk(top):
+                if name + ext in fs:
+                    return os.path.join(root, name + ext)
+    return audioclip_file(name)
+
+
+def audioclip_file(name):
+    """The rip's Assets/AudioClip/<name>.wav or .ogg (AssetRipper's folder for the clips outside Resources; a name it saw
+    twice has _0, _1 ... copies beside it, never taken here), else None."""
+    for ext in (".wav", ".ogg"):
+        p = os.path.join(os.path.dirname(os.path.dirname(RIP)), "AudioClip", name + ext)
+        if os.path.exists(p):
+            return p
     return None
 
 
@@ -590,12 +799,15 @@ def hero_sound_wav(cls, name):
     if p or SOUND_ALIASES.get(cls, {}).get(name):
         return p
     chars = os.path.normcase(os.path.join(RIP, "characters"))
-    for root, dirs, fs in os.walk(os.path.dirname(RIP)):
-        if os.path.normcase(root) == chars:
-            dirs[:] = []
-        elif name + ".wav" in fs:
-            return os.path.join(root, name + ".wav")
-    return None
+    # a .wav, then an .ogg (2026-11-13, plans/fx_mole/decisions.md 48, tto.md P15: the Missile lock's Resources/sound/gui/
+    # beep.ogg), then the rip's Assets/AudioClip (kaiser_open.wav: KingKaiser's kaiser_openFx, no Resources path)
+    for ext in (".wav", ".ogg"):
+        for root, dirs, fs in os.walk(os.path.dirname(RIP)):
+            if os.path.normcase(root) == chars:
+                dirs[:] = []
+            elif name + ext in fs:
+                return os.path.join(root, name + ext)
+    return audioclip_file(name)
 
 
 def builds(entry):
@@ -655,6 +867,8 @@ def main():
                 print(json.dumps(one, indent=1))
             except Exception as e:      # noqa: BLE001 (a script with no layout yet: say so, go on)
                 print(json.dumps({n: f"{type(e).__name__}: {e}"}))
+        for fname, fpath in sorted(FONTS_USED):      # (FONTS: what fx.json's "fonts" would get; no texture written)
+            print(json.dumps({"fonts": {fname: font(game, fname, fpath)[0]}}))
         return
     if not a.fx:
         a.fx, a.voices, a.sounds = cue_names(a.cls)
@@ -674,22 +888,37 @@ def main():
     tdir = os.path.join(DATA, "fx", "tex"); os.makedirs(tdir, exist_ok=True)
     for n, o in texs.items():
         o.read().image.save(os.path.join(tdir, n + ".webp"), "WEBP", quality=90, method=6)
+    fonts = {}
+    for fname, fpath in sorted(FONTS_USED):          # FONTS: the bitmap fonts the effects' scripts draw with
+        fonts[fname], img = font(game, fname, fpath)
+        img.save(os.path.join(tdir, fname + ".webp"), "WEBP", lossless=True)
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     sdir = os.path.join(DATA, a.cls, "sfx"); os.makedirs(sdir, exist_ok=True)
-    missing, jobs = [], []
+    missing, jobs, own = [], [], []
+    # a summon's own clip (SOUND_REFS): the game's bytes, written beside the output and removed after the conversion
+    for n in sorted(set(sounds) & set(FIELD_SOUNDS)):
+        k, v = next(iter(FIELD_SOUNDS[n].read().samples.items()))
+        own.append(os.path.join(sdir, "_" + n + os.path.splitext(k)[1]))
+        open(own[-1], "wb").write(v)
+        jobs.append((n, own[-1], n))
     # an effect's own sound and a Sounds/ cue: <name>.mp3 (from sounds/ first); a voice: v_<name>.mp3 from voices/ only
-    jobs += [(n, rip_wav(a.cls, n), n) for n in sorted(sounds)]
+    jobs += [(n, rip_wav(a.cls, n), n) for n in sorted(set(sounds) - set(FIELD_SOUNDS))]
     jobs += [(n, hero_sound_wav(a.cls, n), n) for n in sorted(set(hero_sounds) - sounds)]
     jobs += [(n, rip_wav(a.cls, n, "voices"), "v_" + n) for n in sorted(set(voices))]
     for n, src, out_name in jobs:
         if not src:
             missing.append(out_name); continue
         subprocess.run([ff, "-y", "-loglevel", "error", "-i", src, "-ac", "1", "-b:a", "64k", os.path.join(sdir, out_name + ".mp3")], check=True)
+    for p in own:
+        os.remove(p)
     out = os.path.join(DATA, a.cls, "fx.json")
     old = json.load(open(out, encoding="utf-8")) if os.path.exists(out) else {}
     merged = {"effects": {**old.get("effects", {}), **effects}, "materials": {**old.get("materials", {}), **mats}}
-    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"))   # compact: meshes and clips (2026-11-09) doubled it indented
+    if fonts or old.get("fonts"):
+        merged["fonts"] = {**old.get("fonts", {}), **fonts}
+    # (allow_nan=False: a NaN would make the page refuse the whole file, 2026-11-13; wardrobe_fx_mesh.r5 writes 0 for one)
+    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"), allow_nan=False)   # compact: meshes and clips (2026-11-09) doubled it indented
     print(f"{a.cls}: {len(effects)} effects, {len(mats)} materials, {len(texs)} textures, {len(jobs) - len(missing)} sounds"
           + (f", missing sounds: {missing}" if missing else ""))
 

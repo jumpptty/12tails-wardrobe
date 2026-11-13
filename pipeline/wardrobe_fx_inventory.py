@@ -61,7 +61,18 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # needles); Chameleon_campFire draws nothing (data only: its heal; the cue's kill is its life); mesh.js's FX/Invisible
          # and Self-Illumin/DoubleTexture, index.html's FX/Blend / FX/Invisible hero looks are shaders (this table doesn't see
          # them). thunderDragon_ring2's and zeroShot_ring's ParticleSystems are grafted from TTO's copies (NOTES below)
-         "Chameleon_nAttack", "Chameleon_needlePrison", "Chameleon_campFire"}
+         "Chameleon_nAttack", "Chameleon_needlePrison", "Chameleon_campFire",
+         # 2026-11-13, the Mole (plans/fx_mole/parts.md "Who builds what", decisions.md 18-37, 53-58): fxparts/mole.js (the six
+         # shells, the homing missiles, the cart, the Time Nuke's countdown in the GMO24 font, War Capital's clips; the mines and
+         # Flame Carnival draw nothing: data only), rotationcontrol.js (rotationControl, generic), robots.js (the summons'
+         # scripts; BarrelBotAI / KingKaiserAI data only: the AI is left out, decision 32). bazooka_ring's, napalm_ring's and
+         # warCapital's ParticleSystems are grafted from TTO's copies (NOTES below)
+         "Mole_nAttack", "Mole_mortarShot", "Mole_stunGrenade", "Mole_grenadeCluster", "Mole_napalm", "Mole_bazooka",
+         "Mole_missile", "Mole_warMissile", "Mole_cartBomb", "Mole_mine", "Mole_stunMine", "Mole_flameCarnival",
+         "Mole_timeNuke", "Mole_warCapital", "rotationControl", "AutoGyroGun", "BarrelBot", "BarrelBotAI", "KingKaiser",
+         "KingKaiserAI",
+         # (warCapital's and the summons' own CharacterControl: data only, wardrobe_fx.py NOT_DRAWN, decision 53)
+         "CharacterControl"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -80,6 +91,7 @@ NOTES = {
            "copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn"
         for n in ("thunderDragon_ring2", "zeroShot_ring")
     },
+    "mole": {n: "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn" for n in ("bazooka_ring", "napalm_ring", "warCapital")},
 }
 CLASS_NOTES = {
     "bison": ["Status looks `CharacterControl.cs` loads for the Bison (not in `Bison.cs`, so not scanned above; every one "
@@ -89,6 +101,14 @@ CLASS_NOTES = {
               "perfectArmor (:35164; its Velvet shader not built: unreachable, no BB or TTO code adds the perfectShield / "
               "perfectArmor status), titanForm (:35243); the hero prefab's nAttack_hit / cAttack_hit and overLord "
               "(plans/fx_bison/parts.md \"Read this first\" 2)."],
+    "mole": ["Effects this scan does not see (2026-11-13, plans/fx_mole/parts.md \"Read this first\" 5, decisions.md 54): the "
+             "hero prefab's fields in the Resources container, built by name: chopper, chopper_forwardDust, chopper_hit, "
+             "chopper_StartDust (`Mole.cs:19763-19781`), missileBase, missile_fire (Mole_missile), missile_hit (`:19784-19802`), "
+             "nAttack_fire (Mole_nAttack), nAttack_hit (`:19436-19439`), deadEffect (`:20084`), synchroMole, synchroMole_ring, "
+             "timeNuke_explosion (`Mole_timeNuke.cs:350`); prefabs held only in script fields (no Resources path), exported "
+             "under the field's name (`wardrobe_fx.py` FIELD_PREFABS): the Mole prefab's kaiser_dust and kaiser_box, "
+             "AutoGyroGun4's autoGyroGun_fire; the summons Characters/Robots/AutoGyroGun4, BarrelBot4 and KingKaiser_<r g b k "
+             "w> (EXTRA_FOLDERS), their AudioClip fields exported as sounds (SOUND_REFS). Every one ready."],
 }
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it

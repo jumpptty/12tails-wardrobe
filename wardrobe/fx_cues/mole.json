@@ -1,1 +1,767 @@
-{}
+{
+  "nAttack1": {
+    "why": "Mole.cs RPC_nAttack1 (:20098-20710), Combo stage 1 (doNormalAttack :9813): clip at 0 with a 0.2 s fade (PlayAnimation(nAttack1, 0.2) :20611) and the voice nAttack1 at 0 (load :20658, PlayOneShot :20704, then Yield(2, 0.3) :20696); 0.3 s, still attacking (:20215): the worn weapon's Animation plays fire (:20243); the Trumpet (w_mol25 = trumpet, :20251) plays the next note of its 26-note tune (trumpet_do / re / me by v6HdwFeOMZ = [3,2,1,2,3,3,3,2,2,2,3,3,3,3,2,1,2,3,3,3,1,2,2,3,2,1] :32, index pre-incremented by Mathf.Repeat(i + 1, 26) :20293, PlayOneShot :20315 / :20334 / :20353; all clients, all modes); own client in a mission / arena only (isMine :20361, mGameType > 4 :20369, the Sheep / Penguin precedent keeps it): Sounds/nAttack_fire (the prefab's nAttack_fireFx field, AudioClip sharedassets8 #229 = heroes/mole/sounds/nattack_fire, checks/fx_mole_research/attacks_emotes/field_keys.txt) at volume 1 unless the Trumpet is held (:20383-20389); the shell from firePos = position + TransformDirection(0.2, 1, 0.6), or the worn weapon's firePoint node (:20396-20418; 28 of the 44 BB cannons have one), aimed at the target point (fireDir = tDir - fireOffset :20423, firePos + fireDir = the 10 m ground point, decision 1 of the Penguin): RPC_nAttack_fire (:20473) = Instantiate(nAttack_fire, firePos, LookRotation(Math.getTrajectoryVector(firePos, target, 15))) (:10077-10080): pitch up 6.753 deg, yaw -1.219 deg (checks/fx_mole_research/attacks_emotes/geom.txt); Double Cannon (w_mol59 = specialCannon, no firePoint) fires two instead, from firePos -+ 0.3 right along rotateH(fireDir, +-9) (:20428-20439): yaw -10.219 / 7.781; Mole_nAttack flies it at 15 m/s with gravity (Mole_nAttack.cs:28, :53, :88; Rigidbody gravity on, box trigger 0.25 x 0.25 x 0.5, probe_parts.txt) and on the ground calls RPC_nAttack_hit at the contact point (Mole_nAttack.cs:156, :201) = nAttack_hit with Quaternion.identity (:10105; plays its own Sounds/nAttack_hit): it lands 9.83 m ahead after 0.62 s (part-spawned: builds); standby at 0.7 s (Yield(3, 0.4) :20700, :20541) unless stage 2 is pressed; the weapon's own Animation plays fire at the shot (:20243; decision 43: propAnim, the prop's clip once when it has one, then its own loop)",
+    "builds": ["nAttack_hit"],
+    "cues": [
+      [0, "voice", "nAttack1"],
+      [0.3, "sound", "trumpet_do|trumpet_re|trumpet_me", {"worn": ["R", "trumpet"], "tune": ["trumpet_re", "trumpet_do", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_re", "trumpet_re", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_re", "trumpet_do", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_do", "trumpet_re", "trumpet_re", "trumpet_me", "trumpet_re", "trumpet_do", "trumpet_me"]}],
+      [0.3, "sound", "nAttack_fire", {"notWorn": ["R", "trumpet"]}],
+      [0.3, "fx", "nAttack_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-6.753, -1.219, 0], "to": [0, 0, 10], "firePoint": "R", "notWorn": ["R", "specialCannon"]}],
+      [0.3, "fx", "nAttack_fire", {"x": -0.1, "y": 1, "d": 0.6, "rot": [-6.753, -10.219, 0], "worn": ["R", "specialCannon"]}],
+      [0.3, "fx", "nAttack_fire", {"x": 0.5, "y": 1, "d": 0.6, "rot": [-6.753, 7.781, 0], "worn": ["R", "specialCannon"]}],
+      [0.3, "propAnim", "R", {"clip": "fire"}]
+    ]
+  },
+  "nAttack2": {
+    "why": "Mole.cs RPC_nAttack2 (:20753-21364), Combo stages 2-5 (one coroutine, repeat 2-5: doNormalAttack :9625, :9677, :9729, :9785, presses before stage 1 + 0.5 / 0.8 / 1.1 / 1.4 s with #101-#104 :9607-9777): its clip at stage 1 + 0.5 x repeat - 0.3 = 0.7 / 1.2 / 1.7 / 2.2 s (Yield(2, actionTime - now + repeat x 0.5 - 0.3) :21352; actionTime is set by stage 1 only, the entry sets actionState / myCommand :21333-21336): Rewind and the clip cut in (PlayAnimation(nAttack2, 0) :20906-20911), the voice nAttack2 at 0 (load :20958, PlayOneShot :21359, then Yield(3, 0.2) :21346); 0.2 s: the weapon's fire clip (:21012), the Trumpet's next note (:21020-21122, the same counter as stage 1), Sounds/nAttack_fire on the own client in a mission / arena (:21130-21152; unlike stage 1, played with the Trumpet too: no w_mol25 test), the shell as in stage 1 (:21158-21235; Double Cannon :21190-21201); standby 0.5 s (Yield(4, 0.3) :21355, :21303) unless the next stage is pressed; each shell lands 0.62 s after its shot (part-spawned nAttack_hit: stage k's in stage k + 1 at 0.32 s, the last one at 0.82 s of this 0.9 s clip); the weapon's own Animation plays fire at the shot (:21012; decision 43: propAnim, the prop's clip once when it has one, then its own loop)",
+    "builds": ["nAttack_hit"],
+    "cues": [
+      [0, "voice", "nAttack2"],
+      [0.2, "sound", "trumpet_do|trumpet_re|trumpet_me", {"worn": ["R", "trumpet"], "tune": ["trumpet_re", "trumpet_do", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_re", "trumpet_re", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_re", "trumpet_do", "trumpet_re", "trumpet_me", "trumpet_me", "trumpet_me", "trumpet_do", "trumpet_re", "trumpet_re", "trumpet_me", "trumpet_re", "trumpet_do", "trumpet_me"]}],
+      [0.2, "sound", "nAttack_fire"],
+      [0.2, "fx", "nAttack_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-6.753, -1.219, 0], "to": [0, 0, 10], "firePoint": "R", "notWorn": ["R", "specialCannon"]}],
+      [0.2, "fx", "nAttack_fire", {"x": -0.1, "y": 1, "d": 0.6, "rot": [-6.753, -10.219, 0], "worn": ["R", "specialCannon"]}],
+      [0.2, "fx", "nAttack_fire", {"x": 0.5, "y": 1, "d": 0.6, "rot": [-6.753, 7.781, 0], "worn": ["R", "specialCannon"]}],
+      [0.2, "propAnim", "R", {"clip": "fire"}]
+    ]
+  },
+  "superDig": {
+    "why": "Mole.cs RPC_cAttack1 (:21411-22513), Charge Attack 3 (#113, digTimeOut 4 x 3 = 12 s :21553), Speed Drill 2 (#312), Super Dig #411 on (passives rule): at 0 the clip superDig cut in (PlayAnimation(superDig, 0) :22290-22296; dig1 without #411 :22304), the voice superDig (#411 :22359-22383; cAttack without it :22402-22414; at most every 2 s :22348), dig_hole 0.05 m up with the hero's rotation (:22446; EffectControl life 5, its digSound child plays the looping Sounds/dig for 2 s); the dig-in (IL_26 :21608-21690) until actionTime + 1 - 0.2 x 2 = 0.6 s (:21609): superDig_dust at the hero with its rotation every 0.2 s from 0.1 s (dustTimer :22466, :21645-21676; mission / arena only, mGameType > 4 :21637, kept as the Sheep / Penguin precedent) = 0.1, 0.3, 0.5 s; at 0.6 s every renderer of the hero off (IL_858 :22031-22053) until the release, when the loop sees myCommand change (:21934-21951): the page's whole-hero hiding (hideProp hero, HeroPropHide: the hero, its props and their weapon_fx particles, as GetComponentsInChildren(Renderer) :22031) from 0.6 to 3.0 s (the release at 3.0 s in the Charge Attack tile, 3.01 s in Sky Drill's); then Yield(4, 0.1) (:22503) to the underground loop at 0.7 s (case 4 :21533-21561), the dig2 step",
+    "cues": [
+      [0, "voice", "superDig"],
+      [0, "fx", "dig_hole", {"y": 0.05}],
+      [0.1, "fx", "superDig_dust"],
+      [0.3, "fx", "superDig_dust"],
+      [0.5, "fx", "superDig_dust"],
+      [0.6, "hideProp", "hero", {"kill": 2.4}]
+    ]
+  },
+  "dig2": {
+    "why": "Mole.cs RPC_cAttack1's underground loop (IL_1535 :21694-21880, every frame from 0.7 s while myCommand is cAttack1): dig_dirt at the hero's position with a random yaw (Quaternion.Euler(0, Random.Range(0, 360), 0) :21792; EffectControl life 2, its Animation raises the mound) whenever 0.2 s have passed since the last (digTime :21548, :21758-21764): 0.9, 1.1, ... s = 0.2, 0.4, ... s into this step, the last at 2.9 s before the 3.0 s release; not mission-gated; the hero moves underground in the game (:21813-21818), here in place (Penguin decision 8); the Super Dig heal every 2 s (:21823-21860) needs HP below max and draws nothing at full HP; the auto-surfacing at 12 s (:21716-21750) is not reached; dig2 itself is never played by BB or TTO code (only loaded, :709): the hidden hero's step",
+    "cues": [
+      [0.2, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [0.4, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [0.6, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [0.8, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [1.0, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [1.2, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [1.4, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [1.6, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [1.8, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [2.0, "fx", "dig_dirt", {"rot": "randomYaw"}],
+      [2.2, "fx", "dig_dirt", {"rot": "randomYaw"}]
+    ]
+  },
+  "@ChargeAttack:root": {
+    "why": "Mole.cs doReleaseCharge (:9938-10040): released after 3 s or less underground (Time.time - actionTime > 3 is false, :9993; Sky Drill's tile shows the later release) -> RPC_cAttack0 (:10027, coroutine :22647-22879) at getExpandPos(position, 1, 0.4) (:9954, the hero's own spot on open ground): dig_dust three times at the hero with its rotation (:22828-22838; EffectControl life 1, not mission-gated), the hero shown again (RPC_cAttack1 :21934-21951), CrossFade(root, 0.2) (:22864), standby 0.2 s later (Yield(2, 0.2) :22877, :22776)",
+    "cues": [
+      [0, "fx", "dig_dust"],
+      [0, "fx", "dig_dust"],
+      [0, "fx", "dig_dust"]
+    ]
+  },
+  "skyDrill": {
+    "why": "Mole.cs doReleaseCharge (:9972-10023): Sky Drill 2 (#314, passives rule) learned, more than 3 s since the press (:9993), mission / arena (mGameType > 4 :9999, kept): RPC_skyDrill (:12265, coroutine :31496-32186) instead of the plain surfacing: at 0 the clip cut in (PlayAnimation(skyDrill, 0) :31825), the hero shown again (myCommand skyDrill :31810 ends RPC_cAttack1's loop), voice skyDrill1 or skyDrill2 (Random.Range(0, 2) :31874, PlayOneShot :31898 / :31929), skyDrill created at the hero with rotation x Euler(270, 90, 0) (createEffect :31960; EffectControl life 0.55, followPosition, followState; its drills' Animation), Sky Shaker #413 on: skyShaker_ring at the hero (:31974-31998; plays its own Sounds/skyDrill) in place of skyDrill_ring (:32021-32033); the Sky Shaker 5 m hit and the two drill rings at 0.1 and 0.2 s (Yield(2, 0.1) :32184, :31649; 1 and 2 m) reach no target at 10 m: nothing drawn (Cat decision 19); camera blur and shake (:32059, :32153) left out; standby 1.0 s (Yield(3, 0.8) :32180, :31743)",
+    "cues": [
+      [0, "voice", "skyDrill1|skyDrill2"],
+      [0, "fx", "skyDrill", {"rot": [270, 90, 0]}],
+      [0, "fx", "skyShaker_ring"]
+    ]
+  },
+  "wave": {
+    "why": "Mole.cs RPC_emotion (:45917-46738): every emote's voice at 0, before its clip, emo_<name> = Voices/<name> (Substring(4) :46215, PlayOneShot :46227, only if the file loads :46221; the gates :46149-46183); no effect, no sound; the rip's Mole voices have hi, wave, ty, laugh, sleep, cheer, cry, battle, pose, chat1-5 and no bow, beg, sit, talk, dance (checks/fx_mole_research/attacks_emotes/rip_audio.txt); emo_hi (:46263) and emo_wave (:46270) both play the wave clip (:46704): voice hi or wave",
+    "cues": [
+      [0, "voice", "hi|wave"]
+    ]
+  },
+  "bow": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_ty (:46279) and emo_bow (:46286) both play the bow clip (:46697); emo_ty's voice ty is in the rip, emo_bow's Voices/bow is not (rip_audio.txt), so emo_bow is silent: the tile takes the voiced emote's ty (as talk takes chat's)",
+    "cues": [
+      [0, "voice", "ty"]
+    ]
+  },
+  "laugh": {
+    "why": "Mole.cs RPC_emotion (:45917): voice at 0, emo_<name> = Voices/<name> (:46215, PlayOneShot :46227); emo_laugh (:46293-46299)",
+    "cues": [
+      [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Mole.cs RPC_emotion (:45917): voice at 0, emo_<name> = Voices/<name> (:46215, PlayOneShot :46227); emo_sleep (:46325-46331)",
+    "cues": [
+      [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Mole.cs RPC_emotion (:45917): voice at 0, emo_<name> = Voices/<name> (:46215, PlayOneShot :46227); emo_cheer (:46337-46343)",
+    "cues": [
+      [0, "voice", "cheer"]
+    ]
+  },
+  "cry": {
+    "why": "Mole.cs RPC_emotion (:45917): voice at 0, emo_<name> = Voices/<name> (:46215, PlayOneShot :46227); emo_cry (:46361-46367)",
+    "cues": [
+      [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_chat (:46382) plays the talk clip (:46675) with Voices/chat + Random.Range(1, 4) = chat1-3 (:46201-46207; the Mole picks from three, though the rip has chat1-5); emo_talk (:46375) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+      [0, "voice", "chat1|chat2|chat3"]
+    ]
+  },
+  "battle": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_battle (:46645-46651): voice battle (:46215, PlayOneShot :46227); RPC_useMount and RPC_useCoin play the clip without it (:50260, :50590): the tile takes the emote's voice",
+    "cues": [
+      [0, "voice", "battle"]
+    ]
+  },
+  "pose": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice Voices/pose (:46215, PlayOneShot :46227; in the rip) at 0, before the clip is chosen by the worn set (:46389-46635): pose with no full set (:46635); the mission's RPC_activateIcon1 loops this clip with activate1 instead (:51782, :51837; no tile, Penguin decision 19)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose5": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose5 with w_mol5 + a_mol5 + c_mol5 worn (:46393-46411)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose15": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose15 with a_mol15 + c_mol15 worn (no weapon test, :46420-46432)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose25": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose25 with w_mol25 + a_mol25 + c_mol25 (:46440-46458)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose35": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose35 with the 35 set (:46467-46485)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose45": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose45 with the 45 set (:46494-46512)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose46": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose46 with w_mol46 + c_all46 (:46575-46587)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose58": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose58 with w_mol58 + a_all58 + c_all58 (:46521-46539)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose65": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose65 with the 65 set (:46548-46566)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "pose66": {
+    "why": "Mole.cs RPC_emotion (:45917): emo_pose's voice pose at 0 (:46215, PlayOneShot :46227), then pose66 with w_mol66 + c_all66 (:46615-46627)",
+    "cues": [
+      [0, "voice", "pose"]
+    ]
+  },
+  "ko": {
+    "why": "Mole.cs RPC_ko (:52008): clip (animation.Play :52222) and voice ko1 or ko2 at 0 (Random.Range(0, 2) :52257, loads :52267 / :52298, PlayOneShot :52337 / :52340), getUp after 3 s (Yield(2, 3) :52347, :52124), standby 1 s later, no effect; RPC_dead (:52387) plays the same clip (Rewind + Play :52581-52584) with dead1 or dead2 at 0 (Random.Range(0, 2) :52619, :52631-52674) and always puts deadEffect at the hero's position and rotation (IL_408 :52687, reached by every voice path; the Mole prefab's deadEffect field = heroes/mole/effects/deadEffect, sharedassets8 #371, field_keys.txt; EffectControl life 3): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / penguin.json / cat.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+      [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+      [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+      [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  },
+  "advanceRepair": {
+    "why": "Mole.cs RPC_advanceRepair (:36263-36900), Advance Repair #431 (one rank; doSkill :7048 needs a Robots / Structure ally within 2 m): clip (0.2 fade, looped, :36725-36728) and voice advanceRepair1 / advanceRepair2 (Random.Range(0, 2) :36766-36821) at 0; Effects/advanceRepair_ring at the hero (createEffect :36834-36850) is in neither BB's data (resources.assets) nor TTO's catalog (checks/fx_mole_research/skills_a/probe): the game logs 'Cannot find advanceRepair_ring effect' (:36859) and draws nothing; from 1 s, every 1 s: SP - 1 and the target +150 HP (:36671-36699; the heal number only); the channel ends on a move key, the target past 2 m or SP < 5 (:36573-36658; RPC_advanceRepair0 :13665-13695 standby): the page's loop (LOOPS)",
+    "cues": [
+      [0, "voice", "advanceRepair1|advanceRepair2"]
+    ]
+  },
+  "assemble1": {
+    "why": "The assemble1 clip opens RPC_assemble1 (Mole.cs:22908-23596), the build coroutine of Auto Gyro Gun, Barrel Bot and War Capital (sType :23353-23411); BB's only player, and TTO's RPC_assemble1 the same (pseudo/Mole.c:1735-2297); War Capital has its own tile (its 8 s bar), TTO's Barrel Railgun its own sequence: one tile each (poolChains, with the Assemble sequence's steps)",
+    "skills": {
+      "autoGyroGun": {
+        "why": "Mole.cs RPC_assemble1 with sType autoGyroGun (rank 4, :8285): clip (0.2 fade, Once, :23438-23441) and voice cast (one file, :23479-23533) at 0; Yield 0.6 (:23527): assemble2",
+        "cues": [
+          [0, "voice", "cast"]
+        ]
+      },
+      "barrelBot": {
+        "why": "Mole.cs RPC_assemble1 with sType barrelBot (rank 4, :5130-5170): clip (0.2 fade, Once, :23438-23441) and voice cast (:23479-23533) at 0; Yield 0.6 (:23527): assemble2",
+        "cues": [
+          [0, "voice", "cast"]
+        ]
+      }
+    }
+  },
+  "assemble2": {
+    "why": "RPC_assemble1's build step (Mole.cs:23065-23125): assemble2 cut in and looped, the assemble box, the cast bar magAdjust(1 + sLv) / magAdjust(3 + sLv) (:23353-23417; 0.1 s, magAdjust's floor, CharacterControl.cs:20584-20588, the SEQ's assemble2*@0.1), then the summon in the same frame (:23163-23331)",
+    "skills": {
+      "autoGyroGun": {
+        "why": "Mole.cs RPC_assemble1 (autoGyroGun, sLv 4): at 0.6 s assemble2 (cut, loop, :23065-23070) and Effects/assemble_box at the hero, hero rotation (createEffect :23086-23098; EffectControl life 999, followPosition, followState; Animation root looped; plays its own looping Sounds/assemble); at the bar's end (magAdjust(5) = 0.1 s, cued 0.05: the step edge less the page's margin) the box Destroyed (:23331), standby (RPC_assemble0 :10477-10504) and RPC_autoGyroGun_create4 (:23199-23236, :11751-12235): assemble_dust 0.7 m ahead, hero rotation (Instantiate :11764-11776; life 1), voice autoGyroGun1 / autoGyroGun2 (Random.Range(0, 2) :11819-11874), the turret Characters/Robots/AutoGyroGun/AutoGyroGun4 where a ray from 1 m up along 0.7 forward - up meets the floor (getSpawnVector :23199: 0.7 m ahead), LookRotation(forward) (:12019-12031); AutoGyroGun.create (AutoGyroGun.cs:1651-1741): clip create and its create_fx, 0.8 s later root looped; life chaAdjust(120) cut at 10 s; its AI (first scan 2 s after Awake, AutoGyroGun.cs:58, then a shot every 2 s at an enemy within 8 + 4 x 4 = 24 m, :755-811, :1159-1477) fires at the 10 m target 0.6 m up (parts: the robot summon); decision 32: its AI (fxparts/robots.js) fires at `to` 2, 4, 6, 8 s after its spawn (the 2 s nAttack lock, AutoGyroGun.cs:58, :1159-1477): leg1 turned, fire, nAttack_fx (autoGyroGun_nAttack), the field prefab autoGyroGun_fire at the turret (decision 54)",
+        "cues": [
+          [0, "fx", "assemble_box", {"kill": 0.05}],
+          [0.05, "fx", "assemble_dust", {"d": 0.7}],
+          [0.05, "voice", "autoGyroGun1|autoGyroGun2"],
+          [0.05, "fx", "AutoGyroGun4", {"d": 0.7, "kill": 10, "to": [0, 0.6, 10]}]
+        ],
+        "builds": ["autoGyroGun_fire", "sound:autoGyroGun_create", "sound:autoGyroGun_nAttack"]
+      },
+      "barrelBot": {
+        "why": "Mole.cs RPC_assemble1 (barrelBot, sLv 4): at 0.6 s assemble2 and assemble_box as Auto Gyro Gun's (:23065-23098); at the bar's end (magAdjust(7) = 0.1 s, cued 0.05) the box Destroyed (:23331), standby, RPC_barrelBot_create4 (:23249-23274, :12279-13005): assemble_dust 1 m ahead (position + forward), hero rotation (:12292-12304), voice barrelBot1 / barrelBot2 (Random.Range(0, 2) :12347-12402), Characters/Robots/BarrelBot/BarrelBot4 0.7 m ahead on the floor (getSpawnVector :23249), LookRotation(forward) (:12589-12601); BarrelBot.create (BarrelBot.cs:5940-6103): getUp once and its create_fx, standby 0.8 s later, then root; no life (BarrelBot.cs:179-260): cut at 10 s; Double Bot #423 keeps an earlier bot (:12415-12433): none in a single play; its AI (BarrelBotAI.cs) left out (open question 3); decision 32: standing (fxparts/robots.js BarrelBot: getUp and its create_fx, root 0.8 s later), no AI",
+        "cues": [
+          [0, "fx", "assemble_box", {"kill": 0.05}],
+          [0.05, "fx", "assemble_dust", {"d": 1}],
+          [0.05, "voice", "barrelBot1|barrelBot2"],
+          [0.05, "fx", "BarrelBot4", {"d": 0.7, "kill": 10}]
+        ],
+        "builds": ["sound:barrelBot_create"]
+      }
+    }
+  },
+  "@WarCapital:assemble1": {
+    "why": "Mole.cs RPC_assemble1 with sType warCapital (War Capital #444, one rank): clip (0.2 fade, Once, :23438-23441) and voice cast (:23479-23533) at 0; Yield 0.6 (:23527): assemble2",
+    "cues": [
+      [0, "voice", "cast"]
+    ]
+  },
+  "@WarCapital:assemble2": {
+    "why": "Mole.cs RPC_assemble1 (warCapital): at 0.6 s assemble2 (cut, loop, :23065-23070) and assemble_box at the hero (createEffect :23086-23098; life 999, followState; its own looping Sounds/assemble); the bar magAdjust(24) (:23393, :23417), at the highest MAG 24 - 512 / 32 = 8 s (CharacterControl.cs:20586-20587; the SEQ's assemble2*@8, cued 7.95): the box Destroyed (:23331), standby, RPC_warCapital_create (:23291-23316, :14239-14463): any earlier War Capital destroyed (:14252), Effects/warCapital 2 m ahead on the floor (getSpawnVector(position + up, 2 x forward - up) :23291), LookRotation(forward) (:14267-14279; plays its own Sounds/warCapital), voice laugh (:14328-14340), InitWarCapital (:14451; Mole_warCapital.cs:313-381: open once, 1 s later root looped); lives until destroyed (Mole_warCapital.cs:100-170): cut at 10 s; its first enemy scan 12 s after the create (OnWarCapital :43912, then every 6 s :43919): no missiles within the 10 s",
+    "cues": [
+      [0, "fx", "assemble_box", {"kill": 7.95}],
+      [7.95, "fx", "warCapital", {"d": 2, "kill": 10}],
+      [7.95, "voice", "laugh"]
+    ]
+  },
+  "barrelCannon": {
+    "why": "Mole.cs RPC_barrelCannon (:39835-40330), Barrel Cannon #443 (one rank; doSkill :7356-7375 casts with no bot check): clip (0.2 fade, Once, :40208-40211) and voice barrelBot2 (one file, no pick, :40281-40320) at 0; Effects/barrelCannon_ring at the hero (createEffect :40220-40238) is in neither BB's data nor TTO's catalog (probe): 'Cannot find barrelCannon_ring effect' (:40246), nothing drawn; Yield 0.3 (:40325): each living Barrel Bot (and Double Bot's second, :40053-40104) is sent RPC_cannonForm (BarrelBot.cs:5377-5800), none here ('BarrelBot is not ready', :40046); Yield 0.5 (:40327): standby at 0.8 s (:40133-40177)",
+    "cues": [
+      [0, "voice", "barrelBot2"]
+    ]
+  },
+  "bunker": {
+    "why": "Mole.cs RPC_bunker (:25102-25640), Bunker rank 2 (myCommand bunker2: damage taken x 0.25, CharacterControl.cs:4636-4672; no look change): clip cut in (PlayAnimation(bunker, 0), Once, :25334-25339), voice bunker1 / bunker2 (Random.Range(0, 2) :25383-25438) and Effects/bunker_hole at the hero, hero rotation (createEffect :25451-25469; EffectControl life 1, followPosition) at 0; Yield 0.2 (:25601): Effects/bunker at the hero (createEffect :25248-25266; life 999, followPosition, followState; the sandbag ring mesh Mole_bunker, its dust ring and puff; plays its own Sounds/bunker), Race = Structure (:25280); Yield 0.3 (:25589): held until a move key (:25485-25542; RPC_bunker0 :10954-10993 standby): the SEQ Bunker's 3 s (the run-until-the-player-moves rule), cut 2.95",
+    "cues": [
+      [0, "voice", "bunker1|bunker2"],
+      [0, "fx", "bunker_hole"],
+      [0.2, "fx", "bunker", {"cut": 2.95}]
+    ]
+  },
+  "chopper": {
+    "why": "Mole.cs RPC_chopper (:33450-34186), Chopper rank 3, Barrel Cannon #443 on (passives on): clip (0.2 fade, Once, :34028-34031) and voice chopper1 / chopper2 (Random.Range(0, 2) :34069-34169) at 0; Yield 0.3 (:34172): the Mole prefab's Mole_chopper field (= Effects/chopper, checks/fx_mole_research/skills_a/probe/fields.txt) created at the origin, parented to Mole_tri/root/UpperBody1/UpperBody2/mount_Cannon, localPosition 0, localRotation identity (:33589-33604; EffectControl life 5.5, followState; Animation root; its AudioSource chopper, loop, playOnAwake off); Yield 0.2 (:34167): chopper_startDust (= Effects/chopper_StartDust) at the hero, Quaternion.identity (:33631); Yield 0.2 (:34157): at 0.7 s moveSpeed 3 and the chopper's AudioSource Play() (:33658-33663: playAudio 0.4 after its spawn); Yield 0.6 (:34151): at 1.3 s moveSpeed 5 + 3 (:33690), hasSkill(443) (:33695): choppperCannon_ring at the hero, hero rotation (createEffect :33701-33719; life 4, followPosition; plays its own looping Sounds/chopperCannon_ring); ten ticks 0.4 s apart from 1.3 s (i >= 10 :33794, Yield 0.4 :34160): chopper_forwardDust (= Effects/chopper_forwardDust) at the hero, hero rotation (:33877); each tick's 3 m box (:33890) and #443's 5 m blast (:33957-33986) hit nothing at the standing hero (the hero does not travel; chopper_hit only on a hit, :33929); at 5.3 s the chopper's sound Stop and standby (:33800-33868): the chopper cut at 5.15, the clip's 5.2 s end less the page's margin",
+    "cues": [
+      [0, "voice", "chopper1|chopper2"],
+      [0.3, "fx", "chopper", {"bone": "mount_Cannon", "cut": 5.15, "playAudio": 0.4}],
+      [0.5, "fx", "chopper_StartDust"],
+      [1.3, "fx", "choppperCannon_ring"],
+      [1.3, "fx", "chopper_forwardDust"],
+      [1.7, "fx", "chopper_forwardDust"],
+      [2.1, "fx", "chopper_forwardDust"],
+      [2.5, "fx", "chopper_forwardDust"],
+      [2.9, "fx", "chopper_forwardDust"],
+      [3.3, "fx", "chopper_forwardDust"],
+      [3.7, "fx", "chopper_forwardDust"],
+      [4.1, "fx", "chopper_forwardDust"],
+      [4.5, "fx", "chopper_forwardDust"],
+      [4.9, "fx", "chopper_forwardDust"]
+    ]
+  },
+  "detonate": {
+    "why": "Mole.cs RPC_detonate (:30961-31490), Detonate #273 (one rank; doSkill refuses it with no Time Nuke, :6740-6762: the tile assumes Time Nuke 2's nuke where the Time Nuke tile puts it, mPos + tDir = 1 m ahead, identity, RPC_timeNuke :30653, RPC_timeNuke_create :11663-11730): clip (0.2 fade, Once, :31277-31280), voice detonate1 / detonate2 (Random.Range(0, 2) :31318-31373) and Effects/detonate_ring at the hero, hero rotation (createEffect :31386-31404; life 1.5, followPosition; plays its own Sounds/detonate) at 0; the local player's motion blur (:31430-31433) left out; Yield 0.6 (:31458): each nuke sent detonate (:31096-31148) and Effects/detonate Instantiated at it, identity (:31107-31171; life 1); Mole_timeNuke.detonate (Mole_timeNuke.cs:407-523): renderers on, Yield 0.5, doExplode (:615-921): timeNuke_explosion (the prefab's field = Effects/timeNuke_explosion, probe/nukefield.txt) at the nuke, its rotation (:796; life 4; plays its own Sounds/timeNuke), the nuke's renderers off and Destroyed after four 0.1 s rings (:801-911); Yield 0.7 (:31462): standby at 1.3 s; decision 27: the nuke's own part (fxparts/mole.js Mole_timeNuke, found by the detonate effect's fx:detonate) explodes it 0.5 s after the detonate (timeNuke_explosion at 1.1 s, its meshes off, gone at 1.5 s): the blast part-made (builds), the nuke's kill 3",
+    "cues": [
+      [0, "voice", "detonate1|detonate2"],
+      [0, "fx", "detonate_ring"],
+      [0, "fx", "timeNuke2", {"d": 1, "kill": 3}],
+      [0.6, "fx", "detonate", {"d": 1}]
+    ],
+    "builds": ["timeNuke_explosion"]
+  },
+  "dig1": {
+    "why": "dig1 is King Kaiser's (RPC_kingKaiser :35389; Charge Attack plays superDig instead with Super Dig #411 on, :22290-22304, the passives rule): Mole.cs RPC_kingKaiser (:34990-35530), King Kaiser #371 (one rank; Kaiser Cannon #372 / Kaiser Beam #373 on: Kaiser level 3, the Kaiser's attacks only): clip (0.2 fade, Once, :35389-35392; held on its last frame, the SEQ's dig1@4.9), noForce 5 s (:35401, nothing drawn), the camera zoom (:35420) left out, Effects/dig_hole at the hero 0.05 m up, hero rotation (Instantiate :35426-35444; EffectControl life 5, Animation root; its digSound child plays the looping Sounds/dig for 2 s) at 0; every 0.1 s on the frame loop (dustTimer :35321-35329; the nominal 0.1, 0.2 ... 1.8 s, decision 45: one timer model for the class) until actionTime + 1.9 (:35293): Effects/dig_dust at the hero, hero rotation (:35334-35352; life 1); Yield 0.5 (:35487): at 2.4 s the Mole prefab's kaiser_dust field (sharedassets8.assets path 387, not in Resources; probe2.json: four smoke puffs at (+-1.5, 0, +-1), life 1 + 1) at the hero, hero rotation (:35127-35133; the camera shake left out); Yield 0.5 (:35496): at 2.9 s the kaiser_box field (path 379; life 3, Animation root, the KaiserBox mesh; plays its own kaiser_box) at the hero, rotation x Euler(270, 90, 0) (:35186-35192); Yield 2 (:35494): at 4.9 s the Kaiser (@KingKaiser:root)",
+    "cues": [
+      [0, "fx", "dig_hole", {"y": 0.05}],
+      [0.1, "fx", "dig_dust"],
+      [0.2, "fx", "dig_dust"],
+      [0.3, "fx", "dig_dust"],
+      [0.4, "fx", "dig_dust"],
+      [0.5, "fx", "dig_dust"],
+      [0.6, "fx", "dig_dust"],
+      [0.7, "fx", "dig_dust"],
+      [0.8, "fx", "dig_dust"],
+      [0.9, "fx", "dig_dust"],
+      [1.0, "fx", "dig_dust"],
+      [1.1, "fx", "dig_dust"],
+      [1.2, "fx", "dig_dust"],
+      [1.3, "fx", "dig_dust"],
+      [1.4, "fx", "dig_dust"],
+      [1.5, "fx", "dig_dust"],
+      [1.6, "fx", "dig_dust"],
+      [1.7, "fx", "dig_dust"],
+      [1.8, "fx", "dig_dust"],
+      [2.4, "fx", "kaiser_dust"],
+      [2.9, "fx", "kaiser_box", {"rot": [270, 90, 0]}]
+    ]
+  },
+  "@KingKaiser:root": {
+    "why": "Mole.cs RPC_kingKaiser at 4.9 s (case 5 :35210-35277): kaiser_dust again at the hero (:35229-35235), RPC_kingKaiser_create at getExpandPos(position, 4, 1.2) (:35270; the hero's spot when it is free), LookRotation(forward) (:35536-36204): Characters/Robots/KingKaiser/KingKaiser_<r g b k w> by the armour colour Skin / 100 = 1-5 (:35709-35776, MoleEquipment.cs:1495-1500; the else branch loads KingKaiser_p, which BB's data does not have: no Kaiser; every wardrobe Mole outfit has colours 1-5, steamSuit none: the part's fallback), KingKaiser.summon (KingKaiser.cs:3821-4048: create once and its kaiser_createFx, 3 s to standby, then root), voice kingKaiser1 / kingKaiser2 (Random.Range(0, 2) :36057-36112), the Mole hidden (addStatus hide, chaAdjust(240) :36135: every renderer off, CharacterControl.cs:32818-32830; the page's whole-hero hideProp) and carried with the Kaiser for 240 s: cut at 10 s (the Kaiser and the hide, 9.95 inside the step); the colour ramp and motion blur (:36012-36017) left out; decision 35: \"pick\": \"color\" takes KingKaiser_<r g b k w> by the outfit colour (steamSuit, no colour: _r); decision 36: the page's whole-hero hideProp; the summon's script (fxparts/robots.js KingKaiser): create and its kaiser_createFx, root from 3 s",
+    "cues": [
+      [0, "fx", "kaiser_dust"],
+      [0, "voice", "kingKaiser1|kingKaiser2"],
+      [0, "fx", "KingKaiser_r|KingKaiser_g|KingKaiser_b|KingKaiser_k|KingKaiser_w", {"kill": 9.95, "pick": "color"}],
+      [0, "hideProp", "hero", {"kill": 9.95}]
+    ],
+    "builds": ["sound:kingKaiser_kaiser_create"]
+  },
+  "flameTurret1": {
+    "why": "Mole.cs RPC_flameTurret (:27714-28415), Flame Turret rank 3 (damage only): clip cut in (PlayAnimation(flameTurret1, 0), Once, :28234-28237), voice flameTurret1 / flameTurret2 (Random.Range(0, 2) :28275-28330) and Effects/flameTurret at the hero, hero rotation (createEffect :28343-28359; EffectControl life 60, followPosition, followState, rotation mode followObject; the turret Mole_frameTurret's create / root, a puff, a dust ring; plays its own Sounds/bunker) at 0; Yield 0.5 (:28396): flameTurret2; the channel ends at actionTime + chaAdjust(5) (:27935, :27984: 5 s at the stat-free CHA 1; the SEQ's flameTurret2*@4.5): the turret's followState cut 4.45 on flameTurret2's clock",
+    "cues": [
+      [0, "voice", "flameTurret1|flameTurret2"],
+      [0, "fx", "flameTurret", {"cut": 4.45}]
+    ]
+  },
+  "flameTurret2": {
+    "why": "Mole.cs RPC_flameTurret from 0.5 s: flameTurret2 cut in and looped (:27861-27866); Yield 0.5 (:28392): at 1.0 s (0.5 into this step) Effects/flameTurret_fire at the hero, hero rotation (createEffect :27893-27911; life 5, followPosition, followState, followObject; the flames 1.5 m ahead; plays its own looping Sounds/fireTurret), the damage box every 0.25 s from 1.25 s (FindRecTarget 12 m :28144-28200, nothing drawn); turning by the arrow keys (RPC_flameTurret_rotate :28078-28130) left out; standby at 5 s (:27984-28028): cut 4.45 (the step's 4.5 s less the page's margin)",
+    "cues": [
+      [0.5, "fx", "flameTurret_fire", {"cut": 4.45}]
+    ]
+  },
+  "mine": {
+    "why": "The mine clip: four Mole skills, one per play, even chance, picked anew on every play (plans/fx_sheep/decisions.md 14; one tile each, poolChains): Landmine (RPC_mine, PlayAnimation(\"mine\", 0.2) Mole.cs:23917), Stun Mine (RPC_stunMine :26706), Time Nuke (RPC_timeNuke :30795), Flame Carnival (RPC_flameCarnival :38671) (pipeline/clip_calls.js); each lays its device at 0.3 s and stands by at 0.8 s; every device's trigger (4 m sphere, rip prefabs) is 9 m short of the 10 m target point: no blast",
+    "skills": {
+      "mine": {
+        "why": "Mole.cs RPC_mine (:23601-24076), Landmine 4 (max rank; Mine Lover #402 changes only the cooldown :23891-23905): clip mine, 0.2 s fade (:23917), voice mine1 / mine2 (Random.Range(0, 2) :23958, loads :23968 / :23999, PlayOneShot :24039 / :24042) at 0; Yield 0.3 (:24045): RPC_mine_create(mPos + 0.5 tDir) (:23758) Instantiates mine<sLv> = mine4 (switch :24254-24398) with Quaternion.Euler(270, 90, 0), a world rotation (the page's hero faces +z: the same) (:24398), Init 0.3 s later (:24233); Mole_mine draws nothing of its own (it hides the renderers from other teams only, Mole_mine.cs:80-97; a data-only part) and lives chaAdjust(60) s (:60, :146): cut at 10 s (kill 10, the Sheep's seal fields); Sounds/mine (load :23782, PlayOneShot :23794); Yield 0.5 (:24037): standby 0.8 s (:23830)",
+        "cues": [
+          [0, "voice", "mine1|mine2"],
+          [0.3, "sound", "mine"],
+          [0.3, "fx", "mine4", {"d": 0.5, "rot": [270, 90, 0], "kill": 10}]
+        ],
+        "name": "Landmine"
+      },
+      "stunMine": {
+        "why": "Mole.cs RPC_stunMine (:26463-26862), Stun Mine 2: clip mine, 0.2 s fade (:26706), voice stunMine1 / stunMine2 (Random.Range(0, 2) :26747, loads :26757 / :26788, PlayOneShot :26834 / :26830) at 0; Yield 0.3 (:26832): RPC_stunMine_create(mPos + 0.5 tDir) (:26547) Instantiates stunMine2 (sLv 2, :27082-27106) with Quaternion.Euler(270, 90, 0) (:27106), Init 0.3 s later (:27019); Mole_stunMine draws nothing (hides from other teams, Mole_stunMine.cs:80-97; data-only) and lives talAdjust(60) s (:60, the Bible's BB bug): cut at 10 s; Sounds/mine (:26571, :26583); Yield 0.5 (:26823): standby 0.8 s (:26619)",
+        "cues": [
+          [0, "voice", "stunMine1|stunMine2"],
+          [0.3, "sound", "mine"],
+          [0.3, "fx", "stunMine2", {"d": 0.5, "rot": [270, 90, 0], "kill": 10}]
+        ]
+      },
+      "timeNuke": {
+        "why": "Mole.cs RPC_timeNuke (:30574-30954), Time Nuke 2: clip mine, 0.2 s fade (:30795), voice timeNuke1 / timeNuke2 (Random.Range(0, 2) :30836, loads :30846 / :30877, PlayOneShot :30922 / :30925) at 0; Yield 0.3 (:30914): RPC_timeNuke_create(mPos + tDir) (:30653): timeNuke2 (sLv 2, :11663-11687) 1 m ahead, Quaternion.identity (:11687), Init(hero) (:11711); Mole_timeNuke draws the fuse's countdown over it: OnGUI label FloorToInt(start + 60 - now) (60, 59 ...) in GameGui/Fonts/GMO24, colour (0.8, 0.3, 0.3), centred in 30 x 30 px at the nuke + (0.2 mLv + 0.6) = 1.0 m up (mLv 2 in the prefab, checks/fx_mole_research/skills_b/probe2.json) (Mole_timeNuke.cs:62-68, :142-175; the part to build); the fuse is 60 s (:241, :276): cut at 10 s, so its blast timeNuke_explosion (:796) never comes; Sounds/mine (:30677, :30689); Yield 0.5 (:30920): standby 0.8 s (:30725)",
+        "cues": [
+          [0, "voice", "timeNuke1|timeNuke2"],
+          [0.3, "sound", "mine"],
+          [0.3, "fx", "timeNuke2", {"d": 1, "kill": 10}]
+        ]
+      },
+      "flameCarnival": {
+        "why": "Mole.cs RPC_flameCarnival (:38399-38831): clip mine, 0.2 s fade (:38671), voice activate2 / mine2 (Random.Range(0, 2) :38712, loads :38722 / :38753, PlayOneShot :38804 / :38787) at 0; Yield 0.3 (:38794): Sounds/mine (:38474-38486) and flameCarnival Instantiated 1 m ahead (mPos + tDir), Quaternion.identity (:38518), InitFlameCarnival (:38559); its Animation plays 'close' on awake and its AudioSource Sounds/flameCarnival (probe); Mole_flameCarnival lives chaAdjust(90) s (Mole_flameCarnival.cs:53), hides from other teams (:80-93) and fires flameCarnival_fire only when an enemy walks into its 4 m trigger (OnTriggerEnter :198-280; the 10 m target is 9 m away: never): data-only, cut at 10 s; Yield 0.5 (:38807): standby 0.8 s (:38601)",
+        "cues": [
+          [0, "voice", "activate2|mine2"],
+          [0.3, "sound", "mine"],
+          [0.3, "fx", "flameCarnival", {"d": 1, "kill": 10}]
+        ]
+      }
+    }
+  },
+  "mortarShot": {
+    "why": "The mortarShot clip: Mortar Shot (RPC_mortarShot, PlayAnimation(\"mortarShot\", 0.2) Mole.cs:24807) and Napalm (RPC_napalm :37401), one per play, even chance, picked anew on every play (one tile each, poolChains); both fire from the fixed point TransformDirection(0.2, 1, 0.6) (the weapon's firePoint is BB's first choice, :24696-24712, :37106-37122; TTO always uses the fixed point: question 3)",
+    "skills": {
+      "mortarShot": {
+        "why": "Mole.cs RPC_mortarShot (:24470-25095), Mortar Shot 2: aimed at the target's position (:24761-24772: the 10 m target point); clip, 0.2 s fade (:24807), voice mortarShot1 / mortarShot2 (Random.Range(0, 2) :24858, loads :24870 / :24902, PlayOneShot :25035 / :25042) at 0; Yield 0.1 (:25040), then 2 sLv + 1 = 5 shells (a <= 2 sLv :24927), each after Yield 0.2 (:25033): 0.3, 0.5, 0.7, 0.9, 1.1 s (the Bible's '0.1 s apart' is the first wait only: question 7); each shell: the weapon's 'fire' clip (:24666-24671, not on the page), Sounds/nAttack_fire (the hero prefab's field nAttack_fireFx, :24684; probe_fields.txt), RPC_mortarShot_fire (:24728): mortarShot_fire with LookRotation(getMortarVector(firePos, target, 20)) (:10768-10771; Math.cs:1011-1060: 83.34 deg up, calc.txt), life 5 x rangeMod (:10780); Mole_mortarShot: 20 m/s (Mole_mortarShot.cs:26, :51), Rigidbody gravity on, drag 0 (rip prefab; Physics.gravity -9.8), LookAt(position + velocity) every FixedUpdate (:86), bursts on the first collider not its own layer / 1 / 2 (OnTriggerEnter :98-171): RPC_mortarShot_hit = mortarShot_hit at the contact, identity (:10804-10830; its own Sounds/nAttack_hit): on the floor at the 10 m point (0, 10.06 m) 4.08 s after each shot (plans/fx_sheep/decisions.md 3; the part spawns it: builds); standby at 1.1 s (:24983); decision 19: the worn cannon's firePoint node (28 of 44 BB cannons) re-aimed at `to` by the part, the cue's x / y / d / rot the fallback (getMortarVector 20, :24696-24712)",
+        "builds": ["mortarShot_hit"],
+        "cues": [
+          [0, "voice", "mortarShot1|mortarShot2"],
+          [0.3, "sound", "nAttack_fire"],
+          [0.3, "fx", "mortarShot_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}],
+          [0.5, "sound", "nAttack_fire"],
+          [0.5, "fx", "mortarShot_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}],
+          [0.7, "sound", "nAttack_fire"],
+          [0.7, "fx", "mortarShot_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}],
+          [0.9, "sound", "nAttack_fire"],
+          [0.9, "fx", "mortarShot_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}],
+          [1.1, "sound", "nAttack_fire"],
+          [1.1, "fx", "mortarShot_fire", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}]
+        ]
+      },
+      "napalm": {
+        "why": "Mole.cs RPC_napalm (:37008-37504): aimed at the target (:37371-37380: the 10 m target point); clip mortarShot, 0.2 s fade (:37401), voice mortarShot2 always (load :37419, PlayOneShot :37456: no pick, no voice-setting check) at 0; Yield 0.3 (:37454): the weapon's 'fire' clip (:37094-37099), napalm_ring createEffect at the fire point, hero rotation (:37128-37146; plays its own Sounds/napalm_ring; its Shuriken from TTO's copy, SHURIKEN_FROM_TTO), and 5 shells at once (i < 5 :37173) aimed at the target and the target + world (-5, 0, -5), (-5, 0, 5), (5, 0, -5), (5, 0, 5) (:37185-37232): RPC_napalm_fire (:37238): napalm with LookRotation(getMortarVector(firePos, aim, 20)) (:13737-13740), life 5 x rangeMod (:13749); Mole_napalm: 20 m/s (Mole_napalm.cs:26, :51), gravity, bursts on contact (OnTriggerEnter :98-179): RPC_napalm_hit = napalm_hit at the contact, LookRotation(the shell's flat forward) (:37757-37769; EffectControl 3 + 3 s, its own Sounds/napalm_hit): on the floor 4.04-4.10 s after, at (0, 10.06), (-5.04, 5.04), (-5.04, 15.12), (5.04, 5.03), (5.04, 15.12) m (calc.txt; builds); Yield 0.3 (:37459): standby 0.6 s (:37319); decision 19: the worn cannon's firePoint node (28 of 44 BB cannons) re-aimed at `to` by the part, the cue's x / y / d / rot the fallback (getMortarVector 20, :37106-37122; each shell's own aim, the target + world offset, written as the absolute point (the part reads `to` as a point: (-5, 0, 5), (-5, 0, 15), (5, 0, 5), (5, 0, 15); 2026-11-13, the Mole's QA); napalm_ring stays at the fixed point)",
+        "builds": ["napalm_hit"],
+        "cues": [
+          [0, "voice", "mortarShot2"],
+          [0.3, "fx", "napalm_ring", {"x": 0.2, "y": 1, "d": 0.6}],
+          [0.3, "fx", "napalm", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-83.34, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}],
+          [0.3, "fx", "napalm", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-85.2, -49.76, 0], "to": [-5, 0, 5], "firePoint": "R"}],
+          [0.3, "fx", "napalm", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-78.98, -19.86, 0], "to": [-5, 0, 15], "firePoint": "R"}],
+          [0.3, "fx", "napalm", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-85.41, 47.49, 0], "to": [5, 0, 5], "firePoint": "R"}],
+          [0.3, "fx", "napalm", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-79.08, 18.43, 0], "to": [5, 0, 15], "firePoint": "R"}]
+        ]
+      }
+    }
+  },
+  "punch": {
+    "why": "The punch clip: Mega Punch (RPC_megaPunch, PlayAnimation(\"punch\", 0.2) Mole.cs:32671) and Mega Drill (RPC_megaDrill :39739), one per play, even chance, picked anew on every play (one tile each, poolChains); both punch within 3 m (FindRecTarget :32513, :39563): no hit at the 10 m target point (the Bison's decision 16)",
+    "skills": {
+      "megaPunch": {
+        "why": "Mole.cs RPC_megaPunch (:32324-32811), Mega Punch 2 (Mega Drill #433's passive part only raises damage and KO, :32488-32499): clip, 0.2 s fade (:32671), voice megaPunch1 / megaPunch2 (Random.Range(0, 2) :32712, loads :32722 / :32753, PlayOneShot :32792 / :32795) at 0; Yield 0.2 (:32798): moveSpeed -5 (:32398: a 0.5 m step back over 0.1 s; the page's hero doesn't travel, the Bison's decision 17) and megaPunch createEffect at the hero, hero rotation (:32403-32421; followPosition + followState; plays its own Sounds/megaPunch); Yield 0.1 (:32810): the punch, megaPunch_hit only on a target hit within 3 m (:32513-32552, :13062-13085); Yield 0.3 (:32788): standby 0.6 s (:32601): megaPunch's cut",
+        "cues": [
+          [0, "voice", "megaPunch1|megaPunch2"],
+          [0.2, "fx", "megaPunch", {"cut": 0.6}]
+        ]
+      },
+      "megaDrill": {
+        "why": "Mole.cs RPC_megaDrill (:39390-39788), no voice (none loaded): clip punch, 0.2 s fade (:39739); Yield 0.2 (:39776): moveSpeed -5 (:39460; no travel) and megaDrill_ring createEffect at the hero, hero rotation (:39465-39483; followPosition + followState, EffectControl 0.8 + 0.2 s; its AudioSource's clip gallonDrill is only in the rip's Assets/AudioClip/gallonDrill.ogg: question 8); Yield 0.1 (:39774): moveSpeed 0, four drill hits 0.1 s apart from 0.4 s (i < 4 :39761, Yield 0.1 :39782) within 3 m (:39563), megaDrill_hit only on a target (:39592-39602, :13906-13929); Yield 0.3 (:39778): standby 1.0 s (:39657)",
+        "cues": [
+          [0.2, "fx", "megaDrill_ring", {"cut": 1.0}]
+        ]
+      }
+    }
+  },
+  "tnt": {
+    "why": "The tnt clip: TNT 1-4 (#221-224) are four casts the Mole has together at max rank, each with its own key and cooldown (Mole.cs:26180; doSkill mol_tnt1-4 :6573-6610 -> num 1-4 via :8841-8851, RPC_tnt :8815; the peers replay RPC_tnt1-4 in onActionEvent :4312-4366; Bible mole-skill-reference 'TNT is four separate casts'): one tile each (question 1), each throwing 8 x n m ahead (:25846)",
+    "skills": {
+      "tnt1": {
+        "why": "Mole.cs RPC_tnt (:25639-26383) with sLv 1: TNT 1 (#221), its own key and cooldown \"tnt1\" (:26180; doSkill mol_tnt1 :6602, RPC_tnt :8815; onActionEvent :4312 for the peers): clip tnt, 0.2 s fade (:26189), voice tnt1 / tnt2 (Random.Range(0, 2) :26230, loads :26240 / :26271, PlayOneShot :26305 / :26320) at 0; Yield 0.2 (:26311): tnt createEffect at the hero, hero rotation (:25786-25804; the bundle in hand, followPosition + followState: cut at the standby); Yield 0.3 (:26314): at 0.5 s the blast at getSpawnPos(mPos + 8 sLv forward) = 8 m ahead on the ground (:25846-25857; Math.cs getSpawnPos: the floor below), Super TNT #422 on (passives on, :25841): superTNT_hit, Quaternion.identity (:25869-25893; without it tnt_hit, :25910-25928), playing its own Sounds/superTNT_hit; Sounds/tnt, the owner's (:25944-25970); Yield 0.3 (:26326): standby 0.8 s (:26119)",
+        "cues": [
+          [0, "voice", "tnt1|tnt2"],
+          [0.2, "fx", "tnt", {"cut": 0.8}],
+          [0.5, "fx", "superTNT_hit", {"d": 8}],
+          [0.5, "sound", "tnt"]
+        ],
+        "name": "TNT 1"
+      },
+      "tnt2": {
+        "why": "Mole.cs RPC_tnt (:25639-26383) with sLv 2: TNT 2 (#222), its own key and cooldown \"tnt2\" (:26180; doSkill mol_tnt2 :6594, RPC_tnt :8815; onActionEvent :4330 for the peers): clip tnt, 0.2 s fade (:26189), voice tnt1 / tnt2 (Random.Range(0, 2) :26230, loads :26240 / :26271, PlayOneShot :26305 / :26320) at 0; Yield 0.2 (:26311): tnt createEffect at the hero, hero rotation (:25786-25804; the bundle in hand, followPosition + followState: cut at the standby); Yield 0.3 (:26314): at 0.5 s the blast at getSpawnPos(mPos + 8 sLv forward) = 16 m ahead on the ground (:25846-25857; Math.cs getSpawnPos: the floor below), Super TNT #422 on (passives on, :25841): superTNT_hit, Quaternion.identity (:25869-25893; without it tnt_hit, :25910-25928), playing its own Sounds/superTNT_hit; Sounds/tnt, the owner's (:25944-25970); Yield 0.3 (:26326): standby 0.8 s (:26119)",
+        "cues": [
+          [0, "voice", "tnt1|tnt2"],
+          [0.2, "fx", "tnt", {"cut": 0.8}],
+          [0.5, "fx", "superTNT_hit", {"d": 16}],
+          [0.5, "sound", "tnt"]
+        ],
+        "name": "TNT 2"
+      },
+      "tnt3": {
+        "why": "Mole.cs RPC_tnt (:25639-26383) with sLv 3: TNT 3 (#223), its own key and cooldown \"tnt3\" (:26180; doSkill mol_tnt3 :6586, RPC_tnt :8815; onActionEvent :4348 for the peers): clip tnt, 0.2 s fade (:26189), voice tnt1 / tnt2 (Random.Range(0, 2) :26230, loads :26240 / :26271, PlayOneShot :26305 / :26320) at 0; Yield 0.2 (:26311): tnt createEffect at the hero, hero rotation (:25786-25804; the bundle in hand, followPosition + followState: cut at the standby); Yield 0.3 (:26314): at 0.5 s the blast at getSpawnPos(mPos + 8 sLv forward) = 24 m ahead on the ground (:25846-25857; Math.cs getSpawnPos: the floor below), Super TNT #422 on (passives on, :25841): superTNT_hit, Quaternion.identity (:25869-25893; without it tnt_hit, :25910-25928), playing its own Sounds/superTNT_hit; Sounds/tnt, the owner's (:25944-25970); Yield 0.3 (:26326): standby 0.8 s (:26119)",
+        "cues": [
+          [0, "voice", "tnt1|tnt2"],
+          [0.2, "fx", "tnt", {"cut": 0.8}],
+          [0.5, "fx", "superTNT_hit", {"d": 24}],
+          [0.5, "sound", "tnt"]
+        ],
+        "name": "TNT 3"
+      },
+      "tnt4": {
+        "why": "Mole.cs RPC_tnt (:25639-26383) with sLv 4: TNT 4 (#224), its own key and cooldown \"tnt4\" (:26180; doSkill mol_tnt4 :6573, RPC_tnt :8815; onActionEvent :4366 for the peers): clip tnt, 0.2 s fade (:26189), voice tnt1 / tnt2 (Random.Range(0, 2) :26230, loads :26240 / :26271, PlayOneShot :26305 / :26320) at 0; Yield 0.2 (:26311): tnt createEffect at the hero, hero rotation (:25786-25804; the bundle in hand, followPosition + followState: cut at the standby); Yield 0.3 (:26314): at 0.5 s the blast at getSpawnPos(mPos + 8 sLv forward) = 32 m ahead on the ground (:25846-25857; Math.cs getSpawnPos: the floor below), Super TNT #422 on (passives on, :25841): superTNT_hit, Quaternion.identity (:25869-25893; without it tnt_hit, :25910-25928), playing its own Sounds/superTNT_hit; Sounds/tnt, the owner's (:25944-25970); Yield 0.3 (:26326): standby 0.8 s (:26119)",
+        "cues": [
+          [0, "voice", "tnt1|tnt2"],
+          [0.2, "fx", "tnt", {"cut": 0.8}],
+          [0.5, "fx", "superTNT_hit", {"d": 32}],
+          [0.5, "sound", "tnt"]
+        ],
+        "name": "TNT 4"
+      }
+    }
+  },
+  "grenade": {
+    "why": "Mole.cs RPC_stunGrenade (:27258-27660), Stun Grenade 2, the only skill on the grenade clip: aimed at the target's position, else 12 m ahead (:27466-27501: the 10 m target point); clip, 0.2 s fade (:27525), voice stunGrenade1 / stunGrenade2 (Random.Range(0, 2) :27566, loads :27576 / :27607, PlayOneShot :27653 / :27656) at 0; Yield 0.6 (:27647): from the fixed fire point (:27343-27365; question 3) toward the target's feet (:27370), RPC_stunGrenade_fire (:27375): stunGrenade with LookRotation(getTrajectoryVector(firePos, target, 15)) (:11295-11298; 6.75 deg up, calc.txt), life 3 x rangeMod (:11307), mLv = sLv + Grenade Cluster #432 (:11319, gameplay only); Mole_stunGrenade: 15 m/s (Mole_stunGrenade.cs:28, :57), gravity, LookAt(velocity) (:92), bursts on contact (OnTriggerEnter :104-193) with RPC_nAttack_hit (:193; not RPC_stunGrenade_hit, whose stunGrenade_hit is in neither game's files): nAttack_hit at the contact, identity (Mole.cs:10103-10105; its own Sounds/nAttack_hit), on the floor at the 10 m point (0, 10.13 m) 0.64 s after the throw (plans/fx_sheep/decisions.md 3; builds); Yield 0.2 (:27651): standby 0.8 s (:27414); decision 19: the worn cannon's firePoint node (28 of 44 BB cannons) re-aimed at `to` by the part, the cue's x / y / d / rot the fallback (getTrajectoryVector 15, :27343-27365); the hit spawned by the part on contact with the floor or the target body (decision 18)",
+    "builds": ["nAttack_hit"],
+    "cues": [
+      [0, "voice", "stunGrenade1|stunGrenade2"],
+      [0.6, "fx", "stunGrenade", {"x": 0.2, "y": 1, "d": 0.6, "rot": [-6.75, -1.22, 0], "to": [0, 0, 10], "firePoint": "R"}]
+    ]
+  },
+  "grenadeCluster": {
+    "why": "Mole.cs RPC_grenadeCluster (:37919-38294), Grenade Cluster (one rank), the only skill on its clip: clip, 0.2 s fade (:38132); the voice: BB asks for Voices/grenadeCluster1 / grenadeCluster2 (Random.Range(0, 2) :38173, loads :38185 / :38216), which BB doesn't have ('Cannot find' :38201 / :38232; the rip has granadeCluster1 / 2.wav); TTO plays grenadeCluster1 / 2, in its catalog (TTO1102:Mole.<RPC_grenadeCluster>d__276::MoveNext, pseudo/Mole.c:12058-12066): TTO's fix, BB's recordings (plans/fx_sheep/decisions.md 10; question 4); its ring Effects/granadeCluster_ring (:38241-38257) is in neither game's files (BB 'Cannot find' :38266, TTO's grenadeCluster_ring not in its catalog): none; Yield 0.5 (:38287): 8 grenades (i < 8 :38002) from position + TransformDirection(0, 1, 0.5) (:38004), each dir = rotateH(forward + 0.1 Random.Range(3, 10) up, 45 i).normalized (:38009; rotateH turns +z toward -x, Math.cs:838-843, so Unity yaw -45 i; the int 3 ... 9 drawn per grenade: 16.7 ... 42.0 deg up, the part's tilt), RPC_grenadeCluster_fire (:38014): grenadeCluster_fire at firePos + 0.5 dir, LookRotation(dir) (:13810), life 5 x rangeMod (:13819); Mole_grenadeCluster: 6 m/s (Mole_grenadeCluster.cs:28, :53), gravity, LookAt(velocity) (:88), bursts on contact (OnTriggerEnter :100-184): grenadeCluster_hit at the contact, LookRotation(zero) = identity (:13865; its own Sounds/grenade_hit), on the floor 4.8 ... 5.6 m out 0.66 ... 1.04 s after the throw (calc.txt; builds); Yield 0.2 (:38291): standby 0.7 s (:38062)",
+    "builds": ["grenadeCluster_hit"],
+    "cues": [
+      [0, "voice", "granadeCluster1|granadeCluster2"],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 0, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 315, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 270, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 225, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 180, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 135, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 90, 0], "tilt": [3, 9]}],
+      [0.5, "fx", "grenadeCluster_fire", {"y": 1, "d": 0.5, "rot": [0, 45, 0], "tilt": [3, 9]}]
+    ]
+  },
+  "hammer": {
+    "why": "Mole.cs RPC_megaHammer (:32938-33396), Mega Hammer 2, the only skill on the hammer clip (Mega Drill #433 raises only damage and KO, :33081-33092): clip, 0.2 s fade (:33237), voice megaHammer1 / megaHammer2 (Random.Range(0, 2) :33278, loads :33290 / :33321, PlayOneShot :33302 / :33333) and megaHammer createEffect at the hero, hero rotation (:33346-33362; followPosition + followState; plays its own Sounds/megaHammer) at 0; Yield 0.4 (:33395): the camera shake (:33018, left out: the Bison's decision 35), assemble_dust Instantiated 1.4 m ahead, hero rotation (:33024-33042), the blow within 3 m (FindRecTarget :33106: nothing at 10 m); Yield 0.3 (:33390): standby 0.7 s (:33167): megaHammer's cut",
+    "cues": [
+      [0, "voice", "megaHammer1|megaHammer2"],
+      [0, "fx", "megaHammer", {"cut": 0.7}],
+      [0.4, "fx", "assemble_dust", {"d": 1.4}]
+    ]
+  },
+  "missile": {
+    "why": "Mole.cs RPC_missile (:34309-34921), Missile 4, the only BB skill on the missile clip (TTO's OldMissile is the same, TTO1102:Mole::RPC_missile without the Missile Bot passive, pseudo/Mole.c:16064-16076): clip cut (:34786), voice missile1 / missile2 (Random.Range(0, 2) :34827, loads :34837 / :34868, PlayOneShot :34918 / :34905) at 0; Yield 0.1 (:34920): Sounds/missile_base (:34399, :34411) and sLv = 4 launchers (start -45, step 90 at rank 4, :34481-34492): missileBase createEffect at the hero, rotation x Euler(270, 90 - 45 + 90 b, 0) (:34515-34522; the hero prefab's field missileBase, probe_fields.txt; followPosition + followState, life 0.8: cut at the standby); Yield 0.5 (:34912): Sounds/missile_fire (:34565, :34577), 4 missiles (i < sLv :34614), each locked on a random enemy within 32 m (:34604-34656: the one target), dir = rotateH(forward + 0.3 up, -45 + 90 i).normalized (:34668: Unity yaw 45, -45, -135, 135, 16.7 deg up), RPC_missile_fire (:34673): the field missile_fire at the hero + dir, LookRotation(dir) (:13140), life 5 x rangeMod (:13149), mTarget (:13189); Mole_missile: ProjectileControl.velocity (0, 0, 8) (probe2.json), no gravity (rip prefab), RotateTowards(forward, the target's bounds centre - position, 0.3 rad) every 0.2 s (Mole_missile.cs:157-162; aimed 0.6 m up, plans/fx_penguin/decisions.md 3), missile_hit with the hero's rotation where it touches anything not on its layer / 1 / 2 (OnTriggerEnter :188-290, Mole.cs:13206-13208) or where its life runs out (Update :46-118); its sound is the Penguin's Sounds/manaMissile_hit (the rip); the two front ones reach the target 1.18 s after the launch, the two back ones 2.88 s (calc.txt); Yield 0.2 (:34903): standby 0.8 s (:34716)",
+    "builds": ["missile_hit"],
+    "cues": [
+      [0, "voice", "missile1|missile2"],
+      [0.1, "sound", "missile_base"],
+      [0.1, "fx", "missileBase", {"rot": [270, 45, 0], "cut": 0.8}],
+      [0.1, "fx", "missileBase", {"rot": [270, 135, 0], "cut": 0.8}],
+      [0.1, "fx", "missileBase", {"rot": [270, 225, 0], "cut": 0.8}],
+      [0.1, "fx", "missileBase", {"rot": [270, 315, 0], "cut": 0.8}],
+      [0.6, "sound", "missile_fire"],
+      [0.6, "fx", "missile_fire", {"x": 0.6773, "y": 0.2873, "d": 0.6773, "rot": [-16.7, 45, 0], "to": [0, 0.6, 10]}],
+      [0.6, "fx", "missile_fire", {"x": -0.6773, "y": 0.2873, "d": 0.6773, "rot": [-16.7, -45, 0], "to": [0, 0.6, 10]}],
+      [0.6, "fx", "missile_fire", {"x": -0.6773, "y": 0.2873, "d": -0.6773, "rot": [-16.7, -135, 0], "to": [0, 0.6, 10]}],
+      [0.6, "fx", "missile_fire", {"x": 0.6773, "y": 0.2873, "d": -0.6773, "rot": [-16.7, 135, 0], "to": [0, 0.6, 10]}]
+    ]
+  },
+  "warFactory": {
+    "order": "cycle",
+    "why": "The warFactory clip: War Factory (#434, one skill) plays it five ways in turn, Saw Machine, Bazooka, Tesla Coil, Roller Machine, Cart Bomb (Mole.cs doSkill (:7376-7460): War Factory's counter steps 1 -> 5 and wraps (:7417-7421); RPC_sawMachine :40826, RPC_bazooka :41400, RPC_teslaCoil :41920, RPC_rollerMachine :42699, RPC_cartBomb :43406, each animation.Rewind() + PlayAnimation(\"warFactory\", 0.2)); every one opens with its voice and warFactory_ring created at the hero, hero rotation (followPosition + followState, its own Sounds/warFactory) at 0 and its machine at 0.3 s; each weapon's own hits reach 2-5 m (FindRecTarget / FindAreaTarget): nothing at 10 m except the Bazooka's shells; one tile, the five in the game's order, one per play (question 2); each play ends at that weapon's standby (\"standby\", decision 13), then the page's 0.2 s fade to idle",
+    "skills": {
+      "sawMachine": {
+        "why": "Mole.cs RPC_sawMachine (:40443-40964): clip (:40826), voice sawMachine (load :40873, PlayOneShot :40885), warFactory_ring (:40897-40913) at 0; Yield 0.3 (:40963): sawMachine_ring createEffect at the hero, hero rotation (:40513-40531; followPosition + followState, its own Sounds/sawMachine); Yield 0.1 (:40951): four cuts 0.2 s apart from 0.4 s (i 1-4 :40568, :40594, :40671; Yield 0.2 :40959) within 4 m (:40704-40746; sawMachine_hit only on a target, and not in the rip); Yield 0.1 (:40957): standby 1.3 s (:40619): both rings' cut",
+        "cues": [
+          [0, "voice", "sawMachine"],
+          [0, "fx", "warFactory_ring", {"cut": 1.3}],
+          [0.3, "fx", "sawMachine_ring", {"cut": 1.3}]
+        ],
+        "standby": 1.3
+      },
+      "bazooka": {
+        "why": "Mole.cs RPC_bazooka (:41081-41536): clip (:41400), voice bazooka (load :41447, PlayOneShot :41459), warFactory_ring (:41471-41487) at 0; Yield 0.3 (:41515): bazooka_ring createEffect at the hero, hero rotation (:41150-41168; followPosition + followState, life 2; its Shuriken from TTO's copy, SHURIKEN_FROM_TTO); Yield 0.6 (:41530): three shells 0.3 s apart (i < 3 :41308, Yield 0.3 :41520): 0.9, 1.2, 1.5 s, each bazooka_fire at the hero + TransformDirection(-0.25, 1, 1), LookRotation(forward) (:41318-41346), life 2 x rangeMod (:41361), playing its own Sounds/bazooka_fire; Mole_bazooka: 24 m/s straight (Mole_bazooka.cs:28, :53; no gravity, rip prefab), bursts on the first collider not its layer / 1 / 2 (OnTriggerEnter :93-182): RPC_bazooka_hit = bazooka_hit at the contact, LookRotation(its flat forward) (:182, Mole.cs:14013-14036): on the 10 m target's body front, 9.7 m ahead and 1 m up, 0.35 s after each shot (builds); Yield 0.4 (:41522): standby 2.2 s (:41256): both rings' cut",
+        "builds": ["bazooka_hit"],
+        "cues": [
+          [0, "voice", "bazooka"],
+          [0, "fx", "warFactory_ring", {"cut": 2.2}],
+          [0.3, "fx", "bazooka_ring", {"cut": 2.2}],
+          [0.9, "fx", "bazooka_fire", {"x": -0.25, "y": 1, "d": 1, "to": [0, 0.6, 10]}],
+          [1.2, "fx", "bazooka_fire", {"x": -0.25, "y": 1, "d": 1, "to": [0, 0.6, 10]}],
+          [1.5, "fx", "bazooka_fire", {"x": -0.25, "y": 1, "d": 1, "to": [0, 0.6, 10]}]
+        ],
+        "standby": 2.2
+      },
+      "teslaCoil": {
+        "why": "Mole.cs RPC_teslaCoil (:41647-42149): clip (:41920), voice teslaCoil (load :41975, PlayOneShot :41987), warFactory_ring (:41999-42017) at 0; Yield 0.3 (:42127): teslaCoil_ring createEffect at the hero, hero rotation (:41717-41735; EffectControl 2.7 s, no followState; its own Sounds/teslaCoil); Yield 0.7 (:42149): seven shocks 0.2 s apart, 1.0 ... 2.2 s (i < 7 :42034, Yield 0.2 :42147), within 5 m (:42046), paralysis on the hit (:42109; drawn on the target only); Yield 0.6 (:42135): standby 3.0 s (:41833)",
+        "cues": [
+          [0, "voice", "teslaCoil"],
+          [0, "fx", "warFactory_ring", {"cut": 3.0}],
+          [0.3, "fx", "teslaCoil_ring"]
+        ],
+        "standby": 3.0
+      },
+      "rollerMachine": {
+        "why": "Mole.cs RPC_rollerMachine (:42264-42838): clip (:42699), voice rollerMachine (load :42746, PlayOneShot :42758), warFactory_ring (:42770-42786) at 0; Yield 0.3 (:42822): rollerMachine_ring createEffect at the hero, hero rotation (:42334-42352; followPosition + followState, life 3.2, its own Sounds/rollerMachine); Yield 0.3 (:42826): the first crush at 0.6 s within 2 m (:42394) and a camera shake (:42462, left out); Yield 0.4 (:42832): moveSpeed 1 from 1.0 s (:42489; the hero doesn't travel), ten crushes 0.2 s apart, 1.0 ... 2.8 s (i < 10 :42597, Yield 0.2 :42816; rollerMachine_hit only on a target, :14070-14093); moveSpeed 0 at 3.0 (:42603), Yield 0.5 (:42828): standby 3.5 s (:42545): the ring's cut",
+        "cues": [
+          [0, "voice", "rollerMachine"],
+          [0, "fx", "warFactory_ring", {"cut": 3.5}],
+          [0.3, "fx", "rollerMachine_ring", {"cut": 3.5}]
+        ],
+        "standby": 3.5
+      },
+      "cartBomb": {
+        "why": "Mole.cs RPC_cartBomb (:42964-43546), the fifth step, which arms the 180 s cooldown (:43394): clip (:43406), voice cartBomb (load :43453, PlayOneShot :43465), warFactory_ring (:43477-43493) at 0; Yield 0.3 (:43540): cartBomb_ring createEffect at the hero, hero rotation (:43033-43051) and cartBomb_fire at getSpawnPos(hero + 0.5 forward) = on the floor 0.5 m ahead, hero rotation (:43070-43106), Mole_cartBomb.Init (:43132); Yield 0.2 (:43544): from 0.5 s, every FixedUpdate (Yield WaitForFixedUpdate :43538), the hero's code drives it at 6 m/s along the hero's forward (the arrow keys steer it, :43262-43296); Mole_cartBomb (Update, Mole_cartBomb.cs:52-130) blows up 3 s after its Init (:83-88) or when the hero's action changes: RPC_cartBomb_hit = cartBomb_hit at the cart, LookRotation(its forward) (:127, Mole.cs:14128-14154; its own Sounds/cartBomb_hit), 3.3 s; the cart is solid (CapsuleCollider radius 0.5, no trigger, rip prefab) and every layer collides (mainData PhysicsManager m_LayerCollisionMatrix all set, checks/fx_cat_research/parts/probe_ps.txt), so the 10 m target stops it at 9.2 m from 1.95 s and it blows up there at 3.3 s (question 6; builds); the cart's own AudioSource loops Sounds/cartBomb; the cart gone, Yield 0.2 (:43520): standby about 3.5 s (:43196); the part (Mole_cartBomb): still for 0.2 s, then 6 m/s, stopped at the body 9.2 m, the boom 3 s after its spawn (decision 23, parts.md Verification 5)",
+        "builds": ["cartBomb_hit"],
+        "cues": [
+          [0, "voice", "cartBomb"],
+          [0, "fx", "warFactory_ring", {"cut": 3.5}],
+          [0.3, "fx", "cartBomb_ring"],
+          [0.3, "fx", "cartBomb_fire", {"d": 0.5, "to": [0, 0.6, 10]}]
+        ],
+        "standby": 3.5
+      }
+    }
+  },
+  "@Reload:root": {
+    "why": "Mole.cs RPC_reload (:10168-10465), a plain method doSkill calls straight (mol_reload1 / 2 :6472-6484, call :8942, ActionEvent :8951; doSkill :6338-8972 calls no PlayAnimation / animation.Play / CrossFade), so the Mole goes on with what she was doing; the tile plays it on the idle stance. At max rank (Reload 2) it clears the listed cooldowns (:10170-10307: 13 at rank 1, 9 more at rank 2, 8 more with Advance Repair #431), adds ceil(0.5 x 2 x msp) SP (:10313) and arms agiAdjust(240) (:10316); Effects/reload (:10325) createEffect at the hero's position and rotation (:10337; EffectControl life 1, followPosition, no followState), voice reload1 / reload2 (Random.Range(0, 2) :10380; reload1 :10390 -> break -> PlayOneShot :10460, reload2 :10421 -> Block_63 PlayOneShot :10465; both predicates worked by hand, plans/fx_mole/effect_only.md)",
+    "cues": [
+      [0, "fx", "reload"],
+      [0, "voice", "reload1|reload2"]
+    ]
+  },
+  "@FireBarrage:root": {
+    "why": "Mole.cs RPC_fireBarrage (:11403 -> $RPC_fireBarrage$23666 :28462-28855), started straight from doSkill (:8636, ActionEvent :8649; no clip anywhere on the way) at max rank (mol_fireBarrage2 num++ :6683); the aim mPos = getSpawnPos(target - the unit Mole->target direction vector2) (:8539; vector2 :6399-6402), so 1 m in front of the 10 m target point = 9 m ahead (no target: the cursor's ground point :8571, or 12 m ahead :8596), tDir = vector2 = the hero's facing. At 0: voice fireBarrage1 / fireBarrage2 (Random.Range(0, 2) :28679; :28691 / :28722, PlayOneShot :28703 / :28734; the 3 s voice timer is clear on a first press, :28644), fireBarrage_signal at mPos with the hero's rotation (:28787-28797; shown to the caster's own team, :28757-28763; EffectControl life 3, its AudioSource signal). Yield 2 s (:28819), then RPC_fireBarrage_fire (:28612 -> $RPC_fireBarrage_fire$23676 :28859-29290): at 2.0 the aircraft fireBarrage_<colour> picked by the hero's colour Skin / 100 (1 r, 2 g, 3 b, 4 k, 5 w, else r: :29096-29163; the outfit colour C.state.color) at mPos, LookRotation(tDir) (:29176), and at rank 2 two more (:29181-29204): tDir1 = rotateH(tDir, 30) (30 deg left, Unity yaw -30) at mPos - rotateNormal((-3, 0, -3), tDir1) = 1.098 m right, 13.098 m ahead, and tDir2 = rotateH(tDir, -30) (yaw +30) at 1.098 m left, 13.098 m ahead (Math.cs:838-880 worked through); EffectControl life 3, each with its looped plane sound. Yield 1.3 s (:29280): at 3.3 fireBarrage_hit2 (sLv 2; hit1 is rank 1's, :29000-29047) at mPos with the hero's rotation (EffectControl life 1 + afterLife 1, its AudioSource fireBarrage); the four 0.1 s damage waves after it draw nothing (:29227-29285)",
+    "cues": [
+      [0, "voice", "fireBarrage1|fireBarrage2"],
+      [0, "fx", "fireBarrage_signal", 9],
+      [2, "fx", "fireBarrage_r|fireBarrage_g|fireBarrage_b|fireBarrage_k|fireBarrage_w", {"d": 9, "pick": "color"}],
+      [2, "fx", "fireBarrage_r|fireBarrage_g|fireBarrage_b|fireBarrage_k|fireBarrage_w", {"d": 13.098, "x": 1.098, "rot": [0, -30, 0], "pick": "color"}],
+      [2, "fx", "fireBarrage_r|fireBarrage_g|fireBarrage_b|fireBarrage_k|fireBarrage_w", {"d": 13.098, "x": -1.098, "rot": [0, 30, 0], "pick": "color"}],
+      [3.3, "fx", "fireBarrage_hit2", 9]
+    ]
+  },
+  "@Bombardment:root": {
+    "why": "Mole.cs RPC_bombardment (:11417 -> $RPC_bombardment$23693 :29343-29733), started straight from doSkill (:8420, ActionEvent :8433; no clip) at max rank (mol_bombardment2 num++ :6704); the aim mPos = 1 m in front of the 10 m target point = 9 m ahead (:8373; no target :8450 / :8480, as Fire Barrage), tDir = the hero's facing. At 0: voice bombardment1 / bombardment2 (Random.Range(0, 2) :29560; :29572 / :29603, PlayOneShot :29584 / :29615), bombardment_signal at mPos, Quaternion.identity (:29668-29678; own team only, :29638-29644; EffectControl life 5, its AudioSource signal). Yield 4 s (:29700), then RPC_bombardment_fire (:29493 -> :29738-30078): at 4.0 the bomber bombardment_<colour> by Skin / 100 (1 r, 2 g, 3 b, 4 k, 5 w, else r: :29961-30028) at mPos, LookRotation(tDir) (:30039), and at rank 2 two more at mPos + rotateNormal((-3, 0, -3)) / ((3, 0, -3), tDir) = 3 m left / right, 3 m nearer (:30048, :30051); EffectControl life 3. Yield 1.2 s (:30071): five strikes 0.1 s apart (Yield 0.1 :30073), strike k (0-4) at 5.2 + 0.1 k s at getSpawnPos(mPos + tDir x (3 k - 6)) = 3, 6, 9, 12, 15 m ahead (:29912, RPC_bombardment_hit :29929 -> :30119-30451); each: bombardment_fire (the falling bomb, EffectControl life 2, sound bombardment) at the strike, LookRotation(tDir) (:30418-30428), Yield 0.2 (:30447), at rank 2 two more 3 m left / right, 3 m nearer (:30256, :30261), Yield 0.4 (:30449), then bombardment_hit at the strike and at rank 2 at the two sides (:30286, :30297, :30302; EffectControl life 1 + afterLife 1) and the damage (:30317-30394): 3 bombers, 15 bombs, 15 blasts, the last at 6.2 s",
+    "cues": [
+      [0, "voice", "bombardment1|bombardment2"],
+      [0, "fx", "bombardment_signal", 9],
+      [4, "fx", "bombardment_r|bombardment_g|bombardment_b|bombardment_k|bombardment_w", {"d": 9, "pick": "color"}],
+      [4, "fx", "bombardment_r|bombardment_g|bombardment_b|bombardment_k|bombardment_w", {"d": 6, "x": -3, "pick": "color"}],
+      [4, "fx", "bombardment_r|bombardment_g|bombardment_b|bombardment_k|bombardment_w", {"d": 6, "x": 3, "pick": "color"}],
+      [5.2, "fx", "bombardment_fire", 3],
+      [5.3, "fx", "bombardment_fire", 6],
+      [5.4, "fx", "bombardment_fire", {"d": 0, "x": -3}],
+      [5.4, "fx", "bombardment_fire", {"d": 0, "x": 3}],
+      [5.4, "fx", "bombardment_fire", 9],
+      [5.5, "fx", "bombardment_fire", {"d": 3, "x": -3}],
+      [5.5, "fx", "bombardment_fire", {"d": 3, "x": 3}],
+      [5.5, "fx", "bombardment_fire", 12],
+      [5.6, "fx", "bombardment_fire", {"d": 6, "x": -3}],
+      [5.6, "fx", "bombardment_fire", {"d": 6, "x": 3}],
+      [5.6, "fx", "bombardment_fire", 15],
+      [5.7, "fx", "bombardment_fire", {"d": 9, "x": -3}],
+      [5.7, "fx", "bombardment_fire", {"d": 9, "x": 3}],
+      [5.8, "fx", "bombardment_hit", 3],
+      [5.8, "fx", "bombardment_hit", {"d": 0, "x": -3}],
+      [5.8, "fx", "bombardment_hit", {"d": 0, "x": 3}],
+      [5.8, "fx", "bombardment_fire", {"d": 12, "x": -3}],
+      [5.8, "fx", "bombardment_fire", {"d": 12, "x": 3}],
+      [5.9, "fx", "bombardment_hit", 6],
+      [5.9, "fx", "bombardment_hit", {"d": 3, "x": -3}],
+      [5.9, "fx", "bombardment_hit", {"d": 3, "x": 3}],
+      [6.0, "fx", "bombardment_hit", 9],
+      [6.0, "fx", "bombardment_hit", {"d": 6, "x": -3}],
+      [6.0, "fx", "bombardment_hit", {"d": 6, "x": 3}],
+      [6.1, "fx", "bombardment_hit", 12],
+      [6.1, "fx", "bombardment_hit", {"d": 9, "x": -3}],
+      [6.1, "fx", "bombardment_hit", {"d": 9, "x": 3}],
+      [6.2, "fx", "bombardment_hit", 15],
+      [6.2, "fx", "bombardment_hit", {"d": 12, "x": -3}],
+      [6.2, "fx", "bombardment_hit", {"d": 12, "x": 3}]
+    ]
+  },
+  "@SynchroMole:root": {
+    "why": "Mole.cs RPC_synchroMole (:13220-13510), a plain method doSkill calls straight (mol_synchroMole1 / 2 :6982-6994, call :7920, ActionEvent :7933; no clip) at max rank: agiAdjust(300) (:13228), the synchroMole status Lv 2 on the Mole for chaAdjust(30) = 30 s (:13237-13242; cut at 10 s, the long-buff rule) and for 31 s on each own Auto Gyro Gun / Barrel Bot present (:13247-13370; none in this tile), voice synchroMole1 / synchroMole2 (Random.Range(0, 2) :13437; :13447 -> Block_47 PlayOneShot :13506, :13478 -> IL_549 PlayOneShot :13509). The status's apply on a Mole (CharacterControl.cs:37714-37748, Type == \"Mole\"): Effects/synchroMole_ring Instantiated at the hero's position, Quaternion.identity, parented to the hero (synchroMoleRingFx; no EffectControl: its ImageEmitter repeats until the status's removal destroys it, CharacterControl.cs:16989-16998: kill 10; its AudioSource synchroMole plays on awake); the green tint and the synchroMole look over the head are the summons' (the else branch :37760-37806), not the Mole's; RPC_synchroMole0 (:13514) at the end only strips the summons' status",
+    "cues": [
+      [0, "fx", "synchroMole_ring", {"kill": 10}],
+      [0, "voice", "synchroMole1|synchroMole2"]
+    ]
+  },
+  "@BarrelRailgun:assemble1": {
+    "why": "TTO1102:Mole.<RPC_barrelRailgun>d__418::MoveNext@0x1C606D0 (pseudo/Mole.c:2754-3382; plans/fx_mole/tto.md 2.1): WarAreaBegin('barrelRailgun', dir, clip assemble1, fade 0.2) (:2840); the turret barrelRailgun_turret at mRailSpot = start + 1.17 x flat dir (:2857-2865), identity then set_Yaw(the aim's yaw) = the hero's facing, Grow(1), Assemble(0, 6) (:2875-2914; its 13 parts fly in to 5.61 s, boot 5.62, flash 5.85, Finish at 6.0: MoleRailTurret::Assemble@0x1C84A40, MoleRailTurret::.cctor@0x1C86030 Steps); RailFx assemble_dust at mRailSpot with the hero's rotation (:2925) and RailSound('assemble', 1) (:2926; sounds/); the 6 s cast bar (:2944) is the owner's GUI. The turret lives to the end's shrink (<RPC_barrelRailgun_end>d__430@0x1C61B20: Grow(1 - clamp01(2 (t - 0.3))), Destroy at 0.8 s, Mole.c:3586-3621): with the ride cut at 10 s (question 1) the end starts at 6.65 + 10 = 16.65 s, so kill 17.45; finish / ride / shots / rideEnd are the turret part's clock (parts P1, P2: the ground line, the charge tiers with teslaCoil, Fire and Kick at each shot, the shrink); decision 40: the hop onto the seat and off (index.html LIFTS.barrelRailgun: on the seat 0.63 m up, 0.55 m ahead by 6.55 s, landed 0.8 m left / 0.97 m ahead by 17.07 s; effects spawned during it are placed from her spot before the lift, the game's mRailSpot); the gun's arcs (tto/barrelRailgun_arc, fxparts/tto_mole.js MoleRailgun)",
+    "builds": ["tto/barrelRailgun_line", "sound:teslaCoil", "tto/barrelRailgun_arc"],
+    "cues": [
+      [0, "lift", "barrelRailgun"],
+      [0, "fx", "tto/barrelRailgun_turret", {"d": 1.17, "kill": 17.45, "finish": 6.0, "ride": 6.65, "shots": [8.85, 11.25, 13.65, 16.05], "rideEnd": 16.65}],
+      [0, "fx", "assemble_dust", 1.17],
+      [0, "sound", "assemble"]
+    ]
+  },
+  "@BarrelRailgun:assemble2": {
+    "why": "RPC_barrelRailgun d__418 (Mole.c:2953-2993): at 0.6 s PlayAnimation(assemble2, 0) looped (:2962-2964) and WarAreaSpawn assemble_box owned at the hero with the hero's rotation (:2975), destroyed when the 6 s cast ends (:2995-3005: kill 5.4); each turret part's lock (MoleRailTurret::Assemble, OnLock = Mole::RailLock@0x1C3BF90, when its step reaches 1, at the step's 'to': checks/fx_mole_research/tto/steps.txt) spawns barrelRailgun_lock at the part, identity, scale x (0.6 + 0.8 clank) (Mole.c:40428-40457), RailSound nAttack_hit (megaPunch_hit when clank >= 0.7) at 0.25 + 0.35 clank (:40489-40494), and assemble_dust at mRailSpot with the hero's rotation when clank >= 0.9 (the Pedestal, :40459-40486); times are the steps' 'to' - 0.6; the parts' pivots (probe.json): Plate / Pedestal / Cap at the turret root, Ring / Yoke / Seat / Grips at Head (0.6 up), Drum / Breech / Rails / Coil1-3 at the gun (Head + Cradle (0, 0.45, 0.45)); the locks' arcs (tto/barrelRailgun_arc) are their part's (fxparts/tto_mole.js MoleRailShock)",
+    "cues": [
+      [0, "fx", "assemble_box", {"kill": 5.4}],
+      [0.1, "fx", "tto/barrelRailgun_lock", {"d": 1.17, "scale": 1.08}],
+      [0.1, "sound", "nAttack_hit", {"vol": 0.46}],
+      [0.75, "fx", "tto/barrelRailgun_lock", {"d": 1.17, "scale": 1.4}],
+      [0.75, "sound", "megaPunch_hit", {"vol": 0.6}],
+      [0.75, "fx", "assemble_dust", 1.17],
+      [1.25, "fx", "tto/barrelRailgun_lock", {"d": 1.17, "scale": 1.0}],
+      [1.25, "sound", "nAttack_hit", {"vol": 0.425}],
+      [1.7, "fx", "tto/barrelRailgun_lock", {"y": 0.6, "d": 1.17, "scale": 0.92}],
+      [1.7, "sound", "nAttack_hit", {"vol": 0.39}],
+      [2.25, "fx", "tto/barrelRailgun_lock", {"y": 0.6, "d": 1.17, "scale": 1.16}],
+      [2.25, "sound", "megaPunch_hit", {"vol": 0.495}],
+      [2.75, "fx", "tto/barrelRailgun_lock", {"y": 0.6, "d": 1.17, "scale": 1.0}],
+      [2.75, "sound", "nAttack_hit", {"vol": 0.425}],
+      [3.15, "fx", "tto/barrelRailgun_lock", {"y": 0.6, "d": 1.17, "scale": 0.88}],
+      [3.15, "sound", "nAttack_hit", {"vol": 0.3725}],
+      [3.75, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 1.24}],
+      [3.75, "sound", "megaPunch_hit", {"vol": 0.53}],
+      [4.05, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 1.08}],
+      [4.05, "sound", "nAttack_hit", {"vol": 0.46}],
+      [4.45, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 1.08}],
+      [4.45, "sound", "nAttack_hit", {"vol": 0.46}],
+      [4.65, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 0.88}],
+      [4.65, "sound", "nAttack_hit", {"vol": 0.3725}],
+      [4.83, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 0.88}],
+      [4.83, "sound", "nAttack_hit", {"vol": 0.3725}],
+      [5.01, "fx", "tto/barrelRailgun_lock", {"y": 1.05, "d": 1.62, "scale": 0.96}],
+      [5.01, "sound", "nAttack_hit", {"vol": 0.4075}]
+    ],
+    "builds": ["tto/barrelRailgun_arc"]
+  },
+  "@BarrelRailgun:barrelRailgun3": {
+    "why": "Each shot: TTO1102:Mole.<RPC_barrelRailgun_fire>d__424::MoveNext@0x1C62250 (Mole.c:3657-3932), started at ride 2.2 + 2.4 k (d__418 :3310-3343; RailTierAt 0.6 / 1.3 / 2.0, Mole::.cctor@0x1C404E0): MoleRailgun.Fire and MoleRailTurret.Kick (:3800-3803, the turret part's clock); barrelRailgun_beam at the gun's muzzle (Head 0.6 + Cradle (0, 0.45, 0.45) + Muzzle (0, 0, 1.42): 1.05 up, 3.04 ahead), LookRotation(dir), MoleRailBeam.Shoot(muzzle, muzzle + 45 dir, tier 3) (:3836-3855; part P3); barrelRailgun_muzzle at the muzzle (:3861); barrelRailgun_recoil and barrelRailgun_blast at mRailSpot (:3867, :3872; the blast is followState with no owner, a bare Instantiate (Mole::RailFx@0x1C3B5D0), so EffectControl sends it to its after-life at once (EffectControl.cs:194-210): cut at its spawn); RailSound bazooka_fire 1 and superTNT_hit 0.6 (:3873-3874); RailRip (<RailRip>d__428@0x1C93700, Mole.c:24361-24455): barrelRailgun_rip at mRailSpot + s dir, s = 2, 5 ... 44, every 0.01875 s (the slug's 160 m/s), LookRotation(dir), also unowned followState (cut at spawn); barrelRailgun_trench at mRailSpot + dir, LookRotation(dir) (:3885) and RailTrenchSparks (<RailTrenchSparks>d__427@0x1C93C70: an arc every 0.05-0.11 s for 2.4 s; part P5 on the trench, from = mRailSpot); RailHit@0x1C3B780: barrelRailgun_hit at the struck foe's bounds centre (the 10 m target, 0.6 m up), LookRotation(dir) (Mole.c:39935-39983), then RPC_barrelRailgun_overload on the nearest damaged foe (:40014-40033): <RPC_barrelRailgun_overload>d__429@0x1C62C00 puts barrelRailgun_overload on its feet, identity, parented to it (:4065-4094), 3 shocks (barrelRailgun_shock at the foe + 1 up, identity) 0.7 s apart, the aura destroyed after the third at 2.1 s (:4110-4295; part P6 spawns the shocks). Then barrelRailgun3 (fade 0.05) for Waits 0.5 and barrelRailgun2 again (fade 0.1) (:3919-3925, :3719). The 12 % paralysis (:39919-39931) is a status on the foe: no look here (Sheep decision 4); the overload's part ends it after its third shock (fxparts/tto_mole.js; no kill, so the last shock at 2.1 s is not lost)",
+    "builds": ["tto/barrelRailgun_arc", "tto/barrelRailgun_shock"],
+    "cues": [
+      [0, "fx", "tto/barrelRailgun_beam", {"y": 1.05, "d": 3.04, "to": [0, 1.05, 48.04], "tier": 3}],
+      [0, "fx", "tto/barrelRailgun_muzzle", {"y": 1.05, "d": 3.04}],
+      [0, "fx", "tto/barrelRailgun_recoil", 1.17],
+      [0, "fx", "tto/barrelRailgun_blast", {"d": 1.17, "cut": 0}],
+      [0, "sound", "bazooka_fire"],
+      [0, "sound", "superTNT_hit", {"vol": 0.6}],
+      [0.0, "fx", "tto/barrelRailgun_rip", {"d": 3.17, "cut": 0.0}],
+      [0.01875, "fx", "tto/barrelRailgun_rip", {"d": 6.17, "cut": 0.01875}],
+      [0.0375, "fx", "tto/barrelRailgun_rip", {"d": 9.17, "cut": 0.0375}],
+      [0.05625, "fx", "tto/barrelRailgun_rip", {"d": 12.17, "cut": 0.05625}],
+      [0.075, "fx", "tto/barrelRailgun_rip", {"d": 15.17, "cut": 0.075}],
+      [0.09375, "fx", "tto/barrelRailgun_rip", {"d": 18.17, "cut": 0.09375}],
+      [0.1125, "fx", "tto/barrelRailgun_rip", {"d": 21.17, "cut": 0.1125}],
+      [0.13125, "fx", "tto/barrelRailgun_rip", {"d": 24.17, "cut": 0.13125}],
+      [0.15, "fx", "tto/barrelRailgun_rip", {"d": 27.17, "cut": 0.15}],
+      [0.16875, "fx", "tto/barrelRailgun_rip", {"d": 30.17, "cut": 0.16875}],
+      [0.1875, "fx", "tto/barrelRailgun_rip", {"d": 33.17, "cut": 0.1875}],
+      [0.20625, "fx", "tto/barrelRailgun_rip", {"d": 36.17, "cut": 0.20625}],
+      [0.225, "fx", "tto/barrelRailgun_rip", {"d": 39.17, "cut": 0.225}],
+      [0.24375, "fx", "tto/barrelRailgun_rip", {"d": 42.17, "cut": 0.24375}],
+      [0.2625, "fx", "tto/barrelRailgun_rip", {"d": 45.17, "cut": 0.2625}],
+      [0, "fx", "tto/barrelRailgun_trench", {"d": 2.17, "from": [0, 0, 1.17]}],
+      [0, "fx", "tto/barrelRailgun_hit", {"y": 0.6, "d": 10}],
+      [0, "fx", "tto/barrelRailgun_overload", {"d": 10}]
+    ]
+  },
+  "missilePad": {
+    "why": "TTO1102:Mole.<RPC_missile>d__344::MoveNext@0x1C78270 (pseudo/Mole.c:15978-16471; plans/fx_mole/tto.md 2.2), Twin Warhead learned (passives on; without it OldMissile plays BB's missile clip): Missile rank 4 -> 8 missiles (Mole::MissileBotLevel@0x1C2DFD0); the clip, fade 0.05 (:16116-16125); Mole::MissileVoice@0x1C2EA40: missile1 / missile2, Random.Range(0, 2) (voices/); Mole::SpawnMissilePad@0x1C3D4D0 at mPos - 1.35 forward, the hero's rotation (:16143-16149): missilePad + assemble_dust there + sounds/missile_base; the pad's locks (MoleLaunchPad.Locks (0.45, 1.0), (0.6, 0.5), (0.72, 0.6), MoleLaunchPad::.cctor@0x1C82740) -> Mole::MissilePadLock@0x1C2E7C0: nAttack_hit / megaPunch_hit at 0.25 + 0.35 clank, and for clank >= 0.9 chopper_forwardDust at the pad with the hero's rotation (the camera shake is the player's screen: left out); Waits 0.3 (capstone 0x1C7871E): PickLocks((8 + 1) / 2) = the one target, LockSequence -> RPC_missile_lock@0x1C352E0: missile_lock at its bounds centre, identity, parented to it, scale 1 for a hero-sized foe, and sound/gui/beep at 0.6 (Mole.c:38686-38806); Waits 0.65 (0x1C788FA): sounds/missile_fire, then missile i every 0.05 s (0x1C78D98), fire dir = normalize(rotateH(forward, 45 i) x 0.45 + up x 1.4) (:16316-16333; Math.rotateH turns to the left, DecompiledSource/Math.cs:838-843), from the pad's next muzzle (NextMuzzle cycles Muzzle0-3; the pad scaled 0.85, the rack raised 0.22: 0.64 m up): RPC_missile_fire@0x1C34DE0: MoleLaunchPad.Kick, missilePad_launch at the muzzle, LookRotation(dir); FireMissile@0x1C2B3C0: missileBot_fire (the egg missileBot_fire_bot when the cast's 5 % roll hit, MissileBotLevel) at muzzle + dir, LookRotation(dir); Mole_missile turns 0.3 rad toward the target's bounds centre every 0.2 s at 8 m/s (Mole_missile::Update@0x1CA0660; checks/fx_mole_research/verify_tp/missile_sim2.py on the standard target body (Bat decision 4: radius 0.3, y 0.1-1.1, ClosestPointOnBounds clamped into x +-0.3, y 0.1..1.1, z 9.7..10.3; TTO missileBot_fire trigger 0.2 x 0.2 x 0.5 centred 0.25 ahead): hits 2.55-3.57 s); RPC_missile_hit@0x1C35100: missileBot_hit at the hit point (ClosestPointOnBounds: the top of the target), the hero's rotation; Mole::WarheadHit@0x1C3FFE0: a pair's second hit within 0.5 s -> TwinImpact -> RPC_twinImpact@0x1C39D90: twinImpact there, LookRotation(flat dir), 4 pairs, egg or not (FireMissile sets twin = hasSkill(453) for the egg prefab too, Mole.c:34141-34143, and OnTriggerEnter calls MissileBotScatter and then WarheadHit, :44470-44537); an egg's hit also splits (Mole::MissileBotScatter@0x1C2E1E0, part P9); SinkIn(0.45) at 1.30 (0x1C78ED1): the pad sinks over 0.55 s and is destroyed at 2.30 (MoleLaunchPad::Update@0x1C82450). LinkedSalvo (Auto Gyro Guns within 20 m) has nothing to fire here; decisions 22, 41 (the page): the pad part (fxparts/tto_mole.js MoleLaunchPad, launch: true) kicks at each of `kicks`, spawns tto/missilePad_launch at its real muzzle and the missile at muzzle + dir with `to`, twin and `pair` (2j, 2j + 1 share one), every one tto/missileBot_fire_bot on the egg's roll (`egg` 0.05, once per pad); the missiles (fxparts/mole.js Mole_missile, 8 m/s, 0.3 rad every 0.2 s, the standard body) spawn tto/missileBot_hit on contact and tto/twinImpact on a pair's second hit within 0.5 s, the eggs' eight-way splits too; tto/missileBot_fire_bot is left out of builds (made only on the 5 % roll, so not every play shows it; wardrobe_fx_tto.py SKILL_FX builds it)",
+    "cues": [
+      [0, "voice", "missile1|missile2"],
+      [0, "fx", "tto/missilePad", {"d": -1.35, "sink": 1.75, "kill": 2.3, "kicks": [0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3], "launch": true, "egg": 0.05, "to": [0, 0.6, 10]}],
+      [0, "fx", "assemble_dust", -1.35],
+      [0, "sound", "missile_base"],
+      [0.3, "fx", "tto/missile_lock", {"y": 0.6, "d": 10}],
+      [0.3, "sound", "beep", {"vol": 0.6}],
+      [0.45, "sound", "megaPunch_hit", {"vol": 0.6}],
+      [0.45, "fx", "chopper_forwardDust", -1.35],
+      [0.6, "sound", "nAttack_hit", {"vol": 0.425}],
+      [0.72, "sound", "nAttack_hit", {"vol": 0.46}],
+      [0.95, "sound", "missile_fire"]
+    ],
+    "builds": ["tto/missilePad_launch", "tto/missileBot_fire", "tto/missileBot_hit", "tto/twinImpact"]
+  },
+  "kaiserArsenal": {
+    "why": "TTO1102:KingKaiser.<RPC_kaiserArsenal>d__72::MoveNext@0x1CB7460 (pseudo_c6_extra/mole/KingKaiser.c:206-656; plans/fx_mole/tto.md 2.3), the King Kaiser's move (question 4: the page plays the clip on the Mole): CrossFade(arsenal = mole/animations/kaiserArsenal, 0.2) (:308-329); Waits 0.6: KingKaiser::SpawnPods@0x1CB19A0: kaiserArsenalPod on the Kaiser's Arm_R and Arm_L bones, localPosition 0, localRotation LookRotation(left, forward) (KingKaiser.c:7256-7320), Wear(the Kaiser's material), and assemble_dust at the Kaiser with its rotation, scale 1.6 (:7354-7366), then PlayOneShot(kaiser_openFx = clip kaiser_open) (:357-366); the pods' locks (KaiserArsenalPod.Locks (0.38, 0.6), (0.68, 1.0), (0.85, 0.45), (0.98, 0.5) after Unfold; KaiserArsenalPod::.cctor@0x1CAD990, resolved with the Bible's tools/usages.py) -> KingKaiser::PodLock@0x1CB08B0: barrelRailgun_lock at the pod's lock point, scale 1.2 + 1.2 clank, nAttack_hit / megaPunch_hit at 0.3 + 0.4 clank (part P11); Waits 1.2: 16 shots 0.1 s apart from 1.8 s, shot k on pod k % 2 (:484-603): KaiserArsenalPod.Kick -> its muzzle, dir = normalize(muzzle.forward + 0.35 up), KingKaiser::ArsenalShot@0x1CAF000: kaiserArsenal_muzzle at the muzzle, LookRotation(dir), TwinSound missile_fire 0.55, FireWarhead(arsenal, life 3.5): kaiserWarhead at the muzzle, LookRotation(dir) (KaiserWarhead::Update@0x1CAE4A0: 12 m/s, 0.4 rad toward the target every 0.15 s; Land@0x1CADC40 on contact or at 3.5 s -> KingKaiser::WarheadLanded@0x1CB2E70 -> RPC_kaiserArsenal_hit@0x1CB0CA0: kaiserArsenal_hit there with the Kaiser's rotation): the pod part spawns the flashes, warheads and hits (builds); at 3.5 s the pods fold and TwinSound nAttack_hit 0.5 (:620-653); Waits 0.7: DropPods(false) at 4.2 (kill 3.6 after the 0.6 s spawn); standby at 4.4, the clip's length; decision 37: the King Kaiser stands at the hero's spot from 0 by the outfit colour (\"pick\": \"color\"), playing the kaiserArsenal clip once (\"clip\", fxparts/robots.js; the clip added to its Animation by wardrobe_fx.py HERO_CLIPS), then root; the Mole hidden for the 4.4 s; the pods on the Kaiser's own Arm_R / Arm_L (\"host\": \"KingKaiser\", the hero's bone the fallback), wearing its material; the pods' locks' arcs (tto/barrelRailgun_arc)",
+    "builds": ["tto/kaiserArsenal_muzzle", "tto/kaiserWarhead", "tto/kaiserArsenal_hit", "tto/barrelRailgun_lock", "sound:nAttack_hit", "sound:megaPunch_hit", "tto/barrelRailgun_arc"],
+    "cues": [
+      [0, "fx", "KingKaiser_r|KingKaiser_g|KingKaiser_b|KingKaiser_k|KingKaiser_w", {"pick": "color", "clip": "kaiserArsenal", "kill": 4.4}],
+      [0, "hideProp", "hero", {"kill": 4.4}],
+      [0.6, "fx", "tto/kaiserArsenalPod", {"bone": "Arm_R", "rot": [0, -90, -90], "kill": 3.6, "fold": 2.9, "kicks": [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6], "to": [0, 0.6, 10], "host": "KingKaiser"}],
+      [0.6, "fx", "tto/kaiserArsenalPod", {"bone": "Arm_L", "rot": [0, -90, -90], "kill": 3.6, "fold": 2.9, "kicks": [1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7], "to": [0, 0.6, 10], "host": "KingKaiser"}],
+      [0.6, "fx", "assemble_dust", {"scale": 1.6}],
+      [0.6, "sound", "kaiser_open"],
+      [1.8, "sound", "missile_fire", {"vol": 0.55}],
+      [1.9, "sound", "missile_fire", {"vol": 0.55}],
+      [2.0, "sound", "missile_fire", {"vol": 0.55}],
+      [2.1, "sound", "missile_fire", {"vol": 0.55}],
+      [2.2, "sound", "missile_fire", {"vol": 0.55}],
+      [2.3, "sound", "missile_fire", {"vol": 0.55}],
+      [2.4, "sound", "missile_fire", {"vol": 0.55}],
+      [2.5, "sound", "missile_fire", {"vol": 0.55}],
+      [2.6, "sound", "missile_fire", {"vol": 0.55}],
+      [2.7, "sound", "missile_fire", {"vol": 0.55}],
+      [2.8, "sound", "missile_fire", {"vol": 0.55}],
+      [2.9, "sound", "missile_fire", {"vol": 0.55}],
+      [3.0, "sound", "missile_fire", {"vol": 0.55}],
+      [3.1, "sound", "missile_fire", {"vol": 0.55}],
+      [3.2, "sound", "missile_fire", {"vol": 0.55}],
+      [3.3, "sound", "missile_fire", {"vol": 0.55}],
+      [3.5, "sound", "nAttack_hit", {"vol": 0.5}]
+    ]
+  }
+}

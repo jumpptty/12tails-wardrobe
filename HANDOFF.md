@@ -58,16 +58,19 @@ the token on discord.com/developers → 12 Tails Skins → Bot (then the office'
 
 ## Next up (either PC)
 
-- **Effects + sounds: continue with the Mole, then Monkey, Panda, Rabbit, Whale** (stopped by the user 2026-11-13 07:05,
-  "stop here for now, push and deploy all progress"; the run is `plans/goal_fx_all_classes.md`, NOTES.md "every class's
-  skill effects: the run"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon. The Mole: its
-  research is done and verified (`plans/fx_mole/*.md`), and its build's planner wrote `plans/fx_mole/decisions.md`
-  (63 decisions, decided overnight); the builders, editor and QA had not started, so nothing of the Mole is in the page or
-  the data yet. Next: the Mole's build (planner output can be reused: give the builders its groups again, or re-plan),
-  then for each of Monkey, Panda, Rabbit, Whale the research and the build, each class committed + published + deployed
-  when its gate passes. The workflow is `class-fx` as NOTES.md describes it (re-create it in a new session). For the
-  user's review: every class's `plans/fx_<cls>/decisions.md` (decided overnight) and the QA contact sheets
-  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored, home PC).
+- **Effects + sounds: the run continues at the office (2026-11-13)** (`plans/goal_fx_all_classes.md`, NOTES.md "the run
+  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole. Researched (reports
+  committed): Monkey, Panda (Rabbit's under way). Left: the Monkey, Panda, Rabbit and Whale builds, the Whale's
+  research. The workflow is `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; office paths inside). For the
+  user's review: every class's `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
+  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: the Mole's are on the office PC).
+
+## Home PC: the Panda's two "&" clips (a data rebuild)
+
+- The Panda's Wind & Cloud and Rain & Storm have body clips (`wind&cloud`, `rain&storm`), but the clip-name filter
+  `[a-z0-9_]+` at `pipeline/wardrobe_data.py:210` drops any name with "&", so `wardrobe/data/panda/clips.json` lacks
+  them (plans/fx_panda/effect_only.md). Fix the filter (keep the name, or map "&" to "And"), rebuild the Panda's data at
+  home, commit + push; then those two skills can get tiles and cues (they are left out of the Panda's build until then).
 - Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);
   effects on an enemy go to the target point 10 m ahead; the user declined the Sheep's Bible findings (2026-11-10: "no need to
   offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched

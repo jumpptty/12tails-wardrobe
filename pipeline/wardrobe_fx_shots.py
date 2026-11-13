@@ -5,9 +5,11 @@ clip time asked, however slowly swiftshader draws (the probe's real-time samples
 The tile is played once first at a coarse step so its files and textures are loaded, then again for the shots. Each
 sample also prints how many hero meshes are drawn / hidden (heroHide, a skin's copies) and the live effects' opacity.
   uv run --no-project --with playwright python -I pipeline/wardrobe_fx_shots.py <repo> <out dir> <cls> <tile>
-      <t1,t2,...> [side|front|back|far|top|near|book|spot|bookside|bookback|behind, several joined by ,] [<cue key>=<skill> | <cue key>!<roll> | <cue key>%<effect>, several joined by +] [<props JSON>]
+      <t1,t2,...> [side|front|back|far|top|near|book|spot|bookside|bookback|behind, several joined by ,] [<cue key>=<skill> | <cue key>!<roll> | <cue key>%<effect> | <cue key>^<option>=<JSON>, several joined by +] [<props JSON>]
 (<cue key>!<roll>: that roll always comes up, e.g. ko!dead for the KO tile's deadEffect; cast3=iceBlock+cast3!doubleSpell.)
 (<cue key>%<effect>: that effect's chance cues (a "p" with no roll) always fire, e.g. anchorYank%tto/dropAnchor_shrapnel; 2026-11-13, the Cat's QA.)
+(<cue key>^<option>=<JSON>: that option set on every fx cue of the entry, e.g. missilePad^egg=1; props {"_color": n}: the outfit's colour
+ number, e.g. {"_color": 3} for the Kaiser's pick "color"; 2026-11-13, the Mole's QA.)
 Shots: <out>/<cls>_<tile>_<view>_<t>[_skill][_white][_prop...].png (dark backdrop; the environment variable BG=white keeps the page's white
 stage). One browser.
   ... wardrobe_fx_shots.py <repo> <out dir> <cls> --jobs <jobs.json>   (2026-11-13, the Penguin's QA pass): several tiles in
@@ -95,10 +97,19 @@ async def shoot(page, errors, TILE, TIMES, VIEW, FORCE, SLOTS):
           t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })()""" % int(os.environ["SEED"]))
     await page.goto(URL)
     await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
+    SLOTS = dict(SLOTS); color = SLOTS.pop("_color", None)   # props {"_color": n}: the outfit's colour number (2026-11-13, the Mole's QA: the Kaiser's pick "color")
     await page.evaluate("([c, s]) => wardrobe.show(c, s)", [CLS, SLOTS])
     await page.wait_for_function("c => wardrobe.debug().C?.cls === c && wardrobe.debug().FX.cueTab[c]", arg=CLS, timeout=120000)
+    if color:
+        await page.evaluate("n => wardrobe.setOutfit(wardrobe.debug().C.state.outfit, n)", color)
+        SLOTS["color"] = color
     for force in filter(None, FORCE.split("+")):    # several joined by "+": "cast3=iceBlock+cast3!doubleSpell"
-        if "=" in force:
+        if "^" in force:                              # "<cue key>^<option>=<JSON>": that option on every fx cue of the entry
+            k, rest = force.split("^", 1); o, v = rest.split("=", 1)   # (missilePad^egg=1: the egg on every play; the Mole's QA)
+            await page.evaluate("""([c, k, o, v]) => { const e = wardrobe.debug().FX.cueTab[c][k];
+              for (const x of [e, ...Object.values(e.skills || {})]) if (x.cues) x.cues = x.cues
+                .map(q => q[1] === "fx" ? [q[0], q[1], q[2], { ...(typeof q[3] === "object" ? q[3] : { d: q[3] ?? 0 }), [o]: v }] : q); }""", [CLS, k, o, json.loads(v)])
+        elif "=" in force:
             await page.evaluate("""([c, k, s]) => { const e = wardrobe.debug().FX.cueTab[c][k]; e.skills = { [s]: e.skills[s] }; }""", [CLS, *force.split("=")])
         elif "%" in force:                            # "<cue key>%<effect>": that effect's chance cues (p, no roll) always fire
             await page.evaluate("""([c, k, n]) => { const e = wardrobe.debug().FX.cueTab[c][k];
@@ -153,7 +164,7 @@ async def shoot(page, errors, TILE, TIMES, VIEW, FORCE, SLOTS):
         if os.environ.get("PARTS"):
             for x in await page.evaluate(PARTS):
                 print("      part", x)
-        sk = "".join("_" + f.replace("=", "!").replace("%", "!").split("!")[-1].split("/")[-1] for f in FORCE.split("+") if f)
+        sk = "".join("_" + f.replace("^", "!").replace("=", "!").replace("%", "!").split("!")[-1 if "^" not in f else -2].split("/")[-1] for f in FORCE.split("+") if f)
         bg = ("_white" if os.environ.get("BG") == "white" else "") + "".join("_" + str(v) for v in SLOTS.values())
         for i, view in enumerate(views):
             if i:

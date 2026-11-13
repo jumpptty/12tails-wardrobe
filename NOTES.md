@@ -1970,7 +1970,6 @@ page_pipeline).
     (checks/fx_chameleon_qa/skeleton_near.png); the Venom Phantom ghosts are pale grey-white with green on the white
     stage; the target-point effects sit outside the default camera's frame, as for the other classes; decisions.md's
     overnight calls and the editor's judgement calls above.
-
 ## 2026-11-13 (office), ชื่อผลงาน on the send form
 
 User: "when players are submitting the skins, add another text box field, ชื่อผลงาน" then "queue it and deploy this
@@ -1984,7 +1983,6 @@ should be required), up to 60 characters, one plain line (the Worker's `clean`).
   sets keep `title` when set. Tests: node 9 pass (one new), unit tests 66 OK (one new).
 - Deployed from a clean worktree of 578705e (C:\work\12tails-wardrobe-hotfix, branch title-field), because the Mole
   build was editing index.html in the main folder at the time; the same edits were made there too.
-
 ## 2026-11-13 (office), the team's sets taken down (the user re-uploads them)
 
 User: "take down, DeetaeZ, rabbit and cat skins from the public site, I will try uploading them myself using the new
@@ -1995,3 +1993,168 @@ git-ignored plans/reskins/, checked against the published webp: same sizes, mean
 the office PC's Desktop `wardrobe_reupload\<set>\12tails_<class in Thai>_<item>.png`, the names the page's drag-and-drop
 reads (dropMany), one folder per look (the Cat knight's folder name carries its face, 23). Published and deployed from a
 clean worktree again (the Mole build was editing index.html).
+
+## 2026-11-13 (office), the run resumed: Mole build, then Monkey, Panda, Rabbit, Whale
+
+User: "goal prompt to finish what we started" (plans/goal_fx_all_classes.md, rewritten for either PC: gate from the repo
+root, deploy paths `<repo>`, usage guard back at CLAUDE.md's 98 %). The workflow is now in the repo:
+`pipeline/workflow_class_fx.js` (run it with the Workflow tool's scriptPath; args `{mode: "research", cls, Cls, released,
+skillClips, ttoClips, ttoEmotes}` or `{mode: "build", cls, Cls, released, regress, groups?}`: without `groups` a planner
+writes decisions.md and splits the builders; office paths are written into it, change REPO / ENV for the home PC).
+- Mole build: the planner skipped (its decisions.md exists); four builders from parts.md "Who builds what" + decisions.md:
+  mole (fxparts/mole.js), robots (fxparts/rotationcontrol.js + the summons in a new fxparts/robots.js: my call, parts.md
+  gave the summons to no agent), tto_mole (fxparts/tto_mole.js), page_pipeline (index.html, wardrobe_fx.py,
+  wardrobe_fx_tto.py); then the editor and the QA. The home PC's research probes (checks/fx_mole_research/) are not
+  here: the builders re-probe.
+- Monkey research runs beside it (released TTO: buitenBastion, golemCall, jaAscension, solarCall; sanctumRaise is TTO
+  but not released: researched, not cued).
+- Progress: Monkey research committed (4e8bdb6), Panda research committed (074e4d4; its effect_only found the "&" clip
+  filter: HANDOFF, home PC), Rabbit research running; the Mole built, its gates passed (editor + QA sections below),
+  committed and deployed.
+- Another session worked in this folder at the same time (reskins; outfits opaque, which touches index.html). Its
+  uncommitted files are left to it: the Mole commit stages index.html without its 24 lines (its own worktree's diff
+  reversed out of a copy, the copy staged with `git update-index --cacheinfo`) and NOTES.md without its three sections;
+  never `git add -A` here while another session has work in the tree.
+
+## 2026-11-13 (office), the Mole's effects: built and cued
+
+From plans/fx_mole/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after four builders (mole, robots, tto_mole, page_pipeline), on the office PC.
+- **Parts (new):** fxparts/mole.js (the six shells Mole_nAttack / _mortarShot / _stunGrenade / _grenadeCluster / _napalm /
+  _bazooka on the 0.02 s step, their hits part-spawned on the floor or the standard target body, `firePoint` = the worn
+  cannon's muzzle re-aimed at `to`, Grenade Cluster's `tilt`; Mole_missile / Mole_warMissile homing, BB and TTO in one
+  part, the TTO pairs' twinImpact and the egg's eight-way splits; Mole_cartBomb (still 0.2 s, 6 m/s, stops at 9.2 m, boom
+  at 3 s); Mole_timeNuke's countdown (GMO24 digits in a 30 x 30 px sprite 1 m over the nuke, the ink centred) and its
+  detonate(); fx:detonate; Mole_warCapital (open, root from 1 s); fx:flameCarnival (`trigger`, never cued); the mines and
+  Flame Carnival data only), fxparts/rotationcontrol.js (rotationControl, generic: also the Monkey's lavu),
+  fxparts/robots.js (AutoGyroGun's AI shots at `to` 2 / 4 / 6 / 8 s, BarrelBot standing, KingKaiser's create / root and
+  the `clip` option, the host of `"host": "KingKaiser"`), fxparts/tto_mole.js (the rail turret, gun, beam, arcs, shocks,
+  trench, overload, the launch pad with `launch`, the lock reticle, the arsenal pods, the Kaiser's warheads). index.html
+  (page_pipeline): SEQ / SEQ_SKILL / NEVER_PLAYED mole, the SEQ token `>t` (a step's clip from t s in), cycle pools
+  (`"order": "cycle"`, member `standby`, FX.counters), member `name`, LIFTS.barrelRailgun (3-axis; effects spawned during
+  it placed from her spot before the lift), cue options tune / pick "color" / host + bone / playAudio / clip / rot
+  "randomYaw", the propAnim kind, api.fontText / api.propPoint, FX_PART_FILES += mole, rotationcontrol, robots, tto_mole.
+  wardrobe_fx.py: the Mole LAYOUTS + the robots' (new string type "s"), EXTRA_FOLDERS (Characters/Robots), field prefabs
+  (kaiser_dust, kaiser_box, autoGyroGun_fire) and the robots' AudioClip fields as sounds (SOUND_REFS: autoGyroGun_create,
+  kingKaiser_kaiser_create ...), the clip reader's AnimationEvents, HERO_CLIPS (kaiserArsenal added to every
+  KingKaiser_<c>'s Animation), the GMO24 font (fx.json `"fonts"`, data/fx/tex/GMO24.webp), sounds found as .ogg and in
+  the rip's Assets/AudioClip (every class, only where a name was missing before), SHURIKEN_FROM_TTO bazooka_ring /
+  napalm_ring / warCapital. wardrobe_fx_tto.py: SKILL_FX mole (24), arcPrefab references resolved, TTO Animations written
+  (barrelRailgun_rip's root; no other class's TTO data has one). Nothing the video repo reads was renamed.
+- **Editor fixes (found by the gate):**
+  - **A NaN in fx.json:** warCapital's mesh has 18 NaN normals; Python wrote `NaN`, the page's JSON.parse refused the whole
+    8 MB file and `fxData` swallowed the error, so every Mole effect read "not in fx.json". wardrobe_fx_mesh.r5 now writes
+    0 for a NaN (those vertices' normals are 0: for the QA's eye on War Capital), both builders dump with
+    `allow_nan=False`, and index.html's fxData says `console.error("effects data", cls, e)` instead of swallowing it (the
+    gate fails on that line from now on). No other class's fx.json had a NaN.
+  - **Mole_missile's clock:** the turns ran once per frame, so the headless gate's 3.9 s first frame flew every TTO missile
+    straight into the floor and no pair ever blasted (twinImpact never spawned); the clock and the 0.2 s turns now run on
+    the 0.02 s physics steps (fxparts/mole.js; the same flight at the page's frame rates, checked with
+    wardrobe_fx_shots.py's virtual clock before and after). KaiserWarhead (tto_mole.js) still turns on the frame clock (its
+    hits spawned in the gate): for the QA's eye on a slow PC.
+  - **robots.js** played `kaiser_create`, but the export names it `kingKaiser_kaiser_create`: the parts now read the comps'
+    own fields (create_fx, nAttack_fx, kaiser_createFx), the SFX names the fallback.
+- **Cues** (wardrobe/fx_cues/mole.json, 56 keys, 351 cues: 224 fx, 62 voice, 59 sound, 3 hideProp, 2 propAnim, 1 lift;
+  103 effect names (cued + builds), 23 of them TTO; assembled by checks/fx_mole_build/editor/assemble.py, git-ignored,
+  from the reports' corrected blocks): attacks_emotes' (the Combo's five shells with firePoint / tune / Double Cannon,
+  superDig per its Verification, dig2's mounds, the plain surfacing, Sky Drill, the emotes, KO), skills_a's (Advance
+  Repair, the Assemble pool, War Capital, Barrel Cannon, Bunker, Chopper with playAudio, Detonate, King Kaiser, Flame
+  Turret), skills_b's (the mine, mortarShot, punch and tnt pools, grenade, grenadeCluster, hammer, missile, War Factory),
+  effect_only's four, tto's three. Applied on top: decision 43 (propAnim R fire at each Normal Attack shot), 19
+  (firePoint + `to` on Mortar Shot, the five Napalm shells with their own aims, Stun Grenade), 12 (TNT 1-4 named "TNT n"),
+  13 (War Factory's standby per member), 45 (dig1's dust on the nominal 0.1 ... 1.8 s), 35 / 36 (the Kaiser by colour,
+  the hideProp), 32 (the Auto Gyro Gun's builds), 27 (Detonate: timeNuke2 kill 3, the cued explosion dropped, builds
+  timeNuke_explosion), 40 (the lift on @BarrelRailgun:assemble1), 22 / 41 (missilePad: the pad's `launch: true` makes the
+  launches, the eight missiles (pair 2j / 2j + 1) and the 5 % egg; the cued launch / missile / hit / blast cues gone), 37
+  (Kaiser Arsenal: the Kaiser at 0 with `clip`, the hideProp 4.4 s, the pods' `host`), the overload's kill dropped (its
+  part ends it), skills_b's five tnt `why` fixes, tto/barrelRailgun_arc in the builds of the three lock entries.
+- **Tiles / icons:** wardrobe_skill_icons.py CLIP_SKILLS mole (decision 14, + missilePad = missile + twinWarhead),
+  RANK_ICONS (new: tnt1-4 with their own rank icons), EFFECT_ONLY mole, OWN_TILE mole (warCapital; cAttack on superDig for
+  the Charge Attack's HD icon), cycle pools skipped; rerun: mole 38 HD icons for 47 clips (index.json mole only).
+- **Data:** `wardrobe_fx_tto.py mole`: 24 TTO effects, 30 materials, 27 textures, 4 sounds; `wardrobe_fx.py mole`: 80
+  effects, 85 materials, 82 textures, 125 sounds (the three graft lines printed). data/mole/fx.json 104 effects (8.1 MB:
+  the robots' meshes and clips; the largest class file), sfx/ 128 files, 76 new textures in data/fx/tex (GMO24.webp
+  among them): all new files, to commit with the run; the other PC pulls. wardrobe_fx_inventory.py BUILT += the 20 Mole
+  parts + CharacterControl (data only, NOT_DRAWN), NOTES (the three grafts), CLASS_NOTES mole (the field prefabs); rerun:
+  the Mole 75 / 78 ready (the 3 left are the grafted ParticleSystems, drawn).
+- **Judgement calls (mine):** the missile pad as the tto_mole builder built it (`launch: true`, the egg rolled by the pad)
+  rather than the mole builder's cued launches with `pair` (one owner for the launch spots: the pad's real muzzles);
+  tto/missileBot_fire_bot left out of the entry's builds (made only on the 5 % egg, so the gate would fail 95 % of plays;
+  SKILL_FX builds it, it is in fx.json); the robot sounds in builds by their exported names (`sound:kingKaiser_kaiser_create`
+  ...) so the files check sees them; Landmine's tile named "Landmine" (the Bible's card), as TNT's; no icon for Kaiser
+  Arsenal (the Bible has none of its own; King Kaiser's is a SEQ_SKILL skill, which moveSkillIcons keeps to its own tile);
+  wardrobe_fx_check.py plays a cycle pool's tile once per member, each play expecting that member's cues, KINDS += propAnim,
+  OPTS += decision 59's 17 + launch, egg, ENTRY_KEYS += order, SKILL_KEYS += standby, name.
+- **Gate:** files-only (every class with cues) "no problems"; `wardrobe_fx_check.py ... checks/fx_mole dark --cls mole`
+  exit 0, errors [], 60 tile plays (War Factory five times), every expected effect spawned (the shells' and missiles'
+  part-made hits, autoGyroGun_fire, timeNuke_explosion, the four twinImpacts, the arsenal's warheads and hits);
+  the page, the fxparts and the builders changed shared code, so also `--cls wolf,sheep,penguin,bat,bison,cat,chameleon` in one run (checks/fx_mole_regress): exit 0, errors [], 300 tile plays; unit tests 66 OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK. Not committed.
+- **For the QA pass:** nothing has been looked at in a screenshot yet: the Time Nuke's countdown (GMO24 digits, ink
+  centring, 60 ... 51), the Kaiser in each colour and in Kaiser Arsenal (the pods on its arms, BB's Kaiser material on
+  TTO's pod meshes), the rail turret's assembly, ride and lift (the Mole on the seat), the shells from a worn cannon's
+  firePoint (and Double Cannon's two), Grenade Cluster's tilts, the cart stopping at 9.2 m, the Auto Gyro Gun's leg1 aim,
+  War Capital's zeroed normals, the egg's 64 splits (forced: they land 4-5 m round the target by the builder's physics,
+  untested against the game), the Mortar / Napalm lobs landing 4-5 s in (the idle tail), the Trumpet's tune, propAnim on a
+  cannon with a fire clip, the 8.1 MB fx.json's load time. Headless first-frame stalls (missilePad's first sample at
+  3.95 s) want wardrobe_fx_shots.py's virtual clock (it showed the four twinImpacts at 2.6-3.6 s). Rolled procs the gate
+  does not expect: KO's deadEffect, the egg.
+- **For the Bible (offer, not written):** decisions.md's last section; also, from the builders: the Auto Gyro Gun fires
+  2 s after it stands, then every 2 s (the 2 s nAttack lock); the King Kaiser's footsteps are events on its run clip only;
+  the robots' sounds are AudioClips outside Resources; the egg's split missiles mostly miss a 10 m target (a 0.3 rad per
+  0.2 s turn at 8 m/s cannot curve back), untested against the game.
+- **QA pass (13/11/2026, office).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_mole_qa/jobs.json, 64 jobs, every Mole tile: Normal Attack bare, with Double Cannon, royalCannon (a firePoint),
+  capitalCannon (fire + root clips) and the Trumpet; Charge Attack; Sky Drill; Auto Gyro Gun / Barrel Bot to 10.4 s; War
+  Capital to 18.3 s; Bunker; Flame Turret; King Kaiser to 15.3 s and in each of the five colours; Reload, Fire Barrage,
+  Bombardment, Synchro Mole; the four mines (Time Nuke close up); Mortar Shot and Napalm (also with royalCannon); Mega
+  Punch / Drill; TNT 1-4; Advance Repair, Barrel Cannon, Chopper, Detonate, Grenade (also royalCannon), Grenade Cluster,
+  Hammer, Missile (to 5.7 s); War Factory forced to each of its five weapons and once as cycled; Barrel Railgun to 17.6 s;
+  Kaiser Arsenal; Missile Pad as rolled and with the egg forced; KO (dead forced, and as rolled), getUp, emotes, run) on
+  the dark and the white stage: 719 / 740 shots. Sheets: checks/fx_mole_qa/sheets_dark, sheets_white (git-ignored; shots
+  and logs under run/). No page error, no stalled render loop, no failed job (the only console line: swiftshader's
+  glBlitFramebuffer feedback warning).
+  - What matches (boxes in the hero's frame, +x = her left): the Combo's five shells from (0.2, 1, 0.6) (Unity), hitting
+    the body's front at 9.4-9.8 m 0.62 s after each shot (0.95 / 1.45 / 1.95 / 2.45 / 2.95 s); Double Cannon's two shells
+    -+0.3 m and +-9 deg, two hits each stage; royalCannon's shell (and Stun Grenade's) leaving its muzzle; the burrow
+    (dig_hole, superDig_dust at 0.1 / 0.3 / 0.5 s, the hero hidden 0.6-3.0 s, dig2's mounds every 0.2 s, the surfacing
+    dust at 3.0 s); Sky Drill's drill and rings at 3.01 s; the Auto Gyro Gun from 0.63 s 0.7 m ahead, its tracer to the
+    target 2 s after it stands, gone at 10.63 s; Barrel Bot standing to 10.6 s; War Capital at 8.53 s 2 m ahead, opened,
+    to 18.5 s (its zeroed normals light normally); King Kaiser: dig1's dust, kaiser_dust at 2.4 s, the box at 2.9 s, the
+    Kaiser at 4.9 s (r / g / b / k / w by the outfit colour) with the Mole hidden, gone at 14.85 s; the Time Nuke's
+    GMO24 digits centred 1 m over the nuke (checks/fx_mole_qa/nuke_digits.png), gone on Detonate (0.6 s), the blast at
+    1.1 s (+-20 m) and the nuke gone; Fire Barrage's flare at 9 m, three planes over at 2-3.3 s, the hits at 9 m;
+    Bombardment's 3 x 5 grid of bombs and blasts 5.2-6.2 s; mines 0.5 / 1 m ahead to 10.3 s; Mortar Shot's five lobs
+    landing on the target 4.3-5.1 s; Napalm's five at (0, 10) and (+-5, 5 / 15); TNT 1-4's blasts at 8 / 16 / 24 / 32 m;
+    Grenade Cluster's eight grenades (tilts drawn), eight bursts round her; Missile's four homing missiles, the front
+    pair's hits at 1.7 s, the back pair swinging round to hit at 3.4 s; the Chopper on her back 0.3-5.15 s; War Factory's
+    saw, bazooka (three shells, three hits at the body), tesla coil, roller and the cart (stopped 9 m ahead, boom at
+    3.3 s); Barrel Railgun's 13-part assembly 0.6-6.0 s, the Mole lifted onto the seat behind the grips by 6.55 s, four
+    shots (beam, trench, hit, overload at 10 m) at 8.85 / 11.25 / 13.65 / 16.05 s, off the seat and the shrink to 17.45
+    s; Kaiser Arsenal's Kaiser at her spot, the pods on its arms in its red from 0.6 s, the warheads from 1.8 s, hits at
+    the target, all gone at 4.4 s; Missile Pad 1.35 m behind, eight missiles 0.95-1.3 s, hits at 2.5-3.6 s with the twin
+    blasts; the egg forced: 64 splits landing in a ring 4-6 m round the target (the builder's physics).
+  - **Bug found and fixed (wardrobe/fx_cues/mole.json):** Napalm's four side shells had `to` [+-5, 0, +-5], the game's
+    offsets from the target, but the part reads `to` as the point: with a firePoint cannon worn, four of the five
+    shells re-aimed at points beside the Mole (two behind her). Now the points (-5, 0, 5), (-5, 0, 15), (5, 0, 5), (5, 0,
+    15); re-shot with royalCannon: they land at (+-5, 5 / 15) as the fallback rot does.
+  - **Fixed (wardrobe/fxparts/tto_mole.js, KaiserWarhead):** its clock and 0.15 s turns ran once per frame (the editor's
+    flag): a long frame (a stalled first frame, a tab coming back from the background: the page's clock has no cap) flew
+    the warhead straight for the whole frame. Now on the 0.02 s steps, as Mole_missile's.
+  - Tool: `wardrobe_fx_shots.py` gains the force `<cue key>^<option>=<JSON>` (missilePad^egg=1) and the props key
+    `"_color": n` (the outfit colour, for pick "color").
+  - Looked into, not bugs: the countdown reads 59 at the nuke's first frame and 50 in its last second (floor(60 - age),
+    the game's sum; decision 55's "60 ... 51" is one off: the 10 s kill ends it at 50); the Mole seen under the floor while
+    she digs in / surfaces (dig1, the burrow's crossfade back to idle: the page's stage hides nothing below y 0); during
+    the Chopper she reads orange-red: chopper_forwardDust's multiply smoke drawn over her (hidden, she is her own
+    colour: checks/fx_mole_qa/probe_hide); the Kaiser's shoulder shells stay brown in r / g / b / k (its texture); the
+    Kaiser Arsenal tile shows the "KA" letters (no icon, the editor's call); the props data have firePoint on 22 of 45
+    Mole weapons (attacks_emotes says 28 of 44 BB cannons: if a cannon's shells start at the default point, the
+    extraction may have dropped its firePoint node: the video repo's).
+  - Gates: `wardrobe_fx_check.py ... checks/fx_mole_qa/gate dark --cls mole` exit 0, errors [] (60 tile plays; the
+    arsenal's warheads land with the step clock under the headless stalls); files-only (every class with cues) "no
+    problems"; unit tests 66 OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK. No
+    regression run: the QA changed only Mole files (its cue file, tto_mole.js's KaiserWarhead) and the shots tool.
+  - For the user's eye: the egg's 64 splits (untested against the game); the Chopper's orange-red look; the target-point
+    effects and the far TNTs outside the default camera; the white stage's faint glows; propAnim's recoil and the
+    Trumpet's tune (the gate counts them, a screenshot cannot show them); KaiserWarhead / the 8.1 MB fx.json on a slow PC.
+

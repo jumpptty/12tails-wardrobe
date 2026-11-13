@@ -168,18 +168,27 @@ def expected(entries):
 # parts' (fxparts/tto_chameleon.js, plans/fx_chameleon/tto.md 7): bow, face, slide, slots (the ghosts), ghost, shatterGhosts
 # (a beam's and the rupture's), lockOnly, release, tint (the prey reticle: its race colour), from (a lightning bolt's
 # start); radius (Needle Prison's ring, as r: skills_a.md's block)
+# 2026-11-13, the Mole (plans/fx_mole/decisions.md 19, 22, 24, 26, 35, 37, 42, 46, 59): tune (the Trumpet's notes in turn),
+# firePoint (the worn cannon's muzzle), tilt (Grenade Cluster's per-grenade pitch), pick ("color": the outfit colour's
+# name), playAudio (the root AudioSource started), clip (the King Kaiser's), host (a living effect's bone), pair (a TTO
+# missile's twin pair), trigger (Flame Carnival's, never cued); the TTO parts' (fxparts/tto_mole.js): finish, ride, shots,
+# rideEnd, tier (the rail turret and its beam), sink, kicks, launch, egg (the missile pad), fold (the arsenal pods)
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
         "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home",
         "strafe", "speed", "fatal", "slot", "r", "life", "stop", "all", "bow", "face", "slide", "slots", "ghost", "shatterGhosts",
-        "lockOnly", "release", "from", "tint", "radius"}
+        "lockOnly", "release", "from", "tint", "radius",
+        "tune", "firePoint", "tilt", "pick", "playAudio", "clip", "host", "pair", "trigger", "finish", "ride", "shots",
+        "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg"}
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
 # ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
 # (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
 # Dragon), and no kill = hidden until the next pick (after a cast-bar skill, Clear Arrow's hand arrow)
-KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp")
+KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp", "propAnim")   # propAnim: the worn prop's own clip (the Mole, decision 43)
 PROP_SLOTS = ("R", "L", "Head", "Back")                          # index.html C.props' keys
 HIDE_TARGETS = PROP_SLOTS + ("hero",)                            # index.html fxDue's hideProp (HeroPropHide, heroHide)
-ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle"}, {"why", "cues", "builds", "everyCycle"}
+# order ("cycle": a pool whose plays take its members in turn), a member's standby (its step's end) and name (its tile's):
+# 2026-11-13, the Mole's War Factory and TNT 1-4 (plans/fx_mole/decisions.md 12, 13)
+ENTRY_KEYS, SKILL_KEYS = {"why", "cues", "skills", "builds", "everyCycle", "order"}, {"why", "cues", "builds", "everyCycle", "standby", "name"}
 
 
 def file_errors(cls):
@@ -221,6 +230,8 @@ def file_errors(cls):
                 elif c[1] == "lift":                        # the hero raised along a curve (index.html LIFTS, HeroLift)
                     errs += [f"{cls}: {key}: lift {n} is not one of index.html's LIFTS {sorted(LIFT_NAMES)}"
                              for n in c[2].split("|") if LIFT_NAMES and n not in LIFT_NAMES]
+                elif c[1] == "propAnim":                    # the worn prop's own clip once (index.html propAnimPlay)
+                    errs += [f"{cls}: {key}: propAnim {n} is not a prop slot (R, L, Head, Back)" for n in c[2].split("|") if n not in PROP_SLOTS]
                 elif c[1] == "hideProp":                    # the worn prop's meshes hidden (index.html HeroPropHide)
                     errs += [f"{cls}: {key}: hideProp {n} is not a prop slot (R, L, Head, Back) or hero" for n in c[2].split("|")
                              if n not in HIDE_TARGETS]
@@ -344,8 +355,14 @@ async def main():
                     # a sequence's: each step's entry as the page picks it ("@<sequence>:<clip>" first)
                     sq = tile[1:] if tile.startswith("@") and tile[1:] in SEQS.get(cls, {}) else None
                     # a sequence with alternatives (the Bison's Normal Attack, nAttack4 | nAttack3): once per alternative
-                    for force, step_clips in (seq_plays(cls, sq) if sq else [({}, None)]):
-                        entries = [entry_for(cls, sq, c) for c in step_clips] if sq else [CUES[cls].get(tile, {})]
+                    # a cycle pool's own tile (2026-11-13, the Mole's War Factory, index.html fxStart "order": "cycle"): one
+                    # play per member, each expecting that member's cues (the page takes them in the file's order; no other
+                    # tile plays the clip, and the class's load starts the turn again)
+                    cyc = CUES[cls].get(tile, {}) if not sq and CUES[cls].get(tile, {}).get("order") == "cycle" else {}
+                    plays = ([({}, None, m) for m in cyc["skills"].values()] if cyc else
+                             [(f, sc, None) for f, sc in (seq_plays(cls, sq) if sq else [({}, None)])])
+                    for force, step_clips, member in plays:
+                        entries = [member] if member else [entry_for(cls, sq, c) for c in step_clips] if sq else [CUES[cls].get(tile, {})]
                         # (a skin cue's look: "skin:<name>", a clone "clone:<clip>", a lift "lift:<name>", as the page
                         # tallies them; a part's spawns too)
                         expect = expected(entries)

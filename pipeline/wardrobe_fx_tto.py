@@ -181,6 +181,24 @@ SKILL_FX = {
         "chainLightning_muzzle", "stormChargeFx", "staticDrainFx", "chainLightning_arrow", "chainLightning_zap",
         "chainLightning_bolt", "chainLightning_boltHot",
     ],
+    # plans/fx_mole/tto.md section 5 and Verification 4 (decisions.md 56): the 24 prefabs of the released Barrel Railgun,
+    # Missile with Twin Warhead and Kaiser Arsenal (the never-spawned gun barrelRailgun left out); the ones the parts spawn
+    # (arcs, shocks, warheads, muzzle flashes, hits: no cue names them) must be here, an entry's "builds" never builds a
+    # tto/ name
+    "mole": [
+        # Barrel Railgun: TTO1102:Mole.<RPC_barrelRailgun>d__418::MoveNext@0x1C606D0, <RPC_barrelRailgun_fire>d__424@0x1C62250,
+        # <RailRip>d__428@0x1C93700, <RailTrenchSparks>d__427@0x1C93C70, <RPC_barrelRailgun_overload>d__429@0x1C62C00
+        "barrelRailgun_turret", "barrelRailgun_line", "barrelRailgun_beam", "barrelRailgun_muzzle", "barrelRailgun_recoil",
+        "barrelRailgun_blast", "barrelRailgun_trench", "barrelRailgun_rip", "barrelRailgun_arc", "barrelRailgun_hit",
+        "barrelRailgun_overload", "barrelRailgun_shock", "barrelRailgun_lock",
+        # Missile with Twin Warhead: <RPC_missile>d__344::MoveNext@0x1C78270, Mole::SpawnMissilePad@0x1C3D4D0,
+        # RPC_missile_lock@0x1C352E0, FireMissile@0x1C2B3C0, MissileBotScatter@0x1C2E1E0, RPC_twinImpact@0x1C39D90
+        "missilePad", "missilePad_launch", "missileBot_fire", "missileBot_fire_bot", "missileBot_hit", "missile_lock",
+        "twinImpact",
+        # Kaiser Arsenal: TTO1102:KingKaiser.<RPC_kaiserArsenal>d__72::MoveNext@0x1CB7460, SpawnPods@0x1CB19A0,
+        # ArsenalShot@0x1CAF000, RPC_kaiserArsenal_hit@0x1CB0CA0
+        "kaiserArsenalPod", "kaiserArsenal_muzzle", "kaiserWarhead", "kaiserArsenal_hit",
+    ],
 }
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
@@ -351,6 +369,21 @@ class Tto:
         ext = af.externals[p["m_FileID"] - 1].path.replace("\\", "/").lower()
         return BUILTIN_MESH[p["m_PathID"]] if ext.endswith("unity default resources") else None
 
+    def prefab_of(self, o):
+        """The name of the loaded prefab whose hierarchy holds o (a GameObject or a component), else None."""
+        go = o if o.type.name == "GameObject" else self.deref(o.assets_file, o.read_typetree().get("m_GameObject"))
+        while go is not None:
+            tr = next((c for c in (self.deref(go.assets_file, x["component"]) for x in go.read_typetree()["m_Component"])
+                       if c is not None and c.type.name == "Transform"), None)
+            father = tr.read_typetree()["m_Father"] if tr is not None else None
+            if not father or not father.get("m_PathID"):
+                break
+            ft = self.deref(tr.assets_file, father)
+            go = self.deref(ft.assets_file, ft.read_typetree()["m_GameObject"]) if ft is not None else None
+        if go is None:
+            return None
+        return next((n for n, r in self.roots.items() if r.assets_file is go.assets_file and r.path_id == go.path_id), None)
+
     def script(self, o, t):
         key = (o.assets_file.name, t["m_Script"]["m_FileID"], t["m_Script"]["m_PathID"])
         if key not in self.scripts:
@@ -515,6 +548,13 @@ def effect(tto, b, name):
             return n
         if ty == "Mesh":                       # geometry is exported where it is drawn (MeshFilter, mesh particles)
             return {"mesh": o.read_typetree().get("m_Name")}
+        if ty in ("GameObject", "MonoBehaviour", "Transform"):
+            # another prefab of this run (or a component on one): its page name, "tto/<prefab>" (2026-11-13,
+            # plans/fx_mole/decisions.md 56, tto.md P4: the rail prefabs' arcPrefab = barrelRailgun_arc's MoleRailArc,
+            # which a part spawns by that name, api.spawn)
+            pf = tto.prefab_of(o)
+            if pf:
+                return "tto/" + pf
         # not exported; say so, so the next class's run shows what needs writing
         n = o.read_typetree().get("m_Name")
         print(f"warning: {name}: a {ty} reference ({n}) is written by name only, not exported", file=sys.stderr)
@@ -548,7 +588,7 @@ def effect(tto, b, name):
         return safe(holder, v)
 
     layouts = bb().LAYOUTS
-    nodes = []
+    nodes, anims = [], []
     for idx, (go_obj, parent) in enumerate(order):
         go = go_obj.read_typetree()
         node = {"name": go["m_Name"], "parent": parent, "comps": []}
@@ -596,6 +636,10 @@ def effect(tto, b, name):
                 if not t.get("m_Enabled", 1):
                     entry["enabled"] = False
                 node["comps"].append(entry)
+                continue
+            if ty == "Animation":                  # its clips need every node: filled in after the walk (below)
+                anims.append((idx, len(node["comps"]), co, t))
+                node["comps"].append(None)
                 continue
             if ty == "SkinnedMeshRenderer":
                 # (2026-11-10, part P3: emperorPenguin_penguin's SmallIcePenguin_tri) the BB build's shape
@@ -653,9 +697,60 @@ def effect(tto, b, name):
             if "m_Materials" in entry and ty.endswith("Renderer") and "mats" not in node:
                 node["mats"] = list(entry["m_Materials"])
             node["comps"].append(entry)
+    for idx, k, co, t in anims:
+        nodes[idx]["comps"][k] = animation(tto, name, nodes, idx, co, t)
     if name in CODE_MOVERS:
         nodes[0]["comps"].insert(0, {"type": CODE_MOVERS[name]})
     return {"nodes": nodes}
+
+
+def animation(tto, name, nodes, idx, co, t):
+    """A legacy Animation in the BB build's shape (wardrobe_fx_mesh.py: {type, clip, play, wrap, clips {name: {len, wrap,
+    tracks {node index: {path, q / p / s: keys}}}}}, which wardrobe/fxparts/mesh.js plays), each curve's path found from
+    the Animation's node as Unity's Transform.Find does (the first child of that name at each step; this walk's node order
+    keeps the children's order); a path that names no node is listed in "lost". A clip with compressed, Euler, float or
+    PPtr curves is left out with a warning (2026-11-13, plans/fx_mole/decisions.md 56, tto.md P7: barrelRailgun_rip's drill
+    clip root, 3 bones; before, an Animation was written as its raw dict, its clips by name only)."""
+    kids = {}
+    for i, n in enumerate(nodes):
+        kids.setdefault(n["parent"], []).append(i)
+
+    def find(path):
+        cur = idx
+        for step in [s for s in path.split("/") if s]:
+            cur = next((j for j in kids.get(cur, []) if nodes[j]["name"] == step), None)
+            if cur is None:
+                return None
+        return cur
+
+    clips = {}
+    for p in t["m_Animations"]:
+        cl = tto.deref(co.assets_file, p)
+        if cl is None:
+            continue
+        tt = cl.read_typetree()
+        if tt.get("m_Compressed") or any(tt.get(k) for k in ("m_CompressedRotationCurves", "m_EulerCurves", "m_FloatCurves", "m_PPtrCurves")):
+            print(f"warning: {name}: clip {tt['m_Name']} has curves the page cannot play (compressed / Euler / float / "
+                  "PPtr): left out", file=sys.stderr)
+            continue
+        tracks, length, lost = {}, 0.0, []
+        for field, slot, comps in (("m_RotationCurves", "q", "xyzw"), ("m_PositionCurves", "p", "xyz"),
+                                   ("m_ScaleCurves", "s", "xyz")):
+            for cv in tt.get(field) or []:
+                ks = cv["curve"]["m_Curve"]
+                if not ks:
+                    continue
+                j = find(cv["path"])
+                if j is None:
+                    lost.append(cv["path"]); continue
+                tracks.setdefault(str(j), {"path": cv["path"]})[slot] = mesh()._keys(ks, comps)
+                length = max(length, float(ks[-1]["time"]))
+        clips[tt["m_Name"]] = {"len": round(length, 4), "wrap": int(tt["m_WrapMode"]), "tracks": tracks,
+                               **({"lost": lost} if lost else {})}
+    do = tto.deref(co.assets_file, t.get("m_Animation"))
+    return {"type": "Animation", "clip": do.read_typetree()["m_Name"] if do is not None else None,
+            "play": bool(t.get("m_PlayAutomatically", True)), "wrap": int(t.get("m_WrapMode", 0)), "clips": clips,
+            **({} if t.get("m_Enabled", 1) else {"enabled": False})}
 
 
 def cue_tto(cls):
@@ -734,7 +829,7 @@ def main():
     out = os.path.join(DATA, a.cls, "fx.json")
     old = json.load(open(out, encoding="utf-8")) if os.path.exists(out) else {}
     merged = {**old, "effects": {**old.get("effects", {}), **effects}, "materials": {**old.get("materials", {}), **b.mats}}
-    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"))   # compact, as wardrobe_fx.py writes it
+    json.dump(merged, open(out, "w", encoding="utf-8"), separators=(",", ":"), allow_nan=False)   # compact, as wardrobe_fx.py writes it (no NaN: the page refuses one)
     print(f"{a.cls}: {len(effects)} TTO effects, {len(b.mats)} materials, {len(b.texs)} textures, "
           f"{len(b.sounds) - len(missing)} sounds" + (f" ({len(own)} TTO's own: {own})" if own else "")
           + (f", missing sounds: {missing}" if missing else ""))

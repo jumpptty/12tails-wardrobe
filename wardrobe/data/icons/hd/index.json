@@ -863,6 +863,20 @@
     "advanceRepair"
    ]
   },
+  "autoGyroGun": {
+   "icon": "icons/hd/mole/autoGyroGun.webp",
+   "clips": [
+    "assemble1",
+    "assemble2"
+   ]
+  },
+  "barrelBot": {
+   "icon": "icons/hd/mole/barrelBot.webp",
+   "clips": [
+    "assemble1",
+    "assemble2"
+   ]
+  },
   "barrelCannon": {
    "icon": "icons/hd/mole/barrelCannon.webp",
    "clips": [
@@ -878,10 +892,22 @@
     "barrelRailgun4"
    ]
   },
+  "bombardment": {
+   "icon": "icons/hd/mole/bombardment.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "bunker": {
    "icon": "icons/hd/mole/bunker.webp",
    "clips": [
     "bunker"
+   ]
+  },
+  "cAttack": {
+   "icon": "icons/hd/mole/cAttack.webp",
+   "clips": [
+    "superDig"
    ]
   },
   "chopper": {
@@ -894,6 +920,18 @@
    "icon": "icons/hd/mole/detonate.webp",
    "clips": [
     "detonate"
+   ]
+  },
+  "fireBarrage": {
+   "icon": "icons/hd/mole/fireBarrage.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "flameCarnival": {
+   "icon": "icons/hd/mole/flameCarnival.webp",
+   "clips": [
+    "mine"
    ]
   },
   "flameTurret": {
@@ -909,6 +947,30 @@
     "grenadeCluster"
    ]
   },
+  "kingKaiser": {
+   "icon": "icons/hd/mole/kingKaiser.webp",
+   "clips": [
+    "dig1"
+   ]
+  },
+  "megaDrill": {
+   "icon": "icons/hd/mole/megaDrill.webp",
+   "clips": [
+    "punch"
+   ]
+  },
+  "megaHammer": {
+   "icon": "icons/hd/mole/megaHammer.webp",
+   "clips": [
+    "hammer"
+   ]
+  },
+  "megaPunch": {
+   "icon": "icons/hd/mole/megaPunch.webp",
+   "clips": [
+    "punch"
+   ]
+  },
   "mine": {
    "icon": "icons/hd/mole/mine.webp",
    "clips": [
@@ -918,7 +980,8 @@
   "missile": {
    "icon": "icons/hd/mole/missile.webp",
    "clips": [
-    "missile"
+    "missile",
+    "missilePad"
    ]
   },
   "mortarShot": {
@@ -934,10 +997,34 @@
     "nAttack2"
    ]
   },
+  "napalm": {
+   "icon": "icons/hd/mole/napalm.webp",
+   "clips": [
+    "mortarShot"
+   ]
+  },
+  "reload": {
+   "icon": "icons/hd/mole/reload.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "skyDrill": {
    "icon": "icons/hd/mole/skyDrill.webp",
    "clips": [
     "skyDrill"
+   ]
+  },
+  "stunGrenade": {
+   "icon": "icons/hd/mole/stunGrenade.webp",
+   "clips": [
+    "grenade"
+   ]
+  },
+  "stunMine": {
+   "icon": "icons/hd/mole/stunMine.webp",
+   "clips": [
+    "mine"
    ]
   },
   "superDig": {
@@ -946,10 +1033,59 @@
     "superDig"
    ]
   },
+  "synchroMole": {
+   "icon": "icons/hd/mole/synchroMole.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "timeNuke": {
+   "icon": "icons/hd/mole/timeNuke.webp",
+   "clips": [
+    "mine"
+   ]
+  },
   "tnt": {
    "icon": "icons/hd/mole/tnt.webp",
    "clips": [
     "tnt"
+   ]
+  },
+  "tnt1": {
+   "icon": "icons/hd/mole/tnt1.webp",
+   "clips": [
+    "tnt"
+   ]
+  },
+  "tnt2": {
+   "icon": "icons/hd/mole/tnt2.webp",
+   "clips": [
+    "tnt"
+   ]
+  },
+  "tnt3": {
+   "icon": "icons/hd/mole/tnt3.webp",
+   "clips": [
+    "tnt"
+   ]
+  },
+  "tnt4": {
+   "icon": "icons/hd/mole/tnt4.webp",
+   "clips": [
+    "tnt"
+   ]
+  },
+  "twinWarhead": {
+   "icon": "icons/hd/mole/twinWarhead.webp",
+   "clips": [
+    "missilePad"
+   ]
+  },
+  "warCapital": {
+   "icon": "icons/hd/mole/warCapital.webp",
+   "clips": [
+    "assemble1",
+    "assemble2"
    ]
   },
   "warFactory": {
