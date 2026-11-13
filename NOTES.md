@@ -1524,7 +1524,7 @@ run; it was at 47 % at the start). Order: Penguin, Bat, Bison, Cat, Chameleon, M
   the dark fx check as the gate), one QA with wardrobe_fx_shots.py). The script is saved in this session's folder; to run
   it in another session, re-create it from this description (the research of one class overlaps the build of the one
   before; builds never overlap, they share index.html).
-- Progress (updated as it goes): Penguin, Bat, Bison, Cat DONE + deployed; Chameleon DONE (51 cue keys, 93 effects, 112 sounds; a child EffectControl's velocity now applied, every class's gate passes), committed + deployed below; Mole research DONE + committed (6a166de), its build next; Monkey, Panda, Rabbit, Whale not started. (A deploy needs a NEW empty folder each time: wrangler leaves .wrangler/ behind.)
+- Progress: Penguin, Bat, Bison, Cat, Chameleon DONE, committed and deployed (last: 49b0bc5, version d8254611, data-2f9f8dd372). Mole research done + committed (6a166de); its build stopped by the user at 07:05 ("stop here for now, push and deploy all progress") after only its planner (plans/fx_mole/decisions.md, 63 decisions): nothing of the Mole in the page or data. Not started: Monkey, Panda, Rabbit, Whale. Usage 66 % weekly at the stop (47 % at the start). HANDOFF.md says how to continue.
 - **Bat build, page_pipeline builder (2026-11-13):** the game's Particles/MultiplyOffset, AlphaOffset and AdditiveOffset
   shaders (fxparts/particles.js) and built-in 205 = Particles/Multiply (`BUILTIN_BLEND[205] = "multiply"`) are now built for
   every class. That changes the look of effects already cued and published: the Wolf's Double Art banner (doubleArt),
