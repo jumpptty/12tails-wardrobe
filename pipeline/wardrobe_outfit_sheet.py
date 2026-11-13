@@ -1,7 +1,9 @@
 r"""Every outfit of a class on the hero, front and back, in one labelled picture (2026-11-12; user: "find the best cat outfit
 that can best represent this reference image"): for picking the outfit whose shape suits a repaint (wardrobe_repaint.py).
 The local page, headless; no props, colour 1.
-  uv run --no-project --with pillow --with numpy --with scipy --with playwright python -I pipeline/wardrobe_outfit_sheet.py cat <out.png> [outfit ...]"""
+  uv run --no-project --with pillow --with numpy --with scipy --with playwright python -I pipeline/wardrobe_outfit_sheet.py cat <out.png> [outfit ...]
+Props instead (2026-11-13, the Whale's head pieces and trinkets for a look): `... whale <out.png> --props Head:afro Head:frozenCrown
+Back:glasses`: each prop alone on the first outfit, or on `--on <outfit>`."""
 import asyncio, functools, http.server, json, sys, threading
 from pathlib import Path
 from PIL import Image, ImageDraw
@@ -9,6 +11,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))      # python -I leaves
 from wardrobe_repaint import ROOT, DATA, crop
 
 CLS, OUT, ONLY = sys.argv[1], Path(sys.argv[2]), sys.argv[3:]      # names after the picture: only those, larger
+ON = ONLY.pop(ONLY.index("--on") + 1) if "--on" in ONLY else None
+PROPS = [a.split(":") for a in ONLY[ONLY.index("--props") + 1:] if a != "--on"] if "--props" in ONLY else []
+ONLY = [] if PROPS else ONLY
 S = 640 if ONLY else 360
 
 
@@ -28,8 +33,14 @@ async def main():
         await page.add_style_tag(content="*{visibility:hidden!important} canvas{visibility:visible!important}")
         await page.evaluate("""async cls => { const { scene, THREE } = wardrobe.debug(); scene.background = new THREE.Color(0xe6e1d8);
           await wardrobe.show(cls, {}); for (const s of ["Head", "R", "L", "Back"]) await wardrobe.show(cls, { [s]: null }); }""", CLS)
-        for n in names:
-            await page.evaluate("n => wardrobe.setOutfit(n, 1)", n)
+        if PROPS:
+            await page.evaluate("n => wardrobe.setOutfit(n, 1)", ON or names[0])
+            names = [f"{sl}_{pr}" for sl, pr in PROPS]
+        for i, n in enumerate(names):
+            if PROPS:
+                await page.evaluate("([c, a, b]) => wardrobe.show(c, { Head: null, R: null, L: null, Back: null, ...{ [a]: b } })", [CLS, *PROPS[i]])
+            else:
+                await page.evaluate("n => wardrobe.setOutfit(n, 1)", n)
             for yaw, side in ((20, "f"), (200, "b")):
                 await page.evaluate("([c, y]) => wardrobe.show(c, {}, y)", [CLS, yaw])
                 await page.wait_for_timeout(300)

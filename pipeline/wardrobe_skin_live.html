@@ -3,7 +3,9 @@
 model in real time?"): the local wardrobe in a frame wearing the skin file, put on again whenever the file changes (a
 painter's pass rewrites it), the flat texture beside it. The camera stays where the user left it.
   wardrobe server running (wardrobe.cmd, or py -3 pipeline\wardrobe_serve.py 8771), then
-  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=bat&outfit=student&face=16&skin=/plans/reskins/bat/robe/student.png -->
+  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=bat&outfit=student&face=16&skin=/plans/reskins/bat/robe/student.png
+  &head=<head piece> also puts that piece on (2026-11-13, the Whale's crown); &extra=<skin key>@<png> (repeatable) wears a
+  prop's skin too, read once per outfit pass (the Cat's hair: extra=cat|accessories|default|Cat_default.png@/plans/...). -->
 <meta charset=utf-8>
 <title>ลายสด</title>
 <style>
@@ -22,17 +24,23 @@ painter's pass rewrites it), the flat texture beside it. The camera stays where 
 <div id=bar><span id=dot></span><span id=msg>กำลังเปิดห้องแต่งตัว…</span></div>
 <script>
 const q = new URLSearchParams(location.search), cls = q.get("cls"), outfit = q.get("outfit"), skin = q.get("skin");
-const face = q.get("face"), f = document.getElementById("f"), msg = document.getElementById("msg"), dot = document.getElementById("dot");
+const face = q.get("face"), head = q.get("head"), f = document.getElementById("f"), msg = document.getElementById("msg"), dot = document.getElementById("dot");
 let seen = "", n = 0, busy = false, first = true;
 async function wear() {
   const w = f.contentWindow, W = w.wardrobe, { SKINS } = W.debug();
-  const blob = await (await w.fetch(skin + "?t=" + Date.now(), { cache: "no-store" })).blob();
-  const bmp = await w.createImageBitmap(blob), c = new w.OffscreenCanvas(bmp.width, bmp.height), g = c.getContext("2d");
-  g.drawImage(bmp, 0, 0);
-  SKINS.set(`${cls}|outfits|${outfit}|`, { w: bmp.width, h: bmp.height, data: g.getImageData(0, 0, bmp.width, bmp.height).data });
+  const load = async (key, url) => {
+    const blob = await (await w.fetch(url + "?t=" + Date.now(), { cache: "no-store" })).blob();
+    const bmp = await w.createImageBitmap(blob), c = new w.OffscreenCanvas(bmp.width, bmp.height), g = c.getContext("2d");
+    g.drawImage(bmp, 0, 0);
+    SKINS.set(key, { w: bmp.width, h: bmp.height, data: g.getImageData(0, 0, bmp.width, bmp.height).data });
+    return [blob, bmp];
+  };
+  const [blob, bmp] = await load(`${cls}|outfits|${outfit}|`, skin);
+  for (const e of q.getAll("extra")) await load(...e.split("@"));      // extra=<skin key>@<png>: a prop's skin (the Cat's hair)
   if (first) { await W.show(cls, {}); first = false; }
   if (face != null) W.debug().C.state.face = +face;
   await W.setOutfit(outfit, 1);
+  if (head) await W.show(cls, { Head: head });
   document.getElementById("img").src = URL.createObjectURL(blob);
   return bmp.width + " × " + bmp.height;
 }

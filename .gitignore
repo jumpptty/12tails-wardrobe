@@ -11,6 +11,10 @@
 !/pipeline/
 !/plans/
 !/wardrobe/
+# the project skills only (/reskin-from-image ...), not .claude's local settings
+!/.claude/
+/.claude/*
+!/.claude/skills/
 # wardrobe/data IS tracked since 2026-11-10 (user: "one repo for now"; it moved between the PCs as a tar through Google
 # Drive before). A copy renamed aside (data_old, data-home, ...) stays out, and so does the office's repair of its damaged
 # rip (bb_rip_fix: that PC only)

@@ -68,6 +68,21 @@ def texel_maps(cls, name, size):
                            edge=ndimage.distance_transform_edt(covered))     # texels to the island's edge (0 in the gutter)
 
 
+def cached_maps(cls, name, K, cache):
+    """texel_maps at K x the game's sheet, kept in <cache>/maps_<name>_<K>.npz between runs (a 2048 px rasterising takes
+    most of a minute; the cache folder is not for git)."""
+    f = Path(cache) / f"maps_{name}_{K}.npz"
+    if not f.exists():
+        w, h = Image.open(DATA / cls / "tex" / f"{name}1.webp").size
+        M = texel_maps(cls, name, (w * K, h * K))
+        f.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(f, pos=M.pos.astype(np.float32), nrm=M.nrm.astype(np.float32), lab=M.lab.astype(np.int32),
+                            bone=M.bone.astype(np.int16), covered=M.covered, edge=M.edge.astype(np.float32), bones=np.array(M.bones))
+    d = np.load(f)
+    return SimpleNamespace(pos=d["pos"].astype(float), nrm=d["nrm"].astype(float), lab=d["lab"], bone=d["bone"], covered=d["covered"],
+                           edge=d["edge"], bones=list(d["bones"]))
+
+
 # ---------- colour ----------
 def hsv(rgb):
     a = rgb / 255.0
@@ -263,6 +278,36 @@ async def shots(cls, outfit, variants, out, yaws=((20, "front"), (110, "left"), 
             print("shot", name)
         await b.close()
     srv.shutdown()
+
+
+def paint_under(out, M, piece, under):
+    """A part the design does not want, painted as what lies under it (an outfit cannot hide anything: the game draws it
+    as RGB24 + Diffuse, alpha thrown away; user 2026-11-13: "paint it, never make them transparent"). Each texel of
+    `piece` (its gutter too) takes the colour of the nearest texel, in the bind pose, of the `under` islands, so it reads
+    as part of that surface. |y| is used: a mirrored piece's texels hold one side's position. Not for texels shared by
+    several copies of a piece at different places (the Whale's banknotes): those have no single "under"."""
+    from scipy.spatial import cKDTree
+    P = M.pos * [1, 0, 1] + np.abs(M.pos * [0, 1, 0])
+    src = under & M.covered & ~piece
+    out[piece] = out[src][cKDTree(P[src]).query(P[piece])[1]]
+
+
+def island_shots(cls, outfit, K, cache, out, cut=(), name="islands", yaws=tuple((y, f"{y:03d}") for y in range(0, 360, 45)), face=None):
+    """Before hiding a piece with alpha: the hero with every UV island in its own colour and the islands at the sheet
+    points `cut` (x, y on the game's sheet) not drawn, from eight sides -> out/shots/<name>_<yaw>.png. A body often has
+    a real opening under a strap, a coat or a buckle (the Whale's coat, the Cat's braces, 2026-11-13): if the cut shows
+    the backdrop or another island's inside through the body, that piece cannot be hidden there."""
+    import asyncio, colorsys
+    M = cached_maps(cls, outfit, K, cache)
+    n = int(M.lab.max()) + 1
+    pal = np.array([[int(c * 255) for c in colorsys.hsv_to_rgb((i * 0.381) % 1, 0.55 + 0.4 * (i % 2), 1.0 - 0.35 * (i % 3 == 0))] for i in range(n)], np.uint8)
+    a = np.dstack([pal[M.lab], np.full(M.lab.shape, 255, np.uint8)])
+    for x, y in cut:
+        a[M.lab == M.lab[y * K + K // 2, x * K + K // 2], 3] = 0
+    Path(out).mkdir(parents=True, exist_ok=True)
+    f = Path(out) / f"_{name}.png"
+    Image.fromarray(a, "RGBA").save(f)
+    asyncio.run(shots(cls, outfit, [(name, {f"{cls}|outfits|{outfit}|": f}, {})], Path(out), yaws=yaws, size=800, face=face))
 
 
 def crop(f, pad=14, size=640):

@@ -54,6 +54,10 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   `py -3 pipeline\wardrobe_serve.py 8771`, then
   `http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=<class>&outfit=<outfit>&face=<n>&skin=/<the png, under the repo>`:
   the real 3D page wearing the skin, put on again after every pass, the flat texture beside it.
+  Design only from what the reference image shows (user 2026-11-13: "absolutely no biases"): never identify, look up
+  or name the reference character, and never fill in parts the image doesn't show from knowledge of it. Load the
+  `reskin-from-image` skill (`.claude/skills/`) at the start of any skin task; the user can also invoke it as
+  `/reskin-from-image`.
 - The public copy: `py -3 pipeline\wardrobe_publish.py --out wardrobe_dist`, then deploy (NOTES.md "Online copy"):
   Claude may deploy when the user asks for it (user 2026-11-09: "please change that Claude.md setting then deploy"),
   always from an empty folder, never from the video folder. Online it carries BB content plus the TTO items in `wardrobe\tto_released.json` (the

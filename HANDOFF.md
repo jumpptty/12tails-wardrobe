@@ -27,6 +27,34 @@ has it. The token never goes in git: carry the file from the office PC (USB / a 
 the token on discord.com/developers → 12 Tails Skins → Bot (then the office's copy needs the new one too). Content:
 `{"token": "<bot token>", "channel": "1570242267397230764"}`. Delete this item when done.
 
+## Home PC: the Bat skin after the helmeted enemy, to polish with the user (2026-11-13)
+
+NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the rules are the `reskin-from-image` skill
+(`/reskin-from-image`, .claude/skills/). State: outfit royal + head butterflyHood + face 11; the user called it good
+("Lady Noir looks good now") up to the chest, neckline (a U), midriff and front piece. Then:
+- **Open: the band on the coat.** The user found "a forced painting, some kind of band along the robe" in the 3D view
+  (seen from behind / below, between the coat's two small spiky flaps), asked for original designs in her theme,
+  several mocks, then: "textured belt with dark red as the main color can be quite a good contrast for the lower
+  body". My mocks (plans/reskins/bat/eyes/back_variants.png, belt_variants.png: a belt round the coat at z 0.84)
+  were "not the correct belt". **First find the piece**: `wardrobe_repaint.island_shots("bat", "royal", 2, cache, out)`
+  from behind and below, show the user the coloured islands and let them point. Unchecked guesses: the island at
+  sheet (499,424) (a strip at z 0.54-0.64, never identified; it is in `coat` and takes the readings), or the coat's
+  inside face (452,337). Then mock several original designs on THAT piece, dark red, textured.
+- Also open: a small pale drop low on the back's middle (z ~0.5); the weapon is not skinned.
+- To run at home: the references are not in git (game files). Rebuild them once:
+  `uv run --no-project --with UnityPy --with pillow --with playwright python -I pipeline/wardrobe_enemy_ref.py plans/reskins/bat/ref LadyNoir+NoirWand:NoirWand BatCult@x-90`
+  then `uv run --no-project --with pillow --with numpy --with scipy --with playwright python -I pipeline/wardrobe_bat_enemies.py eyes`
+  (the first run rasterises the maps into plans/reskins/bat/eyes/_cache, a few minutes). Live view:
+  `py -3 pipeline\wardrobe_serve.py 8771`, then
+  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=bat&outfit=royal&face=11&head=butterflyHood&skin=/plans/reskins/bat/eyes/look/royal.png&extra=bat%7Caccessories%7CbutterflyHood%7CBat_butterflyHood.png@/plans/reskins/bat/eyes/look/Bat_butterflyHood.png
+- The user uploads skins themselves. The office Desktop has them ready (`wardrobe_reupload\`); at home copy from git
+  under the names the page's drop reads: plans/reskins/bat/eyes/look/royal.png -> `12tails_ค้างคาว_Royal.png`,
+  Bat_butterflyHood.png -> `12tails_ค้างคาว_Butterfly_Hood.png` (face 11); plans/reskins/bat/rose/look/summer.png ->
+  `12tails_ค้างคาว_summer.png` (face 21, no head piece); plans/reskins/cat/knight/champion.png -> `12tails_แมว_champion.png`,
+  Cat_default.png -> `12tails_แมว_default.png` (face 23).
+- No deploy from this work. A deploy from either PC: from the main folder at current main (NOTES.md "The opaque-outfit
+  deploy d4adea35 had two side effects").
+
 ## Home PC
 
 - **The Panda's two "&" clips (a data rebuild):** Wind & Cloud and Rain & Storm have body clips (`wind&cloud`,

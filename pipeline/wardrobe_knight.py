@@ -154,14 +154,17 @@ def knight(debug=False, K=HI):
 
     # ----- the plate: the original's forms, silver for its white, the reference's gold for its gold
     plate = np.zeros(Y.shape, bool)
-    for k in ("wing", "pauldronR", "gauntR", "gauntR2", "gauntR3", "gauntR4", "bracerL", "bandL", "greave", "rim", "boot", "boot2", "boot3", "boot4"):
+    for k in ("wing", "pauldronR", "gauntR", "gauntR2", "gauntR3", "gauntR4", "bracerL", "bandL", "greave", "rim", "boot", "boot2", "boot3", "boot4", "shield", "shield2"):
         plate |= I[k]
     cloth = I["skirt"] | I["skirt2"] | I["sash"] | I["sash2"] | I["sash3"] | I["belt"] | I["belt2"]
     mix(plate, ramp(metal(tone(L, plate & (gold_k < 0.3) & (s < 0.25))), SILVER))
     mix(cloth, ramp(tone(L, cloth & (gold_k < 0.3) & (s < 0.25)), WHITE))
     for area in (plate, cloth):
         mix(area, ramp(0.75 * tone(L, area & (gold_k > 0.7)) + 0.25 * env, GOLD), gold_k)
-    alpha[I["shield"] | I["shield2"]] = 0
+    # (the shield: the reference has none, and the first skin hid it with alpha 0. An outfit cannot hide anything: the
+    # game draws it as RGB24 + Diffuse, and since 2026-11-13 the page does too, so the hidden shield showed in its old
+    # white. User: "repaint the Cat skin ... to have the shield color filled in": it is part of the plate above, the
+    # armour's silver with its own trim in the reference's gold)
 
     # the hip cloth: its thin gold ornaments (the wing) gone, plain white inside the gold border, as the reference's tabard
     # (a gold piece is a border when some part of it is thick; a per-texel test bit ragged notches into the borders' tips)
@@ -312,8 +315,7 @@ def paint_main(debug):
     skin = knight(debug)
     ow, oh = Image.open(DATA / "cat" / "tex" / "champion1.webp").size
     assert skin.shape[:2] == (oh * HI, ow * HI), "a skin is the original's size or 2x / 4x / 8x of it (the page's skinDims)"
-    hidden = skin[..., 3] != 255
-    assert hidden.mean() < 0.06 and (skin[..., 3][hidden] == 0).all(), "only the shield's texels lose their alpha"
+    assert (skin[..., 3] == 255).all(), "an outfit skin is opaque: the game ignores alpha (paint a part, never hide it)"
     Image.fromarray(skin, "RGBA").save(d / "champion.png", optimize=True)
     print(f"{skin.shape[1]}x{skin.shape[0]} px, {(d / 'champion.png').stat().st_size / 1e6:.1f} MB")
     views = ((0, "front"), (90, "left"), (180, "back"), (270, "right"))

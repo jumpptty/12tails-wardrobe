@@ -2041,6 +2041,48 @@ writes decisions.md and splits the builders; office paths are written into it, c
 - The Rabbit built (planner + rabbit / generic / page_pipeline builders, editor, QA: no bugs found): gates passed,
   committed and deployed (its section below).
 
+## 2026-11-13 (office), the Whale after a reference picture (the `reskin-from-image` skill)
+
+User: "restrict your access to knowledge regarding the reference characters ... just follow what you see in the
+reference image" -> the project skill `.claude/skills/reskin-from-image/` (`/reskin-from-image`; .gitignore lets
+`.claude/skills/` through, nothing else of `.claude`), a line in CLAUDE.md, a memory. Then: "Whale skin, pick the best
+equipment set for this ref image and build the texture" ("any set equipment candidates except student skins from ToT").
+The picture as seen: big purple curls under a small red and gold crown, a wide grin (a wall of teeth, dark purple lips),
+teal eyeshadow and spiked lashes, tan skin, a crimson leotard cut to a deep V with a high pointed collar, a dark
+skull-over-crossed-bars mark on the bare chest, pearls, magenta gloves and boots, a white net cape, net stockings with
+black garters. Notes and files describe the picture only, never who it is.
+- `pipeline/wardrobe_whale_crown.py --paint [--debug] [--noshots] [--darkmouth]` -> plans/reskins/whale/ (crown/
+  superStar.png 2048 px, crown/Wolf_fanKingHat.png, crown/Wolf_afro.png, shots, crown_compare.png, crown.html; not
+  committed until the user picks; reference.png is the user's, not for git). `_cache/maps4.npz` = the texel maps kept
+  between runs (a pass is ~1 min with it).
+- **Base: superStar** (of the Whale's 22; sheet.png): the open coat = the cape, the fur collar + lapels = the high
+  collar, the banknote necklace = the pearls (two round pearls per note, alpha 0 round them; the gold chain and coin
+  alpha 0), the shirt panel = the bare chest, the mark and the leotard's V. **Head: fanKingHat** (a red and gold crown
+  as it is; its blue / green gems painted white) with the curls painted on the Whale's own dome; **afro** in the hair's
+  purple is the alternative (one head piece at a time; the Whale wears the Wolf's files: skin keys
+  `whale|accessories|fanKingHat|Wolf_fanKingHat.png`, `whale|accessories|afro|Wolf_afro.png`). Face 13 (BB's).
+- The Whale's sheet (512 px; body 2.5 tall, x front, y left, z up): the dome is two islands (front, back) + the fin;
+  its rim over the mouth z 2.05 (middle) to 1.69 (corners); the **eyes sit at the mouth's corners** (|y| 0.6, z 2.0, on
+  the dome's sides), so the face is a band of skin over the mouth and the rest of the dome is hair. Each tooth is its
+  own island; the lower jaw (z 1.32-1.82) is one island; the face overlay is the sheet's top-left quarter (only the
+  eyes are opaque). Coat, sleeves and legs are mirrored; the panel is not. The coat has **no body under it** and the
+  material is front-sided: holes all over the coat showed a hollow Whale from the side and behind, so the net is painted
+  over grey (as the reference's cape reads) and real holes (alpha 0, the material's alphaTest) open only from z 0.86
+  down to the hem, where the legs are behind.
+- What the painter does: curls = cells round ~87 scattered points on the dome in 3D (they cross the seams), looked up
+  through a smooth noise (no honeycomb), each a puff with a spiral line; the hairline follows the curls; lips = the 3D
+  distance to the mouth's rim (the island's boundary where x > 0.385); eyeshadow and lashes in a frame on the skin at
+  each eye (found from the face preset's alpha); the mouth's inside painted as more teeth (off-white, dark lines) so the
+  gaps between the Whale's teeth close into the reference's grin.
+- Invented (the picture does not show them): the back (curls all over, the net cape, a crimson seat), the Whale's tail
+  (skin), the soles. Not possible on this mesh: the hair's width past the dome (the afro adds some), the collar's
+  points, long legs for the stockings (they are 0.3 tall here), a single strand of pearls (the notes' side strands hang
+  down as pearls too).
+- `wardrobe_outfit_sheet.py` gained `--props Head:afro Back:glasses ... [--on <outfit>]` (each prop alone on one outfit);
+  `wardrobe_skin_live.html` gained `&head=<piece>`:
+  http://127.0.0.1:8771/pipeline/wardrobe_skin_live.html?cls=whale&outfit=superStar&face=13&head=fanKingHat&skin=/plans/reskins/whale/crown/superStar.png
+- Next, if the user picks it: add to `wardrobe_team_sets.py` (as the Cat knight), publish, deploy.
+
 ## 2026-11-13 (office), the Mole's effects: built and cued
 
 From plans/fx_mole/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
@@ -2183,6 +2225,43 @@ user's review). One editor after four builders (mole, robots, tto_mole, page_pip
     effects and the far TNTs outside the default camera; the white stage's faint glows; propAnim's recoil and the
     Trumpet's tune (the gate counts them, a screenshot cannot show them); KaiserWarhead / the 8.1 MB fx.json on a slow PC.
 
+## 2026-11-13 (office), the Cat after a second reference picture; the five allowed sets; mistakes written down
+
+User: "From now on equipment sets are limited to just these 5 unless I add them later": 60 = royal, 70 = legend, summer,
+Halloween (Original) = `hallow` (BB's, not TTO's `halloween`), the class's bug set (in the `reskin-from-image` skill file
+and a memory). "These classes are female humanoid: Cat, Sheep, Rabbit, and Bat"; for a pick "don't mind" the Rabbit's
+long ears or the Bat's wings. The picture as seen: a slim young woman, short dark violet hair (a small bun behind),
+green half-lidded eyes, fair skin, a black choker, a white sleeveless collared shirt with a thin black ribbon, charcoal
+high-waisted shorts with one button, black thigh-highs, dark brown loafers.
+- **Base: the Cat's summer** (plans/reskins/_pick/<cls>.png: the five sets on the four classes): sleeveless top, shorts,
+  bare arms and legs, slip-on shoes, a neck scarf. `pipeline/wardrobe_cat_shorts.py [--debug] [--noshots]` ->
+  plans/reskins/cat/shorts/ (look/summer.png 2048 px, look/Cat_default.png = the hair, shots, compare.png, look.html;
+  not committed until the user picks; reference.png is the user's).
+- Painted: fair skin (head, arms, hands, thighs), the top + bare midriff as the white shirt (drape, a gathered foot,
+  placket lines, a back yoke), the shorts' **high waist painted on the body** up to z 0.972 (band, button, fly, belt
+  loops), the scarf as the collar with the ribbon's bow and its ends down the placket, a choker on the neck (z 1.268),
+  charcoal shorts (a median blur takes the rivets out), thigh-highs from z 0.56, loafers (strap, apron seam, sole),
+  hair / ears / tail dark violet. Hidden: the wristband, the top's tied knot, the braces' middle (z 0.95-1.085).
+- **Eyes on a closed-eye preset** (the user's idea: "it is easy to work on top of a single eye stroke"): face 5 (each
+  eye one arched stroke, sheet x 24-55 and 87-118, y 49-59) is the upper lid; the eye is painted under it on the head
+  island (sheet space). After the user's close-up ("yours is too generic"): narrow, a heavy lid running past the outer
+  corner, a bright green iris cut by both lids with a rim and an inner ring, a small flat pupil, no light dots, lower
+  lashes at the outer end, cheek hatching. The user is trying an image generator for the eyes: the face block
+  (1024 px, with the overlay) + a prompt are in Desktop\cat_eyes_imagegen (office PC); a returned picture would be
+  pasted over the head island's eye area (not built yet).
+- **Mistakes** (now checks in the skill file): (1) hiding the braces whole showed a hollow shoulder and a hole in the
+  shorts' back: the body has real openings under them; (2) the first "fix" cut "cap sleeves" picked by their pink,
+  which were the top's emblem (a hole in the chest), the second painted them skin (blotches): the cause was found only
+  by `island_shots` (new in wardrobe_repaint.py: every island its own colour, the cut pieces gone, eight sides); (3) the
+  skin's first ramp rendered mauve under the page's light.
+- **Alpha hiding is the page's, not the game's**: the page draws outfits with alphaTest 0.5 (index.html setOutfit);
+  BB's `<Class>Equipment.cs` builds the hero's material as `new Material(Shader.Find("Diffuse"))` (colour 0.86), which
+  ignores alpha, and no cut-out shader is named anywhere in the decompiled code. So in the game a skin's hidden pieces
+  would be drawn solid (the knight's shield, the Bat's tie and buckle, the Whale's hem, pearls, chain and coin, the
+  Cat's wristband, knot and braces). Not tested in a running game.
+- wardrobe_repaint.py also gained `cached_maps` (texel maps kept in <out>/_cache); wardrobe_skin_live.html
+  `&extra=<skin key>@<png>` (a prop's skin, the Cat's hair).
+
 ## 2026-11-13 (office), outfits drawn as the game draws them: opaque
 
 User: "Players use my wardrobe to plan what the skin will looks like in the game. Fix the wardrobe to use game logic
@@ -2227,6 +2306,41 @@ ToT's student sheets have alpha (ToT is another client, local only, its shader u
   champion.png + Cat_default.png are on the office Desktop, `wardrobe_reupload\cat_knight_face23\12tails_แมว_champion.png`
   / `12tails_แมว_default.png` (the names the page's drop reads): the user sends them again (face 23) and takes the old
   message's check mark away; the live list follows Discord within a minute. The Bat robe (tie, buckle) still uses alpha.
+
+## 2026-11-13 (office), two Bat skins after two in-game enemies (3D references)
+
+User: "it will be 3D model reference this time, find the best Bat Equipment set to copy the skins from in-game enemy Lady
+Noir and Bat Cult, 2 skins ... you may use the whole set or just some part". Both enemies are in BB's files on the Bat's
+own body (meshes `LadyNoir_tri` (submesh 0 the body, 1 the wand), `BatCult_tri`; textures in the rip's Texture2D/).
+- **The references:** `pipeline/wardrobe_enemy_ref.py <out> LadyNoir+NoirWand:NoirWand BatCult@x-90` (UnityPy reads the
+  mesh from 12TailsOnline_Data, a bare three.js page shoots it unlit from eight sides) -> plans/reskins/bat/ref/
+  (<name>_tri.obj, <name>_sheet.png; BatCult's bind pose has z up: `@x-90`). Not for git (game assets).
+- **Picks** (the five allowed sets; candidates shot with `wardrobe_outfit_sheet.py`): the helmeted one in the dark
+  purple eye-emblem dress -> outfit **royal** (long dress-coat, wide sleeves, boots) + head **butterflyHood** (the bug
+  set's hood as the helmet) + face 4 (amber); the white-haired one -> outfit **summer** (bikini top + hip cloth on the
+  bare body) + head **hallowCrown** (a small red crown where she has a rose) + face 21 (red). Weapons not skinned.
+- **A whole-model projection was built and dropped** (user: "I don't like your projection approach, it opens up for a
+  lot of mistake ... consider repainting yourself while borrowing textures from the existing ones"): every texel took
+  the nearest point of the enemy's surface: hair on the face, bands down the dress front, a ragged grey hem.
+- **`pipeline/wardrobe_borrow.py`** instead, nothing automatic: `ref_maps` (the enemy's sheet per texel: its place on
+  the body in the Bat's frame, by a fit of 24 turns + ICP, 0.8-0.9 cm), `same_uv` (which outfit islands have the
+  enemy's own layout at the same sheet place), `borrow(dst, src)` (a named outfit part takes the paint of named enemy
+  parts, nearest on the body; prints the distances: over ~3 cm = look at it). **Not mirrored:** a first guess that the
+  game's meshes and the wardrobe's data differ in handedness was wrong: the shared layouts (face, ears, tail, hands)
+  only coincide with a proper turn (same_uv 99-100 %; mirrored 0-12 %).
+- **`pipeline/wardrobe_bat_enemies.py eyes|rose|both [--noshots]`** -> plans/reskins/bat/<eyes|rose>/ (look/<outfit>.png
+  1024 px opaque, look/Bat_butterflyHood.png, shots of eight sides, sheet.png, compare.png = original | new | enemy).
+  Per part, one of three ways: **same** (the enemy's paint texel for texel: neck, ears, hands, tail; the second one's
+  hair back / side and wings too), **own** (the outfit's own paint in the enemy's palette, read from its texture by
+  percentile: the faces under the preset's eyes, hair of another cut, royal's coat with its trims, the hood),
+  **borrow** (torso, arms, legs, feet, wings, capelet, collar, hip cloth). The first one's sleeves: the enemy's ring
+  colours read along the arm (median per 2 mm of |y|). The dress's big eye emblem: a patch of the enemy's sheet
+  (x 360-408, y 158-236) laid on royal's inner front strip (z 0.93-0.58); borrowing that strip whole gave bands (7 cm
+  apart). The hip cloth borrows the skirt's inside only (inset 10: its red edge had spread over the cloth).
+- Limits: summer's arms share one set of texels, so the second enemy's single striped sleeve cannot be on one arm:
+  both arms wear her lace glove, the bracelet takes the sleeve's cuff colours; the hip cloth is short where her skirt
+  is long. Royal is a coat over a dress where the first enemy wears a fitted split dress with bare shoulders; the hood
+  keeps its antennae; no veil over the eye. Left for a next pass: the weapons' skins (royalWand / legendWand).
 
 ## 2026-11-13 (office), the Monkey's effects: built and cued
 
@@ -2796,3 +2910,55 @@ user's review). One editor after three builders (rabbit, generic, page_pipeline)
     - The TTO shots' forward streak.
     - The hired guns 14 m out and the target-point effects outside the default frame, as for the other classes.
     - Decisions.md's overnight calls and the editor's judgement calls above.
+- **The front piece's cut at the waist** (user, after seeing the skin: "the seams here is not connecting cleanly, it
+  looks like a sudden crop even though there's no 3D shift there"): above `TAB_TOP` the piece had kept an earlier
+  reading of her bodice (another purple, loose lines) and the fitted pattern and its border began at TAB_TOP. Now one
+  cloth and one border for the whole piece from the neckline down (the bodice reading and `TABARD_FIT` are gone), the
+  waist sigil on it, the tabard's pattern fading in over 3 cm under the sigil. The Desktop files were replaced.
+- **The front piece above the waist carries her bodice's lines** (user: "it part above the horizontal cut earlier looks
+  bad, not textured and no patterns compared to below"): the plain cloth there now takes her dress's front at the same
+  height, laid across the piece's own width as the tabard is (u = |y| / the piece's edge; her bodice's half-width per
+  height from its 98th percentile), its cloth colour scaled to the tabard's so the two join, cross-faded over 2 cm at
+  `TAB_TOP`; the drawn waist sigil and the piece's border go over it. The Desktop outfit file was replaced again.
+- **A deeper neckline** (user, a box just over the waist sigil: "more exposed skin almost reach the circle sigil"):
+  `NECK` 1.035 (1.085 before), `NECK_K` 1.6 (0.6): a deep V of skin from the chest down to just over the sigil, its
+  sides where they were; the silver edge and its dark line are measured across the neckline now (in height they came
+  out thin and jagged on the steep V). The Desktop outfit file was replaced.
+- **The neckline is a U** (user: "U instead of V"): `neck_z(y)` = NECK + NECK_H * (|y| / NECK_W) ** NECK_P (1.035, 0.080,
+  0.050, 3.5): a round bottom just over the waist sigil, upright sides; `neck_n(y)` measures its silver edge across
+  the curve. The Desktop outfit file was replaced.
+- **A faint midriff** (user: "add a bit of midriff texture on the bare skin part? just a faint texture"): the Bat's summer
+  texture's belly (plain but for its navel, z 1.004, under the U's edge) read `NAVEL_UP` 5.2 cm higher so the navel
+  sits inside the U over the sigil, its light and shade at `MIDRIFF` 1.0, plus a soft wide centre shade (5 %%), below
+  the breasts' fold only. eyes/midriff_closeup.png. The Desktop outfit file was replaced.
+- **No navel: it belongs lower** (user: "how sure are you that belly button is supposed to be there? it is not too high
+  right?"). Measured on every Bat outfit with a bare belly (a navel-like dip in the skin down the middle, garment edges
+  left out): summer 1.008, nude 1.007, warlock 1.007, illusionist 0.997, i.e. the game puts it at z ~1.00-1.01, under
+  the U's bottom (1.035) and its silver edge. The previous pass had moved it 5.2 cm up into the U: wrong. Now the belly
+  reading stays at its true place (so no navel shows) and the midriff is a soft wide centre shade (7 %) and the belly's
+  roundness toward the U's sides (6 %). `NAVEL_UP` is gone. The Desktop outfit file was replaced.
+- The midriff stronger and tighter (user: "too faint and diffused"): `MID_LINE` 0.15 (centre line, 4.5 mm wide), `MID_SIDE`
+  0.12 (the sides, a 0.8 cm transition). Desktop outfit file replaced.
+- The midriff's shades blended (user: "the 2 shades there didn't blend nicely"): the side shade had a hard step (|y|
+  2.2-3 cm) and started at the breasts' fold; now a wide ramp (|y| 1-4.6 cm) running on into the underside, and the whole
+  factor smoothed on the body (1.5 texel sigma, normalised at the edges). Desktop outfit file replaced.
+- **The coat's back and a belt: original designs, mocked for the user's pick** (user, of a band across the coat's back in
+  the 3D view: "I found a forced painting ... please design this according to the theme of this character, your own
+  designs and give me several mock variants, no forced repaint"; then "I think textured belt with dark red as the main
+  color can be quite a good contrast for the lower body"). The band = her skirt read onto the coat's back (`COAT_BACK`
+  "ref") over royal's belt height. `coat_back()` paints the back as clean cloth (form + drape, not royal's paint) with
+  an original design: eye | contour | spine | hem | plain; `belt()` draws a dark red belt round the coat at `BELT_AT`
+  (z 0.84 +- 0.028, where royal's belt flaps sit; the flaps take its red; her wing-edge red as a ramp, silver piping):
+  weave | braid (+ an eye plate behind) | plates (+ silver studs). `wardrobe_bat_enemies.py backs` ->
+  eyes/back_variants.png (A-D, no belt), `... belts` -> eyes/belt_variants.png (E-H: back, three-quarter, front).
+  The back's mirror seam no longer gets a lining (it is an island edge, not the cloth's). Defaults stay "ref" / "none"
+  and look/royal.png + the Desktop file are unchanged until the user picks. Open: a small pale drop on the back's
+  middle near z 0.5 (to clean with the pick).
+- **The belt mocked was the wrong one** (user: "commit push, we will polish this further at home, you missed mark
+  entirely, that is not the correct belt I'm referring to"). The dark red belt of belt_variants.png goes round the coat
+  at hip height (z 0.84); which band the user's screenshot shows was never checked against the islands (rule 12 of
+  the skill: show back which piece was understood before a full pass). Not applied anywhere: `COAT_BACK` "ref", `BELT`
+  "none", look/royal.png = the version on the office Desktop. Continues at home: HANDOFF.md. Committed for that: the
+  painters, the skill, the two Bat skins' look files and mock sheets, the Cat knight's two files (not the user's
+  reference pictures, not plans/reskins/bat/ref (game files: rebuilt at home), not _cache / shots; the Whale, the Cat
+  shorts and the Rabbit folders stay on the office PC, unpicked).
