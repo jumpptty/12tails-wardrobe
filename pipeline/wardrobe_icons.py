@@ -2,7 +2,9 @@ r"""In-game item icons for the wardrobe (user 2026-11-04: "the wardrobe is reall
 
   uv run --no-project --with pefile --with capstone --with UnityPy --with pillow python wardrobe_icons.py
   -> wardrobe/data/item_map.json  (per class: item code -> model, for weapon / armor / accessory / trinket)
-     wardrobe/data/icons/<folder>/<name>.webp  (gamegui/icons/items/<folder>/<name>, every item icon)
+     wardrobe/data/icons/<folder>/<name>.webp  (gamegui/icons/items/<folder>/<name>, every item icon, at the game's
+                                                size; an icon already upscaled from the same picture is left alone:
+                                                run wardrobe_icons_upscale.py afterwards for the new ones)
      wardrobe/data/icons.json      (per class: outfit / prop name -> icon path, and every code of it)
 
 Icons are named by item code (gamegui/icons/items/armor/shp24 = a_shp24), models by name, and TTO keeps no item table
@@ -29,6 +31,8 @@ from capstone import x86_const as X  # noqa: E402
 import UnityPy                     # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from wardrobe_icons_upscale import keep as keep_upscaled   # noqa: E402
 ROOT = os.path.dirname(HERE)
 VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
 ASSETS = os.path.join(VIDEO, "tto_assets", "2026-11-04")
@@ -137,7 +141,9 @@ for (folder, name), iid in sorted(icons.items()):
     if iid in cont:
         d = os.path.join(OUT, "icons", folder)
         os.makedirs(d, exist_ok=True)
-        cont[iid].read().image.save(os.path.join(d, f"{name}.webp"), "WEBP", lossless=True)
+        image = cont[iid].read().image
+        if not keep_upscaled(os.path.join(d, f"{name}.webp"), image):   # its upscale stays (wardrobe_icons_upscale.py)
+            image.save(os.path.join(d, f"{name}.webp"), "WEBP", lossless=True)
         written.add((folder, name))
 print("icons written", len(written), "of", len(icons), flush=True)
 

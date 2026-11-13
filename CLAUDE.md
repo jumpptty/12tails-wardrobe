@@ -42,8 +42,10 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 - The page: `wardrobe.cmd` serves this folder on http://127.0.0.1:8771 and opens `wardrobe/`.
 - Data: `pipeline\wardrobe_data.py` and its siblings (`wardrobe_icons.py`, `wardrobe_placements.py`, `wardrobe_tot.py`,
   `wardrobe_ui_assets.py`, `wardrobe_editions.py`, `bb_item_codes.py`); each docstring has its exact command line.
+  Icons are 2x upscales (user 2026-11-13): after a build that adds icons, `py -3.10 pipeline\wardrobe_icons_upscale.py`
+  (home PC: Real-ESRGAN; it takes the Bible's own upscale where one exists); `--check` lists any left at game size.
   Plain Python runs as `uv run --no-project --with <pkgs> python ...` or `py -3`, never a global `pip install`.
-- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules pipeline.test_wardrobe_community`;
+- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules pipeline.test_wardrobe_community pipeline.test_wardrobe_icons_upscale`;
   `node --test pipeline/test_site_worker.mjs`;
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`

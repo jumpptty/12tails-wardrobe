@@ -927,6 +927,27 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(pixels(d / "icons" / "skills" / "emotion" / "wave.webp"), BB_RGBA)
         self.assertEqual(wp.check(w.out), [])
 
+    def test_upscaled_icon_published_once_proven_against_bb(self):
+        """The data's 2x icons (wardrobe_icons_upscale.py): one that shrinks back to BB's picture is published as it
+        is; a bigger picture that is not BB's is reported and BB's own goes out instead."""
+        w = self.world()
+        bb = Image.new("RGBA", (64, 64))
+        bb.putdata([(40 + 3 * x, 20 + 2 * y, 120, 0 if x < 6 and y < 6 else 255) for y in range(64) for x in range(64)])
+        bb.save(w.icon_dir / "items" / "weapon" / "cat1.png")
+        knife = w.data / "icons" / "weapon" / "cat1.webp"
+        bb.resize((128, 128), Image.LANCZOS).save(knife, "WEBP", quality=90)
+        bb.save(w.icon_dir / "heroes" / "Cat1.png")
+        Image.new("RGBA", (128, 128), TTO_RGBA).save(w.data / "icons" / "heroes" / "cat1.webp", "WEBP", quality=90)
+        result = w.publish()
+        d = data_dir(w)
+        self.assertEqual((d / "icons" / "weapon" / "cat1.webp").read_bytes(), knife.read_bytes())
+        with Image.open(d / "icons" / "heroes" / "cat1.webp") as a:
+            self.assertEqual(wp.over_black(a).tobytes(), wp.over_black(bb).tobytes())   # BB's own, at its size
+        warned = [x for x in result["warnings"] if "upscaled icon is not BB's picture" in x]
+        self.assertEqual(len(warned), 1, result["warnings"])
+        self.assertIn("icons/heroes/cat1.webp", warned[0])
+        self.assertEqual(wp.check(w.out), [])
+
     def test_outfit_textures_from_bb_rip(self):
         w = self.world()
         w.publish()

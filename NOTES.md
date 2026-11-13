@@ -2987,3 +2987,43 @@ user's review). One editor after three builders (rabbit, generic, page_pipeline)
 - The usage guard's `--once` read weekly 98.0 % right before the Whale's workflow; the user then: "lift the usage guard
   permanently" (CLAUDE.md and plans/goal_fx_all_classes.md updated: no guard any more). `pipeline/workflow_class_fx.js`
   now takes `pc: "home"` (D:/ paths, the video folder's TTO 2026-11-04 bundles; default stays the office).
+
+## 2026-11-13 (home), every icon upscaled
+
+User: "check all icons in the wardrobe app for any unupscaled ones, and upscale them"; then "you may check 12 tails
+bible hub, some might be there already".
+
+- **Found:** `wardrobe/data/icons` held 3,741 icons at the game's size: item icons 64 px (51 px for TTO's own art: 70),
+  the skill and emote icons 64 px, the 60 class portraits 75 px. Already upscaled: `icons/hd/` (the Bible's 128 px skill
+  icons for the ท่าสกิล rings) and `wardrobe/ui/recolor1-5.webp` (104 px = 2x the 52 px potion crop; they measure 1.3-1.4
+  from the Real-ESRGAN recipe below against 5.4-6.6 from a plain Lanczos resize, so they were made with it). `ui/tto.webp`
+  (61 x 64) is the Bible's 256 px TTO logo made smaller, shown at 20 px: nothing to upscale.
+- **`pipeline/wardrobe_icons_upscale.py`** (new) replaces each game-size icon in place, same name, with a 2x picture
+  (128 px, TTO's 51 px art to 128 too as the Bible does; the portraits 150 px): the Bible's own 128 px upscale when
+  `12t_projects/bible/assets.js` has one under the same name (GEAR_ICONS `a_ / w_ / c_ / t_<code>`, SKILL_ICONS
+  `<class>_<skill><rank>` and `sup_<skill>`, without case) and it measures within `BIBLE_MAX_DIFF` 10 of the game's icon
+  (its WebP bytes as they are), else the project's icon recipe (the archive's
+  `D:\12tails-assets-archive\tto-c6-skill-icons-2026-11-03\tools`: Real-ESRGAN x4 as plain torch modules, RGB = 0.6 x
+  anime_6B + 0.4 x x4plus, alpha Lanczos, Lanczos down, WebP q90; `py -3.10` with CUDA, models in
+  `D:\sd_backup\models\RealESRGAN`: the home PC only). Run: 1,651 from the Bible, 2,090 by Real-ESRGAN (four Lv 100
+  skill icons of the Bible measured 10.2-10.7 and were upscaled here instead). The folder went from 12.7 MB to 26.3 MB.
+  - Names only, never the nearest picture: a pixel search matched tier variants to each other (`weapon/bat11` to
+    `w_bat12` at 1.9), so the Bible's icon is taken by its name and the pixels only refuse a wrong one.
+  - An edge-bleed pass (colour under the transparent pixels filled from the edge before the upscale) made no visible
+    difference on white or dark; the plain recipe is kept.
+  - `icons/upscaled.json`: per icon the hash of the game-size picture it came from and its source (`bible:<key>` /
+    `esrgan`). `wardrobe_icons.py` and `wardrobe_ui_assets.py` ask `keep()` before writing an icon, so a data rebuild
+    leaves the upscales alone and writes only new or changed icons at game size; then
+    `py -3.10 pipeline\wardrobe_icons_upscale.py` does just those. `--check` (Pillow only, either PC) lists icons still
+    at game size, exit 1 when there are any.
+- **The publish** (`wardrobe_publish.py` `Run.proven_upscale`, `ICON_MAX_DIFF` 12): an icon of the data that is bigger
+  than BB's picture is published as it is once, shrunk to BB's size, it is BB's picture (the Recolor Drug pictures'
+  comparison); one that fails is warned about and BB's own picture goes out at game size, as every icon did before. All
+  3,508 icons with a BB file measure 0.3-9.5; the other 233 are TTO's (published from the data when released, as before).
+  The published `icons.json` / `ui.json` paths are unchanged, and `upscaled.json` is not published.
+- **The page** needed no change (no code reads an icon's pixel size; only two CSS comments). The video repo reads
+  `icons.json` for the paths only: nothing renamed or moved.
+- Checked: unit tests (`test_wardrobe_icons_upscale`, a publish test for the proof), a headless page pass at 2x device
+  pixels over every topic's picker (201 icon and ui pictures, none under 128 px but the five potions and the TTO mark, no
+  console errors), and a publish into a scratch folder.
+- Not deployed: the public copy still shows the game-size icons until the next publish + deploy.

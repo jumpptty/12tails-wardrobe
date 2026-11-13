@@ -55,6 +55,14 @@ NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the
 - No deploy from this work. A deploy from either PC: from the main folder at current main (NOTES.md "The opaque-outfit
   deploy d4adea35 had two side effects").
 
+## Either PC: the upscaled icons are not online yet (2026-11-13)
+
+Every icon in `wardrobe\data\icons` is a 2x upscale now (NOTES.md "every icon upscaled"); the public copy still shows
+the game-size ones. When the user asks for a deploy: publish (it proves each upscale against the BB rip; a warning
+"upscaled icon is not BB's picture" means that one went out at game size) and deploy as usual. Delete this item then.
+A build that adds icons at the office leaves them at game size until the home PC runs
+`py -3.10 pipeline\wardrobe_icons_upscale.py` (`--check` lists them on either PC).
+
 ## Home PC
 
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and

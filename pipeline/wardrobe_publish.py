@@ -25,6 +25,9 @@ Every picture is taken again from the BB rip: outfit colour and edition textures
 a picture with no BB file is dropped with whatever needs it (a prop: the prop; an icon: the tile shows no picture).
 The page's own pictures, ui/recolor1-5.webp (the colour topic), are 2x upscales of BB's Recolor Drug icons cropped to
 the potions' square (UI_CROP in BB's 64 px); each is proven against that box of BB's field/rsc<n>.png.
+The data's icons are 2x upscales since 2026-11-13 (pipeline/wardrobe_icons_upscale.py: the Bible's own, or the same
+Real-ESRGAN recipe): an icon bigger than BB's is published as it is once it proves to be BB's picture the same way
+(shrunk to BB's size, ICON_MAX_DIFF); one that does not is reported and BB's own picture goes out at its game size.
 TTO online (user 2026-11-09: "Also add TTO stuff to the public deployement, I've got the green light, BUT 1. Change the
 pink dot to TTO small logo instead. 2. TTO shouldn't be downloadable nor uploadable, it's preview only 3. only include
 released assets, I will mark them from html picker."): <src>/tto_released.json, written by wardrobe/tto_picker.html,
@@ -83,6 +86,9 @@ UI_TTO = "tto.webp"                    # the TTO mark on TTO's tiles (user 2026-
 UI_COUNT = 5                                           # the page shows colours 1-5: all five pictures are needed
 UI_CROP = (4, 7, 56, 59)                               # the potions' common square in BB's 64 px icons (task 14b)
 UI_MAX_DIFF = 6                                        # mean absolute difference per channel, at BB's size, over black
+# the same measure for the data's upscaled icons (icons/<folder>/<name>.webp, wardrobe_icons_upscale.py): the 3,508 that
+# have a BB file measure 0.3 - 9.5 (2026-11-13; the Bible's skill upscales the highest), another icon 20 and more
+ICON_MAX_DIFF = 12
 # what a publish writes beside its data-<hash> and ui-<hash> folders; "fonts" and "ui" are what earlier publishes wrote
 # (the self-hosted fonts, the unhashed ui folder): listed so a new publish removes them
 OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES + PAGE_DIRS
@@ -97,7 +103,9 @@ PROVENANCE = ("wardrobe_data.py and extract_tto_props.py extracted every outfit 
               "outfit meshes by vertex positions and triangle count, clips by every key, props by every mesh's vertex "
               "positions and triangle count and an animated prop's clip keys. Every picture was taken again from the BB "
               "rip, except ui-<hash>/recolor1-5.webp: 2x upscales of BB's field/rsc1-5.png cropped to the potions' square, "
-              "proven by a downscale comparison against the same box of the BB rip. rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
+              "proven by a downscale comparison against the same box of the BB rip, and the icons (icons/): 2x upscales "
+              "of BB's icons, each published only once the same downscale comparison proved it against the BB rip's "
+              "picture (else BB's own picture). rig.json (BB's skeleton, built from the BB rip by extract.py) is copied as built. placements.json is "
               "TTO's own mount table (Config/*Placement), kept for the published items' codes only. From TTO itself the "
               "copy holds only the first half of TTO's own faces per class.")
 
@@ -677,9 +685,30 @@ class Run:
                                   "pipeline/bb_rip_fix.py, or copy / link that folder from the main checkout")
             return bb_file
 
+    def proven_upscale(self, rel, bb_im):
+        """True when the data's icon rel is an upscale of BB's picture (pipeline/wardrobe_icons_upscale.py, user
+        2026-11-13: bigger than BB's, the same shape and, shrunk to BB's size, BB's picture: verify_ui_icons' comparison
+        with ICON_MAX_DIFF). A bigger picture that is not BB's is reported and BB's own is published instead."""
+        try:
+            with Image.open(self.data / rel) as mine:
+                if mine.size[0] <= bb_im.size[0] or mine.size[1] <= bb_im.size[1]:
+                    return False
+                same_shape = mine.size[0] * bb_im.size[1] == mine.size[1] * bb_im.size[0]
+                diff = max(ImageStat.Stat(ImageChops.difference(
+                    over_black(bb_im), over_black(mine.convert("RGBA").resize(bb_im.size, Image.LANCZOS)))).mean) if same_shape else None
+        except OSError:
+            return False
+        if diff is not None and diff <= ICON_MAX_DIFF:
+            return True
+        self.warnings.append(f"{rel}: the data's upscaled icon is not BB's picture ("
+                             + (f"mean difference {diff:.1f} per channel, limit {ICON_MAX_DIFF}" if same_shape else "another shape")
+                             + "); BB's own picture is published at its game size")
+        return False
+
     def picture(self, rel, bb_file, how):
         """Write stage/rel from BB's file: "texture" = lossy WebP q90 (wardrobe_data.py), "face" = the 256 px face
-        block, lossless, "icon" = lossless WebP. Returns None, or why the BB file could not be used."""
+        block, lossless, "icon" = lossless WebP, or the data's own upscale of it once proven (proven_upscale).
+        Returns None, or why the BB file could not be used."""
         if rel in self._pictures:
             return self._pictures[rel]
         bb_file = self.usable(bb_file)
@@ -691,6 +720,8 @@ class Run:
                     im.convert("RGBA").save(dst, "WEBP", quality=90, method=4)
                 elif how == "face":
                     im.convert("RGBA").crop((0, 0, 256, 256)).save(dst, "WEBP", lossless=True)
+                elif self.proven_upscale(rel, im):
+                    shutil.copy2(self.data / rel, dst)
                 else:
                     im.save(dst, "WEBP", lossless=True)
             why = None

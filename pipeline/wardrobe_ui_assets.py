@@ -9,6 +9,8 @@ the face overlay itself, not the entire texture UV").
 faceBox: the square of the 256 face overlay where that class's faces draw (union of every face's pixels); the page
 crops the overlay webp (data/<class>/faces/<n>.webp, user: "use this for the face icon") to it with object-view-box.
 --faces-only: keep the icons and ui.json, recompute faceBox only.
+The icons are written at the game's size; one already upscaled from the same picture is left alone (run
+wardrobe_icons_upscale.py afterwards for the new ones).
 """
 import json
 import os
@@ -21,6 +23,8 @@ import UnityPy
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from wardrobe_icons_upscale import keep as keep_upscaled   # noqa: E402
 ROOT = os.path.dirname(HERE)
 VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
 ASSETS = os.path.join(VIDEO, "tto_assets", "2026-11-04")
@@ -50,7 +54,9 @@ else:
             continue
         path = os.path.join(OUT, "icons", *sub.split("/")) + ".webp"
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        cont[iid].read().image.save(path, "WEBP", lossless=True)
+        image = cont[iid].read().image
+        if not keep_upscaled(path, image):                  # its upscale stays (wardrobe_icons_upscale.py)
+            image.save(path, "WEBP", lossless=True)
         parts = sub.split("/")
         if parts[0] == "heroes":
             m = re.fullmatch(r"([a-z]+)(\d)", parts[1])
