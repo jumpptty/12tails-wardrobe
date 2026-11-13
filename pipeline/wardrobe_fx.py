@@ -234,6 +234,53 @@ LAYOUTS.update({
                                 "chopper_startDust", "chopper_forwardDust", "chopper_hit", "missileBase", "missile_fire",
                                 "missile_hit", "kaiser_dust", "kaiser_box", "deadEffect")],
 })
+# the Monkey's parts (plans/fx_monkey/parts.md, 2026-11-13; checks/fx_monkey_research/parts/probe_monkey.txt, refs.txt: each
+# instance's bytes are the listed fields exactly); Monkey_earthPulse / Monkey_lavu keep every field private (0 bytes)
+LAYOUTS.update({
+    "Monkey_fireBall": [("mLv", "i")],                # Monkey_fireBall.cs:327 (4 bytes: fireBall1-4 = 1-4; its damage only, :200)
+    # Monkey_runicFlame.cs:239-248 / Monkey_runicSand.cs:261-270 (24 bytes, all zero in the prefab; Init sets them, data only)
+    "Monkey_runicFlame": [("mLife", "f"), ("mOwner", "r"), ("mOwnerChar", "r"), ("isInit", "b")],
+    "Monkey_runicSand": [("mLife", "f"), ("mOwner", "r"), ("mOwnerChar", "r"), ("isInit", "b")],
+    # Rotate (Assembly-UnityScript-firstpass; BB's not decompiled, Reborn's DecompiledSource_Reborn/
+    # Assembly-UnityScript-firstpass/Rotate.cs:7-9, ctor default (10, 15, 19)): 16 bytes; runicFlame_ring/magicRune
+    # (0, 0, 180) false, runicSand_ring/magicRune (0, 0, 120) false (fxparts/rotationcontrol.js)
+    "Rotate": [("speed", "v3"), ("useWorldSpace", "b")],
+    "Monkey_earthPulse": [], "Monkey_lavu": [],
+    # the Phoenix's shots (FIELD_PREFABS phoenix_fireBall, phoenix_skyCrimson_fire; plans/fx_monkey/decisions.md 59;
+    # fxparts/monkey.js moves them): Phoenix_fireBall's one int (4 bytes, as Monkey_fireBall's), Phoenix_skyCrimson_fire's
+    # fields all private (0 bytes)
+    "Phoenix_fireBall": [("mLv", "i")], "Phoenix_skyCrimson_fire": [],
+})
+# the Monkey's summons (Resources characters/elementals/<x>/<x><rank>, EXTRA_FOLDERS; plans/fx_monkey/parts.md part 9):
+# data only (fxparts/elementals.js plays their clips); every public field in declaration order (refs.txt decodes the top
+# ranks with them, byte for byte); the AIs' 8 bytes are the Mole's "s" string ("none")
+R = lambda *ns: [(n, "r") for n in ns]
+LAYOUTS.update({
+    # Buiten.cs:522-552 (52 bytes)
+    "Buiten": [("BuitenType", "i")] + R("mSummoner") + [("isSummon", "b"), ("followDistance", "f")]
+              + R("mSummonerChar", "summonEffect", "buiten_summonFX", "buiten_unsummonFX"),
+    # Gadina.cs:2344-2422 (180 bytes)
+    "Gadina": [("GadinaType", "i"), ("mSwordLv", "i"), ("mShieldLv", "i")]
+              + R(*[f"Gadina_sword{i}" for i in range(1, 5)], *[f"Gadina_shield{i}" for i in range(1, 5)],
+                  *[f"nAttack_hit{i}" for i in range(1, 5)], "nAttack_hitFX", "earthGuard_ring", "planetBreaker1",
+                  "planetBreaker2", "gadina_cry", "mSummoner")
+              + [("isSummon", "b"), ("followDistance", "f")] + R("mSummonerChar", "summonEffect"),
+    # Ja.cs:1319-1349 (56 bytes)
+    "Ja": [("JaType", "i")] + R("mChar", "suicideBomb_hit", "mSummoner") + [("isSummon", "b"), ("followDistance", "f")]
+          + R("mSummonerChar") + [("mSummonLv", "i")] + R("summon_ring"),
+    # Phoenix.cs:2103-2154 (124 bytes)
+    "Phoenix": [("PhoenixType", "i")] + R("mChar", "pheonix_cry", "fireBall", "fireBall_hit", "instantBlaze_ring",
+                                           "skyCrimson_dust", "pheonix_skyCrimsonFX", "skyCrimson_fire", "skyCrimson_hit",
+                                           "mSummoner")
+               + [("isSummon", "b"), ("followDistance", "f")] + R("mSummonerChar")
+               + [("mRapidFireLv", "i"), ("mIntenseFireLv", "i")] + R("summon_ring", "pheonix_unsummon"),
+    # Gaos.cs:2098-2164 (144 bytes; all its effects are also in Resources, gaos/effects/)
+    "Gaos": R("gaos_cry", "footStep_left", "footStep_right", "nAttack1_ring", "nAttack2_ring", "nAttack_hit",
+              "nAttack_hitFX", "tailSpin_ring", "tailSpin_hit", "tailSpin_hitFX", "gaosFire_ring", "gaosFire",
+              "gaosFire_hit", "rampage_ring1", "rampage_ring2", "summon_ring", "unsummon_ring", "dead_ring"),
+    "Gadina_AI": [("AI_state", "s")], "Ja_AI": [("AI_state", "s")], "Phoenix_AI": [("AI_state", "s")],
+    "Gaos_AI": [("AI_state", "s")],                    # *_AI.cs (8 bytes: "none"; Gaos_AI.cs:1626)
+})
 # the scripts whose AudioClip references are written as the clip's name (and the clip exported to sfx/ as any effect's
 # sound, wardrobe/data/<cls>/sfx/<name>.mp3): the summons' own sounds their parts play (2026-11-13, plans/fx_mole/
 # decisions.md 54: AutoGyroGun's nAttack_fx / create_fx, BarrelBot's, KingKaiser's kaiser_createFx ...; fxparts/robots.js)
@@ -241,7 +288,9 @@ LAYOUTS.update({
 # several recordings under one name (create, create_0, create_1; nAttack, nAttack_0 ... _14), so a name says nothing. The
 # sound is named "<script, first letter lower case>_<clip>" (autoGyroGun_create, barrelBot_nAttack,
 # kingKaiser_kaiser_create: two robots' "create" may differ), which the field then holds
-SOUND_REFS = {"AutoGyroGun", "BarrelBot", "KingKaiser"}
+# The Monkey's summons (2026-11-13, plans/fx_monkey/decisions.md 48, skills_b.md Verification 2): phoenix_pheonix_cry,
+# phoenix_phoenix_skyCrimson, phoenix_pheonix_unsummon, gadina_gadina_cry, buiten_buiten_summon ... (fxparts/elementals.js)
+SOUND_REFS = {"AutoGyroGun", "BarrelBot", "KingKaiser", "Phoenix", "Gadina", "Buiten", "Gaos"}
 FIELD_SOUNDS = {}                 # that name -> its AudioClip object (main() writes its samples)
 # prefabs a script holds only in a field (no Resources path of their own), built under the field's name: effect name ->
 # (the holder prefab's Resources container path, its script, the field) (2026-11-13, plans/fx_mole/decisions.md 54,
@@ -251,7 +300,21 @@ FIELD_PREFABS = {"mole": {
     "kaiser_dust": ("gameassets/characters/heroes/mole/mole", "Mole", "kaiser_dust"),
     "kaiser_box": ("gameassets/characters/heroes/mole/mole", "Mole", "kaiser_box"),
     "autoGyroGun_fire": ("gameassets/characters/robots/autogyrogun/autogyrogun4", "AutoGyroGun", "autoGyroGun_fire"),
-}}
+},
+    # the Monkey's summons' effects (2026-11-13, plans/fx_monkey/decisions.md 59, parts.md "Extractor lines", skills_b.md
+    # "Page changes"): script fields of the top-rank summons, named "<summon>_<field>" (three summon_ring, two summonEffect,
+    # the Phoenix's fireBall_hit beside the Monkey's own)
+    "monkey": {
+        **{f"phoenix_{f}": ("gameassets/characters/elementals/phoenix/phoenix4", "Phoenix", f) for f in (
+            "summon_ring", "fireBall", "fireBall_hit", "instantBlaze_ring", "skyCrimson_dust", "skyCrimson_fire",
+            "skyCrimson_hit")},
+        "ja_summon_ring": ("gameassets/characters/elementals/ja/ja4", "Ja", "summon_ring"),
+        "buiten_summonEffect": ("gameassets/characters/elementals/buiten/buiten4", "Buiten", "summonEffect"),
+        **{f"gadina_{f}": ("gameassets/characters/elementals/gadina/gadina4", "Gadina", f) for f in (
+            "summonEffect", "earthGuard_ring", "planetBreaker1", "planetBreaker2")},
+        "gadina_sword4": ("gameassets/characters/elementals/gadina/gadina4", "Gadina", "Gadina_sword4"),
+        "gadina_shield4": ("gameassets/characters/elementals/gadina/gadina4", "Gadina", "Gadina_shield4"),
+    }}
 # the bitmap fonts a script draws with (OnGUI's GUIStyle font), exported when a built effect carries the script:
 # script -> (name, its Resources path) (2026-11-13, plans/fx_mole/decisions.md 55, parts.md part 6 and Interfaces 3: the Time
 # Nuke's countdown, Mole_timeNuke.cs:65 GameGui/Fonts/GMO24) -> fx.json "fonts": {name: {tex, ascent, line, chars: {char:
@@ -271,7 +334,11 @@ SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]
                      "chameleon": ["thunderDragon_ring2", "zeroShot_ring"],
                      # the Mole's (2026-11-13, plans/fx_mole/parts.md part 8, decisions.md 53): BB Cloud1 / Bomb1_a / Smoke1
                      # -> TTO tto_Cloud1 / tto_Bomb1_a / tto_Smoke1, one system each, by the Chameleon's route
-                     "mole": ["bazooka_ring", "napalm_ring", "warCapital"]}
+                     "mole": ["bazooka_ring", "napalm_ring", "warCapital"],
+                     # the Monkey's (2026-11-13, plans/fx_monkey/decisions.md 59, parts.md "Extractor lines"): BB Bomb2 /
+                     # ExplosionRay / Bomb4 -> tto_Bomb2 / tto_ExplosionRay / tto_Bomb4 on the three "Particle System"
+                     # nodes, one match each, by the Chameleon's route
+                     "monkey": ["volcanicEruption"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
@@ -284,17 +351,29 @@ NOT_DRAWN = {"CharacterControl"}
 # (Mole.cs:11902-12031, :12472-12601, :35720-35794)
 EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effects", "gameassets/characters/elementals/manavortex"],
                  "mole": ["gameassets/characters/robots/autogyrogun", "gameassets/characters/robots/barrelbot",
-                          "gameassets/characters/robots/kingkaiser"]}
+                          "gameassets/characters/robots/kingkaiser"],
+                 # the Monkey's summons (2026-11-13, plans/fx_monkey/decisions.md 30, 59): Phoenix4, Ja4, Gadina4, Buiten4, Gaos
+                 # (Monkey.cs:11380-11740, :12207, :12957, :13460, :14595) and the Gaos' own effects
+                 "monkey": [f"gameassets/characters/elementals/{e}" for e in ("phoenix", "ja", "gadina", "buiten", "gaos",
+                                                                               "gaos/effects")]}
 # an effect the page names otherwise than its prefab, because the class's own folder has a prefab of that name too: the
 # name -> its Resources container path, tried before the class's folder (2026-11-13, plans/fx_bat/parts.md Interfaces 6:
 # Guardian of the Night's hits are Shade4's Effects/nAttack_hit, Bat.cs:12606-12619, not the Bat's own nAttack_hit)
 # (2026-11-13, plans/fx_cat/decisions.md 55, skills_a.md part 3: Casino Doom's doom is the Bat's effect, the status look
 # CharacterControl.cs:40491 loads from heroes/bat/effects whoever holds it; one effect, not the whole Bat folder)
 ALIASES = {"bat": {"guardian_hit": "gameassets/characters/elementals/shade4/effects/nattack_hit"},
-           "cat": {"doom": "gameassets/characters/heroes/bat/effects/doom"}}
+           "cat": {"doom": "gameassets/characters/heroes/bat/effects/doom"},
+           # the Gaos' summon / unsummon rings (Gaos.cs:4885, :5106-5164; plans/fx_monkey/decisions.md 30, 59): the
+           # Phoenix's and the Ja's are summon_ring too (FIELD_PREFABS)
+           "monkey": {f"gaos_{n}": f"gameassets/characters/elementals/gaos/effects/{n}" for n in ("summon_ring", "unsummon_ring")}}
 # the same for a sound (rip_wav): the name -> its WAV under the rip's gameassets, without ".wav" (the guardian's swing is
 # Shade4's Sounds/nAttack, Bat_guardianOfTheNight.cs:1047; the Bat's own sounds/nAttack.wav would win by name)
-SOUND_ALIASES = {"bat": {"guardian_nAttack": "characters/elementals/shade4/sounds/nAttack"}}
+# (the Monkey's Lavu cast plays Elementals/Lavu/Sounds/lavu_summon, Monkey.cs:34644-34656; plans/fx_monkey/decisions.md 48)
+# (the Gaos' summon_ring / unsummon_ring play its own sounds/summon_ring, nAttack2_ring: by name alone the rip walk finds
+# the rangerbug's / silverqueenbug's recordings first, checked byte for byte 2026-11-13)
+SOUND_ALIASES = {"bat": {"guardian_nAttack": "characters/elementals/shade4/sounds/nAttack"},
+                 "monkey": {"lavu_summon": "characters/elementals/lavu/sounds/lavu_summon",
+                            **{n: f"characters/elementals/gaos/sounds/{n}" for n in ("summon_ring", "nAttack2_ring")}}}
 SIZES = {"f": 4, "i": 4, "v2": 8, "v3": 12, "c": 16, "q": 16, "r": 8}
 
 
@@ -333,8 +412,18 @@ class Game:
         self.ra = self.files["resources.assets"]
         md = self.files["mainData"]
         rm = next(o for o in md.objects.values() if o.type.name == "ResourceManager").read_typetree()
-        self.container = {k: v for k, v in rm["m_Container"]}
+        # a key listed twice keeps its GameObject (2026-11-13, plans/fx_monkey/decisions.md 59, parts.md "Read this first"
+        # 3: elementals/gaos/gaos, gaos/effects/gaosfire and lavu/lavu are a prefab and the MonoScript of its name), else
+        # the last entry, as before
+        self.container = {}
+        for k, v in rm["m_Container"]:
+            if k not in self.container or not self._is_go(self.container[k], md) or self._is_go(v, md):
+                self.container[k] = v
         self.scripts = {}
+
+    def _is_go(self, pptr, md):
+        o = self.obj(pptr, md)
+        return o is not None and o.type.name == "GameObject"
 
     def obj(self, pptr, base=None):
         """The object a PPtr names, read against the file that holds the reference (fileID 0 = that file; each file
@@ -477,8 +566,15 @@ def effect(game, cls, name, mats, texs, sounds):
     key = ALIASES.get(cls, {}).get(name, f"gameassets/characters/heroes/{cls}/effects/{name.lower()}")
     if key not in game.container:                    # another folder the class's code loads it from (EXTRA_FOLDERS)
         key = next((k for k in (f"{f}/{name.lower()}" for f in EXTRA_FOLDERS.get(cls, [])) if k in game.container), key)
+    own_sound = None
     if key not in game.container and name in FIELD_PREFABS.get(cls, {}):
-        root = field_prefab(game, *FIELD_PREFABS[cls][name])
+        fp = FIELD_PREFABS[cls][name]
+        root = field_prefab(game, *fp)
+        # a prefixed one ("<prefix>_<field>": the Monkey's phoenix_fireBall ...) plays its AudioSources' clips from the
+        # game's bytes as "<prefix>_<clip>" (FIELD_SOUNDS), not a rip WAV by name: the Phoenix's fireBall / fireball_hit
+        # are other recordings than the Monkey's own sounds/fireBall.wav / fireball_hit.wav (2026-11-13, checked here)
+        if name.lower().endswith("_" + fp[2].lower()):
+            own_sound = name[:-len(fp[2]) - 1]
     else:
         root = game.obj(game.container[key], game.files["mainData"])
     nodes, at = [], {}                                # at: (file, GameObject pathID) -> node index (a script's GameObject reference)
@@ -566,6 +662,9 @@ def effect(game, cls, name, mats, texs, sounds):
                 clip = game.obj(t["m_audioClip"], c.assets_file)
                 if clip is not None:
                     sn = clip.read().m_Name
+                    if own_sound:
+                        sn = f"{own_sound}_{sn}"
+                        FIELD_SOUNDS[sn] = clip
                     sounds.add(sn)
                     node["comps"].append({"type": "AudioSource", "clip": sn, "volume": t.get("m_Volume", 1),
                                           "playOnAwake": bool(t.get("m_PlayOnAwake", 1)), "loop": bool(t.get("Loop", 0))})
@@ -790,6 +889,24 @@ def audioclip_file(name):
     return None
 
 
+def container_voice(game, cls, name, folder="voices"):
+    """The hero's voice as BB's own AudioClip in the Resources container (gameassets/characters/heroes/<cls>/voices/<name>),
+    for a voice the rip has no WAV of (2026-11-13, plans/fx_monkey/decisions.md 47, skills_a.md Verification 1: the
+    Monkey's buiten and blazingArrow, the only two in any class); None when the container has no such AudioClip. folder
+    "sounds": the hero's sounds/ (a rip WAV that holds no sound, rip_broken)."""
+    v = game.container.get(f"gameassets/characters/heroes/{cls}/{folder}/{name.lower()}")
+    o = game.obj(v, game.files["mainData"]) if v else None
+    return o if o is not None and o.type.name == "AudioClip" else None
+
+
+def rip_broken(path):
+    """True when a rip's sound file holds no sound: no RIFF / OggS header (2026-11-13, the Monkey's
+    sounds/blazingArrow.wav, the blazingArrow effect's AudioSource: 176,212 bytes of zeros, ffmpeg refuses it; BB's
+    container has the clip)."""
+    with open(path, "rb") as f:
+        return f.read(4) not in (b"RIFF", b"OggS")
+
+
 def hero_sound_wav(cls, name):
     """A "sound" cue's WAV (the hero's code plays it): the class's sounds/ (never its voices/, which share names), else
     anywhere in the rip's Resources outside the characters' folders (2026-11-13, plans/fx_bat/attacks_emotes.md "Parts
@@ -905,8 +1022,27 @@ def main():
     # an effect's own sound and a Sounds/ cue: <name>.mp3 (from sounds/ first); a voice: v_<name>.mp3 from voices/ only
     jobs += [(n, rip_wav(a.cls, n), n) for n in sorted(set(sounds) - set(FIELD_SOUNDS))]
     jobs += [(n, hero_sound_wav(a.cls, n), n) for n in sorted(set(hero_sounds) - sounds)]
-    jobs += [(n, rip_wav(a.cls, n, "voices"), "v_" + n) for n in sorted(set(voices))]
-    for n, src, out_name in jobs:
+    for n in sorted(set(voices)):
+        src = rip_wav(a.cls, n, "voices")
+        clip = None if src else container_voice(game, a.cls, n)
+        if clip is not None:                          # BB's own clip where the rip lost the file (container_voice)
+            k, v = next(iter(clip.read().samples.items()))
+            own.append(os.path.join(sdir, "_v_" + n + os.path.splitext(k)[1]))
+            open(own[-1], "wb").write(v)
+            src = own[-1]
+        jobs.append((n, src, "v_" + n))
+    for i, (n, src, out_name) in enumerate(jobs):
+        if src and src not in own and rip_broken(src):      # the rip's file is empty: BB's own clip from the container
+            clip = next((c for f in (("voices",) if out_name.startswith("v_") else ("sounds", "voices"))
+                         for c in [container_voice(game, a.cls, n, f)] if c is not None), None)
+            print(f"{a.cls}: {src} holds no sound; " + ("BB's container clip used" if clip else "no container clip either"))
+            src = None
+            if clip is not None:
+                k, v = next(iter(clip.read().samples.items()))
+                own.append(os.path.join(sdir, "_" + out_name + os.path.splitext(k)[1]))
+                open(own[-1], "wb").write(v)
+                src = own[-1]
+            jobs[i] = (n, src, out_name)
         if not src:
             missing.append(out_name); continue
         subprocess.run([ff, "-y", "-loglevel", "error", "-i", src, "-ac", "1", "-b:a", "64k", os.path.join(sdir, out_name + ".mp3")], check=True)

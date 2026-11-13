@@ -2010,7 +2010,13 @@ writes decisions.md and splits the builders; office paths are written into it, c
   but not released: researched, not cued).
 - Progress: Monkey research committed (4e8bdb6), Panda research committed (074e4d4; its effect_only found the "&" clip
   filter: HANDOFF, home PC), Rabbit research running; the Mole built, its gates passed (editor + QA sections below),
-  committed and deployed.
+  committed (48d52d6) and deployed (version 9c8368b1, data-afb354ae09; published from a worktree of 48d52d6 plus the
+  other session's live opaque-outfit patch, so its deploy was not undone; the Monkey build was starting in this folder).
+  Rabbit research committed (07546c0; skills_b saved from the journal: its Write was refused, "Subagents should return
+  findings as text", and its checker, which ran before the file existed, was run again on its own). Whale research
+  committed (d7ff8ff; the same for its skills_a). The Monkey built (planner + monkey / elementals / tto_monkey /
+  page_pipeline builders, editor, QA): gates passed, committed and deployed (its section below). The other session
+  committed its opaque change to main itself (1dd61cc), so the Monkey commit needed no index.html split, only NOTES.md.
 - Another session worked in this folder at the same time (reskins; outfits opaque, which touches index.html). Its
   uncommitted files are left to it: the Mole commit stages index.html without its 24 lines (its own worktree's diff
   reversed out of a copy, the copy staged with `git update-index --cacheinfo`) and NOTES.md without its three sections;
@@ -2185,3 +2191,183 @@ ToT's student sheets have alpha (ToT is another client, local only, its shader u
   earlier Cat knight (the shield) and Bat robe (the tie, the buckle). Their painters must paint those parts instead.
 - Deployed from a clean worktree of 074e4d4 (C:\work\12tails-wardrobe-hotfix, branch outfit-opaque), as the last two
   deploys, because the Mole build is editing index.html here: the same edits are in this folder's index.html.
+- **The two new skins repainted with nothing transparent** (user: "paint it, never make them transparent"):
+  `wardrobe_repaint.paint_under(out, M, piece, under)` (new) paints a part as what lies under it (nearest texel, bind
+  pose, |y|). Whale: the chain and coin = the chest under them; the cape's hem net painted over grey like the rest (no
+  holes); the banknotes (one texture shared by every note, so no single "under") = two large touching pearls with a
+  bead-gap shadow. Cat: the wristband = the arm's skin, the top's knot and the braces = the shirt under them. Both
+  painters assert the saved skin is fully opaque. Left as the mesh gives it: the Cat's wristband reads as a skin cuff
+  at the wrist and the knot as two white flaps at the waist (their shapes stand off the body). The Cat knight
+  (wardrobe_knight.py: the shield) and the Bat robe (wardrobe_bat_robe.py: the tie, the buckle and its inner piece)
+  still use alpha: not repainted yet.
+- **The Cat knight's shield painted** (user: "repaint the Cat skin on the online wardrobe too to have the shield color
+  filled in"): the set is live again as a player set (the user re-sent it through the form; Discord message
+  1570624627900678296) and, with outfits opaque, its alpha-hidden shield showed in the champion's old white.
+  wardrobe_knight.py: the shield's two islands joined the plate (the armour's silver, its rim and swirl in the
+  reference's gold; the reference has no shield: invented from its metals); no alpha anywhere, asserted. The new
+  champion.png + Cat_default.png are on the office Desktop, `wardrobe_reupload\cat_knight_face23\12tails_แมว_champion.png`
+  / `12tails_แมว_default.png` (the names the page's drop reads): the user sends them again (face 23) and takes the old
+  message's check mark away; the live list follows Discord within a minute. The Bat robe (tie, buckle) still uses alpha.
+
+## 2026-11-13 (office), the Monkey's effects: built and cued
+
+From plans/fx_monkey/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after four builders (monkey, elementals, tto_monkey, page_pipeline), on the office PC.
+- **Parts (new):** fxparts/monkey.js (the four straight shots Monkey_fireBall 30 m/s / Monkey_earthPulse 15 m/s /
+  Phoenix_fireBall / Phoenix_skyCrimson_fire 16 m/s on the 0.02 s step, no gravity, their hits part-spawned on contact
+  with the standard target body or the floor (Sky Crimson's ball: the floor only); Monkey_lavu: the summon flight, the
+  standby circling the head + 4 m, the 0.25 s trail of its six segments, `lavu: "upheaval"` onto the 6 m ring with
+  `release`, `unsummon`'s 1 s fade; fx:mikeBlink: the worn R prop's copy (nothing worn: noviceMike) on the effect's
+  mount_Summon), rotationcontrol.js + `Rotate` (the runic rings), mesh.js's FX/Lavu line, fxparts/elementals.js (the
+  summons Phoenix, Ja, Gadina, Buiten, Gaos: summon clip + ring, root, their cries, `end` = each one's own unsummon
+  coroutine; options standing, anims, hide, moves, turn, attach, boost (TTO: level 6, the aura, the Buiten x 1.2);
+  the armours fx:phoenixArmor / fx:gadinaArmor / fx:blazingForm_fire with anims and `alpha` on their own material
+  copies; fx.onSingle), fxparts/tto_monkey.js (the two Eric/URP Particles shaders, the Animator's Sigil UV scroll,
+  SunCrownFx, the movers Monkey.SunComet / Monkey.SolarCollapse, MonkeyRow6Rise's quake spikes, RuneGolem's AI ported
+  from RuneGolem.c: rise, roar, walk 3.25 m/s, fist / quake / pound, the aura pulse with tto/stoneAegis on the hero, its
+  glow, CrumbleAway at `end`), shuriken.js's SubModule / NoiseModule (APPROX) / LightsModule (APPROX, pooled lights; no
+  other class's data enables any of the three). index.html (page_pipeline): SEQ / LOWER_RANK (cast1, cast2) /
+  NEVER_PLAYED (damageCast3) / SEQ_SKILL monkey, the step key `@<seq>:<clip>#<step>` (fxStart tries it first), cue
+  option `alt`, PROP_STARTER.monkey, FX_PART_FILES += monkey, elementals, tto_monkey, the cue-format comment.
+  wardrobe_fx.py: the Monkey LAYOUTS + the summons', Game's repeated container key keeps the GameObject, EXTRA_FOLDERS /
+  FIELD_PREFABS (15) / ALIASES (the Gaos rings) / SOUND_REFS (Phoenix, Gadina, Buiten, Gaos) / SOUND_ALIASES
+  (lavu_summon, the Gaos rings' sounds), SHURIKEN_FROM_TTO volcanicEruption, the container voice fallback (buiten,
+  blazingArrow), prefixed field prefabs' own AudioSource names (phoenix_fireBall ...). wardrobe_fx_tto.py: EXTRA_FOLDERS
+  monkey (the elementals' ja / buiten / runegolem folders), SKILL_FX monkey (28), CODE_MOVERS, the Animator's uv curve.
+  Nothing the video repo reads was renamed.
+- **Editor fixes (found by the build and the gate):**
+  - **The rip's Monkey sounds are empty:** all 36 WAVs in `characters/heroes/monkey/sounds/` of BOTH Bible copies
+    (D:\12tails and the Desktop one) are zero-filled (no RIFF header; ffmpeg refused blazingArrow.wav and the build
+    stopped); every other class has 0. wardrobe_fx.py's sound jobs now check the header (`rip_broken`) and take BB's own
+    AudioClip from the Resources container (`container_voice(..., folder)`, sounds/ then voices/), with a printed line
+    per file. The Monkey's sfx/ are BB's container clips: for the user's ear.
+  - **`own.onSingle?.(c)`** (index.html fxDue's `single` branch): the elementals builder's item for page_pipeline was
+    not in the page; without it a reused armour / standing summon kept its first cue's timeline (the form tiles, every
+    loop of a command tile).
+  - wardrobe_fx_check.py: a sequence's cap now adds the time its earlier steps take (`play_time`: the @t holds, else the
+    clip's length): Summon Gaos' 8 s bar put the Gaos' unsummon ring (10 s after the release) past the old cap.
+- **Cues** (wardrobe/fx_cues/monkey.json, 42 keys, 193 cues: 130 fx, 45 voice, 14 sound, 4 hideProp; 97 effect names
+  (cued + builds), 27 TTO; assembled by checks/fx_monkey_build/editor/assemble.py, git-ignored, from
+  attacks_emotes (its blocks with Verification 1's Mike Blink entries), skills_a Verification 8 / skills_b Verification 4
+  (verify/a_fixed.json, b_fixed.json), effect_only block 3, parts Verification's @Lavu:cast3, tto Verification's block).
+  Applied on top: decision 5 (castRing cut 0.1), 7 (@JaAscension:damageCast1 with damageCast1's voice), 15
+  (@Phoenix-Fireball:root new), 30 / 35 (`end` 10 on every skill's own summon: the cast3 pool's Phoenix4 / Ja4 / Gadina4
+  / Buiten4, Summon Gaos' Gaos, Blazing Arrow's Phoenix), 31 (clips -> anims, ring: false -> standing: true), 34
+  (Titanic Earth Pulse's Gadina4 standing, `end` 0, with sword / shield), 36 (the armours' anims), 37 (the form tiles'
+  armour single, kill 10), 38 (Lavu unsummon 10, kill 11), 44 (Fire Rune rolls at the Fireball cast 0.8, Fire Keep 0.8,
+  Fire Avatar 1.5, Earth Form 1.2, Earth Form Attack stage 3 0.8); builds: the Gaos rings, the Phoenix / Buiten unsummon
+  sounds, the Buiten summon sound on Bastion Buiten, fireBall_hit on Fire Avatar - Fireball.
+- **Tiles / icons:** SEQ "Phoenix - Fireball: root*@2.8" (was 2.5: the shot at 0.5 s + about 0.25 s flight + the hit's
+  2 s life); wardrobe_skill_icons.py CLIP_SKILLS / EFFECT_ONLY / OWN_TILE monkey (decision 18); rerun: monkey 42 HD icons
+  for 56 clips (32 new webp; index.json monkey only).
+- **Data:** `wardrobe_fx_tto.py monkey`: 28 TTO effects, 68 materials, 59 textures, 2 sounds; `wardrobe_fx.py monkey`:
+  70 effects, 85 materials, 85 textures, 89 sounds (the three volcanicEruption graft lines and the container-clip lines
+  printed). data/monkey/fx.json 98 effects (8.6 MB, the summons' meshes and clips: now the largest class file), sfx/ 90
+  files, 101 new textures in data/fx/tex: all new files, to commit with the run; the other PC pulls.
+  wardrobe_fx_inventory.py BUILT += the Monkey's shots / Lavu / Rotate / summons (+ their AIs, data only), NOTES
+  volcanicEruption's graft, CLASS_NOTES monkey (the hero fields, the field prefabs); rerun: the Monkey 50 / 51 ready (the 1 left: volcanicEruption's grafted ParticleSystems, drawn).
+- **Judgement calls (mine):** Summon Gaos' instant alternative keeps its castRing cut 0.05 (its step is 0 s, Auto
+  Instant's castTime 0, not the 0.1 s floor of decision 5); Blazing Arrow lists no builds (its Phoenix and ring come
+  with the 24 % roll; the check expects every build on every play; the Phoenix tile's builds put the ring in fx.json);
+  the Phoenix member's builds carry sound:phoenix_pheonix_unsummon and Buiten Hou Hou's sound:buiten_buiten_unsummon
+  (their `end` plays them); the Phoenix - Fireball hold 2.8.
+- **Gate:** files-only (every class with cues) "no problems"; `wardrobe_fx_check.py ... checks/fx_monkey dark --cls
+  monkey` exit 0, errors [], 48 tile plays (Summon Gaos twice: the 8 s bar, the instant one), every expected effect
+  spawned (the four shots' part-made hits, the summons' rings, the Gaos' unsummon ring, the golem's 12 spawns and
+  tto/stoneAegis, the boosted auras); the page and shared parts changed (index.html's onSingle, shuriken.js, mesh.js, rotationcontrol.js, the check, wardrobe_fx.py's sound jobs), so also `--cls wolf,sheep,penguin,bat,bison,cat,chameleon,mole` in one run (checks/fx_monkey_regress): exit 0, errors [], 360 tile plays; unit tests 66 OK, node 9 pass, test_adopt_from_video.ps1 fails 0;
+  `wardrobe_weapon_fx_check.py` OK. Not committed.
+- **Left out:** decision 57's five untraced summon-move cards (Gadina - Normal Attack, Ja - Detonate, Gaos - Fire /
+  Rampage / Tail Spin) and the BB elementals' AIs (a follow-up job for HANDOFF.md); sanctumRaise (not released);
+  volcanicSoul_ring (in neither game); decisions 49-56's camera effects, foe statuses, texts.
+- **For the QA pass:** nothing has been looked at in a screenshot yet: Lavu's flight out of the ground and its circling
+  4 m over the head (the default camera's fit), Upheaval's 6 m ring, the shots' hit points (the 0.02 s steps put them at
+  d 9.97-9.99, not the body's 9.7 front), Sky Crimson's ball from 11.7 m up landing at d 10.2, Instant Blaze's dash to
+  12.8 m, the Gaos 9 m ahead, the Gadina's sword / shield on its hands (and gone with it on Titanic Earth Pulse's `end`
+  0), Mike Blink's flying Mike (bare: noviceMike), Fire Avatar's hidden hero and armour, Blazing Fire's alpha fade, the
+  Eric shaders, the Rune Golem's walk / fists / quake spikes / glow / crumble, Ja Ascension's comet, crown and collapse
+  on the Monkey, the boosted Ja / Buiten auras; the container sounds by ear. Headless first-frame stalls (Ja Ascension's
+  first sample after 0 s at 3.6 s, Phoenix - Fireball's at 2.6 s) want wardrobe_fx_shots.py's virtual clock. Rolled
+  procs the gate does not expect: Fire Rune (12 %), Auto Instant (12 %), Blazing Arrow's Phoenix (24 %), KO's
+  deadEffect. The builders' headless harnesses are in this session's scratchpad (monkey: check/check.mjs; elementals:
+  test_elementals.mjs; tto_monkey: harness/run.mjs).
+- **For the Bible (offer, not written):** decisions.md's last section; also: the rip has no Monkey sounds (zero-filled
+  WAVs; BB's container holds them); the Rune Golem walks at 3.25 m/s (CharacterControl's runSpeed, eased at 4 /s: tto.md's
+  "4 m/s" is the easing rate); the golem's glow is material 1 (tto_runeGolem_glow, legacy Additive); FX_Magic_Circle's
+  scroll binds the Sigil's `glow/line`, whose renderer is off in the game too (no visible scroll).
+- **QA pass (13/11/2026, office).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_monkey_qa/jobs.json from make_jobs.py, 62 jobs, every Monkey tile: Normal Attack; Mike Blink bare (noviceMike),
+  with fireMike (Fire Rune forced on both strikes) and geoMike; HP Transfer, Mike Circle; Fireball (and with Auto Instant
+  + Fire Rune forced); the ten cast3 members, the summons and armours to their unsummon / end (12.3-13.5 s); Lavu to
+  12.4 s (side, front, far); Volcanic Eruption to 11.5 s; Summon Gaos' 8 s bar to 21 s and its instant bar (forced) to
+  12.8 s; Fire Keep; Earth Form Attack (and stage 3's Fire Rune forced); Sentinel Guard; Upheaval to 10.5 s (side, top,
+  far); Instant Cast, Fire / Earth Rune; Fire Avatar - Fireball, Blazing Fire, Phoenix - Fireball; Runic Flame / Sand;
+  the five Summon Attack members, the three Summon Release members, Summon Defense; Blazing Arrow (and its Phoenix forced,
+  to 15.9 s); Titanic Earth Pulse; Flash Fire; the four TTO tiles to their end (Ja Ascension to 15 s and Rune Golem to
+  14.1 s with a far view); sanctumRaise's bare clip tile; KO (dead forced, and as rolled), getUp, run, wave, clap, wai,
+  dance, fishingMonkey, cooking) on the dark and the white stage: 838 shots each. Sheets: checks/fx_monkey_qa/sheets_dark,
+  sheets_white (git-ignored; shots and logs under run/). No page error, no stalled render loop, no failed job (no
+  console line at all on either stage).
+  - What matches (boxes in the hero's frame, +x = her left): Mike Blink's Mike leaving at 0.3 s, at the target by 0.5 s,
+    strikes at (0, 0.9, 9.7) at 0.5 s and (0, 0.9, 10.3) at 0.8 s, the worn piece hidden 0.3-1.0 s (the starter noviceMike
+    flies when nothing is worn); Fire Rune's ring at the hero's feet; HP Transfer's beam (0, 0.6-0.8, 0.9 -> 9.3) with
+    the two Mikes circling the target 0.7-3.85 s; every cast's castRing 0.7-0.8 s, castEffect_fire at 1.1 s, the release
+    at 1.2 s; the Fireball's hit 0.3 s later at the target (the 0.02 s steps put it at d about 10, as the game's discrete
+    trigger would); the Phoenix4 / Ja4 / Gadina4 / Buiten4 2 m ahead from 1.2 s with their rings, standing to 11.2 s, then
+    their own unsummon (the Phoenix's / Ja's ko, the Gadina sinking back into the floor with its sword and shield on its
+    hands, the Buiten's effect), all gone by 12.3-13.5 s; Ground Lock's hit at 1.3 s and Second Stone at 4.3 s at the
+    target; Fire Avatar's hidden hero 1.5-11.5 s with the armour and its two creates, Earth Form's armour from 1.5 s; Lavu
+    bursting up 3 m ahead at 1.2 s, the column climbing to 2 s, its tail out of the floor by 3.3 s; Upheaval's Lavu on the
+    6 m ring round the hero 2.0-3.1 s, released into standby; the Volcanic Eruption field at the target 1.1-11.1 s; the Gaos
+    9 m ahead at 9.1 s (8 s bar) / 1.1 s (instant), its unsummon ring 10 s later; Fire Keep's store 0.8-1.8 s and the
+    shot at 2.2 s; the form tiles' armour already worn (Blazing Fire's fade to 0 over 0.8-1.0 s, back from 2.5 s; Fire
+    Avatar - Fireball's ball at 0.4 s, hit 0.7 s); Phoenix - Fireball's shot at 0.5 s, its hit at 0.8 s; Summon Attack's
+    shot at 0.8 s, hit 1.15 s; Sky Crimson's Phoenix gone 2.3-5.3 s, the ball from (0, 11.7, 5.4) at 3.3 s, bursting on
+    the floor at about (0, 10.2) at 4.2 s; Planet Breaker's two pulses; Instant Blaze's dash from 0.8 s, the Phoenix
+    standing at d about 13 from 1.9 s with its ring riding it; Unsummon's ko, gone 1.3 s; Summon Soul's ring and soul;
+    Blazing Arrow's arrow and, forced, its Phoenix 2 m behind at 4.8 s, unsummoned at 14.8 s; Titanic Earth Pulse's Gadina
+    unsummoned from 0 (gone by 1.5 s), the shot at 5 s and its hit at 5.35 s; Flash Fire's eight bursts; Ascended Ja /
+    Bastion Buiten (the boosted Ja with its aura, the Buiten x 1.2 with its slam and rise); Ja Ascension's standing Ja to
+    0.8 s, the comet arcing onto the head 0.8-1.7 s, the crown to 11.7 s, its rise and dive onto the Monkey and the
+    supernova at 12.5 s; the Rune Golem's circle, rise and burst at 1.4 s, roar, walk to the target, quake spikes, crumble
+    11.4-13.8 s; KO's deadEffect.
+  - Tool: `wardrobe_fx_shots.py` gains the force `seqAlt:<step>=<k>` (window.__seqAlt: Summon Gaos' instant bar).
+  - Looked into, not bugs: the worn Mike seen about 5 m ahead at 1.1 s after Mike Blink is the hero's own piece on its
+    mount, which the nAttack clip flies out and back (the probe checks/fx_monkey_qa/probe/orphan.py: C.props.R at d 4.7
+    at 0.5 s, 5.1 at 1.1 s, back at 2 s; no stray mesh in the scene), as the game's resetMikeBlink puts mWep1 back on
+    its mount; Stone Hammer's box reads 5 m to her right because the box tool takes a skinned mesh's bind-space bounds
+    (the drawn hammer falls on the target's centre: its rings at x 0); ja_summon_ring draws nothing (the prefab is an
+    AudioSource only); the Gaos and the golem fill the front view (they are that big); Lavu out of the default frame
+    3.5-10.8 s: the standby's RotateTowards at 1 rad/s and 8 m/s loops it in the vertical plane up to 28 m and through
+    the floor (Monkey_lavu.cs Update, ported line for line; the game's moving hero tilts that plane); the Titanic Earth
+    Pulse hit's blue dome is 19 m across (the prefab); every one of the 90 sfx files plays a real sound
+    (checks/fx_monkey_qa/probe/loud.py: no silent file, max -0.0 to -12.6 dB, step_normal1 -25 dB as the other classes').
+  - Gates: `wardrobe_fx_check.py ... checks/fx_monkey_qa/gate dark --cls monkey` exit 0, errors [] (48 tile plays); unit
+    tests 66 OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK; index.html LF. No
+    regression run and no fix: the QA changed only the shots tool. Not committed.
+  - For the user's eye: Lavu's vertical loop out of view (and dipping under the floor) for most of its 10 s; the target-
+    point effects and the 9 m Gaos outside / filling the default camera; the container-clip sounds by ear (BB's own, never
+    listened to); the white stage's faint glows; decisions.md's overnight calls and the editor's judgement calls above.
+- **The white-haired one, the user's review** (the rose, the striped sleeve and the midriff strap circled on the
+  reference: "apply these fixes, add these details. And remove the headpiece"; then "details here [the hip cloth]
+  still looks gibberish ... you may invert the pattern from the ref left and right and I think the eye sigil from the
+  ref should align nicely there"; "bat cult need a brighter whiter hair"). (1) **No head piece**: hallowCrown had stood
+  in for her rose (the only small red piece on the head among the five sets' head pieces; a crown on the crown of the
+  head, never repainted: a weak stand-in). The rose is painted flat on the hair before her left ear instead
+  (`ROSE_AT`, `ROSE_R`: the enemy's rose picture laid on the hair texels there; hair islands are not mirrored, the
+  ears are, so not on the ear). (2) **The straps** (front, top to belt; one down the back) are pieces standing off
+  the body sharing one strip of her sheet (x 489-506, y 333-409): the nearest-point borrow never reached them.
+  `Job.lay(dst, box, side)` reads the piece's triangles from the mesh, keeps the front or the back ones, and paints
+  the body texels behind them (nearest in y, z within 3.5 mm). (3) **Arms**: every arm texel of summer has a triangle
+  at +y and one at -y (checked on the mesh), so one sleeve on one arm is impossible: `rose(arms=)` "sleeve" (stripes
+  + cuff on both: the working file), "mix" (stripes to |y| 0.40, lace below), "lace"; `wardrobe_bat_enemies.py arms`
+  -> rose/arms.png (the three side by side) for the user's pick. (4) **Hip cloth**: `borrow(flip=True)` reads the
+  enemy's skirt at the mirror place (her skirt hangs from her left hip, summer's cloth from the right): 0.7 cm median
+  apart (unmirrored: 9-18 cm at the far side, scraps); inset 3 keeps the belt and the red edge. (5) Hair lifted
+  (`HAIR_GAMMA` 0.40): her texture's white reads grey under the page's light.
+- **The straps lengthened; the arms mocked both ways** (user: "make sure the strap reaches the skirt, it ended abruptly";
+  the right arm bare: "forget the right bare arm, it's impossible since it's mirrored ... mock me both bares for
+  comparison"). `Job.lay(to_z=STRAP_TO)`: the straps run down to z 0.90, under the hip cloth's top (the Bat's cloth sits
+  lower than the enemy's belt), their buckle ends kept, the band between stretched. Measured over whole parts (a raster
+  of each side's triangles): summer's arms, hands and legs are 97-99 % shared by both sides, the bracelet is the right
+  wrist's only, the hip cloth and torso are not shared. rose/arms_bare_vs_sleeve.png = A the sleeve on both | B bare on
+  both (her lace glove on the forearm: look/summer_lace.png); the working file is still A until the user picks.

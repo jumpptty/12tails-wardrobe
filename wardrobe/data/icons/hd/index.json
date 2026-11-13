@@ -1102,10 +1102,29 @@
     "blazingArrow"
    ]
   },
+  "blazingFire": {
+   "icon": "icons/hd/monkey/blazingFire.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "buiten": {
+   "icon": "icons/hd/monkey/buiten.webp",
+   "clips": [
+    "buitenBastion"
+   ]
+  },
   "buitenBastion": {
    "icon": "icons/hd/monkey/buitenBastion.webp",
    "clips": [
-    "buitenBastion"
+    "buitenBastion",
+    "sanctumRaise"
+   ]
+  },
+  "buitenHouHou": {
+   "icon": "icons/hd/monkey/buitenHouHou.webp",
+   "clips": [
+    "cast3"
    ]
   },
   "cAttack": {
@@ -1123,16 +1142,112 @@
     "damageCast3"
    ]
   },
+  "earthForm": {
+   "icon": "icons/hd/monkey/earthForm.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "earthGuard": {
+   "icon": "icons/hd/monkey/earthGuard.webp",
+   "clips": [
+    "summonAttack"
+   ]
+  },
+  "earthRune": {
+   "icon": "icons/hd/monkey/earthRune.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "fireAvatar": {
+   "icon": "icons/hd/monkey/fireAvatar.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "fireBall": {
+   "icon": "icons/hd/monkey/fireBall.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "fireKeep": {
+   "icon": "icons/hd/monkey/fireKeep.webp",
+   "clips": [
+    "damageCast2",
+    "root",
+    "cast3"
+   ]
+  },
+  "fireRune": {
+   "icon": "icons/hd/monkey/fireRune.webp",
+   "clips": [
+    "root"
+   ]
+  },
   "flashFire": {
    "icon": "icons/hd/monkey/flashFire.webp",
    "clips": [
     "flashFire"
    ]
   },
+  "gadina": {
+   "icon": "icons/hd/monkey/gadina.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "groundLock": {
+   "icon": "icons/hd/monkey/groundLock.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "instantBlaze": {
+   "icon": "icons/hd/monkey/instantBlaze.webp",
+   "clips": [
+    "summonAttack"
+   ]
+  },
+  "instantCast": {
+   "icon": "icons/hd/monkey/instantCast.webp",
+   "clips": [
+    "root"
+   ]
+  },
+  "ja": {
+   "icon": "icons/hd/monkey/ja.webp",
+   "clips": [
+    "jaAscension",
+    "cast3"
+   ]
+  },
   "jaAscension": {
    "icon": "icons/hd/monkey/jaAscension.webp",
    "clips": [
-    "jaAscension"
+    "jaAscension",
+    "solarCall"
+   ]
+  },
+  "lavu": {
+   "icon": "icons/hd/monkey/lavu.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "mikeBlink": {
+   "icon": "icons/hd/monkey/mikeBlink.webp",
+   "clips": [
+    "nAttack1",
+    "nAttack2"
+   ]
+  },
+  "mikeCircle": {
+   "icon": "icons/hd/monkey/mikeCircle.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
    ]
   },
   "nAttack": {
@@ -1140,6 +1255,56 @@
    "clips": [
     "nAttack1",
     "nAttack2"
+   ]
+  },
+  "phoenix": {
+   "icon": "icons/hd/monkey/phoenix.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "planetBreaker": {
+   "icon": "icons/hd/monkey/planetBreaker.webp",
+   "clips": [
+    "summonAttack"
+   ]
+  },
+  "runeGolem": {
+   "icon": "icons/hd/monkey/runeGolem.webp",
+   "clips": [
+    "golemCall"
+   ]
+  },
+  "runicFlame": {
+   "icon": "icons/hd/monkey/runicFlame.webp",
+   "clips": [
+    "runicCast"
+   ]
+  },
+  "runicSand": {
+   "icon": "icons/hd/monkey/runicSand.webp",
+   "clips": [
+    "runicCast"
+   ]
+  },
+  "skyCrimson": {
+   "icon": "icons/hd/monkey/skyCrimson.webp",
+   "clips": [
+    "summonAttack"
+   ]
+  },
+  "stoneHammer": {
+   "icon": "icons/hd/monkey/stoneHammer.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "stoneSentinel": {
+   "icon": "icons/hd/monkey/stoneSentinel.webp",
+   "clips": [
+    "sentinalGuard1",
+    "sentinalGuard2",
+    "sentinalGuard0"
    ]
   },
   "summonAttack": {
@@ -1154,10 +1319,47 @@
     "summonDefense"
    ]
   },
+  "summonGaos": {
+   "icon": "icons/hd/monkey/summonGaos.webp",
+   "clips": [
+    "damageCast2",
+    "cast3"
+   ]
+  },
   "summonRelease": {
    "icon": "icons/hd/monkey/summonRelease.webp",
    "clips": [
     "summonRelease"
+   ]
+  },
+  "summonSoul": {
+   "icon": "icons/hd/monkey/summonSoul.webp",
+   "clips": [
+    "summonRelease"
+   ]
+  },
+  "titanicEarthPulse": {
+   "icon": "icons/hd/monkey/titanicEarthPulse.webp",
+   "clips": [
+    "earthPulse"
+   ]
+  },
+  "unsummon": {
+   "icon": "icons/hd/monkey/unsummon.webp",
+   "clips": [
+    "summonRelease"
+   ]
+  },
+  "volcanicEruption": {
+   "icon": "icons/hd/monkey/volcanicEruption.webp",
+   "clips": [
+    "cast3"
+   ]
+  },
+  "worldIgnition": {
+   "icon": "icons/hd/monkey/worldIgnition.webp",
+   "clips": [
+    "cast3"
    ]
   }
  },

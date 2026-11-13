@@ -24,4 +24,22 @@ export default function register(api) {
       node.quaternion.copy(fx.uQuat(node.parent).invert().multiply(start).multiply(q));
     } };
   });
+
+  // Rotate (builder "monkey", 2026-11-13; plans/fx_monkey/parts.md part 3, decisions.md 58): an Assembly-UnityScript-
+  // firstpass script, not in BB's decompile; its source is Reborn's, DecompiledSource_Reborn/Assembly-UnityScript-firstpass/
+  // Rotate.cs:7-9 (fields speed (Vector3, degrees a second; ctor default (10, 15, 19), :13), useWorldSpace) and :17-27
+  // (Update: transform.Rotate(speed x dt, useWorldSpace ? Space.World : Space.Self)); BB's 16 bytes match (wardrobe_fx.py
+  // LAYOUTS). The Monkey's runicFlame_ring / runicSand_ring magicRune: (0, 0, 180) / (0, 0, 120), Self: the rune spins flat.
+  // Self: rotation = rotation x Euler(..) (local, as rotationControl's false branch); World: rotation = Euler(..) x rotation
+  // in Unity's world, written under the parent: local = P^-1 x E x P x local (P the parent's world rotation)
+  api.part("Rotate", (fx, node, c) => {
+    const s = Array.isArray(c.speed) ? c.speed : [10, 15, 19];
+    const e = new THREE.Euler(0, 0, 0, "YXZ"), q = new THREE.Quaternion();
+    return { node, update(dt) {
+      q.setFromEuler(e.set(dt * (s[0] || 0) * D, dt * (s[1] || 0) * D, dt * (s[2] || 0) * D, "YXZ"));
+      if (!c.useWorldSpace) { node.quaternion.multiply(q); return; }
+      const p = fx.uQuat(node.parent);
+      node.quaternion.premultiply(p.clone().invert().multiply(q).multiply(p));
+    } };
+  });
 }

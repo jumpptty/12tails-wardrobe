@@ -199,7 +199,29 @@ SKILL_FX = {
         # ArsenalShot@0x1CAF000, RPC_kaiserArsenal_hit@0x1CB0CA0
         "kaiserArsenalPod", "kaiserArsenal_muzzle", "kaiserWarhead", "kaiserArsenal_hit",
     ],
+    # plans/fx_monkey/tto.md section 5 and Verification 3, 7, 9 (decisions.md 60): the released Ja Ascension (both casts),
+    # Buiten Bastion and Rune Golem; the auras and the golem from EXTRA_FOLDERS; every tto/ name a part spawns (the auras,
+    # the golem's effects, stoneAegis) must be here, an entry's "builds" never builds a tto/ name; runeFracture (the
+    # quake's status look on a foe) is built, never cued; sanctumRaise's (not released) left out
+    "monkey": [
+        # Ja Ascension's passive on Ja Hou Hou: TTO1102:Monkey.<RPC_jaAscension_cast>d__315 (pseudo/Monkey.c:10252-10460)
+        "jaAscension_pillar", "jaAscension_launch", "jaAscension_callFx",
+        # Ja Ascension's active (Sun Avatar): RPC_sunAvatar_cast, <RPC_solarCollapse>d__363@0x1D15280 (:17382-17739)
+        "sunAvatar_comet", "sunAvatar_ignite", "solarCrown", "sunAvatar_dive", "jaAscension_supernova",
+        # Buiten Bastion's passive on Buiten Hou Hou (:418-604); Rune Golem: <RPC_runeGolem_cast>d__320 (:16230-16405)
+        "buitenBastion_rise", "buitenBastion_slam", "runeGolem_circle", "runeGolem_stomp",
+        # the boosted summons' auras (elementals/ja/effects, elementals/buiten/effects; tto.md P8)
+        "jaAscension_aura", "buitenBastion_aura",
+        # the golem (elementals/runegolem/RuneGolem: RPC_runeGolem_create) and its 13 effects (elementals/runegolem/effects)
+        "RuneGolem", "runeGolem_rise", "runeGolem_riseBurst", "runeGolem_roar", "runeGolem_auraPulse", "runeGolem_step",
+        "runeGolem_dust", "runeGolem_fistHit", "runeGolem_pound", "runeGolem_quakeCharge", "runeGolem_quake",
+        "runeGolem_crumble", "stoneAegis", "runeFracture",
+    ],
 }
+# a class's effects outside heroes/<cls>/effects/ (Tto tries them after it, in this order; plans/fx_monkey/decisions.md 60,
+# tto.md P1, parts.md T1 and Verification 3): the boosted Ja's / Buiten's auras and the Rune Golem with its effects
+EXTRA_FOLDERS = {"monkey": [f"gameassets/characters/elementals/{f}" for f in ("ja/effects", "buiten/effects", "runegolem",
+                                                                                "runegolem/effects")]}
 # the hero's own sounds/ clips the TTO skills play that BB's rip lacks (Penguin::Row6Sound@0x1DB04B0, Penguin.c:41262:
 # GameAssets/characters/heroes/<cls>/sounds/<name>, PlayOneShot on the hero): TTO's own recordings, read from its bundle
 # (plans/fx_penguin/tto.md "Read this first" 4, part P8) -> wardrobe/data/<cls>/sfx/<name>.mp3, the "sound" cue's file.
@@ -263,6 +285,12 @@ CODE_MOVERS = {
     # Verification 7): from the spawn to its `to` (hero-relative at the spawn, so it works under Apex Hunt's lift) in
     # 0.12 s, a straight lerp, turned along it; Destroy(arrow, 0.3) after the arrival (wardrobe/fxparts/tto_chameleon.js)
     "apexHunt_arrow": "Chameleon.ApexArrow",
+    # TTO1102:Monkey's Sun Avatar (plans/fx_monkey/tto.md P5, P7, decisions.md 60; wardrobe/fxparts/tto_monkey.js): the comet
+    # from the cue's spot on a quadratic Bezier lifted by `rise` to the hero's head (`to`, re-read each frame), s = (3 -
+    # 2u) u^2 over 0.9 s (Monkey.c:20760-20821); the collapse up to `top` over 0.5 s (1 - (1 - 2t)^2), then down to `to`
+    # over `dive` s (u^2) (<RPC_solarCollapse>d__363, Monkey.c:17382-17739)
+    "sunAvatar_comet": "Monkey.SunComet",
+    "sunAvatar_dive": "Monkey.SolarCollapse",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,
@@ -324,15 +352,22 @@ class Tto:
         cat = load_path("aa_catalog", AA_CATALOG).Catalog(os.path.join(assets, "catalog.bin"))
         # folder: another folder of the class's (pipeline/wardrobe_weapon_fx.py: "weapons", BB's weapons in TTO's client)
         base = f"gameassets/characters/heroes/{cls}/{folder or style + 'effects'}/"
-        want = {base + n.lower(): n for n in names}
-        self.iid, deps = {}, set()                  # internal id -> prefab name
+        # then the class's other folders (EXTRA_FOLDERS: the Monkey's elementals), the first folder holding a name wins
+        bases = [base] + ([f + "/" for f in EXTRA_FOLDERS.get(cls, [])] if folder is None and not style else [])
+        want = {b + n.lower(): (i, n) for i, b in enumerate(bases) for n in names}
+        found = {}                                  # prefab name -> (folder index, catalog location)
         for addr, loc in cat.entries():
             if addr in want:
-                self.iid[loc["id"]] = want[addr]
-                deps.update(loc["bundles"])
-        missing = sorted(set(want.values()) - set(self.iid.values()))
+                i, n = want[addr]
+                if n not in found or i < found[n][0]:
+                    found[n] = (i, loc)
+        self.iid, deps = {}, set()                  # internal id -> prefab name
+        for n, (_, loc) in found.items():
+            self.iid[loc["id"]] = n
+            deps.update(loc["bundles"])
+        missing = sorted(set(names) - set(found))
         if missing:
-            raise SystemExit(f"not in TTO's catalog under {base}: {missing}")
+            raise SystemExit(f"not in TTO's catalog under {bases}: {missing}")
         self.env = UnityPy.load(*[os.path.join(assets, "dec", b) for b in sorted(deps)])
         self.sf = {}                                # serialized file name (lower case) -> file, to follow externals
         for f in self.env.files.values():
@@ -341,8 +376,11 @@ class Tto:
         for o in self.env.objects:
             if o.type.name == "AssetBundle":
                 for k, v in o.read_typetree()["m_Container"]:
-                    if k in self.iid:
-                        self.roots[self.iid[k]] = o.assets_file.objects[v["asset"]["m_PathID"]]
+                    # an id listed with more than one asset keeps its GameObject (2026-11-13, plans/fx_monkey/decisions.md
+                    # 60, parts.md T1: the Rune Golem's root; not seen in the 2026-11-09 bundles, tto.md Verification 2)
+                    r = o.assets_file.objects[v["asset"]["m_PathID"]]
+                    if k in self.iid and (self.iid[k] not in self.roots or r.type.name == "GameObject"):
+                        self.roots[self.iid[k]] = r
         self.scripts = {}
 
     def _collect(self, f, key):
@@ -637,6 +675,10 @@ def effect(tto, b, name):
                     entry["enabled"] = False
                 node["comps"].append(entry)
                 continue
+            if ty == "Animator":                   # Mecanim: only its clip's _MainTex_ST curve (animator_uv)
+                node["comps"].append({"type": ty, **animator_uv(tto, name, co, t),
+                                      **({} if t.get("m_Enabled", 1) else {"enabled": False})})
+                continue
             if ty == "Animation":                  # its clips need every node: filled in after the walk (below)
                 anims.append((idx, len(node["comps"]), co, t))
                 node["comps"].append(None)
@@ -751,6 +793,51 @@ def animation(tto, name, nodes, idx, co, t):
     return {"type": "Animation", "clip": do.read_typetree()["m_Name"] if do is not None else None,
             "play": bool(t.get("m_PlayAutomatically", True)), "wrap": int(t.get("m_WrapMode", 0)), "clips": clips,
             **({} if t.get("m_Enabled", 1) else {"enabled": False})}
+
+
+def animator_uv(tto, name, co, t):
+    """An Animator's controller clips, read only for a renderer material's _MainTex_ST (2026-11-13, plans/fx_monkey/
+    decisions.md 60, 63, tto.md section 5, parts.md Verification 11: FX_Magic_Circle on the Sigils, one 2 s clip whose
+    streamed curve scrolls the V offset 0 -> -1): {"uv": {"len": the clip's stop - start, "<x|y|z|w>": [[t, value], ...]}}
+    for each animated component (the constant ones are left to the material), else {}. The binding: typeID 199
+    (ParticleSystemRenderer) with customType 22 (a material property), its attribute's low 28 bits = CRC32("_MainTex_ST")
+    & 0x0FFFFFFF, its top 4 the component; the curves are numbered streamed, then dense, then constant. A streamed frame
+    is [time, key count, per key: curve index, 4 cubic coefficients (the value is the last)] as 32-bit words; the
+    leading -FLT_MAX and the closing +inf frames carry no key of the clip. Dense curves are not read (a warning)."""
+    import struct
+    import zlib
+    ctl = tto.deref(co.assets_file, t.get("m_Controller"))
+    if ctl is None or ctl.type.name != "AnimatorController":
+        return {}
+    st_hash = zlib.crc32(b"_MainTex_ST") & 0x0FFFFFFF
+    ct = ctl.read_typetree()
+    for p in ct.get("m_AnimationClips", []):
+        cl = tto.deref(ctl.assets_file, p)
+        if cl is None:
+            continue
+        tt = cl.read_typetree()
+        mc = tt["m_MuscleClip"]
+        data = mc["m_Clip"]["data"]
+        binds = tt["m_ClipBindingConstant"]["genericBindings"]
+        want = {i: "xyzw"[b["attribute"] >> 28] for i, b in enumerate(binds)
+                if b["customType"] == 22 and b["attribute"] & 0x0FFFFFFF == st_hash}
+        n_stream = data["m_StreamedClip"]["curveCount"]
+        if any(n_stream <= i < n_stream + data["m_DenseClip"]["m_CurveCount"] for i in want):
+            print(f"warning: {name}: {ct['m_Name']}'s dense _MainTex_ST curves are not read", file=sys.stderr)
+        words = data["m_StreamedClip"]["data"]
+        f = lambda w: struct.unpack("<f", struct.pack("<I", w))[0]
+        keys, k = {}, 0
+        while k + 1 < len(words):
+            time, n = f(words[k]), words[k + 1]
+            k += 2
+            for _ in range(n):
+                i, v = words[k], f(words[k + 4])
+                k += 5
+                if i in want and math.isfinite(time) and abs(time) < 1e30:
+                    keys.setdefault(want[i], []).append([num(time), num(v)])
+        if keys:
+            return {"uv": {"len": num(mc["m_StopTime"] - mc["m_StartTime"]), **keys}}
+    return {}
 
 
 def cue_tto(cls):

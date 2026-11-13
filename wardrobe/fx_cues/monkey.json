@@ -1,1 +1,527 @@
-{}
+{
+  "nAttack1": {
+    "why": "Monkey.cs RPC_nAttack1 (:19746-20290), Combo stage 1 (doNormalAttack :10150, no Mike Blink target, no fireKeep status, no form): at 0 the clip with a 0.2 s fade (PlayAnimation(nAttack1, 0.2) :20157; PlayAnimation = CrossFade for a fade > 0, :1133-1160) and the voice nAttack1 (mission / arena, own team: pvoice :20169, mGameType > 4 :20175, mTeam :20181; load :20193, PlayOneShot :20243; then Yield(2, 0.2) :20233); 0.2 s, still attacking (:19864): the hero's PlayOneShot of Sounds/nAttack1 (own hero, or anyone in a mission: :19874-19888; load :19895, PlayOneShot :19907; then Yield(3, 0.2) :20241); 0.4 s the hit, FindRecTarget(position, forward, 1, 1, 7, 2) (:19957): a box 0-7 m ahead, so the 10 m body (nearest point 9.7 m) is not hit and nAttack_hit / Fire Rune / onNormalAttackHit (:20025-20060, only on a hit) draw nothing; Mike (the worn R piece on mount_Summon) flies out about 5 m and back by the clip itself; standby 1.2 s (Yield(4, 0.8) :20229, :20087) unless stage 2 was pressed (its clip at 0.5 s: RPC_nAttack2's Yield(2, actionTime - now + 0.5) :20770, the press window doNormalAttack :9912-9958)",
+    "cues": [
+      [0, "voice", "nAttack1"],
+      [0.2, "sound", "nAttack1"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Monkey.cs RPC_nAttack2 (:20296-20784), Combo stage 2 (doNormalAttack :9942, pressed while attacking with myCommand nAttack1, #101 learned, before stage 1 + 0.5 s :9912-9938): the entry sets attack / nAttack2 (:20753-20756) and waits to stage 1 + 0.5 s (Yield(2, actionTime - Time.time + 0.5) :20770; actionTime is stage 1's); at 0 moveSpeed 0, the clip with a 0.2 s fade (PlayAnimation(nAttack2, 0.2) :20412) and the voice nAttack2 (mission / arena, own team: :20422-20444, load :20452, PlayOneShot :20775; then Yield(3, 0.1) :20764); 0.1 s: the hero's PlayOneShot of Sounds/nAttack2 (own hero, or anyone in a mission: :20488-20500, load :20509, PlayOneShot :20521; then Yield(4, 0.2) :20780); 0.3 s the hit, FindRecTarget(position + 3.5 forward, forward, 1.5, 1.5, 4, 2) (:20571): 3.5-7.5 m ahead, so the 10 m body is not hit (nAttack_hit / Fire Rune only on a hit, :20639-20674); standby 1.1 s (Yield(5, 0.8) :20773, :20701)",
+    "cues": [
+      [0, "voice", "nAttack2"],
+      [0.1, "sound", "nAttack2"]
+    ]
+  },
+  "@MikeBlink:nAttack1": {
+    "why": "Monkey.cs RPC_mikeBlink1 (:35713-36314), Mike Blink #401 (passive): doNormalAttack runs it in place of Combo stage 1 on a locked enemy more than 12 m away in a mission (sqrMagnitude > 144, :10076-10142; shown at the 10 m target point, attacks_emotes Q1); at 0 the clip nAttack1 with a 0.2 s fade (:36205), an old mikeBlink destroyed (:36217-36223), the voice mikeBlink (mission / arena, own team: :36229-36245, load :36253, PlayOneShot :36288; then Yield(2, 0.3) :36304); 0.3 s, still attacking (:35831): the hero's Sounds/nAttack1 (:35841-35874), Effects/mikeBlink at the target's feet (mPos + tDir :35907, tDir = target - hero :10111) with LookRotation(flat tDir) x Euler(270, 90, 0) (:35907), and the worn Mike (mWep1, the page's R; nothing worn: the starter noviceMike, Chameleon decision 50) moved onto its mount_Summon node, localPosition 0, localRotation identity (:35920-35943): fx:mikeBlink's copy of R there, the hand's R hidden with its particles; the effect's Animation (root, 1.1 s) flies it; it lives to stage 2's resetMikeBlink at 0.5 s (:36707, :14015-14058): kill 0.7; then Yield(3, 0.2) :36299. The strike at 0.5 s (FindRecTarget :35995, nAttack_hit d 9.7 y 0.9, Sounds/nAttack_hit, FireRune 12 %) is cued in @MikeBlink:nAttack2 at 0: this step ends at 0.5 (SEQ nAttack1@0.5) and a cue at a step's very end never fires (index.html seqTick :1535 fxDue(S.dur, false), fxDue :5403 skips c.at >= t; attacks_emotes Verification 1)",
+    "cues": [
+      [0, "voice", "mikeBlink"],
+      [0.3, "sound", "nAttack1"],
+      [0.3, "fx", "mikeBlink", {"d": 10, "rot": [270, 90, 0], "kill": 0.7, "slot": "R"}],
+      [0.3, "hideProp", "R", {"kill": 0.7, "all": true}]
+    ]
+  },
+  "@MikeBlink:nAttack2": {
+    "why": "at 0 (= stage 1's 0.5 s, RPC_mikeBlink2's clip at actionTime + 0.5, :36798): stage 1's strike, RPC_mikeBlink1 (:35977-36086): FindRecTarget(target - 3 forward, forward, 1, 1, 4, 2) (:35995: 7-11 m, the 10 m body is hit): RPC_nAttack_hit (:36061) = nAttack_hit at ClosestPointOnBounds(hero + TransformDirection(0, 0.9, 5)) = d 9.7, y 0.9, the hero's rotation (:36051, :10759), the hero's Sounds/nAttack_hit (0.1 s gate, :10773-10798), FireRune (:36086): Fire Rune 3 on, Random.Range(0, 100) < lckAdjust(12) = 12 % at LCK 1 (:12297), fireRune_hit at the hero, identity (:12357); onNormalAttackHit's gear procs left out (cued here, not at 0.5 of nAttack1: a cue at a step's end never fires, Verification 1). Then Monkey.cs RPC_mikeBlink2 (:36370-36811), Mike Blink's second strike (doNormalAttack :9964-10014: pressed while attacking with myCommand mikeBlink1, #101, before stage 1 + 0.5 s): nAttack2 with a 0.2 s fade (:36486), no voice; 0.1 s (Yield(3, 0.1) :36803) the hero's Sounds/nAttack2 (:36510-36543); 0.3 s (Yield(4, 0.2) :36789) the strike, FindAreaTarget(the mikeBlink effect's position, 1, 3) (:36601): nAttack_hit at ClosestPointOnBounds(mikeBlink + TransformDirection(0, 0.9, 5)) = d 10.3, y 0.9 (:36657, :36667, :10759), Sounds/nAttack_hit; FireRune (:36692) 12 % again (the game's 1 s lockout after a proc 0.3 s earlier not modelled: both on 1.4 % of plays, Q6); 0.5 s (Yield(5, 0.2) :36807) resetMikeBlink (:36707; :14015-14058: Mike back on the hero's mount_Summon, the effect destroyed: stage 1's kill); standby 1.1 s (Yield(6, 0.6) :36809, :36726)",
+    "cues": [
+      [0, "fx", "nAttack_hit", {"d": 9.7, "y": 0.9}],
+      [0, "sound", "nAttack_hit"],
+      [0, "fx", "fireRune_hit", {"p": 0.12}],
+      [0.1, "sound", "nAttack2"],
+      [0.3, "fx", "nAttack_hit", {"d": 10.3, "y": 0.9}],
+      [0.3, "sound", "nAttack_hit"],
+      [0.3, "fx", "fireRune_hit", {"p": 0.12}]
+    ]
+  },
+  "cAttack2": {
+    "why": "Monkey.cs RPC_cAttack1 (:20828-21598), HP Transfer (Charge Attack #111-114; doBeginCharge :10414-10537 needs a friendly target, never the Monkey herself :10445-10452: the ally at the 10 m target point, its body 0.6 m up, radius 0.3, Bat decision 4): cAttack1 cut in at 0 (PlayAnimation(cAttack1, 0) :21563), no voice, no sound, no effect, then Yield(2, 0.7) :21594; case 2 at 0.7 s (times from this clip): cAttack2 cut in, looped (:20969-20974); mission / arena (mGameType > 4 :21021, kept as the Sheep / Penguin / Chameleon precedent): the prefab field Monkey_hpTransfer (= effects/hpTransfer, checks/fx_monkey_research/attacks_emotes/probe_fields.txt offset 40: BoltEmitter, Point light, its own looping Sounds/hpTransfer) at position + TransformDirection(0, 0.82, 0.88), identity (:21027), kept there every frame (:21179), its bolt's TargetPosition = the target's collider.bounds.center - forward x 2 x bounds.extents.x (:20996, :21184) = (0, 0.6, 9.4): to; Mike Circle #411 on (passives rule): mikeCircle created by the target (createEffect :21067, CharacterControl.cs:24191-24214) at its bounds.center - 0.15 up = d 10, y 0.45, the hero's rotation x Euler(270, 90, 0) (EffectControl life 99, followPosition on the standing target; its Animation circles the two Mikes, TrailEmitters); neither has an end of its own: Object.Destroy the frame after the release (:21475-21493): kill 3.15 in the 3.2 s step; the ticks every 1 s (hpTransferTimer :20981, :21233-21275: the HP cost and the heal, numbers only, CharacterControl.cs:6058, :7130), Damage Cast's hits every 0.4 s within 2 m of the Monkey (:21299-21373) and Mike Circle's every 0.5 s within 3 m of the ally (:21383-21464) reach no enemy: nothing drawn; the release RPC_cAttack0 (doReleaseCharge :10650-10673; :21836-21865: CrossFade(root, 0.35), standby 0.35 s later) draws nothing",
+    "cues": [
+      [0, "fx", "hpTransfer", {"y": 0.82, "d": 0.88, "to": [0, 0.6, 9.4], "kill": 3.15}],
+      [0, "fx", "mikeCircle", {"d": 10, "y": 0.45, "rot": [270, 90, 0], "kill": 3.15}]
+    ]
+  },
+  "damageCast1": {
+    "why": "Monkey.cs RPC_cast ($RPC_cast$24449 :24676-26292), the cast channel of Fireball, Phoenix, Ja, World Ignition, Ground Lock, Gadina, Stone Hammer, Buiten Hou Hou, Lavu, Fire Avatar, Earth Form, Volcanic Eruption and Summon Gaos (the sType switch :25142-25429, the release switch :25700-26194); with Damage Cast #102/#103 learned (passives on: getDamageCastLv() > 0, Monkey.cs:10820-10823, read at :25122) the channel plays damageCast1 / damageCast2 in place of cast1 / cast2 (:25472-25491, :24845-24864): at 0 actionState attack, myCommand cast (:25435-25445), clip damageCast1 (0.2 fade, Once, :25478, :25492), voice cast (one file, Voices/cast :25537, PlayOneShot :26217); Yield(2, 0.7) (:26208): damageCast2",
+    "cues": [
+      [0, "voice", "cast"]
+    ]
+  },
+  "damageCast2": {
+    "why": "Monkey.cs RPC_cast case 2 at 0.7 s (:24826-25101): damageCast2 (0.2 fade, :24851) looped (:24865), the prefab field castRing (= Resources monkey/effects/castRing; probe: EffectControl life 999, followPosition, followState, its own looping Sounds/castRing) Instantiated at the hero, hero rotation (:24882, InitEffectControl :24892); castTime = now + magAdjust(cast time) (:24989, :25430: the 0.1 s floor at high MAG for every member but Summon Gaos, CharacterControl.cs:20584-20588; the page: no cast bar, the SEQ's damageCast2*~@0); Auto Instant #431 (passives on): Random.Range(0, 100) < lckAdjust(12) = 12 % at the stat-free LCK 1 (:25008-25016, CharacterControl.cs:20658-20670) sets castTime 0 and createEffect(instantCast) at the hero, hero rotation (:25025-25048; probe: life 1, followPosition, its own Sounds/instantCast; the motion blur :25078 left out); the instantCast status (Instant Cast, an active buff) is not on; then each frame (YieldDefault(3) :26204) the Damage Cast hits (every 0.4 s, FindAreaTarget 2 m around the hero :25599-25681: nothing within 2 m of a hero whose target stands 10 m ahead, nothing drawn) and, once Time >= castTime (:25692), the skill's RPC_<skill>_cast (:25700-26194), which sets myCommand to the skill: the ring's followState ends there (EffectControl.cs:110-150 records actionState and myCommand, :190-215 ends the effect when either changes), on the page at the step change (cut 0.1 = the 0.1 s bar's end: fxStart cuts it at that step change; decision 5: magAdjust's 0.1 s floor, every channel step damageCast2*~@0.1)",
+    "cues": [
+      [0, "fx", "castRing", {"cut": 0.1}],
+      [0, "fx", "instantCast", {"p": 0.12}]
+    ]
+  },
+  "cast3": {
+    "why": "cast3 is the release clip of the RPC_cast channel's skills (one RPC_<skill>_cast each, started by the release switch Monkey.cs:25700-26194; TTO1102 has the same 14 players, the <RPC_*_cast> coroutines' cast3 strings); each member below is its own tile (poolChains, with the Cast sequence's steps); Lavu, Volcanic Eruption and Summon Gaos have their own sequences (their hold / bar), Fire Keep plays cast3 from the normal attack with no channel (:10020-10024): their keys @<Skill>:cast3",
+    "skills": {
+      "fireBall": {
+        "why": "Monkey.cs RPC_fireBall_cast (:26315-26750), Fireball rank 4, a target locked (tID != 0: Fire Keep #402's store only for an untargeted cast, :25705-25770): at 0 clip cast3 (0.2 fade, Once, :26633-26636), voice fireBall (Voices/fireBall :26663, PlayOneShot :26707); Yield 0.3 (:26696): the prefab field castEffect_fire (= Resources monkey/effects/castEffect_fire; probe: life 2, its own Sounds/castEffect) Instantiated at the hero + TransformDirection(0, 1, 1), hero rotation (:26461); Yield 0.1 (:26703): RPC_fireBall_fire (:26507-26529, Monkey.cs:11092-11291) from position + (0, 1, 1) toward the target's bounds centre (the 10 m target 0.6 m up: LookRotation(0, -0.4, 9), 2.54 degrees down), Effects/fireBall4 (sLv 4, :11236-11248), ProjectileControl life 2 x rangeMod (:11278); Monkey_fireBall flies 30 m/s along its rotation (Monkey_fireBall.cs:13-51); at the target body (front 9.7 m ahead, 8.71 m of flight = 0.29 s) OnTriggerEnter (Monkey_fireBall.cs:91-200) RPC_fireBall_hit: Effects/fireBall_hit at the contact, hero rotation (:11308-11318; life 2, its own Sounds/fireball_hit); the burn status on the foe left out; Yield 0.4 (:26705): FireRune(), standby at 0.8 s (:26569-26574); verification 4: the Monkey_fireBall part (parts.md part 1) spawns fireBall_hit at the contact with the hero's rotation (Monkey.cs:11318), so it is a build, not a cue; decision 44: Fire Rune 3's FireRune() at the standby (Yield 0.4 :26705) (0.8 s): 12 % (lckAdjust(12) at LCK 1, Monkey.cs:12297), fireRune_hit at the hero, identity (:12357)",
+        "cues": [
+          [0, "voice", "fireBall"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "fireBall4", {"d": 1, "y": 1, "rot": [2.54, 0, 0], "to": [0, 0.6, 10]}],
+          [0.8, "fx", "fireRune_hit", {"p": 0.12}]
+        ],
+        "builds": ["fireBall_hit"]
+      },
+      "phoenix": {
+        "why": "Monkey.cs RPC_phoenix_cast (:26755-27110), Phoenix rank 4: at 0 clip cast3 (0.2 fade, Once, :27025-27028), voice phoenix (:27055, :27098); Yield 0.3 (:27104): castEffect_fire at the hero + (0, 1, 1), hero rotation (:26879); Yield 0.1 (:27094): at 0.4 s RPC_phoenix_create4 (ActionEvent :26939: online the sender's own create runs too, the create codes -211 ... -214 are not gated by isMine, Monkey.cs:5182-5195) at getSpawnPos(position + 2 x forward) (:26914), LookRotation(forward) (Monkey.cs:11345-11759): Fire Soul #422 (passives on): Effects/fireSoul_ring at the hero (:11365-11389; life 1, followPosition, its own Sounds/fireSoul); the previous summon unsummoned (none); Characters/Elementals/Phoenix/Phoenix4 (:11541-11559), Phoenix.summon (:11740; Phoenix.cs:4564-5072: Play(summon) Once, its summon_ring field at its feet, Quaternion.identity, Yield 1, standby: root); no despawn timer (the Bible's infinity chip): cut at 10 s; its AI (Phoenix_AI.cs) left out (open question 4); Yield 0.4 (:27092): standby at 0.8 s (:26966); verification 3: the summon part spawns the Phoenix's summon_ring (Phoenix.cs:4986, parts.md Interfaces 4): a build; decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: Rewind + ko, pheonix_unsummon, gone 1 s later (Phoenix.cs:5261-5306)), no AI (decision 41)",
+        "cues": [
+          [0, "voice", "phoenix"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "fireSoul_ring"],
+          [0.4, "fx", "Phoenix4", {"d": 2, "end": 10}]
+        ],
+        "builds": ["phoenix_summon_ring", "sound:phoenix_pheonix_unsummon"]
+      },
+      "ja": {
+        "why": "Monkey.cs RPC_ja_cast (:28920-29275), Ja rank 4: at 0 clip cast3 (0.2 fade, Once, :29190-29193), voice ja (:29220, :29264); Yield 0.3 (:29262): castEffect_fire at the hero + (0, 1, 1) (:29044); Yield 0.1 (:29270): at 0.4 s RPC_ja_create4 (ActionEvent :29104) at getSpawnPos(position + 2 x forward) (:29079), LookRotation(forward): Characters/Elementals/Ja/Ja4 (Monkey.cs:12049-12061), Ja.summon (:12207; Ja.cs:1702-2049: Play(summon) Once, summon_ring at its feet, Yield 1, standby: root); no despawn timer: cut at 10 s; its AI left out; Yield 0.4 (:29268): standby at 0.8 s (:29131); TTO's Ja Ascension #452 (released) swaps this release for RPC_jaAscension_cast when learned (TTO1102:Monkey.<RPC_cast>d__178::MoveNext@0x1CE8830): open question 9; verification 3: the summon part spawns Ja's summon_ring (Ja.cs:2013): a build; decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: Rewind + ko, gone 1 s later (Ja.cs:2219-2247)), no AI (decision 41)",
+        "cues": [
+          [0, "voice", "ja"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "Ja4", {"d": 2, "end": 10}]
+        ],
+        "builds": ["ja_summon_ring"]
+      },
+      "worldIgnition": {
+        "why": "Monkey.cs RPC_worldIgnition_cast (:29700-30080), World Ignition rank 2: at 0 clip cast3 (0.2 fade, Once, :29993-29996), voice worldIgnition (:30023, :30072); Yield 0.3 (:30065): castEffect_fire at the hero + (0, 1, 1) (:29835); Yield 0.1 (:30061): at 0.4 s the ignite status on the target (getDebuff(60), its explosion after 800 / 1200 damage, :29902-29907): a status on a foe, left out (Chameleon decision 53), and its Effects/worldIgnition explosion (:30309) needs that damage, not in a single play; Yield 0.4 (:30067): standby at 0.8 s (:29934)",
+        "cues": [
+          [0, "voice", "worldIgnition"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}]
+        ]
+      },
+      "groundLock": {
+        "why": "Monkey.cs RPC_groundLock_cast (:30402-30820), Ground Lock rank 4, Second Stone #403 and Aegis of Earth 3 on (passives on): at 0 clip cast3 (0.2 fade, Once, :30736-30739), voice groundLock (:30766, :30801); Yield 0.3 (:30816): castEffect_fire at the hero + (0, 1, 1) (:30537); Yield 0.1 (:30808): at 0.4 s the target locked (groundLock status, getDebuff(3 + 3) :30608-30619, a foe's status: left out), hit (:30625), RPC_groundLock_hit at the target's position (:30633; Monkey.cs:30960-31170): Effects/groundLock_hit there, Quaternion.identity (:31127-31139; life 1, its own Sounds/groundLock); with #403 Yield 3 (:31153-31168): Effects/secondStone at the still-locked target (:31014-31046; life 1, the stone mesh, its own Sounds/secondStone) at 3.4 s, its 0.5 m hit (:31073-31096) draws nothing; Yield 0.4 (:30818): standby at 0.8 s (:30677); the second stone comes in the idle tail",
+        "cues": [
+          [0, "voice", "groundLock"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "groundLock_hit", {"d": 10}],
+          [3.4, "fx", "secondStone", {"d": 10}]
+        ]
+      },
+      "gadina": {
+        "why": "Monkey.cs RPC_gadina_cast (:31217-31570), Gadina rank 4: at 0 clip cast3 (0.2 fade, Once, :31487-31490), voice gadina (:31517, :31555); Yield 0.3 (:31551): castEffect_fire at the hero + (0, 1, 1) (:31341); Yield 0.1 (:31563): at 0.4 s RPC_gadina_create4 (ActionEvent :31401) at getSpawnPos(position + 2 x forward) (:31376), LookRotation(forward) (Monkey.cs:12580-12960): Earth Soul #423 (passives on): Effects/earthSoul_ring at the hero (:12588-12612; life 1, followPosition, its own Sounds/earthSoul); Characters/Elementals/Gadina/Gadina4 (:12770-12782), Gadina.summon (:12957; Gadina.cs:5944-6505: Play(summon) Once, its summonEffect at its feet, Quaternion.identity (:6269), a 4 x 4 + 8 = 24 m hit (:6344-6367, nothing drawn), Gadina4's Yield 1.5 (:6427-6436, :6502), standby: root); no despawn timer: cut at 10 s; its AI left out; Yield 0.4 (:31568): standby at 0.8 s (:31428); verification 2-3: Titan Sword 3 / Aegis of Earth 3 give the Gadina4 sword4 / shield4 on mount_Hand_R / _L (option attach, parts.md Interfaces 3, as skills_b's Gadina4 cues); its summonEffect (Gadina.cs:6269): builds; decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: Rewind, unSummon, gadina_summonEffect at its feet, gone 1.5 s later (Gadina.cs:6717-6804)), no AI (decision 41)",
+        "cues": [
+          [0, "voice", "gadina"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "earthSoul_ring"],
+          [0.4, "fx", "Gadina4", {"d": 2, "attach": [["gadina_sword4", "mount_Hand_R"], ["gadina_shield4", "mount_Hand_L"]], "end": 10}]
+        ],
+        "builds": ["gadina_summonEffect", "gadina_sword4", "gadina_shield4"]
+      },
+      "stoneHammer": {
+        "why": "Monkey.cs RPC_stoneHammer_cast (:32896-33280), Stone Hammer rank 4, Stone Sentinel #443 on (damage and KO only): at 0 clip cast3 (0.2 fade, Once, :33192-33195), voice stoneHammer (:33225, :33265); Yield 0.3 (:33271): castEffect_fire at the hero + (0, 1, 1) (:33031); Yield 0.1 (:33261): at 0.4 s RPC_stoneHammer_fire at the target's position (:33093; Monkey.cs:33400-33560): Effects/stoneHammer there, Quaternion.identity (:33523-33533; life 3, the hammer mesh with its root clip, its own Sounds/stoneHammer), Yield 1 (:33554): the camera shake (:33436) and the hit (:33458-33463) at 1.4 s draw nothing; Yield 0.4 (:33278): standby at 0.8 s (:33133)",
+        "cues": [
+          [0, "voice", "stoneHammer"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "stoneHammer", {"d": 10}]
+        ]
+      },
+      "buitenHouHou": {
+        "why": "Monkey.cs RPC_buiten_cast (:33609-33960; sType buiten, the card Buiten Hou Hou, icon monkey_buitenHouHou4), rank 4: at 0 clip cast3 (0.2 fade, Once, :33879-33882), voice buiten (:33909, :33954); Yield 0.3 (:33956): castEffect_fire at the hero + (0, 1, 1) (:33733); Yield 0.1 (:33948): at 0.4 s RPC_buiten_create4 (ActionEvent :33793) at getSpawnPos(position + 2 x forward) (:33768), LookRotation(forward): Characters/Elementals/Buiten/Buiten4 (Monkey.cs:13327-13339), Buiten.summon (:13460; Buiten.cs:557-816: Play(create) Once, PlayOneShot(buiten_summonFX) (:779), its summonEffect at its feet, its rotation (:791), Yield 1, standby: root); no despawn timer: cut at 10 s; Yield 0.4 (:33942): standby at 0.8 s (:33820); TTO's Buiten Bastion (released) on the same branch: the tto report; verification 3: Buiten.summon's summonEffect (Buiten.cs:791) and its PlayOneShot(buiten_summonFX) (:779; SOUND_REFS += Buiten, the sound named buiten_<AudioClip name>, the rip's only candidate Assets/AudioClip/buiten_summon.wav: the builder confirms the name): builds; the voice buiten is BB's own AudioClip (verification 1); decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: unSummon, buiten_unsummonFX, buiten_summonEffect, gone 1 s later (Buiten.cs:974-1016)), no AI (decision 41); its summon and unsummon sounds the part plays (SOUND_REFS Buiten: buiten_buiten_summon, buiten_buiten_unsummon): builds",
+        "cues": [
+          [0, "voice", "buiten"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.4, "fx", "Buiten4", {"d": 2, "end": 10}]
+        ],
+        "builds": ["buiten_summonEffect", "sound:buiten_buiten_summon", "sound:buiten_buiten_unsummon"]
+      },
+      "fireAvatar": {
+        "why": "Monkey.cs RPC_phoenixArmor_cast (:38208-38700; sType fireAvatar :26057-26063), Fire Avatar (one rank; cast bar 9 s, magAdjust's 0.1 s floor, instant allowed by Auto Instant #431, :25314-25342): at 0 clip cast3 (0.2 fade, Once, :38621), voice sAttack3 (:38651, :38696); Yield 0.3 (:38684): castEffect_fire at the hero + (0, 1, 1) (:38321), the summon unsummoned (none, :38326-38338); Yield 0.4 (:38688): at 0.7 s the fireAvatar status (5, chaAdjust(120), :38371): the hero becomes Elementals and every renderer under him off, the armor's on (CharacterControl.cs status add 'fireAvatar': the page's whole-hero hideProp), Effects/phoenixArmor parented to the hero, local 0 / identity, Play(summon) (:38383-38438; its Animation root / run / nAttack / blazingForm1 / blazingForm2 / summon), phoenixArmor_create at the hero, created twice (:38461 inside the armor branch, :38503 after it; life 1, its own Sounds/fireAvatar_create); Yield 0.8 (:38686): standby at 1.5 s (:38562), from which Monkey.Update crossfades the armor to root looped (:471-523; anims 0.8 s after its spawn); the 120 s form cut at 10 s (the armor and the hide); the motion blur (:38530) left out; verification 5: the armour's clip timeline is parts.md part 8's option anims [[age, clip, fade, wrap]] (Update's CrossFade(root, 0.2) + Loop, Monkey.cs:509, :523); decision 36: the armour part's anims (fxparts/elementals.js fx:phoenixArmor / fx:gadinaArmor); decision 44: Fire Rune 3's FireRune() at the standby (:38557; in the idle tail) (1.5 s): 12 % (lckAdjust(12) at LCK 1, Monkey.cs:12297), fireRune_hit at the hero, identity (:12357)",
+        "cues": [
+          [0, "voice", "sAttack3"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.7, "hideProp", "hero", {"kill": 10}],
+          [0.7, "fx", "phoenixArmor", {"kill": 10, "anims": [[0, "summon", 0, 1], [0.8, "root", 0.2, 2]]}],
+          [0.7, "fx", "phoenixArmor_create"],
+          [0.7, "fx", "phoenixArmor_create"],
+          [1.5, "fx", "fireRune_hit", {"p": 0.12}]
+        ]
+      },
+      "earthForm": {
+        "why": "Monkey.cs RPC_gadinaArmor_cast (:40508-40972; sType earthForm :26083-26089), Earth Form (one rank; 9 s bar, the 0.1 s floor, instant allowed by #431, :25343-25371): at 0 clip cast3 (0.2 fade, Once, :40881), voice sAttack3 (:40911, :40952); Yield 0.3 (:40950): castEffect_fire at the hero + (0, 1, 1) (:40621), the summon unsummoned (none, :40632); Yield 0.4 (:40964): at 0.7 s the earthForm status (5, chaAdjust(120), :40671: Race Elementals, ATK / DEF + 100, no renderer change, CharacterControl.cs status add 'earthForm': the hero stays visible), the camera shake (:40683) left out, Effects/gadinaArmor parented to the hero, local 0 / identity, Play(summon) (:40695-40747; its Animation root / run / summon / nAttack1-3 / cAttack0-2), gadinaArmor_create at the hero (:40758-40770; life 1, followPosition, its own Sounds/earthform_create); Yield 0.5 (:40944): standby at 1.2 s (:40822), from which Monkey.Update crossfades the armor to root looped (:573-587; anims 0.5 s after its spawn); the 120 s form cut at 10 s; verification 5: option anims (CrossFade(root, 0.2) + Loop, Monkey.cs:573, :587); decision 36: the armour part's anims (fxparts/elementals.js fx:phoenixArmor / fx:gadinaArmor); decision 44: Fire Rune 3's FireRune() at the standby (:40817; in the idle tail) (1.2 s): 12 % (lckAdjust(12) at LCK 1, Monkey.cs:12297), fireRune_hit at the hero, identity (:12357)",
+        "cues": [
+          [0, "voice", "sAttack3"],
+          [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+          [0.7, "fx", "gadinaArmor", {"kill": 10, "anims": [[0, "summon", 0, 1], [0.5, "root", 0.2, 2]]}],
+          [0.7, "fx", "gadinaArmor_create"],
+          [1.2, "fx", "fireRune_hit", {"p": 0.12}]
+        ]
+      }
+    }
+  },
+  "@Lavu:cast3": {
+    "why": "Monkey.cs $RPC_lavu_cast (:34445-34870): cast3 with a 0.2 s fade and voice lavu at 0 (:34785, :34815 / :34864); 0.3 castEffect_fire at hero + TransformDirection(0, 1, 1), hero rotation (:34510); 0.4 RPC_lavu_summon (:34550-34561 -> :13876-13915): the lavu serpent at hero + (0, -2, 3), LookRotation(forward) x Euler(-90, 0, 0) (:13899), Monkey_lavu.summon: 10 m/s up for 2 s, then standby round the Monkey's head + 4 m (Monkey_lavu.cs:333-466, :42-58; parts.md part 2); the lavu status chaAdjust(60) s (:34590) cut at 10 s after the summon by its own unsummon (Monkey_lavu.cs:886-930: the 1 s fade, Destroy at 1 s; Bat decision 25; parts.md Verification 6); lavu_ring at hero + 3 forward, identity (:34612-34624); the sound lavu_summon (Elementals/Lavu/Sounds, :34644-34656); decisions 24, 38: fxparts/monkey.js Monkey_lavu flies the game's path and fades at `unsummon` 10 (Monkey_lavu.cs:886-930), the kill 11 after it; the tile's own sequence (decision 9) holds cast3 to its 2.4 s standby (:34677-34740)",
+    "cues": [
+      [0, "voice", "lavu"],
+      [0.3, "fx", "castEffect_fire", {"y": 1, "d": 1}],
+      [0.4, "fx", "lavu", {"y": -2, "d": 3, "rot": [-90, 0, 0], "unsummon": 10, "kill": 11}],
+      [0.4, "fx", "lavu_ring", {"d": 3}],
+      [0.4, "sound", "lavu_summon"]
+    ]
+  },
+  "@VolcanicEruption:cast3": {
+    "why": "Monkey.cs RPC_volcanicEruption_cast (:43326-43870), Volcanic Eruption (one rank; 15 s bar, the 0.1 s floor, instant allowed by #431, :25372-25400); its spot dQs7x5UeNh = the target's position (RPC_cast case 2 :24942-24978; 20 m ahead only without a target): at 0 clip cast3 (0.2 fade, Once, :43766-43771), voice volcanicEruption (:43811, :43863), no castEffect_fire; Yield 0.3 (:43855): Effects/volcanicEruption_ring at the hero, hero rotation (createEffect :43451-43469; life 12, followPosition, followState) and Effects/volcanicEruption at the target, Quaternion.identity (createEffect :43488-43506; probe: life 12 + afterLife 3, its root clip, its looping Sounds/volcanicEruption under AudioControl fade-in 0.5 / middle 11 / fade-out 0.5; a Shuriken system: part P5); the red colour ramp and the shakes (:43531, :43548, :43651) left out; then 22 ticks 0.5 s apart (Yield(3, 0.5) :43861, i < 22 :43836), each a 12 m / 6 m hit (:43584-43633, nothing drawn), the volcano destroyed if the hero leaves the attack (:43665-43673); Yield 0.7 (:43853): standby at 12.0 s (:43698): the field cut at 10 s (kill 10 from 0.3, the ring's followState cut 10.25 inside the SEQ's cast3~@10.3 hold)",
+    "cues": [
+      [0, "voice", "volcanicEruption"],
+      [0.3, "fx", "volcanicEruption_ring", {"cut": 10.25}],
+      [0.3, "fx", "volcanicEruption", {"d": 10, "kill": 10}]
+    ]
+  },
+  "@SummonGaos:damageCast2": {
+    "why": "Monkey.cs RPC_cast case 2 for Summon Gaos (as damageCast2's entry, :24826-25101): the castRing at the hero (:24882) and the bar magAdjust(24) (:25401-25430) = 24 - 512 / 32 = 8 s at the highest MAG (CharacterControl.cs:20584-20588), the SEQ's first alternative damageCast2*~@8 (88 %): the ring's followState cut 7.95; with Auto Instant #431 (canInstantCast kept, :25417-25428) the 12 % roll (lckAdjust(12) at LCK 1, :25008-25016) skips the bar: the second alternative damageCast2*~@0 with instantCast at the hero (:25025-25048) and the ring cut at the step change; each cue plays only in its alternative (the new cue option alt, part P8); decision 9 (the editor's reading of decision 5): alternative 1's step lasts 0 s (Auto Instant's castTime 0, not the 0.1 s floor), so its ring keeps cut 0.05 (written past the 0 s step: it ends 0.05 s into cast3, skills_a Verification 6)",
+    "cues": [
+      [0, "fx", "castRing", {"cut": 7.95, "alt": 0}],
+      [0, "fx", "castRing", {"cut": 0.05, "alt": 1}],
+      [0, "fx", "instantCast", {"alt": 1}]
+    ]
+  },
+  "@SummonGaos:cast3": {
+    "why": "Monkey.cs RPC_summonGaos_cast (:43919-44210), Summon Gaos (one rank): at 0 clip cast3 (0.2 fade, Once, :44178-44181), no voice (none is loaded); Yield 0.3 (:44197): castEffect_fire at the hero + (0, 1, 1) (:44032); Yield 0.1 (:44199): at 0.4 s RPC_summonGaos_create (ActionEvent :44092) at getSpawnPos(position + 9 x forward) (:44067), LookRotation(forward) (Monkey.cs:14370-14600): Fire Soul #422 (passives on) asks Effects/volcanicSoul_ring at the hero (:14375-14399), which is in neither BB's data nor TTO's catalog (probe: KeyError / not in TTO's catalog): 'Cannot find' and nothing drawn; Characters/Elementals/Gaos/Gaos (:14432-14444), Gaos.summon (:14595; Gaos.cs:4690-4926: Play(summon) Once, createEffect(summon_ring) at its feet, its rotation (:4885), Yield 0.8 (a 3 shake, left out), Yield 0.7 (a motion blur, left out), Yield 1.2, standby at 2.7 s: root); no despawn timer: cut at 10 s; Yield 0.4 (:44195): standby at 0.8 s (:44119); decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: Rewind + unsummon, gaos_unsummon_ring, gone 1.5 s later (Gaos.cs:5106-5164)), no AI (decision 41); its summon_ring (Gaos.cs:4885) and unsummon_ring (Gaos.cs:5106-5137) the part spawns (ALIASES elementals/gaos/effects; skills_a Verification 3, the elementals builder): builds",
+    "cues": [
+      [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+      [0.4, "fx", "Gaos", {"d": 9, "end": 10}]
+    ],
+    "builds": ["gaos_summon_ring", "gaos_unsummon_ring"]
+  },
+  "@FireKeep:cast3": {
+    "why": "Fire Keep #402 (passive, Bible 4.x 'fireKeep'): an untargeted Fireball stores a ball (the fireKeep status, Monkey.cs:25705-25748, its 1 s Effects/fireKeep flash at the store, CharacterControl.cs status add 'fireKeep', not on this tile), and the next normal attack releases it in place of the Combo (:10020-10024): Monkey.cs RPC_fireKeep_cast (:36855-37225) at the stored level 4: at 0 LookAt the target, clip cast3 (0.2 fade, Once, :37179-37185), no voice; Yield 0.3 (:37220): castEffect_fire at the hero + (0, 1, 1) (:37012); Yield 0.1 (:37209): RPC_fireBall_fire from position + (0, 1, 1) toward the target's bounds centre (:37047-37087): fireBall4 and its hit as the Fireball tile's; Yield 0.4 (:37216): standby at 0.8 s (:37132); the status decrement (:10039-10055) draws nothing; verification 4: fireBall_hit is the part's (a build); verification 7: the store comes first on this tile (@FireKeep:root); decision 44: Fire Rune 3's FireRune() at the release's standby (:37127) (0.8 s): 12 % (lckAdjust(12) at LCK 1, Monkey.cs:12297), fireRune_hit at the hero, identity (:12357)",
+    "cues": [
+      [0.3, "fx", "castEffect_fire", {"d": 1, "y": 1}],
+      [0.4, "fx", "fireBall4", {"d": 1, "y": 1, "rot": [2.54, 0, 0], "to": [0, 0.6, 10]}],
+      [0.8, "fx", "fireRune_hit", {"p": 0.12}]
+    ],
+    "builds": ["fireBall_hit"]
+  },
+  "blazingArrow": {
+    "why": "Monkey.cs RPC_blazingArrow (:27560-27985), Blazing Arrow #234 (one rank): at 0 actionState attack (:27860-27869), clip blazingArrow (0.2 fade, Once, :27881-27884), voice blazingArrow (Voices/blazingArrow :27917, PlayOneShot :27929): in BB's own data (the Resources container's voices/blazingarrow AudioClip, 245,554-byte WAV; only the rip lacks the file: checks/fx_monkey_research/verify/voiceclip.py, ripgap.txt): BB's recording (verification 1); the current summon unsummoned (none, :27942-27954); Yield 1 (:27976): Effects/blazingArrow at the hero, hero rotation (Instantiate :27697-27715; probe: life 4, the arrow mesh's 4 s root clip, AlphaTimer, trail, its own Sounds/blazingArrow), the zoom blur (:27750) left out; Yield 2 (:27972): at 3.0 s blazingArrow_fire (:27777; Monkey.cs:28015-28355): 12 hits 0.15 s apart, 3.5 m circles at 3 i + 2 m ahead (:28133-28215, Yield 0.15 :28305; damage and the foe's burn only); after the 12th, at 3.0 + 12 x 0.15 = 4.8 s, with no summon out: Random.Range(0, 100) < lckAdjust(24) = 24 % at LCK 1 (:28265-28271, CharacterControl.cs:20658-20670): RPC_phoenix_create4 at getSpawnPos(position - 2 x forward), LookRotation(forward) (:28277-28288; the create as the Phoenix tile's: Fire Soul's fireSoul_ring at the hero, Phoenix4), cut at 10 s: in the idle tail; Yield 0.8 (:27974): standby at 3.8 s (:27825); the Phoenix's summon_ring is the summon part's (a build, verification 3); decision 30: `end` 10 = the summon's own unsummon coroutine 10 s after its spawn (fxparts/elementals.js: Rewind + ko, pheonix_unsummon, gone 1 s later (Phoenix.cs:5261-5306)), no AI (decision 41); decision 35: the Phoenix's summon ring comes with its 24 % roll, so it is not in this entry's builds (the check expects every build on every play; the Phoenix tile's builds bring it into fx.json)",
+    "cues": [
+      [0, "voice", "blazingArrow"],
+      [1, "fx", "blazingArrow"],
+      [4.8, "fx", "fireSoul_ring", {"p": 0.24, "roll": "blazingPhoenix"}],
+      [4.8, "fx", "Phoenix4", {"d": -2, "p": 0.24, "roll": "blazingPhoenix", "end": 10}]
+    ]
+  },
+  "flashFire": {
+    "why": "Monkey.cs RPC_flashFire (:28360-28915), Flash Fire rank 4: at 0 actionState attack (:28726-28735), clip flashFire (0.2 fade, Once, :28747-28750), voice flashFire (:28783, :28795) and Effects/flashFire_ring at the hero, hero rotation (createEffect :28808-28824; probe: life 4, followPosition, followState, its own Sounds/flashFire); Yield 0.3 (:28859): the motion blur (:28518) left out; then while i < sLv x 2 = 8 (:28716), Yield 0.3 (:28854) and a burst: Effects/flashFire at the hero, hero rotation (createEffect :28550-28568; life 1), its 5 m hit (:28593-28632, nothing drawn): at 0.6, 0.9, ... 2.7 s; Yield 0.2 (:28856): standby at 2.9 s (:28652-28674): the ring's followState cut 2.9 (inside the 3.2 s clip)",
+    "cues": [
+      [0, "voice", "flashFire"],
+      [0, "fx", "flashFire_ring", {"cut": 2.9}],
+      [0.6, "fx", "flashFire"],
+      [0.9, "fx", "flashFire"],
+      [1.2, "fx", "flashFire"],
+      [1.5, "fx", "flashFire"],
+      [1.8, "fx", "flashFire"],
+      [2.1, "fx", "flashFire"],
+      [2.4, "fx", "flashFire"],
+      [2.7, "fx", "flashFire"]
+    ]
+  },
+  "earthPulse": {
+    "why": "Monkey.cs RPC_earthPulse (:32100-32593), Titanic Earth Pulse #334 (one rank; needs a Gadina4 and spends it, the Bible's 2.3): at 0 actionState attack, myCommand earthPulse (:32370-32379), clip earthPulse (0.2 fade, Once, :32391-32394), noForce 7 s (:32403, nothing drawn), voice unsummon (:32430, :32442), the Gadina unsummoned (its HP kept for the damage, :32455-32492; not on the page: open question 7), Effects/earthPulse_ring at the hero, hero rotation (createEffect :32495-32511; probe: life 7 + afterLife 1, followPosition, followState, the earth beam mesh with the Gadina shield / sword, its own Sounds/earthPulse_fire); Yield 4 (:32558): at 4.0 s voice earthPulse (:32222, :32553); Yield 1 (:32545): at 5.0 s RPC_earthPulse_fire from position + TransformDirection(0, 1, 5), LookRotation(forward) (:32272-32277; Monkey.cs:13090-13115: Effects/earthPulse, ProjectileControl life 3), Monkey_earthPulse flies 15 m/s along it (Monkey_earthPulse.cs:13-63), at the target body (front 9.7 m ahead: 4.7 m = 0.31 s) OnTriggerEnter (:91-194) RPC_earthPulse_hit at the contact (Monkey.cs:32598-32855): Effects/earthPulse_hit there, Euler(270, 90, 0) (:32806-32818; life 3, its own Sounds/earthPulse_hit), five growing hits 0.2 s apart (:32704-32762, nothing drawn), shakes and the motion blur (:32308, :32847) left out; Yield 2.5 (:32556): standby at 7.5 s (:32335): the ring's followState cut 7.5; verification 4: the Monkey_earthPulse part (parts.md part 1) spawns earthPulse_hit at the contact (about 5.31 s) with the world rotation Euler(270, 90, 0) (Monkey.cs:32818; not lookEuler(vel)): a build; decision 34: the Gadina4 it needs stands 2 m ahead from the tile's start (getSpawnPos(hero + 2 forward), standing) with Titan Sword 3 / Aegis of Earth 3's sword4 / shield4 (decision 32) and is unsummoned at 0 (the code SendMessages unsummon, Monkey.cs:32489: end 0, its unSummon and gadina_summonEffect, gone 1.5 s later)",
+    "cues": [
+      [0, "fx", "Gadina4", {"d": 2, "standing": true, "end": 0, "attach": [["gadina_sword4", "mount_Hand_R"], ["gadina_shield4", "mount_Hand_L"]]}],
+      [0, "voice", "unsummon"],
+      [0, "fx", "earthPulse_ring", {"cut": 7.5}],
+      [4, "voice", "earthPulse"],
+      [5, "fx", "earthPulse", {"d": 5, "y": 1, "to": [0, 1, 9.7]}]
+    ],
+    "builds": ["earthPulse_hit", "gadina_summonEffect", "gadina_sword4", "gadina_shield4"]
+  },
+  "@FireKeep:root": {
+    "why": "Fire Keep #402's store (verification 7): an untargeted Fireball at the bar's end (RPC_cast's release switch, Monkey.cs:25705-25750: hasSkill(402), tID 0) adds the fireKeep status (RPC_AddStatus :25735 / :25743) and calls RPC_cast0 (:11056-11075: standby, no clip: the page's root~), the status add creating Effects/fireKeep at the hero, identity (CharacterControl.cs:38118-38131; probe: EffectControl life 1, followPosition, its own AudioSource instantCast); the tile's 1 s root step is the flash's life, then the next normal attack's release (@FireKeep:cast3)",
+    "cues": [
+      [0, "fx", "fireKeep"]
+    ]
+  },
+  "runicCast": {
+    "why": "The runicCast clip: Runic Flame (RPC_runicFlame, PlayAnimation(\"runicCast\", 0.1) Monkey.cs:29583; dispatcher mnk_runicFlame1 :7986-8005) and Runic Sand (RPC_runicSand :34271; mnk_runicSand1 :8329-8348), one per play, even chance, picked anew on every play (one tile each, poolChains); each puts its status ring on the Monkey at 0.3 s and stands by at 0.6 s; the trail segments (runicFlame / runicSand) drop only while he moves (RunicFlame / RunicSand every 0.2 s, a segment once he is 1.58 m from the last, sqrMagnitude >= 2.5, :12384-12441, :13668-13707): the hero does not travel (plans/fx_bison/decisions.md 17), so none; the camera's motion blur (:29489, :34177) is left out",
+    "skills": {
+      "runicFlame": {
+        "why": "Monkey.cs RPC_runicFlame (:29301-29670), rank 1: clip runicCast, 0.1 s fade (:29583), voice runicFlame (load :29619, PlayOneShot :29664) at 0; Yield 0.3 (:29658): RPC_AddStatus(\"runicFlame\", 1, FloorToInt(0.2 sp)) (:29442; SP then 0, :29463) -> CharacterControl's addStatus removes runicSand (:37851) and creates runicFlame_ring at the Monkey, Quaternion.identity, parented to him (:37854-37879); no EffectControl: it lives while the status does (destroyed at its end, CharacterControl.cs:17101-17115): FloorToInt(0.2 SP) s, 20 s at SP 100: cut at 10 s (kill 10, the 10 s rule); its magicRune spins by Rotate (0, 0, 180) deg/s, it loops its own Sounds/runicFlame and plays runicCast once (checks/fx_monkey_research/skills_b/probe2.json); Yield 0.3 (:29656): standby 0.6 s (:29510)",
+        "cues": [
+          [0, "voice", "runicFlame"],
+          [0.3, "fx", "runicFlame_ring", {"kill": 10}]
+        ]
+      },
+      "runicSand": {
+        "why": "Monkey.cs RPC_runicSand (:33989-34360), rank 1: clip runicCast, 0.1 s fade (:34271); its voice: BB loads Voices/runicSand (:34307), which BB does not have (none in the rip's monkey/voices; Debug.LogError \"Cannot find runicSand voice\" :34322): silent in BB; TTO plays Sounds/runicSand in its place (TTO1102 Monkey.<RPC_runicSand>d__219, pseudo/Monkey.c:16770-16830): TTO's fix (plans/fx_sheep/decisions.md 10), a \"sound\" cue at 0 (PlayOneShot :34345); Yield 0.3 (:34352): RPC_AddStatus(\"runicSand\", 1, FloorToInt(0.2 sp)) (:34130; SP then 0 :34151) -> addStatus removes runicFlame (CharacterControl.cs:38063) and creates runicSand_ring at the Monkey, identity, parented to him (:38066-38091), destroyed with the status (:17184-17198): cut at 10 s (kill 10); magicRune spins by Rotate (0, 0, 120) deg/s, its own looping Sounds/runicSand and a one-shot runicCast (probe2.json); Yield 0.3 (:34350): standby 0.6 s (:34198)",
+        "cues": [
+          [0, "sound", "runicSand"],
+          [0.3, "fx", "runicSand_ring", {"kill": 10}]
+        ]
+      }
+    }
+  },
+  "upheaval": {
+    "why": "Monkey.cs RPC_upheaval (:34904-35455), Lavu's Upheaval: the attack button held with Lavu summoned (dispatcher :10358-10406; released -> RPC_upheaval0 :10681-10698); clip upheaval, 0.2 s fade, wrapMode Loop (:35322-35325), voice upheaval (load :35358, PlayOneShot :35370) and upheaval_ring createEffect at the Monkey, identity (:35389-35401; EffectControl 3 + 1 s, followPosition + followState: cut when his command changes at the release; its own Sounds/lavu_flyby) at 0; Lavu SendMessage(\"upheaval\") (:35430): Monkey_lavu.upheaval (Monkey_lavu.cs:580-686) Slerps the snake over 3 s onto a 6 m circle round the Monkey, one lap per 3 s, bobbing Sin(4t) m (:632-662), back to standby (4 m above him, :48-58) when his command changes (:672); every FixedUpdate (Yield WaitForFixedUpdate :35452): the first wave 2 s in (mUpheavalTimer = now + 2 :35421), then every 0.5 s (:35147-35153): upheaval Instantiated at the Monkey, identity (:35164-35176; EffectControl 2 s, its own Sounds/lavu_upheaval), 1 SP each with Revised Skill #404 (passives on, :35196), RPC_AddDamage on every enemy within 12 m (:35201-35240: the 10 m target, no effect drawn), camera shake (:35258, left out); Damage Cast's 2 m hits every 0.4 s (:35056-35133) miss the 10 m target; it runs until the button is released (or SP <= 1, :35265-35286): three waves, 2.0 / 2.5 / 3.0 s, then the release at 3.1 s (the channel-until-release rule, SEQ comment: three hits), RPC_upheaval0: PlayAnimation(\"root\", 0.35) (:35674), standby 0.35 s later (:35634, Yield :35685); Lavu: the summon shown already in the air at its standby height (y 4), cut at 10 s (the summon rule, plans/fx_mole/decisions.md 32, 37)",
+    "cues": [
+      [0, "voice", "upheaval"],
+      [0, "fx", "upheaval_ring", {"cut": 3.1}],
+      [0, "fx", "lavu", {"y": 4, "kill": 10, "single": true, "lavu": "upheaval", "release": 3.1}],
+      [2.0, "fx", "upheaval"],
+      [2.5, "fx", "upheaval"],
+      [3.0, "fx", "upheaval"]
+    ]
+  },
+  "summonAttack": {
+    "why": "The summonAttack clip: Summon Attack (RPC_summonAttack, PlayAnimation(\"summonAttack\", 0.2) Monkey.cs:22330), Sky Crimson (RPC_skyCrimson :27439), Planet Breaker (RPC_planetBreaker :31900), Instant Blaze (RPC_instantBlaze :37613), Earth Guard (RPC_earthGuard :38068) (pipeline/clip_calls.js), one per play, even chance, picked anew on every play (one tile each, poolChains); each command needs its summon (dispatcher :7546-7575, :7778-7796, :8108-8126, :8376-8421, :8427-8470): the summon stands already summoned on the floor 2 m ahead, facing forward (getSpawnPos(hero + 2 forward), phoenix_cast / gadina_cast), Phoenix 4 or Gadina 4 (max rank), cut at 10 s (plans/fx_mole/decisions.md 32, 37); every one: voice (or none) at 0, the order to the summon at 0.3 s (Yield 0.3), standby 0.6 s (Yield 0.3); the Earth Form's three normal attacks play this clip too: their own sequence, Earth Form Attack (\"@EarthFormAttack:summonAttack#<step>\")",
+    "skills": {
+      "summonAttack": {
+        "why": "Monkey.cs RPC_summonAttack (:21893-22432), Summon Attack (#121): target locked (:7556; the 10 m target), clip, 0.2 s fade (:22330), voice summonAttack (load :22366, PlayOneShot :22415) at 0; Yield 0.3 (:22417): Phoenix.RPC_summonAttack (:22087): hate list cleared, 1200 hate on the target, AI_setTimer(3) (Phoenix.cs:1890-1926): straight into the attack window, no select or idle (12t_reference/monkey-skill-reference.md 4.5): RPC_nAttack at once: CrossFade(\"nAttack\") (:2594) and pheonix_cry (:2612), the fireball 0.5 s in (actionTime + 0.5 :2354) from the Phoenix + (0, 2.4, 1) (Phoenix4 :2425) toward the target's bounds centre (:2461; 10 m ahead 0.6 m up: rot [14.42, 0, 0], calc.txt), RPC_fireball_fire (:2475), standby 0.3 s later (:2634): the shot at 0.8 s; Phoenix_fireBall 30 m/s (Phoenix_fireBall.cs:26) meets the target's body at (0, 0.675, 9.709) 0.231 s later as fireBall_hit (calc.txt; the part spawns it: builds); the Phoenix's later AI shots are left out (plans/fx_mole/decisions.md 32's AI rule: the command's own shot only, question 2); Yield 0.3 (:22426): standby 0.6 s (:22247); verification 2: the summon part's cries / move sounds (SOUND_REFS, named <script lower-first>_<AudioClip name>, wardrobe_fx.py:237-244): builds",
+        "builds": ["phoenix_fireBall_hit", "sound:phoenix_pheonix_cry"],
+        "cues": [
+          [0, "voice", "summonAttack"],
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "anims": [[0, "root", 0, 2], [0.3, "nAttack", 0.3, 1], [1.1, "root", 0.2, 2]], "standing": true}],
+          [0.8, "fx", "phoenix_fireBall", {"d": 3, "y": 2.4, "rot": [14.42, 0, 0], "to": [0, 0.6, 10]}]
+        ]
+      },
+      "skyCrimson": {
+        "why": "Monkey.cs RPC_skyCrimson (:27138-27527), Sky Crimson (#224): needs Phoenix4 (:7790, :27294); clip, 0.2 s fade (:27439), voice skyCrimson (load :27475, PlayOneShot :27523) at 0; Yield 0.3 (:27517): Phoenix.RPC_skyCrimson (:27342; Phoenix.cs:3360-3994), times from its start (+0.3): CrossFade(\"skyCrimson1\", 0.2) (:3908), pheonix_cry (:3932), skyCrimson_dust at the Phoenix, its rotation (:3942) at 0.3; Yield 2 (:3971): every renderer off (:3507-3529; the colour ramp :3572 left out) at 2.3; Yield 1 (:3992): at 3.3 one skyCrimson_fire per enemy within 24 m (:3622): fireDir = (target centre - Phoenix - 20 up).normalized, firePos = target centre - 12 fireDir (:3645-3655) = (0, 11.694, 5.425), rot [67.59, 0, 0] (calc.txt), and its sound phoenix_skyCrimson (:3696); ProjectileControl life 2 (:1813-1822), Phoenix_skyCrimson_fire 16 m/s (Phoenix_skyCrimson_fire.cs:28, :53) bursting only on layer 0, the floor (:143-179: it passes the target): skyCrimson_hit, identity (Phoenix.cs:1856) at (0, 0, 10.247) 0.791 s later, 4.09 s (calc.txt; builds); Yield 2 (:3979): skyCrimson2 and the renderers back (:3723-3751) at 5.3; Yield 0.5 (:3977): skyCrimson_dust again (:3795) and a 300 HP heal at 5.8; Yield 0.5 (:3983): standby 6.3 (:3838); the Monkey: Yield 0.3 (:27521), standby 0.6 s (:27383); verification 2: the summon part's cries / move sounds (SOUND_REFS, named <script lower-first>_<AudioClip name>, wardrobe_fx.py:237-244): builds",
+        "builds": ["phoenix_skyCrimson_hit", "sound:phoenix_pheonix_cry", "sound:phoenix_phoenix_skyCrimson"],
+        "cues": [
+          [0, "voice", "skyCrimson"],
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "hide": [2.3, 5.3], "anims": [[0, "root", 0, 2], [0.3, "skyCrimson1", 0.2, 1], [5.3, "skyCrimson2", 0, 1], [6.3, "root", 0.2, 2]], "standing": true}],
+          [0.3, "fx", "phoenix_skyCrimson_dust", {"d": 2}],
+          [3.3, "fx", "phoenix_skyCrimson_fire", {"d": 5.425, "y": 11.694, "rot": [67.59, 0, 0]}],
+          [5.8, "fx", "phoenix_skyCrimson_dust", {"d": 2}]
+        ]
+      },
+      "planetBreaker": {
+        "why": "Monkey.cs RPC_planetBreaker (:31599-32020), Planet Breaker (#324): needs Gadina4 (:8120, :31755); clip, 0.2 s fade (:31900), voice planetBreaker (load :31936) and planetBreaker_ring createEffect at the Monkey, identity (:31967-31977) at 0; Yield 0.3 (:32005): Gadina.RPC_planetBreaker (:31803; Gadina.cs:5403-5884), times from its start (+0.3): CrossFade(\"planetBreak\") (:5817), planetBreaker1 at the Gadina, its rotation (:5843; followPosition), gadina_cry (:5857) at 0.3; Yield 0.8 (:5883): planetBreaker2 (:5545; AlphaTimer, its own Sounds/gadina_planetBreaker) at 1.1; three pulses 0.3 s apart (i < 3 :5864, Yield :5875) at 1.4 / 1.7 / 2.0: inside 5 m nAttack_hit on a hit (:5589-5664), 5-12 m a flat hit with no effect (:5675-5698): the target 8 m from the Gadina is in the outer ring: nothing drawn; Yield 0.6 (:5870): standby 2.6 (:5735); the Monkey: Yield 0.3 (:32014), standby 0.6 s (:31844); verification 2: the summon part's cries / move sounds (SOUND_REFS, named <script lower-first>_<AudioClip name>, wardrobe_fx.py:237-244): builds",
+        "builds": ["gadina_sword4", "gadina_shield4", "sound:gadina_gadina_cry"],
+        "cues": [
+          [0, "voice", "planetBreaker"],
+          [0, "fx", "planetBreaker_ring"],
+          [0, "fx", "Gadina4", {"d": 2, "single": true, "kill": 10, "attach": [["gadina_sword4", "mount_Hand_R"], ["gadina_shield4", "mount_Hand_L"]], "anims": [[0, "root", 0, 2], [0.3, "planetBreak", 0.3, 1], [2.6, "root", 0.2, 2]], "standing": true}],
+          [0.3, "fx", "gadina_planetBreaker1", {"d": 2}],
+          [1.1, "fx", "gadina_planetBreaker2", {"d": 2}]
+        ]
+      },
+      "instantBlaze": {
+        "why": "Monkey.cs RPC_instantBlaze (:37266-37651), Instant Blaze (#412): needs Phoenix4 (:8388, :37433); no voice (none loaded); clip, 0.2 s fade (:37613); Yield 0.3 (:37646): the Phoenix aimed flat at the target (:37481-37509: straight ahead), Phoenix.RPC_instantBlaze (:37516; Phoenix.cs:2685-3288), times from its start (+0.3): CrossFade(\"instantBlaze\", 0.2) (:3240), pheonix_cry (:3258) at 0.3; Yield 0.5 (:3275): the dash at moveSpeed 12 (:2826) and instantBlaze_ring at the Phoenix, its rotation, riding it (:2837; followPosition; its own Sounds/instantBlaze; the part spawns it: builds) at 0.8; four hit boxes 0.2 s apart (i < 4 :3148, Yield :3281) at 1.0 / 1.2 / 1.4 / 1.6 (burn on a hit, no effect drawn :2942-2987; the reference's 0.7-1.3 s from the Phoenix's start); moveSpeed 6 (:3156) and a 200 HP heal (:3167) at 1.6; stop (:3075) at 1.8, standby (:3096) 1.9: 9.6 + 1.2 = 10.8 m, so it ends 12.8 m ahead, through the target (collisions ignored meanwhile, :3203, :3038; calc.txt); the summon moves, the hero does not (plans/fx_chameleon/decisions.md 30); the Monkey: Yield 0.3 (:37641), standby 0.6 s (:37557); verification 2: the summon part's cries / move sounds (SOUND_REFS, named <script lower-first>_<AudioClip name>, wardrobe_fx.py:237-244): builds",
+        "builds": ["phoenix_instantBlaze_ring", "sound:phoenix_pheonix_cry"],
+        "cues": [
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "moves": [[0.8, 12], [1.6, 6], [1.8, 0]], "anims": [[0, "root", 0, 2], [0.3, "instantBlaze", 0.2, 1], [1.9, "root", 0.2, 2]], "standing": true}]
+        ]
+      },
+      "earthGuard": {
+        "why": "Monkey.cs RPC_earthGuard (:37696-38160), Earth Guard (#413): needs Gadina4 (:8439, :37877); clip, 0.2 s fade (:38068), voice summonDefense (the code's own pick: load :38104) at 0; Yield 0.3 (:38159): +1000 hate on the target, no damage (:37958), Gadina.RPC_earthGuard (:37971; Gadina.cs:5028-5370), times from its start (+0.3): CrossFade(\"guard\") (:5313), earthGuard_ring at the Gadina, its rotation (:5331; EffectControl life 10, followPosition + followState), gadina_cry (:5343) at 0.3; Yield 0.5 (:5360), then six heals 2 s apart (i >= 6 :5261, Yield 2 :5362) at 0.8 ... 10.8 (no effect drawn), Yield 0.5 (:5367): standby 13.3 (:5209): the Gadina cut at 10 s; the ring ends by its own life at 10.3; the Monkey: Yield 0.3 (:38152), standby 0.6 s (:38012); verification 2: the summon part's cries / move sounds (SOUND_REFS, named <script lower-first>_<AudioClip name>, wardrobe_fx.py:237-244): builds",
+        "builds": ["gadina_sword4", "gadina_shield4", "sound:gadina_gadina_cry"],
+        "cues": [
+          [0, "voice", "summonDefense"],
+          [0, "fx", "Gadina4", {"d": 2, "single": true, "kill": 10, "attach": [["gadina_sword4", "mount_Hand_R"], ["gadina_shield4", "mount_Hand_L"]], "anims": [[0, "root", 0, 2], [0.3, "guard", 0.3, 1]], "standing": true}],
+          [0.3, "fx", "gadina_earthGuard_ring", {"d": 2}]
+        ]
+      }
+    }
+  },
+  "@EarthFormAttack:summonAttack": {
+    "why": "Earth Form Attack, stage 1: Monkey.cs RPC_gadinaArmor_nAttack1 (:40994-41546), the normal attack in Earth Form (dispatcher :9749-9876): clip summonAttack, 0.2 s fade (:41360), voice summonAttack (load :41396, PlayOneShot :41408), Sounds/nAttack1 (:41496-41506), the worn Gadina Armor (gadinaArmor, parented to the Monkey at the Earth Form cast, :40719-40747) plays its nAttack1 (:41444-41449) and gAttack1_ring createEffect at the Monkey, his rotation (:41461-41473) at 0; Yield 0.3 (:41534): the right punch at 0.3 (FindAreaTarget(TransformDirection(0.5, 0, 1.5)), 2 m, :41145), Yield 0.3 (:41538): the left at 0.6 (:41222): gadinaArmor_hit only on a hit (:41184, :41261): the 10 m target is out of reach (plans/fx_bison/decisions.md 16); Yield 0.4 (:41544): standby 1.0 s (:41304); the armour is shown already worn (the Earth Form status chaAdjust(120) :40671: cut at 10 s; plans/fx_mole/decisions.md 37's form-already-on rule), its clips the hero's code plays: nAttack1 at 0, nAttack2 at 0.9, nAttack3 at 1.7 (the later stages' own cues), back to root when the Monkey stands by (CrossFade(\"root\", 0.2) Monkey.cs:567-587) at 2.5; verification 1: stage 1 keeps the plain sequence key (poolChains' own() sees it, so Earth Form Attack is not taken as the summonAttack pool's host); stages 2 / 3 are #1 / #2; decision 44: no Fire Rune roll at stage 1 (it never reaches the standby block that calls it)",
+    "cues": [
+      [0, "voice", "summonAttack"],
+      [0, "sound", "nAttack1"],
+      [0, "fx", "gadinaArmor", {"single": true, "kill": 10, "anims": [[0, "nAttack1", 0, 1], [0.9, "nAttack2", 0, 1], [1.7, "nAttack3", 0, 1], [2.5, "root", 0.2, 2]]}],
+      [0, "fx", "gAttack1_ring"]
+    ]
+  },
+  "@EarthFormAttack:summonAttack#1": {
+    "why": "Earth Form Attack, stage 2: Monkey.cs RPC_gadinaArmor_nAttack2 (:41597-42089), started inside stage 1's 0.3-0.8 s window (:9774-9796) and waiting to actionTime + 0.9 (Yield :42088; actionTime is stage 1's: no stage sets it before its standby, :42017): voice sAttack1 (load :41727, PlayOneShot :41739), Sounds/nAttack2 (:41773-41785), clip summonAttack, 0.2 s fade (:41805), the armour's nAttack2 (:41836) and gAttack2_ring at the Monkey (:41853-41865) at 0 (0.9 s after stage 1); Yield 0.2 (:42075): two hits 0.2 s apart within 4 m (i < 2 :42059, Yield :42077, :41924) at 0.4 / 0.6: out of reach; Yield 0.2 (:42071): standby 0.8 s (:42012); decision 44: no Fire Rune roll at stage 2 (it never reaches the standby block that calls it)",
+    "cues": [
+      [0, "voice", "sAttack1"],
+      [0, "sound", "nAttack2"],
+      [0, "fx", "gAttack2_ring"]
+    ]
+  },
+  "@EarthFormAttack:summonAttack#2": {
+    "why": "Earth Form Attack, stage 3: Monkey.cs RPC_gadinaArmor_nAttack3 (:42131-42596), started in stage 2's window (:9817-9849), waiting to actionTime + 1.7 (Yield :42595): voice sAttack2 (load :42261, PlayOneShot :42273), Sounds/nAttack2 (:42307-42319), clip summonAttack, 0.2 s fade (:42339), the armour's nAttack3 (:42370) and gAttack3_ring at the Monkey (:42387-42399) at 0 (1.7 s after stage 1); Yield 0.4 (:42584): camera shake (:42434, left out) and one hit 3 m ahead, 3 m wide (:42453): out of reach; Yield 0.4 (:42582): standby 0.8 s (:42535); decision 44: Fire Rune 3's FireRune() at the last stage's standby (:42530; in the idle tail) (0.8 s): 12 % (lckAdjust(12) at LCK 1, Monkey.cs:12297), fireRune_hit at the hero, identity (:12357)",
+    "cues": [
+      [0, "voice", "sAttack2"],
+      [0, "sound", "nAttack2"],
+      [0, "fx", "gAttack3_ring"],
+      [0.8, "fx", "fireRune_hit", {"p": 0.12}]
+    ]
+  },
+  "summonDefense": {
+    "why": "Monkey.cs RPC_summonDefense (:22485-22940), Summon Defense (#122), the only skill on this clip: needs a summon (:7589); clip, 0.2 s fade (:22847), voice summonDefense (load :22883, PlayOneShot :22936) at 0; Yield 0.3 (:22923): the order to Phoenix / Gadina / Ja (:22641-22736): the summon (Phoenix 4, standing 2 m ahead, question 1) if standing or running turns to face the Monkey (LookAt his flat position :2000: yaw 180) and cries (pheonix_cry :2009), its hate cleared and its AI set to defense (Phoenix.cs:1941-1998; the walk back by its AI is left out, question 2); Yield 0.3 (:22934): standby 0.6 s (:22794); verification 2: the cry at the turn (Phoenix.cs:2009) is the part's: a build",
+    "cues": [
+      [0, "voice", "summonDefense"],
+      [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "turn": 0.3, "anims": [[0, "root", 0, 2]], "standing": true}]
+    ],
+    "builds": ["sound:phoenix_pheonix_cry"]
+  },
+  "summonRelease": {
+    "why": "The summonRelease clip: Unsummon (RPC_unsummon, PlayAnimation(\"summonRelease\", 0.2) Monkey.cs:23458), Summon Release (RPC_summonRelease :23835), Summon Soul (RPC_summonSoul :24519) (pipeline/clip_calls.js), one per play, even chance, picked anew on every play (one tile each, poolChains); each needs a summon (dispatcher :7617-7672, :8504): Phoenix 4 standing 2 m ahead (question 1), cut at 10 s",
+    "skills": {
+      "unsummon": {
+        "why": "Monkey.cs RPC_unsummon (:22983-23545), Unsummon (#123): clip summonRelease, 0.2 s fade (:23458), voice unsummon (load :23494, PlayOneShot :23532) at 0; Yield 0.3 (:23541): half the summon's MP back (Phoenix4 35, :23202), SendMessage(\"unsummon\") (:23367): Phoenix.unsummon (Phoenix.cs:5127-5308): actionState dead, ko clip (:5264), pheonix_unsummon (:5276), destroyed 1 s later (Yield 1 :5306, Destroy :5222): end 0.3 (the Bat guardian's end option: the unsummon, gone 1 s later); Yield 0.3 (:23537): standby 0.6 s (:23405); verification 2: pheonix_unsummon (Phoenix.cs:5276) is the part's: a build",
+        "cues": [
+          [0, "voice", "unsummon"],
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "end": 0.3, "anims": [[0, "root", 0, 2]], "standing": true}]
+        ],
+        "builds": ["sound:phoenix_pheonix_unsummon"]
+      },
+      "summonRelease": {
+        "why": "Monkey.cs RPC_summonRelease (:23579-23920), Summon Release (#124): clip summonRelease, 0.2 s fade (:23835), voice unsummon (the code's own pick: load :23871, PlayOneShot :23916) at 0; Yield 0.3 (:23907): Phoenix / Gadina / Ja / Gaos get SendMessage(\"summonRelease\") (:23735; Buiten and Lavu are unsummoned, :23743): Phoenix.summonRelease (Phoenix.cs:2028-2057): 1200 hate on the Monkey, isSummon off, layer 15 (a neutral enemy): nothing changes on screen; its AI then turns on the Monkey (left out, question 2); Yield 0.3 (:23911): standby 0.6 s (:23782)",
+        "cues": [
+          [0, "voice", "unsummon"],
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "anims": [[0, "root", 0, 2]], "standing": true}]
+        ]
+      },
+      "summonSoul": {
+        "why": "Monkey.cs RPC_summonSoul (:23949-24632), Summon Soul (C skill): a player target (dispatcher :8490-8555): the Monkey himself (plans/fx_sheep/decisions.md 1: ally skills as self-casts); clip summonRelease, 0.2 s fade (:24519), voice summonSoul (load :24555, PlayOneShot :24600) at 0; Yield 0.4 (:24630): once per summon (isTimeOut summonSoul :24124, addTimeOut 999 :24139), summonSoul_ring createEffect at the Monkey, his rotation (:24150-24162; EffectControl 1 + 1 s, followPosition), and the summon's soul status on the target, Phoenix4: phoenixSoul 4 for 240 s (:24234) -> CharacterControl addStatus: deltaAtk(10 sLv) and phoenixSoul createEffect at mChar.bounds.center + 0.5 mChar.height up, identity (CharacterControl.cs:38149-38179): the Monkey's CharacterController centre 0.7, height 1.3 (rip Monkey.prefab:949-955) -> 1.35 m up (calc.txt; EffectControl 1 + 1 s, followPosition, its own Sounds/fireSoul); Yield 0.2 (:24608): standby 0.6 s (:24436)",
+        "cues": [
+          [0, "voice", "summonSoul"],
+          [0, "fx", "Phoenix4", {"d": 2, "single": true, "kill": 10, "anims": [[0, "root", 0, 2]], "standing": true}],
+          [0.4, "fx", "summonSoul_ring"],
+          [0.4, "fx", "phoenixSoul", {"y": 1.35}]
+        ]
+      }
+    }
+  },
+  "sentinalGuard1": {
+    "why": "Sentinel Guard (Stone Sentinel #443's Earth Form charge: the attack button held in Earth Form with >= 10 MP / SP, Monkey.cs:10282-10340), RPC_gadinaArmor_sentinalGuard (:42635-43069): clip sentinalGuard1, 0.1 s fade (:42892), the armour's cAttack1 (:42918-42923), voice summonDefense (the code's own pick: load :42959, PlayOneShot :43054; TTO the same, TTO1102 Monkey.<RPC_gadinaArmor_sentinalGuard>d__243) at 0; Yield 0.5 (:43066): sentinalGuard2 (the next step); the armour shown already worn (Earth Form, cut at 10 s; as Earth Form Attack), its clips: cAttack1 at 0, cAttack2 looped at 0.5 (:42786-42791), cAttack0 at the release 6.6 (RPC_gadinaArmor_sentinalGuard0 :43279-43282), root when the Monkey stands by 0.3 s later (:567-587)",
+    "cues": [
+      [0, "voice", "summonDefense"],
+      [0, "fx", "gadinaArmor", {"single": true, "kill": 10, "anims": [[0, "cAttack1", 0, 1], [0.5, "cAttack2", 0, 2], [6.6, "cAttack0", 0, 1], [6.9, "root", 0.2, 2]]}]
+    ]
+  },
+  "sentinalGuard2": {
+    "why": "RPC_gadinaArmor_sentinalGuard case 2 (Monkey.cs:42751-42829), 0.5 s after the press: PlayAnimation(\"sentinalGuard2\", 0), wrapMode Loop (:42770-42775), sentinalGuard_ring createEffect at the Monkey, his rotation (:42797-42815; EffectControl life 99, followPosition + followState: cut when his command becomes sentinalGuard0 at the release; its own looping Sounds/sentinalGuard_ring) at 0; while held, every 3 s (Yield 3 :43062) MP -8 with Revised Magic #414 (:43012) and a heal of 0.2 MHP (:43017; no effect drawn) at 0, 3, 6 s of this step; held until the button is released (or MP < 10, :43006-43039): the third heal, then the release at 6.1 s into this step (the channel-until-release rule: three ticks)",
+    "cues": [
+      [0, "fx", "sentinalGuard_ring", {"cut": 6.1}]
+    ]
+  },
+  "@InstantCast:root": {
+    "why": "Monkey.cs RPC_instantCast (:10938-11045), a plain method doSkill calls straight (mnk_instantCast2 num2++ :7683-7690, call :9501, ActionEvent RPC_instantCast + sLv :9510; doSkill :7366-9535 calls no PlayAnimation / animation.Play / CrossFade), so the Monkey goes on with what he was doing; the tile plays it on the idle stance. At max rank (Instant Cast 2): addTimeOut instantCast agiAdjust(240) (:10945), for the owner the instantCast status Lv 2 for chaAdjust(12) = 12 s at CHA 1 (:10954; its two instant casts are the cast tiles' business, RPC_cast :25002-25062), Effects/instantCast_ring (:10966) createEffect at the hero's position and rotation (:10978; EffectControl life 1, followPosition, no followState; its own AudioSource Sounds/instantCast 0.771 s), Voices/instantCast (0.850 s; :11016, PlayOneShot :11044 through :11024's Block_9; BB plays it only in modes above 4 to the own team, :10996-11008, shown as Cat decision 38). Predicates worked in checks/fx_monkey_research/effect_only/pred_instantCast_fireRune.txt. Left out: the status's tint setColor(0.78, 0.43, 0.34) (CharacterControl.cs:37821-37835, back to 0.86 at :17075-17085), as the Penguin's multiCast tint (Penguin decision 10, Bison 34, Cat 44)",
+    "cues": [
+      [0, "fx", "instantCast_ring"],
+      [0, "voice", "instantCast"]
+    ]
+  },
+  "@FireRune:root": {
+    "why": "Monkey.cs FireRune (:12273-12330), Fire Rune #261-263's proc (no clip; the tile plays it on the idle stance, the proc every play, as the Penguin's Frost Spike and the Bison's Berserker Rush): for the owner (:12278), once per 1 s (:12282, set :12303), at Fire Rune 3 (getFireRuneLv :12229-12270, passives on) a roll Random.Range(0, 100) < lckAdjust(12) = 12 % at LCK 1 (:12297; CharacterControl.cs:20658-20670) heals 12 MP / 12 SP (RPC_AddHeal(263, 0, 12, 12) :12306; no look), the FireRune! message (:12309; left out), RPC_fireRune (:12312 -> :12334-12373): Effects/fireRune_hit (:12347) createEffect at the hero's position, Quaternion.identity (:12357; no rot, as Mole decision 49's identity looks; EffectControl life 1, followPosition; its AudioSource Sounds/fireRune 0.522 s; a magicRune StaticMesh faded by AlphaTimer 0.2 in / 0.3 out). BB calls FireRune per landed hit (Combo, Mike Blink, Damage Cast, Blazing Arrow, Flash Fire, both Fireballs) and once at the end of the Fireball cast, Fire Keep's release, Fire Avatar's cast and attack, Earth Form's cast and attacks (18 sites, Bible monkey-skill-reference.md 4.7)",
+    "cues": [
+      [0, "fx", "fireRune_hit"]
+    ]
+  },
+  "@EarthRune:root": {
+    "why": "Monkey.cs EarthRune (:13539-13584), Earth Rune #361-363's proc (no clip; the tile plays it on the idle stance, the proc every play, as the Penguin's Frost Spike): run when the Monkey takes a hit (Update's myDamage == -1 :236-242, CharacterControl.cs AddDamage :30341) or his Gadina / Buiten does (:30435); for the owner, once per 1 s (:13569), at Earth Rune 3 (getEarthRuneLv :13495, passives on) a roll < lckAdjust(12) = 12 % (:13563) heals 12 MP / 12 SP (RPC_AddHeal(363, 0, 12, 12) :13572), the EarthRune! message (:13575; left out), RPC_earthRune (:13578 -> :13600): Effects/earthRune_hit (:13613) createEffect at the Monkey's position, Quaternion.identity (:13623; EffectControl life 1, followPosition; the fireRune_hit layout with the earthRune material, its AudioSource the same Sounds/fireRune 0.522 s)",
+    "cues": [
+      [0, "fx", "earthRune_hit"]
+    ]
+  },
+  "@FireAvatar-Fireball:root": {
+    "why": "Monkey.cs doNormalAttack (:9603) in the fireAvatar status (:9689) starts $RPC_phoenixArmor_nAttack$24778 (:9729 -> :38728-39307), which plays no body clip: the status hid every renderer under the Monkey at its start (CharacterControl.cs:38348-38380) and the armor Effects/phoenixArmor parented to him (:38407-38433) plays the attack (hideProp hero, the armor at the hero with the anims). At 0: level 1 + 1 each past 3 / 6 / 9 s since the last action (:39003-39041) = 4, the top rank (the idle tile has stood; fireBall4); voice sAttack3 for level 4 (:39117-39143; levels 2-3 sAttack2 :39156-39174, 1 sAttack1 :39065-39089; BB plays them in modes above 4 to the own team, :39042-39058, shown); the attack state, nAttack lock 1 s, the hero faces the target (:39189-39210); the armor Rewind + Play(nAttack) + Once (:39219-39229); Sounds/nAttack1 (0.118 s; :39256-39266, the owner always). Yield 0.4 (:39302): at 0.4 for the owner firePos = hero + TransformDirection(0.2, 1.5, 1.5) (:38880), fireDir = (target - hero) - that offset (:38885) = from the muzzle to the 10 m target point on the ground: LookRotation((-0.2, -1.5, 8.5)) = pitch 10.0 deg down, yaw 1.35 deg left; RPC_fireBall_fire(firePos, fireDir, tID, 4) (:38890 -> :11092-11290: fireBall4 :11236, Instantiate at firePos, LookRotation(fireDir) :11099 / :11269, ProjectileControl life 2 x rangeMod :11278; Monkey_fireBall 30 m/s, the Fireball report's part); pAttack_ring at the hero's position and rotation (:38914-38926; EffectControl life 1, its emitters at the muzzle 0.2, 1.5, 2.0). Yield 0.4 (:39300): at 0.8 FireRune() (:38963: Fire Rune 3, 12 %, fireRune_hit at the hero, identity) and standby (:38968); Update then CrossFades the armor to root over 0.2 s (:509, the state no longer attack, moveSpeed < 2); decision 37: the armour already worn (single: a live one restarts its anims, fx.onSingle; kill 10), the hero hidden until the next pick; decisions 21, 22: fxparts/monkey.js Monkey_fireBall spawns fireBall_hit where it meets the floor or the target body (aimed at the ground point, it reaches the floor about 9.1 m ahead): a build",
+    "cues": [
+      [0, "hideProp", "hero"],
+      [0, "fx", "phoenixArmor", {"kill": 10, "anims": [[0, "nAttack"], [0.8, "root", 0.2]], "single": true}],
+      [0, "voice", "sAttack3"],
+      [0, "sound", "nAttack1"],
+      [0.4, "fx", "fireBall4", {"x": 0.2, "y": 1.5, "d": 1.5, "rot": [10.0, -1.35, 0]}],
+      [0.4, "fx", "pAttack_ring"],
+      [0.8, "fx", "fireRune_hit", {"p": 0.12}]
+    ],
+    "builds": ["fireBall_hit"]
+  },
+  "@BlazingFire:root": {
+    "why": "Monkey.cs doBeginCharge (:10183) in the fireAvatar status with Blazing Fire #442, 6 MP / 6 SP and no blazingForm lock (:10208-10238) starts $RPC_phoenixArmor_blazingForm$24791 (:10253 -> :39351-40040), no body clip (the Monkey hidden by the status, CharacterControl.cs:38348-38380; hideProp hero). At 0 (:39938-40007): attack state, command blazingForm, blazingForm lock 6 s, the hero faces the target, moveSpeed 0; Effects/blazingForm_ring at the hero's position and rotation (:39969-39981; EffectControl life 1 + afterLife 1, followPosition, its AudioSource Sounds/blazingForm_ring 1.494 s); the armor Play(blazingForm1) + Once (:40001-40004). Yield 0.6 (:40035): at 0.6 Effects/blazingForm_fire at the hero's position and rotation (:39493-39505; EffectControl life 99 + afterLife 0.2, followPosition, followState: ends when the release changes the command; its Animation create 0.2 s plays by itself; its looped Sounds/blazingForm_fire 0.993 s) and the camera motion blur (:39527-39532; left out, Bison decision 35). Yield 0.2 (:40026): at 0.8 moveSpeed 3 (:39559; the dash shown in place, as Cat decision 77's Pillage Plunge), the armor Play(blazingForm2) + Loop (:39595-39600); every FixedUpdate the armor's materials[0] alpha Lerp(0.7, 0, 5 (t - 0.8)) (:39900-39927), at 1.0 s its renderer off (:39865-39871) and blazingForm_fire Play(root) (:39882); from 1.0 every 0.3 s (Yield :40022) MP / SP - 3 (:39744-39749) and a FindRecTarget hit with burn 4 on foes (:39759-39810; nothing drawn). Held 1.5 s of full form (the SEQ's held-part default): release at 2.5 (doReleaseCharge :10594-10600 -> $RPC_phoenixArmor_blazingForm0$24812 :40111-40470): command blazingForm0 (:40282-40302; blazingForm_fire's followState end: cut 2.5, and Play(destroy) :40414), Effects/blazingForm0_ring at the hero's position and rotation (:40318-40330; EffectControl life 1, its AudioSource Sounds/blazingForm0_ring 0.599 s), the armor CrossFade(root, 0.5) + Loop (:40360-40365), its renderer on (:40392) and alpha Lerp(0, 0.7, 5 (t - 2.5)) to 2.7 (:40421-40447); Yield 0.15 (:40464): standby at 2.85 (:40247); decision 37: the armour already worn (single: a live one restarts its anims, fx.onSingle; kill 10), the hero hidden until the next pick",
+    "cues": [
+      [0, "hideProp", "hero"],
+      [0, "fx", "phoenixArmor", {"kill": 10, "anims": [[0, "blazingForm1"], [0.8, "blazingForm2"], [2.5, "root", 0.5]], "alpha": [[0.8, 0.7], [1.0, 0], [2.5, 0], [2.7, 0.7]], "single": true}],
+      [0, "fx", "blazingForm_ring"],
+      [0.6, "fx", "blazingForm_fire", {"cut": 2.5, "anims": [[0.4, "root"]]}],
+      [2.5, "fx", "blazingForm0_ring"]
+    ]
+  },
+  "jaAscension": {
+    "why": "as section 7's jaAscension entry (unchanged), plus: the BB summon part spawns the Ja's summon_ring at the create (Ja.cs:1997-2013; Verification 8)",
+    "builds": ["tto/jaAscension_aura", "ja_summon_ring"],
+    "cues": [
+      [0, "voice", "ja"],
+      [0.25, "fx", "castEffect_fire", {"y": 1, "d": 1}],
+      [0.45, "fx", "tto/jaAscension_pillar", 2],
+      [0.5, "fx", "Ja4", {"d": 2, "boost": 2, "end": 10}]
+    ]
+  },
+  "buitenBastion": {
+    "why": "as section 7's buitenBastion entry (unchanged), plus: the BB summon part spawns the Buiten's summonEffect at its create and at its unsummon (Buiten.cs:761-812, :974-1016; Verification 8); the boosted Buiten4's summon and unsummon sounds (fxparts/elementals.js, SOUND_REFS Buiten): builds",
+    "builds": ["tto/buitenBastion_aura", "buiten_summonEffect", "sound:buiten_buiten_summon", "sound:buiten_buiten_unsummon"],
+    "cues": [
+      [0, "voice", "buiten"],
+      [0.5, "fx", "tto/buitenBastion_slam", 0.35],
+      [0.5, "fx", "tto/buitenBastion_rise", 2],
+      [0.55, "fx", "Buiten4", {"d": 2, "boost": 2, "end": 10}]
+    ]
+  },
+  "golemCall": {
+    "why": "as section 7's golemCall entry (unchanged); runeFracture (the quake's status look on the foe) is built through SKILL_FX, never cued (Verification 7); runeGolem_quake's spikes are MonkeyRow6Rise (Verification 6)",
+    "builds": ["tto/runeGolem_rise", "tto/runeGolem_riseBurst", "tto/runeGolem_roar", "tto/runeGolem_auraPulse", "tto/stoneAegis", "tto/runeGolem_step", "tto/runeGolem_fistHit", "tto/runeGolem_pound", "tto/runeGolem_quakeCharge", "tto/runeGolem_quake", "tto/runeGolem_crumble", "tto/runeGolem_dust"],
+    "cues": [
+      [0, "voice", "summon"],
+      [0, "fx", "tto/runeGolem_circle", 4.5],
+      [0.55, "fx", "tto/runeGolem_stomp"],
+      [0.55, "voice", "upheaval"],
+      [0.6, "fx", "tto/RuneGolem", {"d": 4.5, "end": 10, "to": [0, 0, 10]}]
+    ]
+  },
+  "solarCall": {
+    "why": "as section 7's solarCall entry (unchanged; TTO1102's crown, jaLv + 10 = 16 s, cut at 10 s: kill 10; its end starts the collapse: @JaAscension:root)",
+    "cues": [
+      [0, "fx", "tto/jaAscension_launch", 2],
+      [0, "fx", "tto/sunAvatar_comet", {"y": 1.2, "d": 2, "to": [0, 1.95, 0], "rise": 4.24, "kill": 0.9}],
+      [0, "voice", "ja"],
+      [0, "fx", "tto/jaAscension_callFx"],
+      [0.9, "fx", "tto/sunAvatar_ignite"],
+      [0.9, "fx", "tto/solarCrown", {"head": 1.35, "kill": 10}]
+    ]
+  },
+  "@JaAscension:root": {
+    "why": "The crown's end (the 10 s cut at solarCall 10.9 s = this step's 9.6 s; root starts at solarCall's 1.3 s end) starts the Solar Collapse (TTO1102:Monkey::OnExtendedUpdate@0x1CC7C30, Bible :914): TTO1102:Monkey.<RPC_solarCollapse>d__363::MoveNext@0x1D15280 (pseudo/Monkey.c:17382-17739): sunAvatar_dive at the Monkey + up x (HeadHeight + 0.6) = 1.95, identity; 0.5 s rising to + 5 up (6.95); the dive 0.3 s to the Monkey + 0.5 up (part P7); then the sun destroyed and jaAscension_supernova at the Monkey, identity, ShakeNear (left out), the hits r 6 (no look). TTO1102's code as every class (Bat decision 44, Cat 42, Chameleon 44, Mole 57; Verification 1); TTO1106+'s aimed recast (the dive 0.3 + 0.015 x distance onto a selected enemy) is offered to the user, not shown",
+    "cues": [
+      [9.6, "fx", "tto/sunAvatar_dive", {"y": 1.95, "top": 6.95, "to": [0, 0.5, 0], "dive": 0.3, "kill": 0.8}],
+      [10.4, "fx", "tto/jaAscension_supernova"]
+    ]
+  },
+  "@Phoenix-Fireball:root": {
+    "why": "Phoenix.cs RPC_nAttack (the Phoenix's own normal attack, Bible card monkey_phoenix_fireBall; decision 15, skills_a Verification 9): the Phoenix4 already summoned, standing 2 m ahead (getSpawnPos(hero + 2 forward), decisions 23, 33: standing, single, kill 10), CrossFade(nAttack, 0.3) (:2594) and pheonix_cry (:2612, the part's: builds) at 0; the fireball at actionTime + 0.5 (:2354) from the Phoenix + (0, 2.4, 1) (Phoenix4 :2425) toward the target's bounds centre (0, 0.6, 10) (:2461): rot [14.42, 0, 0] (skills_b calc.txt), RPC_fireball_fire (:2475), Phoenix_fireBall 30 m/s, life 2 (Phoenix.cs:1661; fxparts/monkey.js), phoenix_fireBall_hit spawned by the part where it meets the target body, identity (Phoenix.cs:1768; life 2 + 0: builds), about 0.25 s later; standby 0.3 s after the shot (:2634): root at 0.8; the tile holds to the hit's end (about 0.75 + 2 s: SEQ root*@2.8); the Phoenix's later AI shots left out (decision 41)",
+    "builds": ["phoenix_fireBall_hit", "sound:phoenix_pheonix_cry"],
+    "cues": [
+      [0, "fx", "Phoenix4", {"d": 2, "standing": true, "single": true, "kill": 10, "anims": [[0, "nAttack", 0.3, 1], [0.8, "root", 0.2, 2]]}],
+      [0.5, "fx", "phoenix_fireBall", {"d": 3, "y": 2.4, "rot": [14.42, 0, 0], "to": [0, 0.6, 10]}]
+    ]
+  },
+  "@JaAscension:damageCast1": {
+    "why": "Ja Ascension's active (Sun Avatar in the code, cell 452; the tile is named for the skill: Verification 2) needs a living Ja of the Monkey within 30 m, the highest level first (TTO1102:Monkey::PickJa@0x1CC8AD0 via ::ReleaseSunAvatar@0x1CD2840, Monkey.c:44330-44415): the tile shows the boosted Ja (level 6, the passive's, with its jaAscension_aura) already standing at its summon spot 2 m ahead (SummonSpot(2) of the jaAscension tile; a level-6 Ja's followDistance 5 keeps it there), from the tile's start; at the bar's end the coroutine hides it (Monkey::HideBody@0x1CC6F90 :20550) and SpendJa kills it (:44401): kill 0.8 = cast1 (0.7 s) + the 0.1 s bar. MERGE: this key replaces the plain cast1 entry for this sequence, so the BB research's cast1 cues (the cast voice, castRing ...) go in here too; decision 7: TTO's RPC_cast plays damageCast with Damage Cast learned (passives on), so this is the damageCast1 step's key and carries the plain damageCast1 cues too (the voice cast, Monkey.cs:25537, :26217)",
+    "builds": ["tto/jaAscension_aura"],
+    "cues": [
+      [0, "voice", "cast"],
+      [0, "fx", "Ja4", {"d": 2, "boost": 2, "standing": true, "kill": 0.8}]
+    ]
+  },
+  "wave": {
+    "why": "Monkey.cs RPC_emotion (:45848-46684): the voice at 0, before the clip, only for emo_hi and emo_wave: Voices/hi (gates pvoice, more than 2 s since the last action, own hero / game code 31 / mission teammate :46033-46071; emo_hi / emo_wave test :46080-46092, load :46101, PlayOneShot :46113); both play the wave clip with a 0.2 s fade (:46171-46185 -> :46621); every other emote is silent (no other Voices/ load in RPC_emotion; the rip's monkey voices/ has no wave, ty, bow, laugh, cheer, cry, sleep, chat, pose, battle; TTO1102 Monkey::EmotionVoiceClip returns hi for emo_hi / emo_wave only, pseudo/Monkey.c:41199-41221)",
+    "cues": [
+      [0, "voice", "hi"]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvents playLeftFootEvent at 0.1 s and playRightFootEvent at 0.4 s (rip AnimationClip/run.anim m_Events, the Monkey prefab's own run, checks/fx_monkey_research/attacks_emotes/probe_fields.txt; the only events on any Monkey clip, rip_events.txt) -> Monkey.cs :101-155: the hero's audio.PlayOneShot(footStep_left) / (footStep_right), own hero or anyone in a mission (:108-118, :137-147); both fields (:19249, :19252) are the AudioClip step_normal1 (probe_fields.txt offsets 24 / 32; Resources/sound/fx/step_normal1.wav, hero_sound_wav's fallback); every cycle (everyCycle, as the Bat's wing flap and the Chameleon's steps)",
+    "everyCycle": true,
+    "cues": [
+      [0.1, "sound", "step_normal1"],
+      [0.4, "sound", "step_normal1"]
+    ]
+  },
+  "ko": {
+    "why": "Monkey.cs RPC_ko (:51626-51943): the ko clip cut in (PlayAnimation(ko, 0) :51840) and the voice ko (one file, no random; mission / arena, own team: :51846-51858, load :51870, PlayOneShot :51882), getUp after 3 s (Yield(2, 3) :51938, :51742), standby 1 s later (:51935, :51766), no effect; RPC_dead (:51975-52280): Rewind and the same clip (:52169-52172), the voice dead (same gates :52178-52193, load :52202, PlayOneShot :52214), then always Effects/deadEffect at the hero's position and rotation (:52227-52246, outside the voice block; EffectControl life 3, monkey_dead 0.8 m up and two dust lines after 0.5-0.6 s): one of the two at random, even chance (Sheep decision 11, as mole.json: roll dead, its voice with it; '!dead' = RPC_ko's); TTO1102 the same names (Monkey::KoVoiceName ko, DeadVoiceName dead, pseudo/Monkey.c:41239-41262)",
+    "cues": [
+      [0, "voice", "ko", {"p": 0.5, "roll": "!dead"}],
+      [0, "voice", "dead", {"p": 0.5, "roll": "dead"}],
+      [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

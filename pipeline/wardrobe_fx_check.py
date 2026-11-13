@@ -53,10 +53,25 @@ def seqs():
         else:
             name, body = m.group(2).split(": ", 1)
             out[cls][name.replace(" ", "")] = [[re.match(r"\w+", a).group(0) for a in t.split("|")] for t in body.split()]
+            RAW.setdefault(cls, {})[name.replace(" ", "")] = [t.split("|") for t in body.split()]
     return out
 
 
+RAW = {}            # {cls: {sequence id: [[each step's alternative tokens]]}}: their @t holds (play_time)
 SEQS = seqs()
+
+
+def play_time(cls, sq, force):
+    """The seconds a play of sequence sq takes before its last step starts (each earlier step's @t hold of the alternative
+    played, else its clip's length): the cap waits that long more (2026-11-13, the Monkey's Summon Gaos: its 8 s bar,
+    then the Gaos' unsummon ring 10 s after the release)."""
+    clips = json.loads((DATA / cls / "clips.json").read_text(encoding="utf-8"))
+    total = 0.0
+    for i, alts in enumerate(RAW.get(cls, {}).get(sq, [])[:-1]):
+        tok = alts[min((force or {}).get(i, 0), len(alts) - 1)]
+        m = re.search(r"@([\d.]+)", tok)
+        total += float(m.group(1)) if m else clips.get(re.match(r"\w+", tok).group(0), {}).get("len", 0)
+    return total
 
 
 def seq_clips(cls, sq):
@@ -94,19 +109,39 @@ LIFT_NAMES = lifts()
 
 
 def split_key(key):
-    """A cue key's (sequence id or None, clip): "@Eden Sanctuary:cast3" and "@EdenSanctuary:cast3" are one key."""
+    """A cue key's (sequence id or None, clip): "@Eden Sanctuary:cast3" and "@EdenSanctuary:cast3" are one key; a step's
+    own key "@<sequence>:<clip>#<step index>" (2026-11-13, the Monkey's Earth Form Attack, index.html fxStart) gives the
+    clip without its "#<n>" (key_step: n)."""
     if key.startswith("@") and ":" in key:
         sq, clip = key[1:].split(":", 1)
-        return sq.replace(" ", ""), clip
+        return sq.replace(" ", ""), clip.split("#", 1)[0]
     return None, key
 
 
-def entry_for(cls, sq, clip):
-    """The entry the page runs for a clip in a play of sequence sq (None: a single clip), as fxStart looks it up."""
-    for key, e in CUES[cls].items():
-        if sq and split_key(key) == (sq, clip):
-            return e
+def key_step(key):
+    """A step's own key's step index ("@EarthFormAttack:summonAttack#2" -> 2), else None."""
+    m = re.search(r"#(\d+)$", key) if key.startswith("@") else None
+    return int(m.group(1)) if m else None
+
+
+def entry_for(cls, sq, clip, step=None):
+    """The entry the page runs for a clip in a play of sequence sq (None: a single clip), as fxStart looks it up: the
+    step's own key first ("@<sequence>:<clip>#<step>"), then the sequence's, then the clip's."""
+    for want in ((sq, clip, step), (sq, clip, None)):
+        for key, e in CUES[cls].items():
+            if sq and (*split_key(key), key_step(key)) == want:
+                return e
     return CUES[cls].get(clip, {})
+
+
+def alt_view(e, alt):
+    """The entry as a play with this step's alternative drawn (index.html fxStart's `alt` filter): a cue with an "alt" k
+    plays only when the step's alternative is k (2026-11-13, the Monkey's Summon Gaos: the 8 s bar or the instant one)."""
+    keep = lambda cues: [c for c in cues if not (len(c) > 3 and isinstance(c[3], dict) and "alt" in c[3] and c[3]["alt"] != alt)]
+    out = dict(e, cues=keep(e.get("cues", []))) if "cues" in e else dict(e)
+    if "skills" in e:
+        out["skills"] = {n: dict(m, cues=keep(m.get("cues", []))) for n, m in e["skills"].items()}
+    return out
 
 
 SHOT_AFTER = 0.15     # seconds after an effect first appears
@@ -173,12 +208,17 @@ def expected(entries):
 # name), playAudio (the root AudioSource started), clip (the King Kaiser's), host (a living effect's bone), pair (a TTO
 # missile's twin pair), trigger (Flame Carnival's, never cued); the TTO parts' (fxparts/tto_mole.js): finish, ride, shots,
 # rideEnd, tier (the rail turret and its beam), sink, kicks, launch, egg (the missile pad), fold (the arsenal pods)
+# 2026-11-13, the Monkey (plans/fx_monkey/decisions.md 9, 24, 31, 37-39, 66): alt (the step's drawn alternative, index.html
+# fxStart); the summons' and armours' (fxparts/elementals.js): alpha, standing, hide, moves, turn, attach, boost; Lavu's
+# (fxparts/monkey.js): lavu, unsummon (release is already the Chameleon's); the TTO parts' (fxparts/tto_monkey.js): rise,
+# head, top, dive
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
         "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home",
         "strafe", "speed", "fatal", "slot", "r", "life", "stop", "all", "bow", "face", "slide", "slots", "ghost", "shatterGhosts",
         "lockOnly", "release", "from", "tint", "radius",
         "tune", "firePoint", "tilt", "pick", "playAudio", "clip", "host", "pair", "trigger", "finish", "ride", "shots",
-        "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg"}
+        "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg",
+        "alpha", "standing", "hide", "moves", "turn", "attach", "lavu", "unsummon", "boost", "rise", "head", "top", "dive", "alt"}
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
 # ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
 # (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
@@ -206,6 +246,8 @@ def file_errors(cls):
             errs.append(f"{cls}: cue key {key} is not a clip of the class")
         elif sq and clip not in seq_clips(cls, sq):
             errs.append(f"{cls}: cue key {key}: no sequence {sq} in index.html's SEQ that plays {clip}")
+        elif key_step(key) is not None and clip not in (SEQS[cls][sq][key_step(key)] if key_step(key) < len(SEQS[cls][sq]) else []):
+            errs.append(f"{cls}: cue key {key}: step {key_step(key)} of {sq} does not play {clip}")
         if not isinstance(e.get("why"), str) or ("cues" in e) == ("skills" in e):
             errs.append(f"{cls}: {key}: an entry needs a why and either cues or skills")
         for x, keys, at in [(e, ENTRY_KEYS, key)] + [(s, SKILL_KEYS, f"{key} {n}") for n, s in e.get("skills", {}).items()]:
@@ -362,12 +404,13 @@ async def main():
                     plays = ([({}, None, m) for m in cyc["skills"].values()] if cyc else
                              [(f, sc, None) for f, sc in (seq_plays(cls, sq) if sq else [({}, None)])])
                     for force, step_clips, member in plays:
-                        entries = [member] if member else [entry_for(cls, sq, c) for c in step_clips] if sq else [CUES[cls].get(tile, {})]
+                        entries = ([member] if member else [alt_view(entry_for(cls, sq, c, i), force.get(i, 0)) for i, c in enumerate(step_clips)]
+                                   if sq else [CUES[cls].get(tile, {})])
                         # (a skin cue's look: "skin:<name>", a clone "clone:<clip>", a lift "lift:<name>", as the page
                         # tallies them; a part's spawns too)
                         expect = expected(entries)
                         # a skill's late cues run on in the idle tail (Grand Codex's last page at 20.7 s): wait for them too
-                        cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0])
+                        cap = CAP + max([c[0] for e in entries for cues in cue_lists(e) for c in cues] or [0]) + (play_time(cls, sq, force) if sq else 0)
                         errs = await play_tile(page, var, cls, tile, group, expect, shots, cap, force)
                         errors += [e for e in errs if e not in errors]
         snd = await page.evaluate("() => { const { Sound } = wardrobe.debug(); return { ctx: Sound.ctx?.state, loaded: Object.keys(Sound.bufs).length }; }")

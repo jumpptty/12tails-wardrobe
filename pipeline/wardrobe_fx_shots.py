@@ -10,6 +10,8 @@ sample also prints how many hero meshes are drawn / hidden (heroHide, a skin's c
 (<cue key>%<effect>: that effect's chance cues (a "p" with no roll) always fire, e.g. anchorYank%tto/dropAnchor_shrapnel; 2026-11-13, the Cat's QA.)
 (<cue key>^<option>=<JSON>: that option set on every fx cue of the entry, e.g. missilePad^egg=1; props {"_color": n}: the outfit's colour
  number, e.g. {"_color": 3} for the Kaiser's pick "color"; 2026-11-13, the Mole's QA.)
+(seqAlt:<step>=<k>: that sequence step plays its alternative k (window.__seqAlt), e.g. seqAlt:1=1 for Summon Gaos's instant
+ bar; 2026-11-13, the Monkey's QA.)
 Shots: <out>/<cls>_<tile>_<view>_<t>[_skill][_white][_prop...].png (dark backdrop; the environment variable BG=white keeps the page's white
 stage). One browser.
   ... wardrobe_fx_shots.py <repo> <out dir> <cls> --jobs <jobs.json>   (2026-11-13, the Penguin's QA pass): several tiles in
@@ -104,7 +106,10 @@ async def shoot(page, errors, TILE, TIMES, VIEW, FORCE, SLOTS):
         await page.evaluate("n => wardrobe.setOutfit(wardrobe.debug().C.state.outfit, n)", color)
         SLOTS["color"] = color
     for force in filter(None, FORCE.split("+")):    # several joined by "+": "cast3=iceBlock+cast3!doubleSpell"
-        if "^" in force:                              # "<cue key>^<option>=<JSON>": that option on every fx cue of the entry
+        if force.startswith("seqAlt:"):               # "seqAlt:<step>=<k>": the step's alternative k (index.html's window.__seqAlt;
+            st, k = force[7:].split("=")              # the Monkey's QA: Summon Gaos's instant bar, seqAlt:1=1)
+            await page.evaluate("([s, k]) => { window.__seqAlt = { ...(window.__seqAlt || {}), [s]: k }; }", [int(st), int(k)])
+        elif "^" in force:                            # "<cue key>^<option>=<JSON>": that option on every fx cue of the entry
             k, rest = force.split("^", 1); o, v = rest.split("=", 1)   # (missilePad^egg=1: the egg on every play; the Mole's QA)
             await page.evaluate("""([c, k, o, v]) => { const e = wardrobe.debug().FX.cueTab[c][k];
               for (const x of [e, ...Object.values(e.skills || {})]) if (x.cues) x.cues = x.cues

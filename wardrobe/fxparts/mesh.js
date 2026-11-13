@@ -184,7 +184,7 @@ export default function register(api) {
     if (mats[k]) return mats[k];
     let m;
     if (d.blend === "shader:FX/DistortGlass") m = glass(d);
-    else if (d.blend === "shader:FX/Phoenix") m = phoenix(d);
+    else if (d.blend === "shader:FX/Phoenix" || d.blend === "shader:FX/Lavu") m = phoenix(d);   // FX/Lavu: Phoenix's pass without the Transparent queue tag (plans/fx_monkey/parts.md part 7)
     else if (d.blend === "shader:Transparent/AdditiveSaturate") m = saturate(d);
     else if (d.blend === "shader:Transparent/Opaque1") m = opaque1(d);
     else if (d.blend === "shader:Transparent/Opaque2") m = opaque2(d);

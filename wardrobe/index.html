@@ -1305,8 +1305,30 @@ const SEQ = {
     "Flame Turret: flameTurret1 flameTurret2*@4.5", "King Kaiser: dig1@4.9 root*@10",
     "Barrel Railgun: assemble1@0.6 assemble2*@5.4 barrelRailgun1>0.55^@0.65 barrelRailgun2*^@2.2 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@1.9 barrelRailgun3^0.05@0.5 barrelRailgun2*^@0.1 barrelRailgun4^0.05@0.5",
     "Reload: root*@1.1", "Fire Barrage: root*@5.3", "Bombardment: root*@8.2", "Synchro Mole: root*@10"],
-  monkey: ["Normal Attack: nAttack1 nAttack2~", "Charge Attack: cAttack1 cAttack2*", "Cast: cast1 cast2*~@0 cast3~",
-    "Damage Cast: damageCast1 damageCast2*~@0 cast3~", "Sentinel Guard: sentinalGuard1 sentinalGuard2* sentinalGuard0"],
+  // the Monkey (plans/fx_monkey, 2026-11-13, decisions.md 1-16): Normal Attack's stage 2 at stage 1 + 0.5 s with a 0.2 s
+  // crossfade, Mike Blink #401 its own tile on the same clips (decisions 1, 2); HP Transfer (the Bible's name for the
+  // Charge Attack) and Mike Circle #411: cAttack1, then the looped cAttack2 for three 1 s ticks (decision 4); every channel
+  // is damageCast (Damage Cast #102/#103 on, LOWER_RANK cast1 / cast2) at magAdjust's 0.1 s floor (decisions 5-7); Lavu's
+  // standby 2.4 s into cast3, Volcanic Eruption's 10.3 s (its field cut at 10 s), Summon Gaos's 8 s bar or Auto Instant's
+  // 12 % instant one (the `|` alternative; cues filtered by `alt`), Fire Keep's store (root, key @FireKeep:root) then
+  // the release (decision 9); Earth Form Attack's three stages at 0.9 / 1.7 s, stages 2 / 3 keyed
+  // @EarthFormAttack:summonAttack#1 / #2 (decision 12); Sentinel Guard's three heals, released at 6.6 s, Upheaval's three
+  // waves, released at 3.1 s into root with RPC_upheaval0's 0.35 s fade (decision 13); the effect-only tiles on the idle
+  // stance (decisions 14, 15: Phoenix - Fireball held to its hit's end, the shot at 0.5 s + 0.25 s flight + its 2 s life); the four TTO tiles after
+  // the same damageCast channel, each release with Row6Begin's 0.15 s fade, then root through the summon's 10 s and its
+  // unsummon (decision 16; sanctumRaise is not released: no sequence)
+  monkey: ["Normal Attack: nAttack1@0.5 nAttack2~", "Mike Blink: nAttack1@0.5 nAttack2~", "HP Transfer: cAttack1 cAttack2*@3.2",
+    "Mike Circle: cAttack1 cAttack2*@3.2", "Cast: damageCast1 damageCast2*~@0.1 cast3~",
+    "Lavu: damageCast1 damageCast2*~@0.1 cast3~@2.4", "Volcanic Eruption: damageCast1 damageCast2*~@0.1 cast3~@10.3",
+    "Summon Gaos: damageCast1 damageCast2*~@8%88|damageCast2*~@0 cast3~", "Fire Keep: damageCast1 damageCast2*~@0.1 root~@1 cast3",
+    "Earth Form Attack: summonAttack@0.9 summonAttack~@0.8 summonAttack~",
+    "Sentinel Guard: sentinalGuard1@0.5 sentinalGuard2*@6.1 sentinalGuard0", "Upheaval: upheaval*@3.1 root~0.35@0.35",
+    "Instant Cast: root*@1", "Fire Rune: root*@1", "Earth Rune: root*@1", "Fire Avatar - Fireball: root*@1.8",
+    "Blazing Fire: root*@3.5", "Phoenix - Fireball: root*@2.8",
+    "Ascended Ja: damageCast1 damageCast2*~@0.1 jaAscension~0.15 root*~@10.4",
+    "Ja Ascension: damageCast1 damageCast2*~@0.1 solarCall~0.15 root*~@12.9",
+    "Bastion Buiten: damageCast1 damageCast2*~@0.1 buitenBastion~0.15 root*~@10.3",
+    "Rune Golem: damageCast1 damageCast2*~@0.1 golemCall~0.15 root*~@11.9"],
   panda: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*@3",
     "Raijin Ken: cAttack1 cAttack2* raijinKen1 raijinKen2", "Fuujin Ken: fujinKen1 fujinKen2*@8 fujinKen3", "Qi Strike: qiStrike1@4 qiStrike2~",
     "Tempest Dance: tempestDance*@5 tempestDanceEnd"],
@@ -1359,7 +1381,9 @@ const SEQ = {
 // single moves the game itself loops (wrapMode Loop in the BB code; the data's own loop flag adds the rest)
 const LOOPS = { bison: ["overSwing", "cAttack4", "cAttack5", "cAttack6"], chameleon: ["silentWalk"], mole: ["advanceRepair"],
   monkey: ["upheaval"], panda: ["rollAround"], rabbit: ["truceTrading"] };
-const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"] };
+// (the Monkey's cast1 / cast2: with Damage Cast #102/#103 learned RPC_cast plays damageCast1 / 2, Monkey.cs:25472-25491;
+// plans/fx_monkey/decisions.md 6)
+const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeSong1", "bladeSong2"], monkey: ["cast1", "cast2"] };
 // clips the class's code never plays, left out of the list (2026-11-09: no Wolf skill plays cast1-3, the Cast tile was
 // copied from the casters; plans/fx_wolf/cast.md; the user: "Remove the tile"); the Bison's volcanicRam: no code in BB
 // or TTO plays it (2026-11-13, plans/fx_bison/decisions.md 9, skills_b.md Q1: the Wolf's cast1-3 precedent); the Cat's
@@ -1367,9 +1391,10 @@ const LOWER_RANK = { bison: ["cAttack3", "cAttack4", "cAttack5"], wolf: ["bladeS
 // 2026-11-13, plans/fx_cat/decisions.md 14, tto.md 2.4); the Chameleon's focusFire1 / 2: BB data no code plays (no BB
 // file names them, nor TTO's, no Bible card; 2026-11-13, plans/fx_chameleon/decisions.md 16, skills_a.md item 9)
 // the Mole's dig2: only the clip loader names it, no BB or TTO code plays it (2026-11-13, plans/fx_mole/decisions.md 4,
-// attacks_emotes.md Verification 4); the burrow tiles play it as their hidden underground step
+// attacks_emotes.md Verification 4); the burrow tiles play it as their hidden underground step; the Monkey's damageCast3:
+// no BB or TTO release plays it (2026-11-13, plans/fx_monkey/decisions.md 6, skills_a.md "cast1 / cast2 / damageCast3")
 const NEVER_PLAYED = { wolf: ["cast1", "cast2", "cast3"], bison: ["volcanicRam"], cat: ["shikifujin"], chameleon: ["focusFire1", "focusFire2"],
-  mole: ["dig2"] };
+  mole: ["dig2"], monkey: ["damageCast3"] };
 const LOOP_BASE = new Set(["root", "battle", "run", "falling", "walk"]);
 const HOLD_SECS = 1.5;
 // A step's alternatives (2026-11-13, the Bison's Normal Attack: its third stage is the game's roll, RPC_nAttack4 the spin
@@ -3421,7 +3446,14 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
   // (its passive) on the same clips, War Capital on Assemble's, King Kaiser on dig1, the effect-only tiles, Barrel Railgun
   mole: { "@ChargeAttack": "cAttack", "@SkyDrill": "skyDrill", "@WarCapital": "warCapital", "@KingKaiser": "kingKaiser",
     "@Reload": "reload", "@FireBarrage": "fireBarrage", "@Bombardment": "bombardment", "@SynchroMole": "synchroMole",
-    "@BarrelRailgun": "barrelRailgun" } };
+    "@BarrelRailgun": "barrelRailgun" },
+  // the Monkey (2026-11-13, plans/fx_monkey/decisions.md 17): the passives' and the pool-less skills' own tiles; no
+  // @JaAscension / @RuneGolem (a SEQ_SKILL value leaves every other tile's icons: the TTO tiles take theirs from
+  // CLIP_SKILLS, tto.md Verification 3)
+  monkey: { "@MikeBlink": "mikeBlink", "@MikeCircle": "mikeCircle", "@Lavu": "lavu", "@VolcanicEruption": "volcanicEruption",
+    "@SummonGaos": "summonGaos", "@FireKeep": "fireKeep", "@EarthFormAttack": "earthForm", "@SentinelGuard": "stoneSentinel",
+    "@Upheaval": "lavu", "@InstantCast": "instantCast", "@FireRune": "fireRune", "@EarthRune": "earthRune",
+    "@FireAvatar-Fireball": "fireBall", "@BlazingFire": "blazingFire", "@Phoenix-Fireball": "phoenix" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -4047,7 +4079,13 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   // the cart, Mole_timeNuke's countdown (api.fontText), fx:detonate, Mole_warCapital, fx:flameCarnival; rotationControl
   // (also the Monkey's lavu); the summons AutoGyroGun, BarrelBot, KingKaiser; TTO's MoleRailTurret, MoleRailgun,
   // MoleRailBeam, MoleRailArc, MoleRailShock, MoleLaunchPad, MoleLockReticle, KaiserArsenalPod, KaiserWarhead, TTO's Mole_missile
-  "mole", "rotationcontrol", "robots", "tto_mole"];
+  "mole", "rotationcontrol", "robots", "tto_mole",
+  // the Monkey's (2026-11-13, plans/fx_monkey/parts.md "Who builds what", decisions.md 58-63): the shots Monkey_fireBall /
+  // Monkey_earthPulse / Phoenix_fireBall / Phoenix_skyCrimson_fire, Monkey_lavu, fx:mikeBlink, Rotate (rotationcontrol.js),
+  // FX/Lavu (mesh.js); the summons Phoenix, Ja, Gadina, Buiten, Gaos and the armours (elementals.js); TTO's Eric/URP
+  // Particles shaders, the Sigils' FX_Magic_Circle scroll, SunCrownFx, Monkey.SunComet, Monkey.SolarCollapse,
+  // MonkeyRow6Rise, RuneGolem (tto_monkey.js)
+  "monkey", "elementals", "tto_monkey"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
@@ -4778,6 +4816,18 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //   kind  "propAnim" (2026-11-13, the Mole's cannons, decisions.md 43): [t, "propAnim", slot, {"clip": name}]: the prop worn
 //         there plays its own clip once from its start, then its own loop again (propAnimPlay); nothing when no prop is
 //         worn there or it lacks the clip (the recoil "fire" at each shot, "root" at the standby where a prop has one)
+// 2026-11-13, the Monkey (plans/fx_monkey/decisions.md 9, 12, 24, 30-40, 66): alt (k: the cue plays only when its step's
+//         drawn alternative is k, C.seq.alt; Summon Gaos's 8 s bar or the instant one); an entry key may end "#<step
+//         index>" ("@EarthFormAttack:summonAttack#1": that sequence step's own cues, tried before the plain key); the parts'
+//         (fx.at): anims items [age, clip, fade?, wrap?] (the summons' and armours' clip timeline, fxparts/elementals.js: fade
+//         default 0.2 for root else 0, wrap 2 = Loop), alpha ([[age, a], ...]: the armour faded on its own material copies,
+//         Blazing Fire), standing (true: a summon already out, no summon clip or ring, from root), hide ([from, to] seconds:
+//         the summon unseen), moves ([[age, m/s], ...]: Instant Blaze's dash), turn (age: the summon faces the hero, yaw 180,
+//         and cries), attach ([[effect, bone], ...]: Gadina's sword / shield on its hands), boost (TTO's boosted summon: 2 =
+//         the level-6 Ja with jaAscension_aura, the Buiten x 1.2 with buitenBastion_aura) (fxparts/elementals.js); lavu
+//         ("upheaval": Lavu spawned summoned, in its upheaval state), release (age: back to standby), unsummon (age: its 1 s
+//         fade) (fxparts/monkey.js); rise (the comet's Bezier lift), head (the crown's height), top / dive (the Solar
+//         Collapse's rise and dive time) (fxparts/tto_monkey.js)
 // An entry with "skills" may carry "order": "cycle" (the Mole's War Factory, decision 13): one skill, its members taken in
 // the file's order, one per play (the turn kept across plays and tiles, a new class starts again), no tile of their own
 // (poolChains); a member's "standby" (seconds) ends that play's step there; a member's "name" is its tile's name where the
@@ -5176,7 +5226,8 @@ class HeroClone {
 }
 // api.propModel (2026-11-13, the Chameleon's arrow: plans/fx_chameleon/parts.md Interfaces 1, decisions.md 50; the comment
 // above FX_PART_FILES). The starter pieces a fallback of true stands for (item_map.json: w_chm1 = noviceBow + noviceArrow)
-const PROP_STARTER = { chameleon: { R: "noviceBow", L: "noviceArrow" } };
+// (w_mnk1 = noviceMike: the Monkey's Mike Blink with nothing worn in R, plans/fx_monkey/decisions.md 3)
+const PROP_STARTER = { chameleon: { R: "noviceBow", L: "noviceArrow" }, monkey: { R: "noviceMike" } };
 function propModel(which, fallback) {
   if (!C) return null;
   const slot = typeof which === "string" ? which : null, kind = slot ? SLOTS[slot] : which?.kind || "weapons";
@@ -5330,7 +5381,11 @@ function fxStart(clip, step = 0) {
   FX.stepGen++;
   FX.t = 0;
   const tab = FX.cueTab[C?.cls] || {}, ch = chainOf(C?.cur);
-  const e = (ch && (tab[ch.id + ":" + clip] ?? tab["@" + ch.name + ":" + clip])) ?? tab[clip];
+  // a step's own key first, "@<sequence>:<clip>#<step index>" (2026-11-13, the Monkey's Earth Form Attack: one clip at three
+  // steps, each with its own cues; stage 1 keeps the plain key so poolChains still finds it, plans/fx_monkey/decisions.md
+  // 12, skills_b.md Verification 1)
+  const e = (ch && (tab[ch.id + ":" + clip + "#" + step] ?? tab["@" + ch.name + ":" + clip + "#" + step]
+    ?? tab[ch.id + ":" + clip] ?? tab["@" + ch.name + ":" + clip])) ?? tab[clip];
   let cues = e?.cues || [];
   if (step === 0) FX.pick = null;
   if (e?.skills) {
@@ -5361,7 +5416,10 @@ function fxStart(clip, step = 0) {
   // worn [slot, item]: only while that item is worn there (2026-11-13, the Bat's Homing Wand, w_bat59 = "specialWand":
   // the Normal Attack bolts home on the target and hit it, Bat.cs:10765-10788, plans/fx_bat/decisions.md 15)
   // (2026-11-13, the Bison: either one's item may be a list of items or a set name in ITEM_SETS, decisions.md 25, 26)
-  const worn = c => !(Array.isArray(c.notWorn) && wearing(c.notWorn)) && !(Array.isArray(c.worn) && !wearing(c.worn));
+  // alt k: only when this step's drawn alternative is k (C.seq.alt, drawAlts; 2026-11-13, the Monkey's Summon Gaos: the 8 s
+  // bar or Auto Instant's instant one, plans/fx_monkey/decisions.md 9, skills_a.md Verification 10)
+  const worn = c => !(Array.isArray(c.notWorn) && wearing(c.notWorn)) && !(Array.isArray(c.worn) && !wearing(c.worn))
+    && (c.alt == null || (C?.seq?.alt?.[step] ?? 0) === c.alt);
   FX.cues = cues.map(cueOf).filter(c => worn(c) && rolled(c));
   // "everyCycle": the cues again on every cycle of the looped clip, against its own time (fxTick; the run's wing flap)
   const own = e?.skills ? e.skills[FX.pick] : e;
@@ -5467,6 +5525,9 @@ function fxDue(t, inclusive) {
       const own = c.single ? FX.live.find(x => x.alive && x instanceof Fx && x.name === c.name) : null;
       if (own) {
         if (c.kill != null) own.killAt = own.age + c.kill;
+        // a part's own timeline restarts from this cue (2026-11-13, the Monkey's armours and standing summons, re-cued by
+        // the form tiles and each loop: fxparts/elementals.js fx.onSingle, plans/fx_monkey/decisions.md 37)
+        own.onSingle?.(c);
         FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
         return;
       }

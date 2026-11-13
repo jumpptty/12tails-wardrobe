@@ -45,6 +45,11 @@ CLIP_SKILLS = {
     # Verification 3; missilePad the editor's: the Bible has no icon of its own)
     "mole": {"grenade": ["stunGrenade"], "hammer": ["megaHammer"], "assemble1": ["autoGyroGun", "barrelBot"],
              "assemble2": ["autoGyroGun", "barrelBot"], "dig1": ["kingKaiser"], "missilePad": ["missile", "twinWarhead"]},
+    # the Monkey's earthPulse clip is Titanic Earth Pulse; the TTO tiles: the boosted Ja / Buiten with their passive, Ja
+    # Ascension's solarCall, golemCall Rune Golem, sanctumRaise (not released) Buiten Bastion (2026-11-13,
+    # plans/fx_monkey/decisions.md 18, tto.md S2)
+    "monkey": {"earthPulse": ["titanicEarthPulse"], "jaAscension": ["ja", "jaAscension"], "buitenBastion": ["buiten", "buitenBastion"],
+               "solarCall": ["jaAscension"], "golemCall": ["runeGolem"], "sanctumRaise": ["buitenBastion"]},
 }
 # pool members that are one skill's ranks, each a cast of its own (the Mole's TNT 1-4, decisions.md 12): the Bible key of
 # their own rank's icon
@@ -60,7 +65,10 @@ EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"],
                # decisions.md 8, 10)
                "cat": ["awareness", "damageRoulette", "treasureHunt"],
                # the Mole's Reload, Fire Barrage, Bombardment and Synchro Mole (2026-11-13, plans/fx_mole/effect_only.md)
-               "mole": ["reload", "fireBarrage", "bombardment", "synchroMole"]}
+               "mole": ["reload", "fireBarrage", "bombardment", "synchroMole"],
+               # the Monkey's Instant Cast, Fire Rune, Earth Rune and Blazing Fire (2026-11-13, plans/fx_monkey/decisions.md 18,
+               # effect_only.md Verification 3: Fire Avatar - Fireball takes the Fireball's icon through SEQ_SKILL)
+               "monkey": ["instantCast", "fireRune", "earthRune", "blazingFire"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip (the Bat's
 # Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3; the Cat's Even Odds on the
 # gamble clip and Nine Lives' ko then getUp, plans/fx_cat/effect_only.md block 4, decisions.md 8, 11, 12)
@@ -73,7 +81,13 @@ OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "ed
                           "tent": ["cast3", "sleep"], "criticalPlus": ["nAttack1"], "clearArrow": ["nAttack1"]},
             # the Mole's War Capital on Assemble's clips; the Charge Attack (the burrow, no cAttack clip: Super Dig's superDig)
             # its own cAttack3 (2026-11-13, plans/fx_mole/decisions.md 7, 14; cAttack the editor's, for the HD icon)
-            "mole": {"warCapital": ["assemble1", "assemble2"], "cAttack": ["superDig"]}}
+            "mole": {"warCapital": ["assemble1", "assemble2"], "cAttack": ["superDig"]},
+            # the Monkey's Mike Blink / Mike Circle on the Normal Attack's / HP Transfer's clips, the cast skills with their
+            # own sequences, Sentinel Guard (2026-11-13, plans/fx_monkey/decisions.md 18, attacks_emotes.md Verification 3,
+            # skills_a.md Verification 7, skills_b.md Verification 3)
+            "monkey": {"mikeBlink": ["nAttack1", "nAttack2"], "mikeCircle": ["cAttack1", "cAttack2"], "lavu": ["cast3"],
+                       "volcanicEruption": ["cast3"], "summonGaos": ["damageCast2", "cast3"], "fireKeep": ["damageCast2", "root", "cast3"],
+                       "stoneSentinel": ["sentinalGuard1", "sentinalGuard2", "sentinalGuard0"]}}
 
 
 def bible_icons():

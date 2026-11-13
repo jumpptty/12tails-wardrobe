@@ -59,9 +59,9 @@ the token on discord.com/developers → 12 Tails Skins → Bot (then the office'
 ## Next up (either PC)
 
 - **Effects + sounds: the run continues at the office (2026-11-13)** (`plans/goal_fx_all_classes.md`, NOTES.md "the run
-  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole. Researched (reports
-  committed): Monkey, Panda (Rabbit's under way). Left: the Monkey, Panda, Rabbit and Whale builds, the Whale's
-  research. The workflow is `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; office paths inside). For the
+  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey. Researched
+  (reports committed): Panda, Rabbit, Whale. Left: the Panda, Rabbit and Whale builds. For the user's ear: the
+  Monkey's sounds come from BB's resources container (every WAV in the rip's monkey/sounds is zero-filled). The workflow is `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; office paths inside). For the
   user's review: every class's `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
   `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: the Mole's are on the office PC).
 

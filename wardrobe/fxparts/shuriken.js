@@ -27,6 +27,9 @@
 // wardrobe_fx_tto.py BUILTIN_MESH writes it inline, and QUAD below stands in for data built before that). No Wolf or
 // Sheep system enables a TrailModule or names a built-in mesh (their fx.json, checked 2026-11-10), so what they draw
 // is unchanged.
+// 2026-11-13 (the Monkey's TTO effects, plans/fx_monkey/parts.md T3, decision 62): SubModule (sub-emitters), NoiseModule
+// (APPROX) and LightsModule (APPROX, api.pointLight), compile() below. A system that enables none of them runs exactly as
+// before (every new path is gated on P.subs / P.noise / P.lights; emitRange's carry moved into `main`, the same number).
 export default function register(api) {
   const { THREE } = api;
   const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
@@ -49,6 +52,16 @@ export default function register(api) {
   const lin = c => [toLin(c[0]), toLin(c[1]), toLin(c[2]), c[3]];
   const randUnit = () => { const z = 2 * Math.random() - 1, a = 2 * Math.PI * Math.random(), r = Math.sqrt(1 - z * z); return V(r * Math.cos(a), r * Math.sin(a), z); };
   const finite = x => typeof x === "number" && Number.isFinite(x) && Math.abs(x) < 1e30;
+  // smooth 3D value noise in [-1, 1] (the NoiseModule's APPROX, compile() below): hashed lattice values, smoothstep-blended
+  const hash3 = (x, y, z) => { const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return s - Math.floor(s); };
+  const vnoise = (x, y, z) => {
+    const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z), sm = t => t * t * (3 - 2 * t);
+    const fx = sm(x - ix), fy = sm(y - iy), fz = sm(z - iz);
+    const e = (a, b, c) => hash3(ix + a, iy + b, iz + c);
+    const l = (a, b, k) => a + (b - a) * k;
+    return 2 * l(l(l(e(0, 0, 0), e(1, 0, 0), fx), l(e(0, 1, 0), e(1, 1, 0), fx), fy),
+                 l(l(e(0, 0, 1), e(1, 0, 1), fx), l(e(0, 1, 1), e(1, 1, 1), fx), fy), fz) - 1;
+  };
   // Unity's built-in Quad ("unity default resources" path id 10210; wardrobe_fx_tto.py BUILTIN_MESH, the same numbers):
   // 1 x 1 in the XY plane about its centre, normal -z, triangles 0 3 1 / 3 0 2
   const QUAD = { name: "Quad", verts: 4, pos: [-0.5, -0.5, 0, 0.5, -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0],
@@ -284,9 +297,37 @@ export default function register(api) {
       sizeW: on(m.sizeAffectsWidth), sizeL: on(m.sizeAffectsLifetime), inherit: m.inheritParticleColor == null ? true : on(m.inheritParticleColor),
       colLife: mmGrad(m.colorOverLifetime), width: mmCurve(m.widthOverTrail, 1), colTrail: mmGrad(m.colorOverTrail),
       ribbons: Math.max(1, num(m.ribbonCount, 1)), tex: num(m.textureMode), texScale: vec(m.textureScale, [1, 1, 1]) };
-    // not drawn (no Wolf, Sheep or Penguin prefab enables them): NoiseModule, ExternalForces, Collision with planes
-    // (type 0), Trigger, SubModule (sub-emitters), Lights, CustomData; the UV module's sprite mode
-    P.skipped = ["NoiseModule", "ExternalForcesModule", "CollisionModule", "TriggerModule", "SubModule", "LightsModule", "TrailModule"]
+    // 2026-11-13, the Monkey (plans/fx_monkey/parts.md T3, Interfaces 6, decision 62; tto_monkey builder):
+    // SubModule (Unity's Manual "Sub Emitters module"): subEmitters[] = { emitter: {node: i} (a system of the same
+    // effect), type 0 Birth / 1 Collision / 2 Death, properties (bit mask: 1 colour, 2 size, 4 rotation, 8 lifetime, 16
+    // duration; only 2, InheritSize, is read: the child's start size x the parent particle's size), emitProbability }.
+    // The child is built idle (it never plays by itself, as Unity's sub-emitter systems) and runs one emission instance
+    // per trigger: Birth = from the parent particle's birth, following it, while it lives (looping as the child's own
+    // duration loops); Collision / Death = one pass of the child's duration at the hit / death point. An instance runs the
+    // child's own rate over time and bursts (runeGolem_quake's crystals: a burst of 1 every 0.04 s, 10 cycles, so each
+    // flying carrier leaves a short trail). Every Monkey sub-emitter is Birth with InheritSize (buitenBastion_rise,
+    // runeGolem_rise / _quake / _pound / _crumble).
+    // NoiseModule: APPROX, a cheap smooth value noise in place of Unity's curl noise: per axis a velocity offset in
+    // [-1, 1] x strength (x positionAmount; damping: / frequency), sampled at the particle's position x frequency + the
+    // scroll (scrollSpeed x time), not kept in the velocity (as Unity's); octaves, quality, remap, rotation and size
+    // amounts are not read (jaAscension_pillar's / runeGolem_rise's Sparks Confetti Noise: strength 0.2, 1 octave).
+    // LightsModule: APPROX, through api.pointLight (the scene's two pooled point lights, index.html): at most two lights
+    // per system (min(maxLights, 2)), on its brightest particles among the share `ratio` picked at birth; the template is
+    // the module's `light` (a Light component of the effect, usually disabled itself): colour x the particle's colour
+    // (`color`), range m_Range x rangeCurve (x the particle's size: `range`), intensity m_Intensity x intensityCurve (x
+    // its alpha: `intensity`), x 2 pi as fxparts/light.js scales a light. Released when the system has no particles, its
+    // node leaves the stage or the effect goes.
+    // CustomDataModule: nothing to draw (no page shader reads custom data).
+    if ((m = mod("SubModule"))) P.subs = (m.subEmitters || []).filter(s => typeof s?.emitter?.node === "number")
+      .map(s => ({ node: s.emitter.node, type: num(s.type), size: (num(s.properties) & 2) !== 0, p: num(s.emitProbability, 1) }));
+    if ((m = mod("NoiseModule"))) P.noise = { sep: on(m.separateAxes), x: mmCurve(m.strength, 1), y: mmCurve(m.strengthY, 1),
+      z: mmCurve(m.strengthZ, 1), freq: Math.max(1e-4, num(m.frequency, 0.5)), damp: on(m.damping), scroll: mmCurve(m.scrollSpeed, 0),
+      amount: mmCurve(m.positionAmount, 1) };
+    if ((m = mod("LightsModule"))) P.lights = { ref: m.light, ratio: num(m.ratio, 0), max: Math.min(2, num(m.maxLights, 20)),
+      col: on(m.color), sizeRange: on(m.range), alphaI: on(m.intensity), range: mmCurve(m.rangeCurve, 1), inten: mmCurve(m.intensityCurve, 1) };
+    // not drawn (no prefab of the classes built so far enables them): ExternalForces, Collision with planes (type 0),
+    // Trigger; the UV module's sprite mode
+    P.skipped = ["ExternalForcesModule", "CollisionModule", "TriggerModule", "TrailModule"]
       .filter(n => mod(n) && !(n === "CollisionModule" && P.coll) && !(n === "TrailModule" && P.trail));
     if (P.skipped.length) console.warn("Shuriken: not drawn", P.skipped.join(", "));
     CACHE.set(ps, P);
@@ -317,10 +358,16 @@ export default function register(api) {
     const sortMode = num(rd.m_SortMode), minSize = num(rd.m_MinParticleSize), maxSize = num(rd.m_MaxParticleSize, 0.5);
     const pivot = vec(rd.m_Pivot);
 
+    // a sub-emitter's child (SubModule, compile() above) is built idle: its parent, an earlier node of the same effect,
+    // listed it in fx.shurikenSubs at its own build (asSub() below covers any other order)
+    if (P.subs) { fx.shurikenSubs ||= new Set(); for (const s of P.subs) fx.shurikenSubs.add(s.node); }
+    let isSub = !!fx.shurikenSubs?.has(fx.nodes?.indexOf(node));
     const parts = [];
     let ghosts = [];                         // the trails of dead particles (dieWithParticles off): { pts, life, k, w }
-    let time = 0, delay = -1, emitting = P.playOnAwake, played = P.playOnAwake, ended = false, ready = false;
-    let acc = 0, accD = 0;
+    let time = 0, delay = -1, emitting = P.playOnAwake && !isSub, played = P.playOnAwake && !isSub, ended = false, ready = false;
+    const main = { acc: 0 };                 // the rate's carry (a sub-emitter instance keeps its own)
+    let accD = 0, noiseT = 0;
+    const inst = [];                         // this child's sub-emitter instances: { t, acc, o, loop, done }
     const pending = [];
     // this frame's emitter: Unity-world position T, rotation Rq (Ri inverse), Sm = the scale the simulation sees
     // (scalingMode 0 hierarchy: the lossy scale, 1 local: the node's own, 2 shape: none, the shape alone is scaled by
@@ -372,6 +419,7 @@ export default function register(api) {
       const s = P.size(nt, Math.random());
       const size = o?.startSize != null ? V(o.startSize, o.startSize, o.startSize)
         : P.size3D ? V(s, P.sizeY(nt, Math.random()), P.sizeZ(nt, Math.random())) : V(s, s, s);
+      if (o?.sizeMul != null) size.multiplyScalar(o.sizeMul);   // a sub-emitter's InheritSize (SubModule)
       const flip = Math.random() < P.flipRot ? -1 : 1;
       const rot = o?.rotation != null ? V(0, 0, o.rotation * DEG)
         : V(P.rot3D ? P.rotX(nt, Math.random()) : 0, P.rot3D ? P.rotY(nt, Math.random()) : 0, P.rot(nt, Math.random())).multiplyScalar(flip);
@@ -383,8 +431,10 @@ export default function register(api) {
         q.tr = [{ p: trailPt(p), a: preAge, fresh: true }];
         q.trLife = P.trail.life(nt, Math.random()) * life * (P.trail.sizeL ? size.x : 1);
       }
+      if (P.lights) q.lit = Math.random() < P.lights.ratio;    // the LightsModule's share, picked at birth
       if (preAge > 0 && !step(q, preAge)) return;              // emitted inside the frame: run the rest of it
       parts.push(q);
+      if (P.subs) subBirth(q);
     }
     // one particle forward by dt; false = it died
     const tmp = V();
@@ -435,6 +485,12 @@ export default function register(api) {
         sm = m.speedMod(u, R[15]);
       }
       if (P.inherit && P.inherit.mode === 1 && P.world) q.vt.addScaledVector(eVel, P.inherit.k(u, R[13]));   // mode 1: current
+      if (P.noise) {                                           // NoiseModule (APPROX, compile() above)
+        const N = P.noise, f = N.freq, k = N.amount(u, R[6]) / (N.damp ? f : 1);
+        const sx = N.x(u, R[3]), sy = N.sep ? N.y(u, R[4]) : sx, sz = N.sep ? N.z(u, R[5]) : sx;
+        const X = q.p.x * f + noiseT, Y = q.p.y * f, Z = q.p.z * f;
+        q.vt.x += vnoise(X, Y, Z) * sx * k; q.vt.y += vnoise(X + 31.7, Y + 11.3, Z) * sy * k; q.vt.z += vnoise(X, Y + 57.1, Z + 23.9) * sz * k;
+      }
       q.p.addScaledVector(q.vt, sm * dt);
       if (P.coll && !collide(q, u)) return false;
       if (P.rotOL || P.rotBS) {                                // angular velocity (radians a second, as serialized)
@@ -448,16 +504,18 @@ export default function register(api) {
       return true;
     }
     // the system's clock: start delay, then rate and bursts over [a, b) of the duration (looping wraps)
-    function emitRange(a, b, extra) {
+    // (o, st: a sub-emitter instance's EmitParams and its own carry; its spot is its parent particle's, so no rate over
+    // distance)
+    function emitRange(a, b, extra, o = null, st = main) {
       const dur = P.dur, nt = a / dur;
       const rate = P.rate ? P.rate(nt, Math.random()) : 0;
       if (rate > 0) {
-        const before = acc; acc += rate * (b - a);
-        const n = Math.floor(acc);
-        for (let k = 1; k <= n; k++) { const tau = a + (k - before) / rate; emitOne(tau, b - tau + extra); }
-        acc -= n;
+        const before = st.acc; st.acc += rate * (b - a);
+        const n = Math.floor(st.acc);
+        for (let k = 1; k <= n; k++) { const tau = a + (k - before) / rate; emitOne(tau, b - tau + extra, 0, 0, o); }
+        st.acc -= n;
       }
-      const rd2 = P.rateD ? P.rateD(nt, Math.random()) : 0;
+      const rd2 = !o && P.rateD ? P.rateD(nt, Math.random()) : 0;
       if (rd2 > 0) {                                           // rate over distance: the emitter's own travel
         const before = accD; accD += rd2 * eVel.length() * (b - a);
         const n = Math.floor(accD);
@@ -471,7 +529,7 @@ export default function register(api) {
           if (tau >= b) break;
           if (tau < a || Math.random() >= B.prob) continue;
           const n = Math.max(0, Math.round(B.count(tau / dur, Math.random())));
-          for (let i = 0; i < n; i++) emitOne(tau, b - tau + extra, i, n);
+          for (let i = 0; i < n; i++) emitOne(tau, b - tau + extra, i, n, o);
         }
       }
     }
@@ -497,6 +555,7 @@ export default function register(api) {
       q.p.copy(P.world ? W : W.sub(T).applyQuaternion(Ri).divide(safe(Sm)));
       q.v.copy(worldToSimDir(v));
       q.age += C.loss(u, k) * q.life;
+      if (P.subs) subTrigger(q, 1);                            // a Collision sub-emitter, at the hit point
       const sp = v.length();
       return q.age < q.life && sp >= C.minKill && sp <= C.maxKill;
     }
@@ -504,8 +563,72 @@ export default function register(api) {
       for (let i = parts.length - 1; i >= 0; i--) if (!step(parts[i], dt)) {
         const q = parts[i];                                    // its trail stays (dieWithParticles off) and runs out
         if (q.tr?.length && !P.trail.die) ghosts.push({ pts: q.tr, life: q.trLife, k: q.tk || [1, 1, 1, 1], w: q.tw ?? 1 });
+        if (P.subs) subEnd(q);
         parts[i] = parts[parts.length - 1]; parts.pop();
       }
+      if (P.subs) for (const q of parts) subFollow(q);
+    }
+    // ---- SubModule (compile() above): the children looked up when due (later nodes of the effect: the Bat's gotcha), each
+    // trigger an instance of the child's emission at the particle's Unity-world spot (EmitParams, applyShapeToPosition)
+    const pSizeOf = q => q.size.x * (P.sizeOL ? P.sizeOL.x(clamp01(q.age / q.life), q.R[7]) : 1);   // its size now (InheritSize)
+    const subPS = s => { const c = fx.nodes?.[s.node]?.userData.particleSystem || null; if (c && !c.isSub) c.asSub(); return c; };
+    const subOpts = (q, s) => ({ position: toWorld(q.p), space: "world", applyShapeToPosition: true, sizeMul: s.size ? pSizeOf(q) : null });
+    function subBirth(q) {
+      for (const s of P.subs) if (s.type === 0 && Math.random() < s.p) {
+        const c = subPS(s);
+        if (c) (q.subI ||= []).push([c.subStart(subOpts(q, s), true), s]);
+      }
+    }
+    function subFollow(q) {
+      if (!q.subI) return;
+      for (const [I, s] of q.subI) { I.o.position.copy(toWorld(q.p)); if (s.size) I.o.sizeMul = pSizeOf(q); }
+    }
+    function subTrigger(q, type) { for (const s of P.subs) if (s.type === type && Math.random() < s.p) subPS(s)?.subStart(subOpts(q, s), false); }
+    function subEnd(q) { if (q.subI) for (const [I] of q.subI) I.done = true; subTrigger(q, 2); }
+    // one instance's step: the child's own rate and bursts over its duration (a Birth one loops while its particle lives)
+    function runInst(s, dt) {
+      let left = dt;
+      while (left > 1e-9 && !s.done) {
+        const st = Math.min(left, P.dur - s.t);
+        emitRange(s.t, s.t + st, left - st, s.o, s);
+        s.t += st; left -= st;
+        if (s.t >= P.dur - 1e-9) { if (s.loop && P.loop) s.t = 0; else s.done = true; }
+      }
+    }
+    // ---- LightsModule (compile() above): the pooled lights this system holds, given back when it has nothing to light
+    const lit = [], LC = V(), LP = V();
+    let lightTpl = null;
+    const lightsOff = () => { for (const l of lit.splice(0)) api.releaseLight?.(l); };
+    if (P.lights) for (let o = node; o && o !== fx.mirror; o = o.parent) o.addEventListener("removed", lightsOff);
+    function lightsFrame() {
+      const L = P.lights;
+      if (!lightTpl) {
+        const r = L.ref, nd = typeof r?.node === "number" ? data.effects?.[fx.name]?.nodes?.[r.node] : null;
+        lightTpl = nd?.comps?.find(c => c.type === "Light") || {};
+        const c = lightTpl.m_Color || { r: 1, g: 1, b: 1 };
+        LC.set(toLin(num(c.r, 1)), toLin(num(c.g, 1)), toLin(num(c.b, 1)));
+      }
+      let shown = !!api.pointLight;
+      for (let o = node; o && shown; o = o.parent) shown = o.visible;
+      const best = [];
+      if (shown) for (const q of parts) {
+        if (!q.lit) continue;
+        const u = q.age / q.life, c = pColour(q, u, q.vt.length());
+        best.push({ q, u, c, I: num(lightTpl.m_Intensity, 1) * L.inten(u, q.R[1]) * (L.alphaI ? c[3] : 1) });
+      }
+      best.sort((a, b) => b.I - a.I).length = Math.min(best.length, L.max);
+      while (lit.length > best.length) api.releaseLight(lit.pop());
+      while (lit.length < best.length) { const l = api.pointLight(); if (!l) break; lit.push(l); }
+      fx.mirror.updateWorldMatrix(true, false);
+      lit.forEach((l, i) => {
+        const { q, u, c, I } = best[i];
+        LP.copy(toWorld(q.p)).applyMatrix4(fx.mirror.matrixWorld);
+        if (l.parent && l.parent !== api.scene) l.parent.worldToLocal(LP);
+        l.position.copy(LP);
+        l.color.setRGB(LC.x * (L.col ? c[0] : 1), LC.y * (L.col ? c[1] : 1), LC.z * (L.col ? c[2] : 1));
+        l.distance = num(lightTpl.m_Range, 10) * L.range(u, q.R[2]) * (L.sizeRange ? pSize(q, u, q.vt.length()) : 1);
+        l.intensity = 2 * Math.PI * Math.max(0, I);
+      });
     }
     // ---- trail points: in the effect's Unity world (worldSpace, or a World system), else in the system's space (they
     // move with it); each ages by the frame, goes at its lifetime, and a new one is added at the particle once it is
@@ -548,6 +671,12 @@ export default function register(api) {
         return ids.includes(want);
       },
       get count() { return parts.length; },
+      // a sub-emitter's child (SubModule): idle, and one emission instance per trigger (o: EmitParams as emit()'s, plus
+      // sizeMul; loop: a Birth instance, run until its parent particle marks it done)
+      get isSub() { return isSub; },
+      asSub() { isSub = true; emitting = false; played = false; parts.length = 0; },
+      subStart(o, loop) { const s = { t: 0, acc: 0, o, loop, done: false }; inst.push(s); played = true; return s; },
+      dispose: lightsOff,
       update(dt, cam) {
         dt *= P.simSpeed;
         frame(dt);
@@ -560,17 +689,24 @@ export default function register(api) {
           }
           for (const [n, o] of pending.splice(0)) this.emit(n, o);
         }
+        if (P.noise) noiseT += dt * P.noise.scroll(time / P.dur, 0);
         stepAll(dt);
         if (emitting) advance(dt);
+        if (inst.length) {                                     // sub-emitter instances (SubModule)
+          for (const s of inst) runInst(s, dt);
+          for (let i = inst.length - 1; i >= 0; i--) if (inst[i].done) inst.splice(i, 1);
+        }
         if (P.trail) trailStep(dt);
-        // the system has stopped (no emission and no particles): its stopAction (1 disable, 2 destroy, 3 callback)
-        if (!ended && played && !emitting && !parts.length && delay <= 0) {
+        // the system has stopped (no emission and no particles): its stopAction (1 disable, 2 destroy, 3 callback); a
+        // sub-emitter's child never stops on its own (its parent triggers it again)
+        if (!ended && !isSub && played && !emitting && !parts.length && delay <= 0) {
           ended = true;
           if (P.stopAction === 2) return "destroy";
           if (P.stopAction === 1) node.visible = false;
         }
         if (mesh) (pMesh ? renderMesh : render)(cam);
         if (tmesh) renderTrails(cam);
+        if (P.lights) lightsFrame();
       },
     };
     node.userData.particleSystem = ps0;

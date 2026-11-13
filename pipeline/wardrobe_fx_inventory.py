@@ -72,7 +72,18 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          "Mole_timeNuke", "Mole_warCapital", "rotationControl", "AutoGyroGun", "BarrelBot", "BarrelBotAI", "KingKaiser",
          "KingKaiserAI",
          # (warCapital's and the summons' own CharacterControl: data only, wardrobe_fx.py NOT_DRAWN, decision 53)
-         "CharacterControl"}
+         "CharacterControl",
+         # 2026-11-13, the Monkey (plans/fx_monkey/parts.md "Who builds what", decisions.md 58-67): fxparts/monkey.js (the
+         # straight shots Monkey_fireBall / Monkey_earthPulse / Phoenix_fireBall / Phoenix_skyCrimson_fire with their
+         # part-spawned hits, the Lavu serpent, fx:mikeBlink), rotationcontrol.js (+ Rotate), mesh.js's FX/Lavu (a shader);
+         # Monkey_runicFlame / Monkey_runicSand draw nothing (data only: the segments' damage); fxparts/elementals.js (the
+         # summons Phoenix, Ja, Gadina, Buiten, Gaos: summon, root, unsummon; their *_AI data only, decision 41; the armours
+         # are the hero's code, not a script); fxparts/tto_monkey.js (TTO's Eric shaders, the Animator's Sigil scroll,
+         # SunCrownFx, MonkeyRow6Rise, RuneGolem's AI, the comet / collapse movers) and shuriken.js's Sub / Noise / Lights
+         # modules. volcanicEruption's ParticleSystems are grafted from TTO's copy (NOTES below)
+         "Monkey_fireBall", "Monkey_earthPulse", "Monkey_lavu", "Monkey_runicFlame", "Monkey_runicSand", "Rotate",
+         "Phoenix_fireBall", "Phoenix_skyCrimson_fire", "Phoenix", "Ja", "Gadina", "Buiten", "Gaos", "Phoenix_AI", "Ja_AI",
+         "Gadina_AI", "Gaos_AI"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -91,6 +102,9 @@ NOTES = {
            "copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn"
         for n in ("thunderDragon_ring2", "zeroShot_ring")
     },
+    "monkey": {"volcanicEruption": "its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) "
+                                   "are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material, BB's "
+                                   "own materials): drawn"},
     "mole": {n: "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn" for n in ("bazooka_ring", "napalm_ring", "warCapital")},
 }
 CLASS_NOTES = {
@@ -109,6 +123,17 @@ CLASS_NOTES = {
              "under the field's name (`wardrobe_fx.py` FIELD_PREFABS): the Mole prefab's kaiser_dust and kaiser_box, "
              "AutoGyroGun4's autoGyroGun_fire; the summons Characters/Robots/AutoGyroGun4, BarrelBot4 and KingKaiser_<r g b k "
              "w> (EXTRA_FOLDERS), their AudioClip fields exported as sounds (SOUND_REFS). Every one ready."],
+    "monkey": ["Effects this scan does not see (2026-11-13, plans/fx_monkey/attacks_emotes.md part 2, decisions.md 59, 67): "
+               "the hero prefab's fields in the Resources container, built by name: hpTransfer (`Monkey_hpTransfer`, "
+               "`Monkey.cs:21027`: BoltEmitter, Light, AudioSource), castRing (`:24882`), castEffect_fire (`:26461`); prefabs "
+               "held only in the summons' script fields (no Resources path), exported under the field's name (`wardrobe_fx.py` "
+               "FIELD_PREFABS): phoenix_summon_ring, phoenix_fireBall (Phoenix_fireBall), phoenix_fireBall_hit, "
+               "phoenix_instantBlaze_ring, phoenix_skyCrimson_dust, phoenix_skyCrimson_fire (Phoenix_skyCrimson_fire), "
+               "phoenix_skyCrimson_hit, ja_summon_ring, buiten_summonEffect, gadina_summonEffect, gadina_earthGuard_ring, "
+               "gadina_planetBreaker1 / 2, gadina_sword4, gadina_shield4, and gaos_summon_ring / gaos_unsummon_ring "
+               "(ALIASES: elementals/gaos/effects); the summons Characters/Elementals/Phoenix/Phoenix4, Ja4, Gadina4, Buiten4, "
+               "Gaos (EXTRA_FOLDERS), their AudioClip fields exported as sounds (SOUND_REFS); the Lavu serpent's "
+               "lavu_summon (SOUND_ALIASES). Every one ready."],
 }
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it

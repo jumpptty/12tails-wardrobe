@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, GroundConformParticles, ImageEmitter, KingKaiser, KingKaiserAI, Light, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, ProjectileControl, RingEmitter, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, ProjectileControl, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -16,7 +16,7 @@ like a Sheep's heal): counted apart, never this class's skills.
 | cat | 67 | 66 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | chameleon | 57 | 55 | 2 | ParticleSystemRenderer 2, ParticleSystem 2 | 28 |
 | mole | 78 | 75 | 3 | ParticleSystemRenderer 3, ParticleSystem 3 | 28 |
-| monkey | 51 | 42 | 9 | Monkey_fireBall 4, Monkey_earthPulse 1, Monkey_lavu 1, Monkey_runicFlame 1, Monkey_runicSand 1, ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
+| monkey | 51 | 50 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | panda | 71 | 70 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | penguin | 48 | 48 | 0 |  | 28 |
 | rabbit | 84 | 66 | 18 | Rabbit_potion 13, Rabbit_acidicField 1, ParticleSystemRenderer 1, ParticleSystem 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
@@ -32,7 +32,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | part | effects | blocks alone | classes |
 |---|---|---|---|
 | Rabbit_potion | 13 | 13 | rabbit |
-| Monkey_fireBall | 4 | 4 | monkey |
 | whale_kingdomKnight | 2 | 2 | whale |
 | Whale_javelin | 1 | 1 | whale |
 | Whale_homingShield | 1 | 1 | whale |
@@ -41,10 +40,6 @@ Own effects that need the part (all classes), and how many of those it alone blo
 | Rabbit_sniperCamera | 1 | 1 | rabbit |
 | Rabbit_healingField | 1 | 1 | rabbit |
 | Rabbit_acidicField | 1 | 1 | rabbit |
-| Monkey_runicSand | 1 | 1 | monkey |
-| Monkey_runicFlame | 1 | 1 | monkey |
-| Monkey_lavu | 1 | 1 | monkey |
-| Monkey_earthPulse | 1 | 1 | monkey |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 
@@ -55,23 +50,18 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 658 | 658 / 699 |
-| 1 | Rabbit_potion | 13 | 671 / 699 |
-| 2 | Monkey_fireBall | 4 | 675 / 699 |
-| 3 | whale_kingdomKnight | 2 | 677 / 699 |
-| 4 | Whale_javelin | 1 | 678 / 699 |
-| 5 | Whale_homingShield | 1 | 679 / 699 |
-| 6 | Whale_flyingShield | 1 | 680 / 699 |
-| 7 | Rabbit_stickyGum | 1 | 681 / 699 |
-| 8 | Rabbit_sniperCamera | 1 | 682 / 699 |
-| 9 | Rabbit_healingField | 1 | 683 / 699 |
-| 10 | Rabbit_acidicField | 1 | 684 / 699 |
-| 11 | Monkey_runicSand | 1 | 685 / 699 |
-| 12 | Monkey_runicFlame | 1 | 686 / 699 |
-| 13 | Monkey_lavu | 1 | 687 / 699 |
-| 14 | Monkey_earthPulse | 1 | 688 / 699 |
-| 15 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 16 | ParticleSystem | 11 | 699 / 699 |
+| 0 | (built today) | 666 | 666 / 699 |
+| 1 | Rabbit_potion | 13 | 679 / 699 |
+| 2 | whale_kingdomKnight | 2 | 681 / 699 |
+| 3 | Whale_javelin | 1 | 682 / 699 |
+| 4 | Whale_homingShield | 1 | 683 / 699 |
+| 5 | Whale_flyingShield | 1 | 684 / 699 |
+| 6 | Rabbit_stickyGum | 1 | 685 / 699 |
+| 7 | Rabbit_sniperCamera | 1 | 686 / 699 |
+| 8 | Rabbit_healingField | 1 | 687 / 699 |
+| 9 | Rabbit_acidicField | 1 | 688 / 699 |
+| 10 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 11 | ParticleSystem | 11 | 699 / 699 |
 
 ## Per effect
 
@@ -370,21 +360,23 @@ Effects this scan does not see (2026-11-13, plans/fx_mole/parts.md "Read this fi
 
 ### monkey
 
+Effects this scan does not see (2026-11-13, plans/fx_monkey/attacks_emotes.md part 2, decisions.md 59, 67): the hero prefab's fields in the Resources container, built by name: hpTransfer (`Monkey_hpTransfer`, `Monkey.cs:21027`: BoltEmitter, Light, AudioSource), castRing (`:24882`), castEffect_fire (`:26461`); prefabs held only in the summons' script fields (no Resources path), exported under the field's name (`wardrobe_fx.py` FIELD_PREFABS): phoenix_summon_ring, phoenix_fireBall (Phoenix_fireBall), phoenix_fireBall_hit, phoenix_instantBlaze_ring, phoenix_skyCrimson_dust, phoenix_skyCrimson_fire (Phoenix_skyCrimson_fire), phoenix_skyCrimson_hit, ja_summon_ring, buiten_summonEffect, gadina_summonEffect, gadina_earthGuard_ring, gadina_planetBreaker1 / 2, gadina_sword4, gadina_shield4, and gaos_summon_ring / gaos_unsummon_ring (ALIASES: elementals/gaos/effects); the summons Characters/Elementals/Phoenix/Phoenix4, Ja4, Gadina4, Buiten4, Gaos (EXTRA_FOLDERS), their AudioClip fields exported as sounds (SOUND_REFS); the Lavu serpent's lavu_summon (SOUND_ALIASES). Every one ready.
+
 - `blazingArrow` (Monkey.cs:27703): ready
 - `blazingForm0_ring` (Monkey.cs:40318): ready
 - `blazingForm_fire` (Monkey.cs:39493): ready
 - `blazingForm_ring` (Monkey.cs:39969): ready
 - `deadEffect` (Monkey.cs:52233): ready
-- `earthPulse` (Monkey.cs:13094): needs Monkey_earthPulse
+- `earthPulse` (Monkey.cs:13094): ready
 - `earthPulse_hit` (Monkey.cs:32806): ready
 - `earthPulse_ring` (Monkey.cs:32501): ready
 - `earthRune_hit` (Monkey.cs:13613): ready
 - `earthSoul_ring` (Monkey.cs:12600): ready
 - `elementalBound_ring` (Monkey.cs:15530): ready
-- `fireBall1` (Monkey.cs:11119): needs Monkey_fireBall
-- `fireBall2` (Monkey.cs:11158): needs Monkey_fireBall
-- `fireBall3` (Monkey.cs:11197): needs Monkey_fireBall
-- `fireBall4` (Monkey.cs:11236): needs Monkey_fireBall
+- `fireBall1` (Monkey.cs:11119): ready
+- `fireBall2` (Monkey.cs:11158): ready
+- `fireBall3` (Monkey.cs:11197): ready
+- `fireBall4` (Monkey.cs:11236): ready
 - `fireBall_hit` (Monkey.cs:11308): ready
 - `fireRune_hit` (Monkey.cs:12347): ready
 - `fireSoul_ring` (Monkey.cs:11377): ready
@@ -400,7 +392,7 @@ Effects this scan does not see (2026-11-13, plans/fx_mole/parts.md "Read this fi
 - `groundLock_hit` (Monkey.cs:31127): ready
 - `instantCast` (Monkey.cs:25036): ready
 - `instantCast_ring` (Monkey.cs:10966): ready
-- `lavu` (Monkey.cs:13889): needs Monkey_lavu
+- `lavu` (Monkey.cs:13889): ready
 - `lavu_ring` (Monkey.cs:34612): ready
 - `mikeBlink` (Monkey.cs:35895): ready
 - `mikeCircle` (Monkey.cs:21055): ready
@@ -410,15 +402,15 @@ Effects this scan does not see (2026-11-13, plans/fx_mole/parts.md "Read this fi
 - `phoenixArmor_create` (Monkey.cs:38449): ready
 - `phoenixArmor_destroy` (Monkey.cs:14140): ready
 - `planetBreaker_ring` (Monkey.cs:31967): ready
-- `runicFlame` (Monkey.cs:12481): needs Monkey_runicFlame
-- `runicSand` (Monkey.cs:13747): needs Monkey_runicSand
+- `runicFlame` (Monkey.cs:12481): ready
+- `runicSand` (Monkey.cs:13747): ready
 - `secondStone` (Monkey.cs:31034): ready
 - `sentinalGuard_ring` (Monkey.cs:42803): ready
 - `stoneHammer` (Monkey.cs:33523): ready
 - `summonSoul_ring` (Monkey.cs:24150): ready
 - `upheaval` (Monkey.cs:35164): ready
 - `upheaval_ring` (Monkey.cs:35389): ready
-- `volcanicEruption` (Monkey.cs:43494): needs ParticleSystem, ParticleSystemRenderer
+- `volcanicEruption` (Monkey.cs:43494): needs ParticleSystem, ParticleSystemRenderer (its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material, BB's own materials): drawn)
 - `volcanicEruption_ring` (Monkey.cs:43457): ready
 - `worldIgnition` (Monkey.cs:30309): ready
 
