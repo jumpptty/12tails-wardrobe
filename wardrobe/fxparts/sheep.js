@@ -105,6 +105,7 @@ export default function register(api) {
   // spawn frame (the coroutine's next pass, under 0.1 s off); particles keep the size they were born with, as Unity's.
   const CHARGE_K = 0.25 * (0.01 + 0.0015 * 3) * 101, CHARGE_TOP = 0.4 * 4;
   api.part("fx:cAttack_charge", (fx, node) => {
+    if (fx.cls !== "sheep") return null;   // the hook is keyed by effect name only: the Rabbit's star burst is not resized (plans/fx_rabbit/parts.md part 8)
     const ball = fx.emitters.find(e => e.node === node && e.setSize);
     if (!ball) { console.warn("effect part fx:cAttack_charge: the ball's particle emitter has no setSize (index.html legacyParticles)"); return null; }
     const cl = (x, a, b) => Math.min(b, Math.max(a, x));

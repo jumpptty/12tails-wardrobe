@@ -232,6 +232,21 @@ SKILL_FX = {
         # CharacterControl::AddYinYangFx@0x24af630
         "yinYangFist_charge", "yinYangFist_seal", "yinYangFist_burst", "yinYang",
     ],
+    # plans/fx_rabbit/parts.md "TTO" and Verification 7 (2026-11-13, decisions.md 50): every prefab the three released
+    # coroutines name (pseudo/Rabbit.c strings; Clap and Wai have none); bountyHunt_claim (the kill reward), bounty and gilded
+    # (the status looks on the foe) built, not cued (decision 45)
+    "rabbit": [
+        # Bounty Hunt: PosterFly (<PosterFly>d__353@0x1e28850), the pin, the hired guns' flare / muzzle / tracer / hit
+        "bountyHunt_poster", "bountyHunt_pin", "bountyHunt_flare", "bountyHunt_muzzle", "bountyHunt_tracer", "bountyHunt_hit",
+        "bountyHunt_claim", "bounty",
+        # Coin Ricochet: the flick, the four coins (<CoinRise>d__346@0x1e27890), the shots, ricochets, cash-out; the look
+        "coinRicochet_flick", "coinRicochet_coin", "coinRicochet_shot", "coinRicochet_ping", "coinRicochet_ricochet",
+        "coinRicochet_hit", "coinRicochet_cashTracer", "coinRicochet_cashout", "gilded",
+        # Medic Turret: the cast, the deploy, the turret (RabbitMedicTurret) and its beats, shots, capsules
+        # (<TurretCapsule>d__338@0x1e7aa60), hits and break
+        "medicTurret_cast", "medicTurret_deploy", "medicTurret", "medicTurret_beat", "medicTurret_shot",
+        "medicTurret_capsule", "medicTurret_hit", "medicTurret_break",
+    ],
 }
 # a class's effects outside heroes/<cls>/effects/ (Tto tries them after it, in this order; plans/fx_monkey/decisions.md 60,
 # tto.md P1, parts.md T1 and Verification 3): the boosted Ja's / Buiten's auras and the Rune Golem with its effects
@@ -313,6 +328,17 @@ CODE_MOVERS = {
     # <NineKing>d__339::MoveNext@0x1d701c0 (:405-766, disasm_NineKing.txt): 0.4 s from the spawn to the landing point
     # + 0.8 up, weaving, NineVanish at the end
     "nineDragons_king": "Panda.NineKing",
+    # TTO1102:Rabbit.<TurretCapsule>d__338@0x1e7aa60 (Rabbit.c:24911-25140; plans/fx_rabbit/parts.md T2, Interfaces 3): from
+    # the turret's muzzle to the ally's chest (`to`) in 0.25 s (u = 4 t), turned 1080 deg/s; then Destroyed, medicTurret_hit
+    # at `to` and the `kind` drop (lifeShot / boostShot / heatShot) at the ally's feet (`ally`), Destroy after 2 s
+    # (wardrobe/fxparts/tto_rabbit.js)
+    "medicTurret_capsule": "Rabbit.TurretCapsule",
+    # <PosterFly>d__353@0x1e28850 (Rabbit.c:556-786; parts.md T3 and Verification 2): from the hand to the target's chest
+    # + 0.6 up (`to`) in 0.25 s on an arc 0.8 u (1 - u), turned 900 deg/s; it spawns nothing on arrival (the pin is a cue)
+    "bountyHunt_poster": "Rabbit.PosterFly",
+    # <CoinRise>d__346@0x1e27890 (Rabbit.c:440-539; parts.md T4): from the hand to its hang spot (`to`) over 0.35 s
+    # (1 - (1 - u)^2), bobbing 0.08 sin(40 delay + 6 time) until shot (`delay`: the coin's phase)
+    "coinRicochet_coin": "Rabbit.CoinRise",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,

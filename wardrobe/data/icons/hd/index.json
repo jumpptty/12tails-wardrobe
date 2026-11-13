@@ -1768,10 +1768,22 @@
   }
  },
  "rabbit": {
+  "acidicField": {
+   "icon": "icons/hd/rabbit/acidicField.webp",
+   "clips": [
+    "mix4"
+   ]
+  },
   "backpack": {
    "icon": "icons/hd/rabbit/backpack.webp",
    "clips": [
     "backpack"
+   ]
+  },
+  "boostShot": {
+   "icon": "icons/hd/rabbit/boostShot.webp",
+   "clips": [
+    "medicalShot"
    ]
   },
   "bounce": {
@@ -1807,6 +1819,25 @@
     "coinRicochet"
    ]
   },
+  "contract": {
+   "icon": "icons/hd/rabbit/contract.webp",
+   "clips": [
+    "truceTrading",
+    "bow"
+   ]
+  },
+  "customizedShotgun": {
+   "icon": "icons/hd/rabbit/customizedShotgun.webp",
+   "clips": [
+    "nAttack"
+   ]
+  },
+  "diamondShot": {
+   "icon": "icons/hd/rabbit/diamondShot.webp",
+   "clips": [
+    "gilShot"
+   ]
+  },
   "extravagance": {
    "icon": "icons/hd/rabbit/extravagance.webp",
    "clips": [
@@ -1819,6 +1850,13 @@
     "fourShot"
    ]
   },
+  "fromTheAbove": {
+   "icon": "icons/hd/rabbit/fromTheAbove.webp",
+   "clips": [
+    "bounce1",
+    "bounce2"
+   ]
+  },
   "gilShot": {
    "icon": "icons/hd/rabbit/gilShot.webp",
    "clips": [
@@ -1829,6 +1867,36 @@
    "icon": "icons/hd/rabbit/gorgonShot.webp",
    "clips": [
     "gorgonShot"
+   ]
+  },
+  "healingField": {
+   "icon": "icons/hd/rabbit/healingField.webp",
+   "clips": [
+    "mix4"
+   ]
+  },
+  "heatShot": {
+   "icon": "icons/hd/rabbit/heatShot.webp",
+   "clips": [
+    "medicalShot"
+   ]
+  },
+  "immuneShot": {
+   "icon": "icons/hd/rabbit/immuneShot.webp",
+   "clips": [
+    "medicalShot"
+   ]
+  },
+  "lifeShot": {
+   "icon": "icons/hd/rabbit/lifeShot.webp",
+   "clips": [
+    "medicalShot"
+   ]
+  },
+  "maimShot": {
+   "icon": "icons/hd/rabbit/maimShot.webp",
+   "clips": [
+    "maim"
    ]
   },
   "mall": {
@@ -1848,6 +1916,12 @@
    "icon": "icons/hd/rabbit/millionaire.webp",
    "clips": [
     "millionaire"
+   ]
+  },
+  "miracleBlend": {
+   "icon": "icons/hd/rabbit/miracleBlend.webp",
+   "clips": [
+    "mix3"
    ]
   },
   "mix": {
@@ -1871,6 +1945,12 @@
     "rapidTrance"
    ]
   },
+  "shake": {
+   "icon": "icons/hd/rabbit/shake.webp",
+   "clips": [
+    "mix3"
+   ]
+  },
   "shootingArray": {
    "icon": "icons/hd/rabbit/shootingArray.webp",
    "clips": [
@@ -1881,6 +1961,12 @@
    "icon": "icons/hd/rabbit/statScan.webp",
    "clips": [
     "statScan"
+   ]
+  },
+  "stickyGum": {
+   "icon": "icons/hd/rabbit/stickyGum.webp",
+   "clips": [
+    "mix4"
    ]
   },
   "tenShot": {

@@ -2037,6 +2037,9 @@ writes decisions.md and splits the builders; office paths are written into it, c
 - The Panda built (planner + two builders: tto_panda, page_pipeline; editor; QA, which added the `floor` clip for the
   two dragons under the ground): gates passed, committed and deployed (its section below). Its editor also fixed the
   "&" in wardrobe_data.py's clip filter; the data rebuild is the home PC's (HANDOFF).
+  Panda live: version 462c24e7 (data-7360b42ed2; a worktree of a2506ba with bb_rip_fix linked in; every class 33 faces).
+- The Rabbit built (planner + rabbit / generic / page_pipeline builders, editor, QA: no bugs found): gates passed,
+  committed and deployed (its section below).
 
 ## 2026-11-13 (office), the Mole's effects: built and cued
 
@@ -2622,3 +2625,174 @@ user's review). One editor after two builders (tto_panda, page_pipeline), on the
   shade above it, the cast shade on the ribs below it fading down. It shows from the front beside the trinket (the
   fold lies at the top of the skin that shows). eyes/chest_under_trinket.png = the paint alone, chest_closeup.png =
   the model from three angles.
+- **The helmeted one is done** (user: "Lady Noir looks good now, prepare it on desktop for me to publish"). On the office
+  Desktop, `wardrobe_reupload\lady_noir_face11\`: `12tails_ค้างคาว_Royal.png` (outfit royal, 1024 px) and
+  `12tails_ค้างคาว_Butterfly_Hood.png` (head butterflyHood, 512 px), both opaque, + preview_front.png. File names =
+  12tails_<class in Thai>_<the page's humanize(item) with _ for spaces> ("Butterfly_Hood", not "butterflyHood": dropMany
+  matches the humanized name). Tested headless: dropping both on the Bat puts royal + butterflyHood on with both
+  skins, no page errors. The user sends it from the page themselves (face 11).
+
+## 2026-11-13 (office), the Rabbit's effects: built and cued
+
+From plans/fx_rabbit/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after three builders (rabbit, generic, page_pipeline), on the office PC.
+- **Parts (new):** fxparts/rabbit.js (`LightGolem`: Contract's golem plays its own `root` clip looped from the spawn, its
+  own LightGolem1 material, no AI; class-guarded); fxparts/tto_rabbit.js (TTO's RabbitSpin, PowerUpRotation (not
+  class-guarded: a generic store script, on the uncued bountyHunt_claim), the movers Rabbit.PosterFly (0.25 s arc to `to`,
+  spinning 900 deg/s, nothing on arrival), Rabbit.CoinRise (0.35 s ease to the hang spot, the bob from the cue's clip time
+  `fx.at.at` + age) and Rabbit.TurretCapsule (0.25 s to `to`, then medicTurret_hit at `to` and `kind` at `ally`, kill 2),
+  and RabbitMedicTurret (the Model's 0.45 s grow, beats at 0.75 + 1.5 k s while age < `end`: beat, head snapped to the
+  ally, shot and capsule from the Muzzle node, the drop a third each; at `end` the break and a 0.4 s shrink));
+  fxparts/control.js: `EffectControl(root)`, the root's faceCamera / faceUp (modes 2 / 3) while age < life, with cue
+  option `owner` + followPosition: the root at owner + R x (spawn - owner) (statScan swings round the target), for every
+  class (the child part's mode code moved into one `faceTurn`, unchanged); fxparts/sheep.js: `fx:cAttack_charge` returns
+  null unless the Sheep (the Rabbit's cAttack_charge shares the name). index.html (page_pipeline): SEQ / SEQ_SKILL rabbit
+  (decisions 1-10, 13), ITEM_SETS.rabbitShotgun (isShotgun's 10 props), the cue kind `propCopy` (HeroPropCopy: a copy of
+  the worn prop, weapon_fx too, on a hero bone at the worn prop's world scale), cue options `yaw` (FX.yaws, one angle per
+  play per name), `sphere`, `replace` and `"random"` inside a rot list (rotOf now returns a fresh array), HERO_SKINS
+  rapidTrance, the `EffectControl(root)` call in the Fx constructor, FX_PART_FILES += rabbit, tto_rabbit, the cue-format
+  comment. **Mine (index.html Fx.update):** an effect with no EffectControl and nothing left to draw was disposed on its
+  first frame even with a cue's kill: the scope (sniperCamera: Transform, script, the playOnAwake-off deadShot AudioSource)
+  went before its playAudio 0.1, so the deadShot never played; such an effect now lives to its cue's kill (every other
+  cued effect with a kill has an EffectControl or something drawn: no other class changes). wardrobe_fx.py: LAYOUTS
+  Rabbit_potion, Rabbit_sniperCamera, the four 0-byte scripts, LightGolem, LightGolemAI; SHURIKEN_FROM_TTO rabbit
+  extravagance_ring (no SHURIKEN_MAT); EXTRA_FOLDERS rabbit lightgolem. wardrobe_fx_tto.py: SKILL_FX rabbit (25),
+  CODE_MOVERS medicTurret_capsule / bountyHunt_poster / coinRicochet_coin. Nothing the video repo reads was renamed.
+- **Cues** (wardrobe/fx_cues/rabbit.json, 53 keys, 282 cues: 206 fx, 62 voice, 9 sound, 3 hideProp, 1 skin, 1 propCopy; 94
+  effect names, 17 of them TTO; assembled by checks/fx_rabbit_build/editor/assemble.py, git-ignored): attacks_emotes'
+  block with its Verification's nAttack / cAttack3 (its From the Above block dropped); skills_a Verification's whole block
+  (no Mall voices); skills_b's block with its Verification's statScan (`owner`), `@Contract:bow`, medicalShot, and its
+  tenShot (not parts'); effect_only Verification's `@FromtheAbove:bounce1` / `:bounce2` (empty, a guard); tto section 7's
+  bountyHunt / coinRicochet and its Verification 2's medicTurret. Applied on top: decision 39 (cAttack2 = the scope cue
+  `sniperCamera` {y 1.05, d 0.15, playAudio 0.1, kill 4.2}, its why rewritten, not attacks_emotes Verification 2's sound
+  kill); decisions 31 / 33 / 55 (the turret cue `replace`, medicTurret_deploy's bare 1.8 written {"d": 1.8}).
+- **Tiles / icons:** wardrobe_skill_icons.py CLIP_SKILLS rabbit maim -> maimShot, OWN_TILE rabbit customizedShotgun /
+  fromTheAbove / contract, RANK_ICONS rabbit (decision 13's 14 card icons + cAttack3 and customizedShotgun2, below); rerun:
+  rabbit 34 HD icons for 43 clips (14 new webp: acidicField, boostShot, contract, customizedShotgun, diamondShot,
+  fromTheAbove, healingField, heatShot, immuneShot, lifeShot, maimShot, miracleBlend, shake, stickyGum; 11 replaced by the
+  card's picture: backpack, cAttack, circleShot, fourShot, gorgonShot, mall, millionaire, rapidTrance, shootingArray,
+  statScan, truceTrading); index.json rabbit only, no other class changed. No NEVER_PLAYED / LIFTS for the Rabbit.
+- **Check / inventory:** wardrobe_fx_check.py KINDS += propCopy (its slot one of R / L / Head / Back, `bone` a string; not
+  expected: it takes hold only with a prop worn), OPTS += yaw, sphere, replace, owner, ally, delay (not kind); names()
+  splits a builds name "a|b" (wardrobe_fx.py already built every name of one). wardrobe_fx_inventory.py BUILT += the 14 of
+  decision 57, NOTES rabbit extravagance_ring (grafted: drawn), CLASS_NOTES rabbit (castStar / castLight / deadEffect /
+  mall1-5 / the drinkers' looks / the golem, and the ten missing prefabs); rerun: the Rabbit 83 / 84 ready (the 1 left:
+  extravagance_ring's grafted ParticleSystems, drawn).
+- **Data:** `wardrobe_fx_tto.py rabbit`: 25 TTO effects, 61 materials, 55 textures, 11 sounds; `wardrobe_fx.py rabbit`: 77
+  effects, 70 materials, 66 textures, 110 sounds (the two extravagance_ring graft lines printed, Gil and star5).
+  data/rabbit/fx.json 102 effects (3.0 MB; LightGolem 26 nodes with its root / run / ko / getUp / dead clips), sfx/ 111
+  files, 65 new textures in data/fx/tex: all new files, to commit with the run; the other PC pulls.
+- **Judgement calls (mine):** RANK_ICONS cAttack -> rabbit_cAttack3 and customizedShotgun -> rabbit_customizedShotgun2
+  (decision 13 says to compare nAttack / cAttack with their cards; the cAttack card's picture differs from cAttack4, and
+  the Customized Shotgun tile's card differs from customizedShotgun4 the same way; nAttack4 is its card); the turret's
+  drops as one builds pick `"lifeShot|boostShot|heatShot"`: written as three names, the check expected all three from 7
+  random draws (a ~17 % flaky gate); the Fx disposal fix above; skills_b's harmless ring cuts (medicalShot_ring 1.7,
+  shootingArray_ring 1.8) kept as its Verification allows; the turret probe (7 beats, 7 capsules, 7 hits, the break, gone
+  by 11.5 s), the scope (live 1.0-5.2 s with its sound) and Ten Shot's copy (timeShotgun worn: the copy on mountHand_L at
+  the worn world scale 0.93, gone by 3.2 s) checked headless (checks/fx_rabbit_build/editor/probe.py).
+- **Gate:** files-only (every class with cues) "no problems"; `wardrobe_fx_check.py ... checks/fx_rabbit dark --cls
+  rabbit` exit 0, errors [], 52 tile plays (Truce Trading once per outcome), every expected effect spawned, 78 sounds
+  loaded (on the final code); the page and shared parts changed (index.html's cue options / propCopy / Fx disposal, control.js, sheep.js, the check), so also `--cls wolf,sheep,penguin,bat,bison,cat,chameleon,mole,monkey,panda` in one run (checks/fx_rabbit_regress): exit 0, errors [], 451 tile plays; unit tests 67 OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py checks/fx_rabbit_build/editor/weapon_fx_check.png` OK.
+  index.html LF. Not committed.
+- **Left out:** decisions 44-48 (the scope's camera and GUI, the messages, Mall's shop UI, Stat Scan's and Coin Ricochet's
+  chat; the status looks on others, the bounty claim; gear procs, numbers, pickups; the missing prefabs snipeShot_hit,
+  kneeShot_hit, herbFinder, contract_ring, fourShot_hit, circleShot_hit, tenShot_hit, mall / mall0 / mall6; the plain
+  rifle path). Nothing else: every skill decided is cued. Built, not cued: tto/bounty, tto/gilded, tto/bountyHunt_claim,
+  autoLife / enlarge / reduce / miracleDrop.
+- **For the QA pass:** nothing has been looked at in a screenshot except Ten Shot's second gun (it reads right: the copy in
+  her left hand, pointing up like the worn one). To look at: statScan facing the camera and swinging round the target
+  (EffectControl(root), the camera behind: about 0.3 m behind the target's centre line), bounce1 / fromTheAbove_ring's
+  faceUp; the potions' and stars' ring turned by one `yaw` per play (stars and bottles in line); Millionaire's 18 coins
+  within 2 m, each its own yaw; the fields and the gum on loop (`replace`: one of each); the Mall stall by colour (mall3-5
+  share one material); the Light Golem 3 m ahead (its root loop, its material); Rapid Trance's purple; the Medic Turret's
+  grow, head turn to her, capsules flying back to her chest and the drops at her feet, its shrink at 10.55 s; the poster's
+  arc from her left hand to 0.6 m above the chest; the coins' rise and bob meeting the shot tracers; the hired guns'
+  muzzles 14 m out and 7 m up (outside the default frame); extravagance_ring's grafted coins and stars; the sniperCamera's
+  deadShot (heard 1.1-5.2 s of the Charge Attack tile); the Normal Attack's floor ricochet at 11 m and the shotgun
+  variant with a shotgun worn. Rolled procs the gate does not expect: KO's deadEffect (p 0.5), Knee Shot's maimShot_hit
+  (p 0.8), Miracle Blend's golden bottle (p 0.05 per bottle).
+- **For the Bible (offer, not written):** decisions.md's last section.
+- **QA pass (13/11/2026, office).**
+  - **What was shot.** `wardrobe_fx_shots.py --jobs` (virtual clock). The jobs file is checks/fx_rabbit_qa/jobs.json,
+    written by make_jobs.py: 70 jobs covering every Rabbit tile.
+    - Normal Attack: bare, and with traderGun worn (the shotgun path); Customized Shotgun.
+    - Charge Attack to 6.2 s; Bounce and From the Above to 10.3 s.
+    - Maim Shot, and again with maimShot_hit forced.
+    - Gil / Diamond Shot, Gorgon Shot, Backpack (standardGun worn, for the hide), Four Shot (side, top), Circle Shot,
+      Extravagance.
+    - Mall to 8.2 s, plus outfit colours 2-5.
+    - Mix / Shake / Miracle Blend to 11.6 s, and Miracle Blend with two golden bottles forced (mix3!pot1+mix3!pot3).
+    - The three fields and the four Medical Shots; Rapid Trance to 11.3 s; Stat Scan (side, front, behind).
+    - Truce Trading, both outcomes (seqAlt:1=0 / 1); Contract to 10.3 s.
+    - Shooting Array, Millionaire (side, front, top); Ten Shot bare, with timeShotgun and with standardGun.
+    - The three TTO tiles: Bounty Hunt (side, front, far), Coin Ricochet (side, front, near), Medic Turret to 11.5 s.
+    - KO (dead forced, and as rolled), getUp, run, and 22 emotes (wave ... pose66, clap, wai, dance).
+  - Both stages: 826 shots each, dark and white. Sheets: checks/fx_rabbit_qa/sheets_dark and sheets_white (git-ignored;
+    shots and logs under run/).
+  - Extra checks (checks/fx_rabbit_qa/probe, probe_sheets):
+    - A top / near / front set for the gum, the fields and the turret.
+    - replace_probe.py, run with the skill tab's วนซ้ำ on.
+  - Page health: no page error, no stalled render loop, no failed job. The only console lines are swiftshader's
+    glBlitFramebuffer feedback warning.
+  - **What matches** (boxes in the hero's frame, +x = her left):
+    - **Normal Attack and Charge Attack.** The Bouncing Bullet tracer meets the floor at 11 m at 0.3 s, and the second
+      tracer leaves the floor 0.02 s later. With a shotgun worn: shotgun_fire / _hit only. Charge Attack: the charge at
+      0 s, the scope drawing nothing 1-5 s, then the release and cAttack_hit at (0, 1.05, 9.83) at 5.0 s.
+    - **Bounce and From the Above.** Bounce leaves the frame by 0.7 s. The hero is hidden 0.9-9.5 s and falls back in on
+      bounce2. fromTheAbove_ring draws from 9.9 s: its emitters have Delay 1.0, so it shows 1 s after its 8.9 s cue,
+      which is the game's 9.9 s step. From the Above's six air shots come down from 12 m onto (0, 0.36, 9.7) at 1.1 ...
+      8.6 s.
+    - **Shots at the target.** Maim / Gil / Diamond / Gorgon / the Medical Shots hit at the 10 m body at their cued times.
+    - **Four Shot** fires forward, back, left and right at 0.4 / 0.7 / 1.0 / 1.3 s (identity rotation, as the code).
+    - **Backpack** hides the worn gun 0.2-1.0 s. **Circle Shot**'s three bursts come above her.
+    - **Extravagance** draws its grafted coins and stars (0.4-0.8 s).
+    - **Mall.** The stall comes in by colour: red, blue, then green for colours 3-5 (mall3-5 share one material).
+    - **Potions and stars.** The stars of Mix / Shake / Miracle Blend land on the bottle spots (one `yaw` per play, in
+      line). The bottles stay to 11.4 s; the golden winged bottle shows at the forced slots.
+    - **Sticky Gum** is centred about 2.4 m ahead, radius about 2.5 m, read off the top view. Its box (z 4.4-10) reads
+      wrong because the gum is a skinned mesh.
+    - **The fields and the turret** keep one live copy each across loops (`replace`). The potions stack: 5, then 20 by
+      8 s.
+    - **Rapid Trance**: the potion in her left hand 0.4-1.3 s, the purple tint 1.1-11.1 s, back at 11.3 s.
+    - **Stat Scan's** mark sits on the target and faces each camera (side, front, behind).
+    - **Truce Trading**: the flag in her left hand, then success or fail.
+    - **The Light Golem** stands 3 m ahead from 0.1 s, animating: frames differ between samples. Its own teal
+      LightGolem1 material; gone at 10.3 s.
+    - **Shooting Array**'s three shots and finalhit land at the target. **Ten Shot**'s volleys go in the code's
+      directions, with nAttack_hit x2 at 2.5 s. The worn gun's copy shows 0.2-2.8 s: three hero meshes, two at 2.9 s.
+      Nothing is copied when no gun is worn.
+    - **Bounty Hunt**: the poster's arc from her left hand to the chest + 0.6 by 0.65 s, then the pin, the flare going
+      up, and the three hired guns at their fixed spots at 1.15 / 1.35 / 1.55 s.
+    - **Coin Ricochet**: four coins rise and hang. Each is pinged at 0.75 / 0.95 / 1.15 / 1.35 s, in order from her left,
+      then ricochets onto the target and cashes out at 1.42 s.
+    - **Medic Turret**: it grows from 0.55 s, beats at 1.3, 2.8, ... s, and sends capsules back to her with a drop at her
+      feet. It breaks at 10.55 s and is gone by 11.0 s.
+    - **KO**: deadEffect when forced.
+  - **Bugs found:** none. No file was changed by this pass.
+  - **Looked into, not bugs:**
+    - **Millionaire's peppers** spawn 4-6 m out. The prefab's Animation rolls each one from +6 m through its root to -6 m
+      over 2 s; the root itself is within 2 m (`sphere`).
+    - **The Gorgon beam** looks near-white on the dark stage. It is an additive cyan / pink texture with both faces
+      drawn; the white stage shows its colours.
+    - **The TTO shots' 10 m streak** (coinRicochet_shot, medicTurret_shot). Their Muzzle's LineEmitter (endRadius 10)
+      points along the hero's facing, because Row6Tracer spawns at identity. Example: the turret's shot back at her
+      streaks forward, away from her.
+    - **statScan_dust** draws nothing in the samples: its emitters have Delay 0.3 and Life 0.4, which no sample hit.
+    - **Box readings.** The skinned meshes' boxes (the gum, the golem, the bottles) read in bind space.
+    - **The miracle bottles** hover 0.3-0.45 m up and spin: that is the prefab's looped root clip.
+    - **The floor's contact-shadow disc** stays while the hero is hidden in Bounce. It is the stage's, as for every
+      class.
+  - **Gates (on the final code, unchanged by this pass).**
+    - `wardrobe_fx_check.py ... checks/fx_rabbit_qa/gate dark --cls rabbit`: exit 0, errors [], 52 tile plays.
+    - Files-only check for every class: "no problems".
+    - Unit tests: 67 OK; node 9 pass; test_adopt_from_video.ps1 fails 0.
+    - `wardrobe_weapon_fx_check.py`: OK. index.html is LF.
+    - No regression run: no shared code changed in this pass. Not committed.
+  - **For the user's eye:**
+    - Snipe Mastery's hit and the other missing prefabs draw nothing (decision 17 / 47).
+    - The Light Golem's size: about 2.5 times her height.
+    - The white sacks on the Mall stall.
+    - Millionaire's peppers rolling across 12 m.
+    - The TTO shots' forward streak.
+    - The hired guns 14 m out and the target-point effects outside the default frame, as for the other classes.
+    - Decisions.md's overnight calls and the editor's judgement calls above.

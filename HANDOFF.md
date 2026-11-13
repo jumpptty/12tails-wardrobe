@@ -64,12 +64,12 @@ the token on discord.com/developers → 12 Tails Skins → Bot (then the office'
 ## Next up (either PC)
 
 - **Effects + sounds: the run continues at the office (2026-11-13)** (`plans/goal_fx_all_classes.md`, NOTES.md "the run
-  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda.
-  Researched (reports committed): Rabbit, Whale. Left: the Rabbit and Whale builds. For the user's ear: the Monkey's
+  resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda,
+  Rabbit. Researched (reports committed): Whale. Left: the Whale build. For the user's ear: the Monkey's
   sounds come from BB's resources container (every WAV in the rip's monkey/sounds is zero-filled). The workflow is
   `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; office paths inside). For the user's review: every
   class's `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
-  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: Mole to Panda's are on the office PC).
+  `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: Mole to Rabbit's are on the office PC).
 - Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);
   effects on an enemy go to the target point 10 m ahead; the user declined the Sheep's Bible findings (2026-11-10: "no need to
   offer"; they stay in NOTES.md and the reports). Still open: a game clip of Cross Break to check its stretched

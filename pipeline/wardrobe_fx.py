@@ -234,6 +234,23 @@ LAYOUTS.update({
                                 "chopper_startDust", "chopper_forwardDust", "chopper_hit", "missileBase", "missile_fire",
                                 "missile_hit", "kaiser_dust", "kaiser_box", "deadEffect")],
 })
+# the Rabbit's parts (plans/fx_rabbit/parts.md, 2026-11-13; checks/fx_rabbit_research/parts/probe.txt, layouts_try.txt: each
+# instance's bytes are the listed fields exactly, all 96 Rabbit prefabs and the Light Golem build); the other Rabbit scripts
+# keep every field private (0 field bytes); every Rabbit script is data only on the page (nothing to draw of its own)
+LAYOUTS.update({
+    # Rabbit_potion.cs:528 (4 bytes: eRabbitPotionType, hpPot1-4 = 0-3, spPot1-3 = 4-6, randomPot1-6 = rdPot1-6 = 7-12)
+    "Rabbit_potion": [("potionType", "i")],
+    # Rabbit_sniperCamera.cs:553, :556, :589, :592 (24 bytes: the scope and Dead Shot pictures [9, 67] / [9, 54], false, 0)
+    "Rabbit_sniperCamera": [("mSniperCamera", "r"), ("mDeadShotCamera", "r"), ("hasDeadShot", "b"), ("mDeadShotTimer", "f")],
+    "Rabbit_acidicField": [], "Rabbit_healingField": [], "Rabbit_mall": [], "Rabbit_stickyGum": [],
+})
+# Contract's mercenary (Resources characters/elementals/lightgolem/LightGolem, Rabbit.cs:11596-11611; parts.md part 7): data
+# only (fxparts/rabbit.js loops its root clip); its CharacterControl stays NOT_DRAWN
+LAYOUTS.update({
+    # LightGolem.cs:1144-1159 (40 bytes; the private float at :1147 is not serialized)
+    "LightGolem": [(n, "r") for n in ("mChar", "LightGolem2", "LightGolemIcon2", "nAttack_hit", "nAttack_hitFx")],
+    "LightGolemAI": [("AI_state", "s")],             # LightGolemAI.cs:1462 (8 bytes: "none")
+})
 # the Monkey's parts (plans/fx_monkey/parts.md, 2026-11-13; checks/fx_monkey_research/parts/probe_monkey.txt, refs.txt: each
 # instance's bytes are the listed fields exactly); Monkey_earthPulse / Monkey_lavu keep every field private (0 bytes)
 LAYOUTS.update({
@@ -342,7 +359,11 @@ SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]
                      # the Panda's (2026-11-13, plans/fx_panda/parts.md part 2, decisions.md 55): raijinKen_hit's node
                      # "ParticleSystem" (BB Cloud1, addsoft) <- TTO node 1 (tto_Cloud1), the 32-puff burst at 0.4 s, by the
                      # Chameleon's route
-                     "panda": ["raijinKen_hit"]}
+                     "panda": ["raijinKen_hit"],
+                     # the Rabbit's (2026-11-13, plans/fx_rabbit/parts.md part 4, decisions.md 49): extravagance_ring's two
+                     # Unity 3.5 ParticleSystems (BB node 3 Gil alpha: the 16 coins at 0.7 s; node 4 star5 addsoft: the stars
+                     # drawn in) <- TTO nodes 1 / 4, matched by name and material, by the Chameleon's route (no SHURIKEN_MAT)
+                     "rabbit": ["extravagance_ring"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and
@@ -359,7 +380,10 @@ EXTRA_FOLDERS = {"penguin": ["gameassets/characters/elementals/manavortex/effect
                  # the Monkey's summons (2026-11-13, plans/fx_monkey/decisions.md 30, 59): Phoenix4, Ja4, Gadina4, Buiten4, Gaos
                  # (Monkey.cs:11380-11740, :12207, :12957, :13460, :14595) and the Gaos' own effects
                  "monkey": [f"gameassets/characters/elementals/{e}" for e in ("phoenix", "ja", "gadina", "buiten", "gaos",
-                                                                               "gaos/effects")]}
+                                                                               "gaos/effects")],
+                 # Contract's Light Golem (2026-11-13, plans/fx_rabbit/parts.md part 7, decisions.md 30, 49): the top rank's
+                 # mercenary, Resources Characters/Elementals/LightGolem/LightGolem (Rabbit.cs:11596), the effect LightGolem
+                 "rabbit": ["gameassets/characters/elementals/lightgolem"]}
 # an effect the page names otherwise than its prefab, because the class's own folder has a prefab of that name too: the
 # name -> its Resources container path, tried before the class's folder (2026-11-13, plans/fx_bat/parts.md Interfaces 6:
 # Guardian of the Night's hits are Shade4's Effects/nAttack_hit, Bat.cs:12606-12619, not the Bat's own nAttack_hit)

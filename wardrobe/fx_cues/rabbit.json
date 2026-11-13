@@ -1,1 +1,2996 @@
-{}
+{
+  "nAttack": {
+    "why": "Rabbit.cs doNormalAttack (:8876-9100): Customized Shotgun 2 (#354, passives on) with a shotgun worn (getCustomizedShotgunLv :11087-11131, isShotgun :11136-11256: w_rab22 / 24 / 32 / 34 / 39 / 47 / 48 / 50 / 51 / 52 / 55 / 69, the set rabbitShotgun) in a mission / arena (mGameType > 4 :9051) starts RPC_shotgun (:9057), else RPC_nAttack (:9078). RPC_nAttack ($RPC_nAttack$26825, :17359-18403): at 0 attack, actionTime, myCommand nAttack, timeout 1.5 (1 with w_rab59 :17809-17823), LookAt the aim, Rewind + animation.Play(nAttack), Once (a cut, :17849-17859), voice nAttack1 (pvoice; own hero, else a mission teammate :17864-17888; load :17901, PlayOneShot :18399), Yield(2, 0.3) (:18385). 0.3 s, still attacking (:17374): moveSpeed -3 (the recoil step back, :17384; in place here, Penguin decision 8), firePos = mPos + up + forward (:17389), fireDir = tDir - up (:17394), the aim the no-target 10 m ground point (GameGui.cs:1659; Penguin decision 1); mission / arena only (mGameType <= 4 skips the whole shot :17451, kept as the Sheep / Penguin precedent); Bouncing Bullet #401 on (:17459): Sounds/nAttack PlayOneShot (:17471-17483; the bouncingBullet prefab has no AudioSource, probe_summary.txt), bounceRange 20 + 5 x Combo 4 = 40 (:17512), the loop IL_F77 (:18075-18378): segment 1 bouncingBullet at firePos, LookRotation(fireDir) (:18097-18109) = [5.711, 0, 0] from (0, 1, 1); Physics.Raycast on layer 1 (Default, :17497, :18123), which the ground is on (Math.cs:1102-1105), meets the floor at (0, 0, 11) (geom.txt): bouncingBullet_hit there with the hero's rotation (LookRotation(forward) :18135-18147), bounceMagnitude int 10.05 = 10, bounceRange 30 (:18161-18171); RaycastAll over the hero layers (130816 - own, :18197) along those 10 m meets the standard target body (Bat decision 4: the CharacterController capsule, centre 0.6 m up, height 1, radius 0.3) on its lower cap at (0, 0.106, 9.941), 8.985 m out, a graze 1.5 mm inside the radius (checks/fx_rabbit_research/verify/verify.txt): RPC_snipeShot_hit with Snipe Mastery #431 (:18265-18271), whose prefab Effects/snipeShot_hit is in neither BB's container nor TTO's catalog (container.txt; probe_tto_err.txt): Cannot find snipeShot_hit Effect (:11435-11467), nothing drawn; the hit with Hyper Shot 4 and Snipe Mastery's raw distance (the flat 9.94 m x 4 = 39 > 0, :18230-18253, :18319-18325) sets isHyperShot; bounceCount 1 at the hit, not a bounce (:18331); the floor's reflection (Vector3.Reflect :18365-18370), WaitForFixedUpdate (:18393, 0.02 s nominal): segment 2 bouncingBullet at (0, 0, 11) rot [-5.711, 0, 0] at 0.32 s (range 30 > 12 :18082), no wall above (bounceCount = 9 :18179); the next fixed step (0.34 s) leaves the loop (:18076, :18378) for IL_14D7 (:17924): HyperShot message (GUI), the voice nAttack2 (not isBouncingBullet :17937, isHyperShot :18006; load :18051, PlayOneShot :18395); Yield(4, 0.15) (:18389) moveSpeed 0 at 0.49 s, Yield(5, 0.34) (:18391) standby at 0.83 s (:17729-17752). RPC_shotgun ($RPC_shotgun$27317, :36172-36527): at 0 attack, timeout 1.5, LookAt, animation.Play(nAttack) with no Rewind, Once (:36474-36495), no voice anywhere in it (TTO1102 Rabbit.<RPC_shotgun>d__229 :20992-21569 the same); Yield(2, 0.3) (:36525); 0.3 s moveSpeed -3 (:36200), shotgun_fire at position + TransformDirection(0, 1, 1) with the hero's rotation (:36205-36223; its AudioSource plays shotgun), Damage.FindRecTarget's box from position + forward, 12 m long, half-width 1.5 -> 4 m (sLv 2, :36270) holds the target at 10 m: RPC_shotgun_hit at the target's transform.position + up = (0, 1, 10) with the hero's rotation (:36354; :11044-11067); standby at 0.79 s (Yield 0.15 :36518, 0.34 :36520, :36409-36432). Both take worn / notWorn rabbitShotgun on R (Rabbit weapons mount on mount_Hand_R, data/rabbit/props_weapons.json)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "nAttack1",
+        {
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.3,
+        "sound",
+        "nAttack",
+        {
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "bouncingBullet",
+        {
+          "y": 1,
+          "d": 1,
+          "rot": [
+            5.711,
+            0,
+            0
+          ],
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "bouncingBullet_hit",
+        {
+          "d": 11,
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "shotgun_fire",
+        {
+          "y": 1,
+          "d": 1,
+          "worn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "shotgun_hit",
+        {
+          "y": 1,
+          "d": 10,
+          "worn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.32,
+        "fx",
+        "bouncingBullet",
+        {
+          "d": 11,
+          "rot": [
+            -5.711,
+            0,
+            0
+          ],
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ],
+      [
+        0.34,
+        "voice",
+        "nAttack2",
+        {
+          "notWorn": [
+            "R",
+            "rabbitShotgun"
+          ]
+        }
+      ]
+    ]
+  },
+  "@CustomizedShotgun:nAttack": {
+    "why": "Customized Shotgun 2 (#353 / #354, its own tile: one tile per skill, Clear Arrow's shape, Chameleon decision 13): the shotgun shot whatever is worn (the game needs isShotgun, Rabbit.cs:11098; the tile shows the skill): RPC_shotgun ($RPC_shotgun$27317, :36172-36527): at 0 animation.Play(nAttack), Once (:36492-36495), no voice; 0.3 s (Yield(2, 0.3) :36525): shotgun_fire at position + TransformDirection(0, 1, 1), hero rotation (:36205-36223; its own AudioSource shotgun), RPC_shotgun_hit at the 10 m target's position + up (:36354, :11044-11067; the box FindRecTarget 12 m x 1.5-4 m, sLv 2, :36270, mission / arena only :9051); standby at 0.79 s (:36518, :36520, :36422)",
+    "cues": [
+      [
+        0.3,
+        "fx",
+        "shotgun_fire",
+        {
+          "y": 1,
+          "d": 1
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "shotgun_hit",
+        {
+          "y": 1,
+          "d": 10
+        }
+      ]
+    ]
+  },
+  "cAttack1": {
+    "why": "Rabbit.cs doBeginCharge (:9155-9250, #111, from standby / run, 0.1 s after the last action) -> RPC_cAttack1 ($RPC_cAttack1$26855, :18604-19034), Charge Attack 3 (#113): at 0 (IL_B64 :18905-18930) attack, actionTime, myCommand cAttack1, LookAt, PlayAnimation(cAttack1, 0) (a cut, :18921), Once, moveSpeed 0; the voice cAttack (pvoice, mission / arena for every client, the own hero too :18939, a teammate :18945; load :18957, PlayOneShot :18969; kept as the Sheep / Penguin precedent); cAttack_charge created at the hero's position and rotation (:18982-18998; EffectControl life 2, followPosition, followState, its AudioSource plays cAttack1, its cAttack_star 1 m up 0.6 ahead after a 0.7 s delay, probe_summary.txt; the action stays attack until the release, so it lives its 2 s); Yield(2, 1) (:19032) to the cAttack2 step at 1.0 s",
+    "cues": [
+      [
+        0,
+        "voice",
+        "cAttack"
+      ],
+      [
+        0,
+        "fx",
+        "cAttack_charge"
+      ]
+    ]
+  },
+  "cAttack2": {
+    "why": "Rabbit.cs RPC_cAttack1 case 2 (:18617-18731) at 1.0 s, still attack / cAttack1: PlayAnimation(cAttack2, 0) cut in, Loop (:18636-18641); the own player only (:18646) gets the sniperCamera at position + TransformDirection(0, 1.05, 0.15) (:18654-18684; Transform, the Rabbit_sniperCamera script and an AudioSource deadShot, playOnAwake off, no renderer: probe_snipercam.txt) and the camera's specialTarget / FOV 60 (:18698-18715, left out as the camera effects, Cat decision 43); its OnGUI (Rabbit_sniperCamera.cs:246-468) checks every 0.1 s (:308-314) a ray along its forward, the hero's with no mouse (Rabbit.cs:18762-18816): at y 1.05 it meets the target body's head zone (1.05 - 0.6 > 0.5 x 0.5, Rabbit_sniperCamera.cs:357; geom.txt), Dead Shot #411 on (hasDeadShot :266, :335): mDeadShotTimer = now at the first check (:363-369), and at the next check, more than 0.1 s and under 1 s later (:381-387), audio.Play() = sounds/deadShot (:375-393) once (Loop off): 0.1 s, the nominal interval (Mole decision 45); the crosshair GUI and the Dead Shot bar (:246-305, :479-510) are screen UI, left out; held 4 s (the SEQ's full charge: Dead Shot's x3 at clamp(t, 0, 4) = 4, Rabbit.cs:19486, Rabbit_sniperCamera.cs:500), released at 5.0 s; the sound is the scope's own AudioSource (sniperCamera.prefab:49-53: sounds/deadShot.wav, 4.919 s, playOnAwake and Loop off), so it is drawn as the scope itself (plans/fx_rabbit/decisions.md 39, parts.md part 2: the Rabbit_sniperCamera layout) with playAudio 0.1 (audio.Play() at the second 0.1 s check), and the scope goes when RPC_cAttack2 destroys it 0.2 s after the release (Destroy :19254, Yield(2, 0.2) :19781): kill 4.2, which stops the sound (Fx.dispose stops an effect's AudioSources, as Unity's Destroy): 4.1 s of it, from 1.1 to 5.2 s of the tile",
+    "cues": [
+      [
+        0,
+        "fx",
+        "sniperCamera",
+        {
+          "y": 1.05,
+          "d": 0.15,
+          "playAudio": 0.1,
+          "kill": 4.2
+        }
+      ]
+    ]
+  },
+  "cAttack3": {
+    "why": "Rabbit.cs doReleaseCharge (:9254-9353): attack / cAttack1, a mission / arena and the sniperCamera alive (:9297-9303) -> RPC_cAttack2 along the camera's flat forward (:9309; else RPC_cAttack0's cancel :9330, a CrossFade to root, no effect :19960-20060). RPC_cAttack2 ($RPC_cAttack2$26869, :19187-19785): at 0 attack, myCommand cAttack2, LookAt, PlayAnimation(cAttack3, 0) cut in, Once (:19300-19321), moveSpeed -2 (:19327; in place here), cAttack_fire at position + up with LookRotation(the camera's forward = the hero's) (:19330-19366; its own AudioSource plays nAttack, LineEmitter 2 m ahead); the own client's ray from the camera (hero + (0, 1.05, 0.15)) along its forward, 20 + 5 x Combo 4 = 40 m (:19380-19392), meets the standard target body (Bat decision 4: the CharacterController capsule, centre 0.6 m up, height 1, radius 0.3) on its upper cap at (0, 1.05, 9.834) (checks/fx_rabbit_research/verify/verify.txt; still the head zone, 1.05 - 0.6 = 0.45 > 0.5 x 0.5, :19434): RPC_cAttack_hit there with LookRotation(hero forward) (:19398; :9378-9401); the head zone (:19434) and Dead Shot 3 x (:19445-19486, the timer set at 1.0 s, 4 s on the head) give Dead Shot! (GUI, :19529-19535) and the voice headShot (pvoice, own or a mission teammate :19540-19562; load :19575, PlayOneShot :19587); Yield(2, 0.2) (:19781): moveSpeed 0, the camera destroyed (:19217-19254); Yield(3, 0.5) (:19779): standby at 0.7 s (:19257-19275)",
+    "cues": [
+      [
+        0,
+        "fx",
+        "cAttack_fire",
+        {
+          "y": 1
+        }
+      ],
+      [
+        0,
+        "fx",
+        "cAttack_hit",
+        {
+          "y": 1.05,
+          "d": 9.83
+        }
+      ],
+      [
+        0,
+        "voice",
+        "headShot"
+      ]
+    ]
+  },
+  "bounce1": {
+    "why": "Rabbit.cs RPC_bounce (:20867-21425), Bounce rank 2 (sLv 2), From the Above #421 on (passives on): bounce1 cut in (PlayAnimation(bounce1, 0), Once, :21238-21241; the page's first-step fade stays, Cat decision 2) and voice bounce1 / bounce2 (Random.Range(0, 2) :21279-21338, PlayOneShot :21383 / :21363) at 0; Yield 0.5 (:21357): Effects/bounce1 Instantiated at the hero, hero rotation (:21019-21031; EffectControl life 0.5, its own Sounds/bounce1); Yield 0.4 (:21375): at 0.9 s (bounce1's last frame) addStatus hide (level 1, 4 x sLv + 1 = 9 s, :21068), every Renderer of the hero off (CharacterControl.cs:32818-32853: the page's whole-hero hideProp), mBounceTimer = now + 4 x sLv = 8 s (:21073); each FixedUpdate until Time > mBounceTimer (:21108; the steering by the arrow keys :21136-21190 and the From the Above air shot on the attack key, :8944 / :22100-22260, left out: the player's input): at 8.9 s RPC_bounce0 (:21114; :21496-21925): voice bounce0 (one file, :21796-21808) and, #421 learned, Effects/fromTheAbove_ring at the hero, hero rotation (:21820-21840; life 2, its own Sounds/fromTheAbove) in place of Effects/bounce2 (the else branch :21859-21875, not drawn with the passive); Yield 0.6 (:21908): at 9.5 s removeStatus hide (:21566, the hero shown again: CharacterControl.cs:14547-14573) and bounce2 cut in (:21571, the SEQ's bounce1@9.5 bounce2!)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "bounce1|bounce2"
+      ],
+      [
+        0.5,
+        "fx",
+        "bounce1"
+      ],
+      [
+        0.9,
+        "hideProp",
+        "hero",
+        {
+          "kill": 8.6
+        }
+      ],
+      [
+        8.9,
+        "voice",
+        "bounce0"
+      ],
+      [
+        8.9,
+        "fx",
+        "fromTheAbove_ring"
+      ]
+    ]
+  },
+  "@FromtheAbove:bounce1": {
+    "why": "Rabbit.cs From the Above (#421, passive), on Bounce at max rank (Bounce 2) with its air shots; no clip of its own. Bounce (RPC_bounce :9591 -> $RPC_bounce$26916 :20867-21400): at 0 PlayAnimation(bounce1, 0) (:21238), actionTime = now (:21223), voice bounce1 / bounce2 (Random.Range(0, 2) :21279; :21289 -> PlayOneShot :21383, :21320 -> :21363); Yield 0.5 (:21357): Effects/bounce1 at the hero, its rotation (:21019-21031; life 0.5, its AudioSource bounce1); Yield 0.4 (:21375): at 0.9 addStatus(hide, 1, 4 x 2 + 1) (:21068: layer 2 and every Renderer under the hero off, CharacterControl.cs:32818-32848) and the landing timer 0.9 + 8 (:21073); the FixedUpdate loop (:21379) starts RPC_bounce0 at 8.9 (:21108-21114). The air shot: doNormalAttack (:8876-9101) with hasSkill(421), actionState attack, myCommand bounce, Time > actionTime + 1 and the nAttack timeout clear (:8944-8976, the junk predicates between them false) starts RPC_fromTheAbove(position, target - position) (:8984; $RPC_fromTheAbove$26940 :21964-22275): at the press addTimeOut(nAttack, 1.5) (:22247), firePos = hero + 12 up, fireDir = tDir - 12 up, fireRot = LookRotation(fireDir) (:22253-22259), Yield 0.1 (:22272); then Effects/nAttack_fire at firePos, fireRot (:22087-22099; life 1, its AudioSource nAttack) and the owner's raycast (range 16 + 5 x Combo, :22129-22134) -> RPC_nAttack_hit at the hit (:22140; nAttack_hit with the hero's rotation, :9135; Snipe Mastery is not read here). Held attack: presses at 1.0, 2.5, 4.0, 5.5, 7.0, 8.5 (1.5 s apart), shots 0.1 s later; to the 10 m ground point from 12 m up: pitch atan2(12, 10) = 50.194 deg; the ray (mask ~(own + layers 1, 2) :22119, so the foe's layer counts) meets the standard target body (Bat decision 4, the CharacterController capsule centred 0.6 m up, height 1, radius 0.3; the class's other ray hits, skills_a.md) on its lower cap at (0, 0.356, 9.703), 15.16 m out (checks/fx_rabbit_research/verify/verify.txt), within the 36 m range; flat distance 9.7 < 16: no Hyper Shot, no voice (:22168-22214). The landing (RPC_bounce0 :9598 -> $RPC_bounce0$26929 :21430-21925) at 8.9: voice bounce0 (:21796, PlayOneShot :21808) and, with #421, Effects/fromTheAbove_ring at the hero, its rotation (:21820-21840; in place of the bounce2 effect, the else :21857-21875; life 2, its dust bursts delayed 1 s to the stomp, its AudioSource fromTheAbove); Yield 0.6 (:21908): the hide removed and bounce2 at 9.5 (:21566-21571, the next step)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "bounce1|bounce2"
+      ],
+      [
+        0.5,
+        "fx",
+        "bounce1"
+      ],
+      [
+        0.9,
+        "hideProp",
+        "hero",
+        {
+          "kill": 8.6
+        }
+      ],
+      [
+        1.1,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        1.1,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        2.6,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        2.6,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        4.1,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        4.1,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        5.6,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        5.6,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        7.1,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        7.1,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        8.6,
+        "fx",
+        "nAttack_fire",
+        {
+          "y": 12,
+          "rot": [
+            50.194,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        8.6,
+        "fx",
+        "nAttack_hit",
+        {
+          "y": 0.36,
+          "d": 9.7
+        }
+      ],
+      [
+        8.9,
+        "voice",
+        "bounce0"
+      ],
+      [
+        8.9,
+        "fx",
+        "fromTheAbove_ring"
+      ]
+    ]
+  },
+  "@FromtheAbove:bounce2": {
+    "why": "Rabbit.cs RPC_bounce0 after its 0.6 s wait (:21547-21581): the hide removed (:21566) and PlayAnimation(bounce2, 0) (:21571); 0.4 s later the stomp, FindAreaTarget(3 x rangeMod) and hit(421, ..., ATK, KO 20) (:21608-21652, no effect), 0.4 s later standby (:21688). Nothing is drawn in this step: the voice bounce0 and fromTheAbove_ring came at the landing's start, 0.6 s before it, in the bounce1 step. This entry stays empty on purpose, so that a plain bounce2 entry of the Bounce tile does not play its landing cues a second time.",
+    "cues": []
+  },
+  "maim": {
+    "why": "Rabbit.cs RPC_maimShot (:22949-23697), Maim Shot rank 4 + Knee Shot #402 (passives on): maim (0.2 fade, Once, :23486-23489) and voice maimShot1 / maimShot2 (Random.Range(0, 2) :23527-23586, PlayOneShot :23622 / :23625) at 0; Yield 0.5 (:23610): moveSpeed -1 (the step back, left out: the hero does not travel), firePos = position + up, fireDir = the target's collider.bounds.center - position - up (:23111-23127: from (0, 1, 0) to the 10 m target 0.6 m up, pitch atan(0.4 / 10) = 2.29 deg), Effects/maimShot_fire at firePos, FromToRotation(forward, fireDir) (:23133-23156; life 1, its own Sounds/nAttack); Yield 0.1 (:23608): at 0.6 s the Raycast from firePos along fireDir (16 + 5 x Combo m, :23211-23216) meets the standard target body at (0, 0.612, 9.7) (checks/fx_rabbit_research/skills_a/hitpoints.txt): RPC_nAttack_hit there (:23224; Rabbit.cs:9112-9147 Effects/nAttack_hit, hero rotation) and, the hit landing, Knee Shot's roll Random.Range(0, 100) < lckAdjust(20) = 20 at LCK 1 (:23256-23273; CharacterControl.cs:20658: floor(100 x 20.2 / 100.2)): 20 % RPC_kneeShot_hit (:23294; Effects/kneeShot_hit, :9682, is in neither BB's data nor TTO's catalog: nothing drawn), 80 % RPC_maimShot_hit (:23314; Effects/maimShot_hit at the hit, LookRotation(forward) = the hero's, :9639-9649; no EffectControl, one ImageEmitter burst of 0.3 + 0.5 s, so the game never destroys it: kill 1 for the page); the maim status (getDebuff(3), :23337-23348) draws nothing; Yield 0.1 x 2 (:23628, :23620): standby at 0.8 s (:23402-23417)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "maimShot1|maimShot2"
+      ],
+      [
+        0.5,
+        "fx",
+        "maimShot_fire",
+        {
+          "y": 1,
+          "rot": [
+            2.29,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        0.6,
+        "fx",
+        "nAttack_hit",
+        {
+          "d": 9.7,
+          "y": 0.61
+        }
+      ],
+      [
+        0.6,
+        "fx",
+        "maimShot_hit",
+        {
+          "d": 9.7,
+          "y": 0.61,
+          "p": 0.8,
+          "kill": 1
+        }
+      ]
+    ]
+  },
+  "gilShot": {
+    "why": "The gilShot clip is played by RPC_gilShot (Rabbit.cs:30539) and RPC_diamondShot (:38454), each with a 0.2 s fade, Once, and by RPC_medicalShot only under Rapid Trance's status (:28548-28552: the four medical shots' state variant, no member: their tiles are on medicalShot, open question 3); TTO1102's three coroutines name it the same (pseudo/Rabbit.c:7498, :9678, :13403): one tile each (poolChains), the clip alone",
+    "skills": {
+      "gilShot": {
+        "why": "Rabbit.cs RPC_gilShot (:30125-30835), Gil Shot rank 4 + Diamond Shot #403 (damage only): gilShot (0.2 fade, Once, :30539-30542), voice gilShot1 / gilShot2 (Random.Range(0, 2) :30580-30639) and Effects/gilShot_ring at the hero, hero rotation (createEffect :30720-30736; EffectControl life 0.5 + afterLife 1, followPosition, followState; its own Sounds/gilShot) at 0; Yield 1 (:30769): at 1.0 s moveSpeed -1 (left out), firePos = position + up, fireDir to the target's bounds centre (:30287-30303: pitch 2.29 deg), Effects/gilShot_fire at firePos, FromToRotation(forward, fireDir) (:30309-30332; life 1, its own Sounds/nAttack), the Raycast (16 + 5 x Combo m, :30364-30369) meets the target body at (0, 0.612, 9.7) (hitpoints.txt): RPC_gilShot_hit there (:30377; Effects/gilShot_hit, Quaternion.identity, :10502-10512; life 1, its own Sounds/gilShot_hit); Yield 0.2, 0.1 (:30771, :30775): standby at 1.3 s",
+        "cues": [
+          [
+            0,
+            "voice",
+            "gilShot1|gilShot2"
+          ],
+          [
+            0,
+            "fx",
+            "gilShot_ring"
+          ],
+          [
+            1,
+            "fx",
+            "gilShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.29,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1,
+            "fx",
+            "gilShot_hit",
+            {
+              "d": 9.7,
+              "y": 0.61
+            }
+          ]
+        ]
+      },
+      "diamondShot": {
+        "why": "Rabbit.cs RPC_diamondShot (:38030-38720), Diamond Shot (one rank): gilShot (0.2 fade, Once, :38454-38457), Effects/diamondShot_ring at the hero, hero rotation (createEffect :38538-38556; life 0.5 + 1, followPosition, followState; its own Sounds/diamondShot) and voice diamondShot1 / diamondShot2 (Random.Range(0, 2) :38599-38658, PlayOneShot :38694 / :38690) at 0; Yield 1 (:38680): at 1.0 s firePos = position + up, fireDir to the target's bounds centre (:38181-38197: pitch 2.29 deg), Effects/diamondShot_fire at firePos, FromToRotation(forward, fireDir) (:38203-38226; life 1, its own Sounds/nAttack), the Raycast (:38258-38263) meets the target body at (0, 0.612, 9.7): RPC_diamondShot_hit there (:38271; Effects/diamondShot_hit, identity, :11405-11415; its own Sounds/gilShot_hit), then RPC_AddEffectDamage 1000 (:38322, the number only); Yield 0.2, 0.1 (:38678, :38684): standby at 1.3 s",
+        "cues": [
+          [
+            0,
+            "fx",
+            "diamondShot_ring"
+          ],
+          [
+            0,
+            "voice",
+            "diamondShot1|diamondShot2"
+          ],
+          [
+            1,
+            "fx",
+            "diamondShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.29,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1,
+            "fx",
+            "diamondShot_hit",
+            {
+              "d": 9.7,
+              "y": 0.61
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "gorgonShot": {
+    "why": "Rabbit.cs RPC_gorgonShot (:29387-30120), Gorgon Shot rank 2: gorgonShot (0.2 fade, Once, :29859-29862), voice gorgonShot1 / gorgonShot2 (Random.Range(0, 2) :29900-29959) and Effects/gorgonShot_ring at the hero, hero rotation (createEffect :29968-29986; life 3 + 1, no followState; its own Sounds/gorgonShot) at 0; the local player's motion blur (:30009) left out; Yield 1.3 (:30042): firePos = position + TransformDirection(0, 1, 1), fireDir to the target's bounds centre (:29545-29561: pitch 2.29 deg); Yield 0.1 (:30029): at 1.4 s moveSpeed -3 (the recoil, left out), Effects/gorgonShot_fire at firePos, FromToRotation(forward, fireDir) (:29594-29617; life 1, its beam mesh Rabbit_gorgonShot 1 m ahead with its 0.4 s root clip and AlphaTimer), SphereCastAll radius 1, 36 m (:29644): its contact with the target body at (0, 0.692, 9.7) (hitpoints.txt): RPC_gorgonShot_hit there (:29677; Effects/gorgonShot_hit, LookRotation(forward), :10452-10462; life 1); the petrify status (:29699-29710) draws nothing here; Yield 0.2, 0.2 (:30040, :30033): standby at 1.8 s",
+    "cues": [
+      [
+        0,
+        "voice",
+        "gorgonShot1|gorgonShot2"
+      ],
+      [
+        0,
+        "fx",
+        "gorgonShot_ring"
+      ],
+      [
+        1.4,
+        "fx",
+        "gorgonShot_fire",
+        {
+          "d": 1,
+          "y": 1,
+          "rot": [
+            2.29,
+            0,
+            0
+          ]
+        }
+      ],
+      [
+        1.4,
+        "fx",
+        "gorgonShot_hit",
+        {
+          "d": 9.7,
+          "y": 0.69
+        }
+      ]
+    ]
+  },
+  "backpack": {
+    "why": "Rabbit.cs RPC_backpack (:30840-31760), Backpack rank 2 + Big Bag #423 (passives on): backpack cut in (PlayAnimation(backpack, 0), Once, :31428-31433; the page's first-step fade stays) and voice backpack1 / backpack2 (Random.Range(0, 2) :31499-31562, PlayOneShot :31681 / :31674) at 0; Yield 0.2 (:31695): mWep1's MeshRenderers off (:30987-31014: the gun, the page's slot R; its weapon_fx particles stay) and, #423 learned, Effects/bigbag_ring at the hero, hero rotation (createEffect :31024-31053; EffectControl life 0.8, followPosition, followState; the bag mesh Rabbit_bigbag swung by its 0.83 s root clip, a trail, a ring; its own Sounds/bigbag_ring) in place of backpack_ring (Euler(270, 90, 0), the else branch :31072-31090); Yield 0.1 (:31677): three pulses at 0.3, 0.5, 0.7 s (FindAreaTarget 3 m with Big Bag, :31588; Yield 0.2 :31666), none reaching the 10 m target (backpack_hit only on a hit, :31632); at 0.9 s j = 3, Yield 0.1 (:31685): standby at 1.0 s and the gun shown again (:31366-31394): hideProp R from 0.2 for 0.8 s",
+    "cues": [
+      [
+        0,
+        "voice",
+        "backpack1|backpack2"
+      ],
+      [
+        0.2,
+        "hideProp",
+        "R",
+        {
+          "kill": 0.8
+        }
+      ],
+      [
+        0.2,
+        "fx",
+        "bigbag_ring"
+      ]
+    ]
+  },
+  "fourShot": {
+    "why": "Rabbit.cs RPC_fourShot (:31823-32500), Four Shot rank 2 + Ten Shot #433 (damage only): fourShot (0.2 fade, Once, :32022-32027) and voice fourShot1 / fourShot2 (Random.Range(0, 2) :32093-32156, PlayOneShot :32432 / :32427) at 0; Yield 0.4 (:32442), then one shot every 0.3 s (Yield 0.3 :32436) at 0.4, 0.7, 1.0, 1.3 s, each Effects/fourShot_fire at position + TransformDirection(...) with Quaternion.identity (:32308-32326; life 1, its own Sounds/fourShot_fire): forward (0.15, 0.85, 0.85) :32246, back (0.15, 1, -0.85) :32263, left (-0.65, 0.65, 0) :32280, right (0.85, 0.75, -0.2) :32297; each a FindAngleTarget cone of 24 m, 70 deg (:32355): only the forward one holds the 10 m target: RPC_nAttack_hit at its collider.ClosestPointOnBounds(position + up) = (0, 1, 9.7) (:32380-32390; nAttack_hit, hero rotation); at 1.6 s i = 4: standby (:32162-32193)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "fourShot1|fourShot2"
+      ],
+      [
+        0.4,
+        "fx",
+        "fourShot_fire",
+        {
+          "d": 0.85,
+          "x": 0.15,
+          "y": 0.85
+        }
+      ],
+      [
+        0.4,
+        "fx",
+        "nAttack_hit",
+        {
+          "d": 9.7,
+          "y": 1
+        }
+      ],
+      [
+        0.7,
+        "fx",
+        "fourShot_fire",
+        {
+          "d": -0.85,
+          "x": 0.15,
+          "y": 1
+        }
+      ],
+      [
+        1,
+        "fx",
+        "fourShot_fire",
+        {
+          "x": -0.65,
+          "y": 0.65
+        }
+      ],
+      [
+        1.3,
+        "fx",
+        "fourShot_fire",
+        {
+          "d": -0.2,
+          "x": 0.85,
+          "y": 0.75
+        }
+      ]
+    ]
+  },
+  "circleShot": {
+    "why": "Rabbit.cs RPC_circleShot (:32503-33220), Circle Shot rank 2 + Ten Shot #433 (damage only): circleShot (0.2 fade, Once, :32945-32948), voice circleShot1 / circleShot2 (Random.Range(0, 2) :32998-33057) and Effects/circleShot_ring at the hero, hero rotation (createEffect :33066-33084; life 1 + 1, followPosition, followState: the 1.1 s standby comes after its life; its own Sounds/circleShot) at 0; the camera's AutoZoom (:33119, :32894) and motion blur (:32663) left out; Yield 0.4 (:33157), Yield 0.2 (:33143): from 0.6 s three Effects/circleShot at position + (1.7 + 0.5 x (i % 2)) up, hero rotation (:32903-32921): 1.7, 2.2, 1.7 m up at 0.6, 0.733, 0.866 s (Yield 0.133 :33141), each pulse's FindAreaTarget of 8 m (:32727, at 0.733, 0.866, 1.0 s) short of the 10 m target (nAttack_hit only on a hit, :32771); at 1.0 s i = 3, Yield 0.1 (:33154): standby at 1.1 s",
+    "cues": [
+      [
+        0,
+        "voice",
+        "circleShot1|circleShot2"
+      ],
+      [
+        0,
+        "fx",
+        "circleShot_ring"
+      ],
+      [
+        0.6,
+        "fx",
+        "circleShot",
+        {
+          "y": 1.7
+        }
+      ],
+      [
+        0.733,
+        "fx",
+        "circleShot",
+        {
+          "y": 2.2
+        }
+      ],
+      [
+        0.866,
+        "fx",
+        "circleShot",
+        {
+          "y": 1.7
+        }
+      ]
+    ]
+  },
+  "extravagance": {
+    "why": "Rabbit.cs RPC_extravagance (:39711-40115), Extravagance (one rank): extravagance (0.2 fade, Once, :40003-40006) and Effects/extravagance_ring at the hero, hero rotation (createEffect :40015-40033; EffectControl life 1 + 1, followPosition; two ImageEmitters, three RingEmitters and two Shuriken systems, Gil coins and star5 sparks, read from TTO's copy: SHURIKEN_FROM_TTO, the part; its own Sounds/extravagance_ring) at 0; no voice (none loaded, BB or TTO: pseudo/Rabbit.c:8226 names only the effect); the fee (:40056-40074) and the motion blur at 0.5 s (:39859) left out; Yield 0.5, 0.2 (:40100, :40095): at 0.7 s atkUp 5 for chaAdjust(6) (:39902; CharacterControl.cs:33176-33180 deltaAtk only, no look) and the '+N atk' message (:39907) left out; Yield 0.3 (:40107): standby at 1.0 s",
+    "cues": [
+      [
+        0,
+        "fx",
+        "extravagance_ring"
+      ]
+    ]
+  },
+  "mall1": {
+    "why": "Rabbit.cs RPC_mall (:33223-33734), Mall rank 2: mall1 (0.2 fade, looped, :33439-33444), no voice, Effects/mall + Math.div(Skin, 100) (:33507: mall1-mall5 by the outfit's colour number, RabbitEquipment.cs:1474-1492 Skin / 100 = 1-5; every wardrobe Rabbit outfit has colours 1-5) at the hero, LookRotation(forward, the ground normal) = the hero's on the flat floor (:33479-33531): the stall mesh Rabbit_mall, its Rabbit_mall script Init (:33542-33553; Rabbit_mall.cs:37-62: no serialised fields; its OnGUI draws the buy button for other players only, :163, and destroys the stall once the owner's actionState leaves attack / mallSetup / mallOpen, :110-137); the MallGui setup window (:33569-33641) held until the player opens the shop: the SEQ rule's 3 s for a hold (mall1*@3); then RPC_mall_open (MallGui.cs:4965) mall2 and, 2 s later, sit (no cue entries: BB plays no voice there, the mallOpen / mallClose voices are TTO1102's behaviour change, Cat decision 34; the sit emote has no entry of its own, attacks_emotes.md:343); the stall lives to the close: kill 7.95 (the tile's 3 + 2 + 3 s less the page's margin)",
+    "cues": [
+      [
+        0,
+        "fx",
+        "mall1|mall2|mall3|mall4|mall5",
+        {
+          "pick": "color",
+          "kill": 7.95
+        }
+      ]
+    ]
+  },
+  "mix1": {
+    "why": "Rabbit.cs RPC_cast1 (:20091-20866), the channel every Mix / Shake / Miracle Blend / Sticky Gum / Acidic Field / Healing Field cast opens with (pipeline/clip_calls.js): mix1 cut in (PlayAnimation(\"mix1\", 0) :20455, Once :20460) and voice cast1 / cast2 (Random.Range(0, 2) :20506, loads :20518 / :20550, PlayOneShot :20804 / :20782) at 0; no effect; Yield 0.6 (:20809): mix2 looped, cut in (:20259-20264), the cast bar from 0.6 s (castTime :20269, DisplayCastBar :20280) of magAdjust(2 + 0.5 sLv | 2.5 + 0.5 sLv | 5 | 1 + sLv | 1 + sLv | 5) (:20303-20420) = 0.1 s at high INT (magAdjust's floor, CharacterControl.cs:20584-20589; the SEQ rule, plans/fx_mole/decisions.md header), then the release coroutine (Time.time >= castTime :20598, :20617-20751) with mix3 / mix4: SEQ \"Cast: mix1@0.6 mix2*@0.1 mix3~\" / \"Field Cast: mix1@0.6 mix2*@0.1 mix4~\" (the hidden hosts of the two pools)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "cast1|cast2"
+      ]
+    ]
+  },
+  "mix3": {
+    "why": "The mix3 clip: Mix (RPC_mix_cast, PlayAnimation(\"mix3\", 0.2) Rabbit.cs:24141), Shake (RPC_shake_cast :25018) and Miracle Blend (RPC_miracleBlend_cast :25932), one per play, even chance (one tile each, poolChains; host SEQ \"Cast\"), each released 0.7 s into the channel (mix1 entry); all three: Yield 0.3, cast_ring createEffect at the hero, Quaternion.identity (followPosition, life 2, its own Sounds/cast2), the stars castStar1 (= the prefab castStar, the hero prefab's field, checks/fx_rabbit_research/skills_b/probe2.json) at the hero with LookRotation(tDir) x Euler(0, a i, 0), the bottles 1.5 m out at rotateH(1.5 tDir, a i), tDir = RPC_cast1's random angle rotateH(forward, Random.Range(0, 360)) (:20286): the shared option yaw \"cast\"; each bottle's create coroutine waits 0.4 s, then castLight at the bottle, identity, and the bottle, identity, Rabbit_potion Init chaAdjust(60) (data only; picked up only by touch: its 0.6 m trigger box is 1.5 m from the hero, rip hpPot4.prefab): kill 10; voice at 0.3 (Random.Range(0, 2) != 0 and no rapidTrance status -> voice 2, else voice 1: rapidTrance is off on the page, so an even pick); Yield 0.5: standby 0.8 s",
+    "skills": {
+      "mix": {
+        "why": "Rabbit.cs RPC_mix_cast (:23702-24225), Mix 4 (max rank: hpPot<sLv> = hpPot4, RPC_mix_create switch :24360-24504) with Extra Potion #412 on (hasSkill(412) :23891: 5 bottles 72 deg apart, else 3 at 120, :23881-23902): clip mix3, 0.2 s fade (:24141); Yield 0.3 (:24177): cast_ring (:23855-23867), the loop i < 5 (:23913): castStar1 (:23920), RPC_mix_create(hero + rotateH(1.5 tDir, 72 i)) (:23925-23936); voice mix1 / mix2 (Random.Range(0, 2) != 0 :23995, rapidTrance check :24001, loads :24047 / :24016, PlayOneShot :24179 / :24173); RPC_mix_create (:24226-24605): Yield 0.4 (:24559), castLight (:24354), hpPot4 Instantiated, identity (:24492-24504), Init(chaAdjust(60)) (:24535): at 0.7 s; Yield 0.5 (:24165): standby 0.8 s (:24091)",
+        "cues": [
+          [
+            0.3,
+            "fx",
+            "cast_ring"
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                0,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                72,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                144,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                216,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                288,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "voice",
+            "mix1|mix2"
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "hpPot4",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": -1.4266,
+              "d": 0.4635,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "hpPot4",
+            {
+              "x": -1.4266,
+              "d": 0.4635,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": -0.8817,
+              "d": -1.2135,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "hpPot4",
+            {
+              "x": -0.8817,
+              "d": -1.2135,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 0.8817,
+              "d": -1.2135,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "hpPot4",
+            {
+              "x": 0.8817,
+              "d": -1.2135,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 1.4266,
+              "d": 0.4635,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "hpPot4",
+            {
+              "x": 1.4266,
+              "d": 0.4635,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ]
+        ]
+      },
+      "shake": {
+        "why": "Rabbit.cs RPC_shake_cast (:24606-25096), Shake 3 (max rank: spPot<sLv> = spPot3, RPC_shake_create :25231-25336): clip mix3, 0.2 s fade (:25018); Yield 0.3 (:25048): cast_ring (:24759-24771), 3 bottles 120 deg apart (i < 3 :24790): castStar1 (:24797), RPC_shake_create(hero + rotateH(1.5 tDir, 120 i)) (:24802-24813); voice shake1 / shake2 (Random.Range(0, 2) != 0 :24872, rapidTrance :24878, loads :24924 / :24893, PlayOneShot :25045 / :25042); RPC_shake_create: Yield 0.4 (:25392), castLight (:25225), spPot3, identity (:25324-25336), Init(chaAdjust(60)) (:25367): at 0.7 s; Yield 0.5 (:25053): standby 0.8 s (:24968)",
+        "cues": [
+          [
+            0.3,
+            "fx",
+            "cast_ring"
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                0,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                120,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                240,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "voice",
+            "shake1|shake2"
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "spPot3",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": -1.299,
+              "d": -0.75,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "spPot3",
+            {
+              "x": -1.299,
+              "d": -0.75,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 1.299,
+              "d": -0.75,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "spPot3",
+            {
+              "x": 1.299,
+              "d": -0.75,
+              "yaw": "cast",
+              "kill": 10
+            }
+          ]
+        ]
+      },
+      "miracleBlend": {
+        "why": "Rabbit.cs RPC_miracleBlend_cast (:25435-26023), Miracle Blend with Miracle Drop #422 on (hasSkill(422) :25603: 4 bottles 90 deg apart, :25614-25683; else 3 of types 1-4, :25693-25747): clip mix3, 0.2 s fade (:25932); Yield 0.3 (:25975): cast_ring (:25577-25589), each bottle: castStar1 (:25621), its spot hero + rotateH(1.5 tDir, 90 m) (:25626), its type 6 when Random.Range(0, 100) < lckAdjust(5) (:25636-25642; 5 at LCK 1, CharacterControl.cs:20667-20668, the gamble convention plans/fx_cat/decisions.md 30: p 0.05, one roll per bottle), else Random.Range(1, 6) = 1-5, even (:25650); RPC_miracleBlend_create (:26024-26421): Yield 0.4 (:26377), castLight (:26152), randomPot<type>, identity (:26173-26340), Init(chaAdjust(60)) (:26353): at 0.7 s; voice miracleBlend1 / miracleBlend2 (Random.Range(0, 2) != 0 :25786, rapidTrance :25792, loads :25838 / :25807); Yield 0.5 (:25958): standby 0.8 s (:25882)",
+        "cues": [
+          [
+            0.3,
+            "fx",
+            "cast_ring"
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                0,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                90,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                180,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "fx",
+            "castStar",
+            {
+              "rot": [
+                0,
+                270,
+                0
+              ],
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.3,
+            "voice",
+            "miracleBlend1|miracleBlend2"
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot6",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "pot1"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot1|randomPot2|randomPot3|randomPot4|randomPot5",
+            {
+              "x": 0.0,
+              "d": 1.5,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "!pot1"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": -1.5,
+              "d": 0.0,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot6",
+            {
+              "x": -1.5,
+              "d": 0.0,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "pot2"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot1|randomPot2|randomPot3|randomPot4|randomPot5",
+            {
+              "x": -1.5,
+              "d": 0.0,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "!pot2"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 0.0,
+              "d": -1.5,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot6",
+            {
+              "x": 0.0,
+              "d": -1.5,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "pot3"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot1|randomPot2|randomPot3|randomPot4|randomPot5",
+            {
+              "x": 0.0,
+              "d": -1.5,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "!pot3"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "castLight",
+            {
+              "x": 1.5,
+              "d": 0.0,
+              "yaw": "cast"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot6",
+            {
+              "x": 1.5,
+              "d": 0.0,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "pot4"
+            }
+          ],
+          [
+            0.7,
+            "fx",
+            "randomPot1|randomPot2|randomPot3|randomPot4|randomPot5",
+            {
+              "x": 1.5,
+              "d": 0.0,
+              "yaw": "cast",
+              "kill": 10,
+              "p": 0.05,
+              "roll": "!pot4"
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "mix4": {
+    "why": "The mix4 clip: Sticky Gum (RPC_stickyGum_cast, PlayAnimation(\"mix4\", 0.2) Rabbit.cs:26841), Acidic Field (RPC_acidicField_cast :27343) and Healing Field (RPC_healingField_cast :37941), one per play, even chance (one tile each, poolChains; host SEQ \"Field Cast\"), released 0.7 s into the channel (mix1 entry); all three: Yield 0.4, moveSpeed 5 for 0.1 s (a 0.5 m lunge, left out: the hero does not travel, plans/fx_bison/decisions.md 17), Yield 0.1: the field on the floor 2 m ahead (a ray down from 2 m up: the page's floor), its script data only (no EffectControl; it destroys itself after chaAdjust(12) s): kill 10 (fields cut at 10 s); the hero keeps one field of each kind, the next cast Destroys the old one first (option replace); Yield 0.3: standby 0.8 s",
+    "skills": {
+      "stickyGum": {
+        "why": "Rabbit.cs RPC_stickyGum_cast (:26422-26933), Sticky Gum 2: clip mix4, 0.2 s fade (:26841); Yield 0.4 (:26888): moveSpeed 5 (:26568, left out); Yield 0.1 (:26868): at 0.5 s RPC_stickyGum_create(mPos + 2 forward on the floor, FromToRotation(up, the floor's normal) = identity, chaAdjust(12)) (:26606-26643; Rabbit.cs:10032-10080): Destroy the old gum (:10057-10063), stickyGum Instantiated with localScale (sLv + 0.5, 1, sLv + 0.5) = (2.5, 1, 2.5) (:10069-10072; its Animation 'root' and its own Sounds/stickyGum), Rabbit_stickyGum.Init (:10075; data only: the slow on enemies inside, Rabbit_stickyGum.cs:83-140); voice stickyGum1 / stickyGum2 (Random.Range(0, 2) != 0 :26692, rapidTrance :26698, loads :26744 / :26713) at 0.5; Yield 0.3 (:26878): standby 0.8 s (:26788)",
+        "cues": [
+          [
+            0.5,
+            "fx",
+            "stickyGum",
+            {
+              "d": 2,
+              "scale": [
+                2.5,
+                1,
+                2.5
+              ],
+              "kill": 10,
+              "replace": true
+            }
+          ],
+          [
+            0.5,
+            "voice",
+            "stickyGum1|stickyGum2"
+          ]
+        ]
+      },
+      "acidicField": {
+        "why": "Rabbit.cs RPC_acidicField_cast (:26934-27427), Acidic Field 2 (Acid Overflow #442 only raises the level, :10148): clip mix4, 0.2 s fade (:27343); Yield 0.4 (:27379): moveSpeed 5 (:27080, left out); Yield 0.1 (:27377): at 0.5 s RPC_acidicField_create(mPos + 2 forward on the floor, forward, chaAdjust(12)) (:27118-27145; Rabbit.cs:10106-10180): Destroy the old field (:10131-10137), acidicField Instantiated, LookRotation(forward) (:10143; its looping Sounds/acid2), Rabbit_acidicField.Init (:10148; data only: the 2 s acid pulses, Rabbit_acidicField.cs:83-213), and acidicField_fire Instantiated there, identity (:10172-10178; life 2, its own Sounds/acid1); voice acidicField1 / acidicField2 (Random.Range(0, 2) != 0 :27194, rapidTrance :27200, loads :27246 / :27215) at 0.5; Yield 0.3 (:27372): standby 0.8 s (:27290)",
+        "cues": [
+          [
+            0.5,
+            "fx",
+            "acidicField",
+            {
+              "d": 2,
+              "kill": 10,
+              "replace": true
+            }
+          ],
+          [
+            0.5,
+            "fx",
+            "acidicField_fire",
+            {
+              "d": 2
+            }
+          ],
+          [
+            0.5,
+            "voice",
+            "acidicField1|acidicField2"
+          ]
+        ]
+      },
+      "healingField": {
+        "why": "Rabbit.cs RPC_healingField_cast (:37541-38029), Healing Field: clip mix4, 0.2 s fade (:37941); Yield 0.4 (:37979): moveSpeed 5 (:37676, left out) and the voice shake2 / mix2 (Random.Range(0, 2) != 0 :37712 and no rapidTrance :37718 -> shake2 :37733, else mix2 :37764: Healing Field has no voice of its own) at 0.4; Yield 0.1 (:37982): at 0.5 s RPC_healingField_create(mPos + 2 forward on the floor, forward, chaAdjust(12)) (:37821-37848; Rabbit.cs:11282-11365): Destroy the old field (:11307-11313), healingField Instantiated, LookRotation(forward) (its looping Sounds/healingField), Rabbit_healingField.Init (data only: the 2 s heal pulses, Rabbit_healingField.cs:79-204), healingField_fire there, identity (:11355-11361; life 2, its own Sounds/acid1); Yield 0.3 (:37966): standby 0.8 s (:37888)",
+        "cues": [
+          [
+            0.4,
+            "voice",
+            "shake2|mix2"
+          ],
+          [
+            0.5,
+            "fx",
+            "healingField",
+            {
+              "d": 2,
+              "kill": 10,
+              "replace": true
+            }
+          ],
+          [
+            0.5,
+            "fx",
+            "healingField_fire",
+            {
+              "d": 2
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "medicalShot": {
+    "why": "The medicalShot clip: Immune Shot, Boost Shot, Heat Shot and Life Shot, four skills (immuneShot1, boostShot2, heatShot3, lifeShot4; each rank 1, its own cooldown) that start RPC_medicalShot with sLv 1-4 (Rabbit.cs:28564-28606; Bible rabbit-skill-reference 13-16), one per play, even chance (one tile each, poolChains); all aim at an ally and refuse the Rabbit herself ('Cannot use immuneShot / boostShot / heatShot / lifeShot on yourself', Rabbit.cs:6848, :6937, :7026, :7115), so the ally stands at the 10 m point (plans/fx_monkey/decisions.md 20: ally skills that refuse a self-target; not plans/fx_sheep/decisions.md 1, the self-casts)",
+    "skills": {
+      "immuneShot": {
+        "why": "Rabbit.cs RPC_medicalShot (:27428-28845) with sLv 1 = immuneShot (its own cooldown, :28564-28606): clip medicalShot, 0.2 s fade (:28612; with the rapidTrance status gilShot instead, :28548-28552: off on the page), voice medicalShot1 / medicalShot2 (Random.Range(0, 2) :28644, loads :28654 / :28685) at 0; Yield 0.3 (:28735): medicalShot_ring createEffect at the hero, hero rotation (:27591-27603; followPosition + followState, life 1 + 1, its own Sounds/medicalShot_ring); without rapidTrance (:27617; with it Yield 0.7 :28730 and the shot at 1.0 s) the hero turns to the ally every FixedUpdate (:27751-27756, WaitForFixedUpdate :28726) until actionTime + 1.4 (:27734): at 1.4 s the shot: moveSpeed -1 (:27783, left out: no travel), firePos = hero + 1 up (:27788), fireDir = the ally's collider.bounds.center - firePos (:27804): medicalShot_fire createEffect, FromToRotation(forward, fireDir) (:27810-27833) = 2.2906 deg down to the ally 10 m ahead, 0.6 m up (the target body, plans/fx_bat/decisions.md 3-4; an ally target that is never the Rabbit, Rabbit.cs:6848 / :6937 / :7026 / :7115: plans/fx_monkey/decisions.md 20); the shot's voice immuneShot1 / immuneShot2 (Random.Range(0, 2), loads :27888 / :27919) under PlayerPrefs pvoice, Game.mGameType > 4 and the own team (:27847-27865: missions and arenas only; kept, as the Bison's and Sheep's mGameType > 4 cues); Physics.Raycast 16 + 5 x Combo rank m (:28183-28188) hits the ally's capsule at (0, 0.612, 9.7): RPC_immuneShot_hit (:28240; Rabbit.cs:10209-10232) Instantiates immuneShot at the hit point, LookRotation(the hero's forward) = no turn, life 1 + 1, its own Sounds/medicalShot_hit; the status (remedy + immunity :28282-28287) is the ally's, not drawn; Yield 0.2 (:28733): moveSpeed 0 (:27650); Yield 0.1 (:28749): standby 1.7 s (:27676; the ring's life 1 ended at 1.3 s, so its cut 1.7 changes nothing: followState acts within the life, EffectControl.cs:194-232, index.html:4341)",
+        "cues": [
+          [
+            0,
+            "voice",
+            "medicalShot1|medicalShot2"
+          ],
+          [
+            0.3,
+            "fx",
+            "medicalShot_ring",
+            {
+              "cut": 1.7
+            }
+          ],
+          [
+            1.4,
+            "fx",
+            "medicalShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.2906,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1.4,
+            "voice",
+            "immuneShot1|immuneShot2"
+          ],
+          [
+            1.4,
+            "fx",
+            "immuneShot",
+            {
+              "d": 9.7,
+              "y": 0.612
+            }
+          ]
+        ]
+      },
+      "boostShot": {
+        "why": "Rabbit.cs RPC_medicalShot (:27428-28845) with sLv 2 = boostShot (its own cooldown, :28564-28606): clip medicalShot, 0.2 s fade (:28612; with the rapidTrance status gilShot instead, :28548-28552: off on the page), voice medicalShot1 / medicalShot2 (Random.Range(0, 2) :28644, loads :28654 / :28685) at 0; Yield 0.3 (:28735): medicalShot_ring createEffect at the hero, hero rotation (:27591-27603; followPosition + followState, life 1 + 1, its own Sounds/medicalShot_ring); without rapidTrance (:27617; with it Yield 0.7 :28730 and the shot at 1.0 s) the hero turns to the ally every FixedUpdate (:27751-27756, WaitForFixedUpdate :28726) until actionTime + 1.4 (:27734): at 1.4 s the shot: moveSpeed -1 (:27783, left out: no travel), firePos = hero + 1 up (:27788), fireDir = the ally's collider.bounds.center - firePos (:27804): medicalShot_fire createEffect, FromToRotation(forward, fireDir) (:27810-27833) = 2.2906 deg down to the ally 10 m ahead, 0.6 m up (the target body, plans/fx_bat/decisions.md 3-4; an ally target that is never the Rabbit, Rabbit.cs:6848 / :6937 / :7026 / :7115: plans/fx_monkey/decisions.md 20); the shot's voice boostShot1 / boostShot2 (Random.Range(0, 2), loads :27961 / :27992) under PlayerPrefs pvoice, Game.mGameType > 4 and the own team (:27847-27865: missions and arenas only; kept, as the Bison's and Sheep's mGameType > 4 cues); Physics.Raycast 16 + 5 x Combo rank m (:28183-28188) hits the ally's capsule at (0, 0.612, 9.7): RPC_boostShot_hit (:28299; Rabbit.cs:10252-10275) Instantiates boostShot at the hit point, LookRotation(the hero's forward) = no turn, life 1 + 1, its own Sounds/medicalShot_hit; the status (boost + 100 HP x level :28341-28346) is the ally's, not drawn; Yield 0.2 (:28733): moveSpeed 0 (:27650); Yield 0.1 (:28749): standby 1.7 s (:27676; the ring's life 1 ended at 1.3 s, so its cut 1.7 changes nothing: followState acts within the life, EffectControl.cs:194-232, index.html:4341)",
+        "cues": [
+          [
+            0,
+            "voice",
+            "medicalShot1|medicalShot2"
+          ],
+          [
+            0.3,
+            "fx",
+            "medicalShot_ring",
+            {
+              "cut": 1.7
+            }
+          ],
+          [
+            1.4,
+            "fx",
+            "medicalShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.2906,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1.4,
+            "voice",
+            "boostShot1|boostShot2"
+          ],
+          [
+            1.4,
+            "fx",
+            "boostShot",
+            {
+              "d": 9.7,
+              "y": 0.612
+            }
+          ]
+        ]
+      },
+      "heatShot": {
+        "why": "Rabbit.cs RPC_medicalShot (:27428-28845) with sLv 3 = heatShot (its own cooldown, :28564-28606): clip medicalShot, 0.2 s fade (:28612; with the rapidTrance status gilShot instead, :28548-28552: off on the page), voice medicalShot1 / medicalShot2 (Random.Range(0, 2) :28644, loads :28654 / :28685) at 0; Yield 0.3 (:28735): medicalShot_ring createEffect at the hero, hero rotation (:27591-27603; followPosition + followState, life 1 + 1, its own Sounds/medicalShot_ring); without rapidTrance (:27617; with it Yield 0.7 :28730 and the shot at 1.0 s) the hero turns to the ally every FixedUpdate (:27751-27756, WaitForFixedUpdate :28726) until actionTime + 1.4 (:27734): at 1.4 s the shot: moveSpeed -1 (:27783, left out: no travel), firePos = hero + 1 up (:27788), fireDir = the ally's collider.bounds.center - firePos (:27804): medicalShot_fire createEffect, FromToRotation(forward, fireDir) (:27810-27833) = 2.2906 deg down to the ally 10 m ahead, 0.6 m up (the target body, plans/fx_bat/decisions.md 3-4; an ally target that is never the Rabbit, Rabbit.cs:6848 / :6937 / :7026 / :7115: plans/fx_monkey/decisions.md 20); the shot's voice heatShot1 / heatShot2 (Random.Range(0, 2), loads :28034 / :28065) under PlayerPrefs pvoice, Game.mGameType > 4 and the own team (:27847-27865: missions and arenas only; kept, as the Bison's and Sheep's mGameType > 4 cues); Physics.Raycast 16 + 5 x Combo rank m (:28183-28188) hits the ally's capsule at (0, 0.612, 9.7): RPC_heatShot_hit (:28358; Rabbit.cs:10295-10318) Instantiates heatShot at the hit point, LookRotation(the hero's forward) = no turn, life 1 + 1, its own Sounds/medicalShot_hit; the status (heat + 10 SP x level :28400-28405) is the ally's, not drawn; Yield 0.2 (:28733): moveSpeed 0 (:27650); Yield 0.1 (:28749): standby 1.7 s (:27676; the ring's life 1 ended at 1.3 s, so its cut 1.7 changes nothing: followState acts within the life, EffectControl.cs:194-232, index.html:4341)",
+        "cues": [
+          [
+            0,
+            "voice",
+            "medicalShot1|medicalShot2"
+          ],
+          [
+            0.3,
+            "fx",
+            "medicalShot_ring",
+            {
+              "cut": 1.7
+            }
+          ],
+          [
+            1.4,
+            "fx",
+            "medicalShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.2906,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1.4,
+            "voice",
+            "heatShot1|heatShot2"
+          ],
+          [
+            1.4,
+            "fx",
+            "heatShot",
+            {
+              "d": 9.7,
+              "y": 0.612
+            }
+          ]
+        ]
+      },
+      "lifeShot": {
+        "why": "Rabbit.cs RPC_medicalShot (:27428-28845) with sLv 4 = lifeShot (its own cooldown, :28564-28606): clip medicalShot, 0.2 s fade (:28612; with the rapidTrance status gilShot instead, :28548-28552: off on the page), voice medicalShot1 / medicalShot2 (Random.Range(0, 2) :28644, loads :28654 / :28685) at 0; Yield 0.3 (:28735): medicalShot_ring createEffect at the hero, hero rotation (:27591-27603; followPosition + followState, life 1 + 1, its own Sounds/medicalShot_ring); without rapidTrance (:27617; with it Yield 0.7 :28730 and the shot at 1.0 s) the hero turns to the ally every FixedUpdate (:27751-27756, WaitForFixedUpdate :28726) until actionTime + 1.4 (:27734): at 1.4 s the shot: moveSpeed -1 (:27783, left out: no travel), firePos = hero + 1 up (:27788), fireDir = the ally's collider.bounds.center - firePos (:27804): medicalShot_fire createEffect, FromToRotation(forward, fireDir) (:27810-27833) = 2.2906 deg down to the ally 10 m ahead, 0.6 m up (the target body, plans/fx_bat/decisions.md 3-4; an ally target that is never the Rabbit, Rabbit.cs:6848 / :6937 / :7026 / :7115: plans/fx_monkey/decisions.md 20); the shot's voice lifeShot1 / lifeShot2 (Random.Range(0, 2), loads :28107 / :28138) under PlayerPrefs pvoice, Game.mGameType > 4 and the own team (:27847-27865: missions and arenas only; kept, as the Bison's and Sheep's mGameType > 4 cues); Physics.Raycast 16 + 5 x Combo rank m (:28183-28188) hits the ally's capsule at (0, 0.612, 9.7): RPC_lifeShot_hit (:28417; Rabbit.cs:10338-10361) Instantiates lifeShot at the hit point, LookRotation(the hero's forward) = no turn, life 1 + 1, its own Sounds/medicalShot_hit; the status (autoLife :28459) is the ally's, not drawn; Yield 0.2 (:28733): moveSpeed 0 (:27650); Yield 0.1 (:28749): standby 1.7 s (:27676; the ring's life 1 ended at 1.3 s, so its cut 1.7 changes nothing: followState acts within the life, EffectControl.cs:194-232, index.html:4341)",
+        "cues": [
+          [
+            0,
+            "voice",
+            "medicalShot1|medicalShot2"
+          ],
+          [
+            0.3,
+            "fx",
+            "medicalShot_ring",
+            {
+              "cut": 1.7
+            }
+          ],
+          [
+            1.4,
+            "fx",
+            "medicalShot_fire",
+            {
+              "y": 1,
+              "rot": [
+                2.2906,
+                0,
+                0
+              ]
+            }
+          ],
+          [
+            1.4,
+            "voice",
+            "lifeShot1|lifeShot2"
+          ],
+          [
+            1.4,
+            "fx",
+            "lifeShot",
+            {
+              "d": 9.7,
+              "y": 0.612
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "rapidTrance": {
+    "why": "Rabbit.cs RPC_rapidTrance (:28846-29386), Rapid Trance: clip, 0.2 s fade (:29199), voice rapidTrance1 / rapidTrance2 (Random.Range(0, 2) :29240, loads :29250 / :29281) at 0; Yield 0.3 (:29316): rapidTrance_potion Instantiated and parented to mountHand_L, localPosition 0, identity (:28987-29019; option bone; its EffectControl life 1 ends it at 1.3 s, no Destroy in the coroutine); Yield 0.6 (:29340): at 0.9 s rapidTrance_ring createEffect at the hero, identity (:29062-29074; followPosition, life 1 + 1, its own Sounds/rapidTrance_ring); Yield 0.2 (:29326): at 1.1 s the status rapidTrance for chaAdjust(12) s (:29119): CharacterControl.cs:37520-37523 setColor(0.48, 0.43, 0.78) on every renderer (the purple tint, HERO_SKINS rapidTrance: tint = colour / 0.86, the Bison's enrage rule), 13 s at CHA 1: cut at 10 s (kill 10, the Bison's Enrage tint, plans/fx_bison/decisions.md 31); Yield 0.2 (:29347): standby 1.3 s (:29146)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "rapidTrance1|rapidTrance2"
+      ],
+      [
+        0.3,
+        "fx",
+        "rapidTrance_potion",
+        {
+          "bone": "mountHand_L"
+        }
+      ],
+      [
+        0.9,
+        "fx",
+        "rapidTrance_ring"
+      ],
+      [
+        1.1,
+        "skin",
+        "rapidTrance",
+        {
+          "kill": 10
+        }
+      ]
+    ]
+  },
+  "statScan": {
+    "why": "Rabbit.cs RPC_statScan (:22333-22948), Stat Scan: clip cut in (PlayAnimation(\"statScan\", 0) :22755), voice statScan1 / statScan2 (Random.Range(0, 2) :22799, loads :22809 / :22840) at 0; Yield 0.2 (:22883): the target's createEffect(statScan, target.collider.ClosestPointOnBounds(hero + 1.5 up), identity) (:22506-22524) = (0, 1.1, 9.7) on the 10 m target's body (box x / z +-0.3, y 0.1-1.1: plans/fx_bat/decisions.md 4; faceCamera, life 1 + 0.3, its own Sounds/statScan; followPosition with the scanned target as owner: each live frame after the turn to the camera its spot is owner + rotation x (spawn - owner), EffectControl.cs:96-104, :372-381, so the cue's owner [0, 0, 10], the target's feet: plans/fx_rabbit/parts.md part 5 and its Verification 4) and statScan_dust Instantiated at the hero, hero rotation (:22545-22557; life 1); Yield 0.5 (:22893): at 0.7 s the three chat lines of the target's stats (:22610-22675, text: left out); Yield 0.1 (:22876): standby 0.8 s (:22702)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "statScan1|statScan2"
+      ],
+      [
+        0.2,
+        "fx",
+        "statScan",
+        {
+          "d": 9.7,
+          "y": 1.1,
+          "owner": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      [
+        0.2,
+        "fx",
+        "statScan_dust"
+      ]
+    ]
+  },
+  "@TruceTrading:truceTrading": {
+    "why": "Rabbit.cs RPC_truceTrading1 (:33896-34514), Truce Trading 2 (its own tile, SEQ \"Truce Trading: truceTrading*@0.12 cheer*~@2|cry*~@2\"): clip looped, 0.2 s fade (:34233-34236), truceTrading_ring createEffect at the hero, hero rotation (:34263-34275; followPosition + followState, life 12, its looping Sounds/truceTrading), truceTrading_flag Instantiated and parented to mountHand_L, localPosition 0, identity (:34295-34322; no EffectControl: Destroyed when the loop ends, :34199-34205) and voice truceTrading1 / truceTrading2 (Random.Range(0, 2) :34357, loads :34369 / :34400) at 0; the cast bar magAdjust(12) (:34425-34437) = 0.1 s at high INT, checked every FixedUpdate (Time.time - actionTime <= 0.1 :34086, WaitForFixedUpdate :34463): the roll at 0.12 s, LCK x sLv > Random.Range(0, target.hp) on a target not yet traded (:34094-34111) -> RPC_truceTrading_fire<sLv> with the target (:34123), else with 0 (:34139), sent to every client (ActionEvent; the owner's own loop waits on it: isTrade :34145) -> RPC_truceTrading2 (onActionEvent 347 / 348, :3065-3077, :5656-5667): myCommand becomes truceTrading2, which ends the loop (:34051), the flag (kill 0.12) and the ring (followState: myCommand changed, EffectControl.cs:226-232: cut 0.12, the step change)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "truceTrading1|truceTrading2"
+      ],
+      [
+        0,
+        "fx",
+        "truceTrading_ring",
+        {
+          "cut": 0.12
+        }
+      ],
+      [
+        0,
+        "fx",
+        "truceTrading_flag",
+        {
+          "bone": "mountHand_L",
+          "kill": 0.12
+        }
+      ]
+    ]
+  },
+  "@TruceTrading:cheer": {
+    "why": "Rabbit.cs RPC_truceTrading2 (:34515-35019), the trade made (tID != 0 :34733; the chance LCK x 2 / the target's HP, an even pick here: question 1): cheer looped, 0.2 s fade (:34739-34744), truceTrading_success createEffect at the hero, hero rotation (:34749-34767; followPosition, life 1 + 1, its own Sounds/truceTrading_success) and voice tradeSuccess (load :34816) at 0; Yield 2 (:34983): standby (:34660), 2.12 s after the cast",
+    "cues": [
+      [
+        0,
+        "fx",
+        "truceTrading_success"
+      ],
+      [
+        0,
+        "voice",
+        "tradeSuccess"
+      ]
+    ]
+  },
+  "@TruceTrading:cry": {
+    "why": "Rabbit.cs RPC_truceTrading2 (:34515-35019), the trade refused (tID 0 :34733): cry looped, 0.2 s fade (:34843-34848), truceTrading_fail createEffect at the hero, hero rotation (:34853-34871; followPosition, life 1, its own Sounds/truceTrading_fail) and voice tradeFail (load :34920) at 0; Yield 2 (:34983): standby (:34660)",
+    "cues": [
+      [
+        0,
+        "fx",
+        "truceTrading_fail"
+      ],
+      [
+        0,
+        "voice",
+        "tradeFail"
+      ]
+    ]
+  },
+  "@Contract:truceTrading": {
+    "why": "Rabbit.cs RPC_contract (:40147-40822), Contract (its own tile, SEQ \"Contract: truceTrading*@0.1 bow~@1.2\"): clip truceTrading looped, 0.2 s fade (:40631-40634); contract_ring createEffect at the hero (:40655-40673): neither game has the file (BB's Resources container has no contract_ring, checks/fx_rabbit_research/skills_b/probe.json; TTO's catalog neither, tto_probe.err; the game logs 'Cannot find contract_ring' :40681): no ring; contract_flag Instantiated and parented to mountHand_L, localPosition 0, identity (:40690-40723; no EffectControl, its looping Sounds/truceTrading; Destroyed at the standby :40277-40283: kill 1.3) at 0; the cast bar magAdjust(3 + 3 level) (:40729-40738) = 0.1 s at high INT, checked every frame (actionTime + 0.1 <= Time.time :40359, YieldDefault :40761)",
+    "cues": [
+      [
+        0,
+        "fx",
+        "contract_flag",
+        {
+          "bone": "mountHand_L",
+          "kill": 1.3
+        }
+      ]
+    ]
+  },
+  "@Contract:bow": {
+    "why": "Rabbit.cs RPC_contract (:40147-40822) at 0.1 s, level 3 (the top tier: SP >= 65 after the cost, doSkill :7607-7619; Bible rabbit-skill-reference 'Contract'): RPC_contract_create3 at getExpandPos(getSpawnVector(hero + 1 up, TransformDirection(0, -1, 3))) (:40464-40475) = on the floor 3 m ahead (the ray meets the floor at 3.16 m, under its 4 m reach, Math.cs:1210-1224; no wall, :1242), hero forward, sent to every client (onActionEvent :3401): RPC_contract_create (:11542-11850): LightGolem (Resources Characters/Elementals/LightGolem/LightGolem, :11596) Instantiated there, LookRotation(forward) (:11611), stats x 1.5 (:11798-11837), on the Rabbit's layer (:11721), so LightGolem.Start keeps its prefab material LightGolem1: it swaps CrystalBug_tri to LightGolem2 only on layer 9 (`if (layer != 9) break`, LightGolem.cs:77, the swap :109; layer 9 = team 2, a player's layer is team + 7, Game.cs:4202-4211; the page's Rabbit is team 1); it lives 300 s (LightGolem.cs:44): kill 10 (summons cut at 10 s), its AI left out (Mole decision 32), root looped from the spawn by the LightGolem part in fxparts/rabbit.js (plans/fx_rabbit/parts.md part 7); contract_create createEffect there, LookRotation(forward) (:11695-11707; followPosition, life 1 + 1, its own Sounds/truceTrading_success); voice contract1 / contract2 (Random.Range(0, 2) :40512, loads :40524 / :40555); bow, 0.2 s fade (:40580-40585); Yield 1.2 (:40765): the flag Destroyed and standby 1.3 s (:40277-40306)",
+    "cues": [
+      [
+        0,
+        "fx",
+        "LightGolem",
+        {
+          "d": 3,
+          "kill": 10
+        }
+      ],
+      [
+        0,
+        "fx",
+        "contract_create",
+        {
+          "d": 3
+        }
+      ],
+      [
+        0,
+        "voice",
+        "contract1|contract2"
+      ]
+    ]
+  },
+  "shootingArray": {
+    "why": "Rabbit.cs RPC_shootingArray (:35020-36052), Shooting Array 2 (a target skill: tPos = the target's transform.position = the 10 m point's floor, :35754): clip, 0.2 s fade (:35775), shootingArray_ring createEffect at the hero, hero rotation (:35787-35805; followPosition + followState, life 1 + 1, its own Sounds/shootingArray_ring) and voice shootingArray1 / shootingArray2 (Random.Range(0, 2) :35848, loads :35858 / :35889, PlayOneShot :35973 / :35928) at 0; Yield 0.5 (:35935); three shots at 0.5 / 0.6 / 0.7 s (Yield 0.1 :35962, 0.1 :35926): each shootingArray_fire Instantiated at the hero + TransformDirection(0, 0.8, 1), LookRotation(forward) (:35196, :35277, :35374; life 1) and the owner's RPC_shootingArray_hit(tPos) (:35216, :35291, :35388; Rabbit.cs:10951-10974): shootingArray_hit at the target's feet, Euler(0, Random.Range(0, 360), 0) (rot randomYaw; life 3 + 1, its own Sounds/shootingArray_hit); the damage pulses at 0.6 / 0.8 / 1.0 s (FindAreaTarget(tPos, 6) :35308, :35436, :35504; Yield 0.1 :35965, 0.2 :35971, 0.2 :35940) draw nothing; at 1.2 s a fourth shootingArray_fire at the hero + TransformDirection(-0.15, 0.7, 0.25), LookRotation(forward) (:35572); Yield 0.1 (:35950): at 1.3 s the finisher on every enemy within 6 m (:35607-35630): RPC_shootingArray_finalhit at its collider.bounds.center (:35640; Rabbit.cs:10994-11017) = (0, 0.6, 10), LookRotation(forward) (life 1); Yield 0.5 (:35942): standby 1.8 s (:35693): the ring's cut",
+    "cues": [
+      [
+        0,
+        "fx",
+        "shootingArray_ring",
+        {
+          "cut": 1.8
+        }
+      ],
+      [
+        0,
+        "voice",
+        "shootingArray1|shootingArray2"
+      ],
+      [
+        0.5,
+        "fx",
+        "shootingArray_fire",
+        {
+          "y": 0.8,
+          "d": 1
+        }
+      ],
+      [
+        0.5,
+        "fx",
+        "shootingArray_hit",
+        {
+          "d": 10,
+          "rot": "randomYaw"
+        }
+      ],
+      [
+        0.6,
+        "fx",
+        "shootingArray_fire",
+        {
+          "y": 0.8,
+          "d": 1
+        }
+      ],
+      [
+        0.6,
+        "fx",
+        "shootingArray_hit",
+        {
+          "d": 10,
+          "rot": "randomYaw"
+        }
+      ],
+      [
+        0.7,
+        "fx",
+        "shootingArray_fire",
+        {
+          "y": 0.8,
+          "d": 1
+        }
+      ],
+      [
+        0.7,
+        "fx",
+        "shootingArray_hit",
+        {
+          "d": 10,
+          "rot": "randomYaw"
+        }
+      ],
+      [
+        1.2,
+        "fx",
+        "shootingArray_fire",
+        {
+          "x": -0.15,
+          "y": 0.7,
+          "d": 0.25
+        }
+      ],
+      [
+        1.3,
+        "fx",
+        "shootingArray_finalhit",
+        {
+          "d": 10,
+          "y": 0.6
+        }
+      ]
+    ]
+  },
+  "millionaire": {
+    "why": "Rabbit.cs RPC_millionaire (:36589-37342), Millionaire 2: clip, 0.2 s fade (:36834), the fee (:36874-36897, gameplay), millionaire_ring createEffect at the hero, hero rotation (:36903-36921; followPosition + followState, life 5 + 1, its own Sounds/millionaire) and voice millionaire1 / millionaire2 (Random.Range(0, 2) :36966, loads :36978 / :37010, PlayOneShot :37272 / :37281) at 0; Yield 0.5 (:37270): at 0.5 s the coroutine millionaire_createPeppon (:36736; :37343-37540): 18 millionaire_peppon (i < 18 :37452), one every 0.15 s (Yield 0.15 :37513) from 0.5 to 3.05 s, each Instantiated at the hero + vFlat(2 x Random.onUnitSphere), Euler(270, Random.Range(0, 360), 0) (:37473-37485; the new options sphere and rot [270, \"random\", 0]; life 2 + 0.4, its Animation and AlphaTimer); the camera's motion blur (:36741-36752) left out; six bursts (i < 6 :37035): i even millionaire1 Instantiated at the hero, hero rotation (:37116-37128), i odd millionaire2 createEffect at the hero, hero rotation (:37153-37165) (life 2 each; WorldParticleCollider), at 0.5, 1.0, 1.7, 2.2, 2.9, 3.4 s (waits [0.5, 0.7, 0.5, 0.7, 0.5, 0.6]: 0.5 after an even burst :37275, 0.7 - 0.1 x div(i, 5) after an odd one :37266, Math.cs:23-27); each wait ends in the damage pulse FindAreaTarget(hero, 8) (:37183-37189): the 10 m target is outside it, no nAttack_hit; standby at 4.0 s (i >= 6 :37035, :37058): the ring's cut",
+    "cues": [
+      [
+        0,
+        "fx",
+        "millionaire_ring",
+        {
+          "cut": 4.0
+        }
+      ],
+      [
+        0,
+        "voice",
+        "millionaire1|millionaire2"
+      ],
+      [
+        0.5,
+        "fx",
+        "millionaire1"
+      ],
+      [
+        0.5,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        0.65,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        0.8,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        0.95,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.0,
+        "fx",
+        "millionaire2"
+      ],
+      [
+        1.1,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.25,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.4,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.55,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.7,
+        "fx",
+        "millionaire1"
+      ],
+      [
+        1.7,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        1.85,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.0,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.15,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.2,
+        "fx",
+        "millionaire2"
+      ],
+      [
+        2.3,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.45,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.6,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.75,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        2.9,
+        "fx",
+        "millionaire1"
+      ],
+      [
+        2.9,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        3.05,
+        "fx",
+        "millionaire_peppon",
+        {
+          "sphere": 2,
+          "rot": [
+            270,
+            "random",
+            0
+          ]
+        }
+      ],
+      [
+        3.4,
+        "fx",
+        "millionaire2"
+      ]
+    ]
+  },
+  "tenShot": {
+    "why": "Rabbit.cs RPC_tenShot (:38760-39710), Ten Shot: clip, 0.2 s fade (:39086), tenShot_ring createEffect at the hero, hero rotation (:39106-39124; followPosition + followState, life 3, its own Sounds/tenShot_ring) and voice tenShot1 / tenShot2 (Random.Range(0, 2) :39169, loads :39181 / :39213, PlayOneShot :39615 / :39620) at 0; Yield 0.2 (:39609): at 0.2 s a copy of the worn main-hand weapon (mChar.mWep1, RabbitEquipment.cs:929-954: the mountHand_R piece, the page's slot R) Instantiated and parented to mountHand_L, localPosition 0, identity (:38901-38922; nothing when none is worn): the new kind propCopy, Destroyed at 2.8 s (:38975-38981); a counter i from 0 at 0.2 s, + 1 every 0.1 s (Yield 0.1 :39629, i++ :38952): volleys at i = 6 / 11 / 15 / 19 / 23 = 0.8 / 1.3 / 1.7 / 2.1 / 2.5 s, each two tenShot_fire Instantiated at the hero + TransformDirection(firePos), LookRotation(rotateH(forward, a)) (rotateH(+a) turns left = Unity yaw -a; i 6 :39265-39291, i 11 :39297-39323, i 15 :39329-39355, i 19 :39361-39387, i 23 :39393-39419; Instantiates :39449 / :39454; life 1, its own Sounds/fourShot_fire); each cone FindAngleTarget(hero, dir, 24, 70, 3) (:39477-39480; 35 deg each side, Damage.cs:1232): only the last volley's two forward cones hold the 10 m target, so at 2.5 s two RPC_nAttack_hit at its ClosestPointOnBounds(hero + 1 up) = (0, 1, 9.7) (:39505 / :39558, :39515 / :39568; the Bible's 2 hits at 0-10 deg); i >= 24 at 2.6 s (:39238): Yield 0.2 (:39607): at 2.8 s the copy Destroyed and standby (:39004): the ring's cut",
+    "cues": [
+      [
+        0,
+        "fx",
+        "tenShot_ring",
+        {
+          "cut": 2.8
+        }
+      ],
+      [
+        0,
+        "voice",
+        "tenShot1|tenShot2"
+      ],
+      [
+        0.2,
+        "propCopy",
+        "R",
+        {
+          "bone": "mountHand_L",
+          "kill": 2.6
+        }
+      ],
+      [
+        0.8,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": -0.6,
+          "y": 0.5,
+          "d": 0.75,
+          "rot": [
+            0,
+            -45,
+            0
+          ]
+        }
+      ],
+      [
+        0.8,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": 0.6,
+          "y": 0.5,
+          "d": 0.75,
+          "rot": [
+            0,
+            45,
+            0
+          ]
+        }
+      ],
+      [
+        1.3,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": -0.4,
+          "y": 0.6,
+          "d": -0.5,
+          "rot": [
+            0,
+            135,
+            0
+          ]
+        }
+      ],
+      [
+        1.3,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": 0.5,
+          "y": 0.6,
+          "d": -0.5,
+          "rot": [
+            0,
+            -135,
+            0
+          ]
+        }
+      ],
+      [
+        1.7,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": -1.2,
+          "y": 0.75,
+          "d": 0.1,
+          "rot": [
+            0,
+            -90,
+            0
+          ]
+        }
+      ],
+      [
+        1.7,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": 1,
+          "y": 0.75,
+          "d": 0.1,
+          "rot": [
+            0,
+            90,
+            0
+          ]
+        }
+      ],
+      [
+        2.1,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": -0.3,
+          "y": 0.9,
+          "d": -0.7,
+          "rot": [
+            0,
+            180,
+            0
+          ]
+        }
+      ],
+      [
+        2.1,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": 0.2,
+          "y": 0.8,
+          "d": -0.7,
+          "rot": [
+            0,
+            180,
+            0
+          ]
+        }
+      ],
+      [
+        2.5,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": -0.3,
+          "y": 0.9,
+          "d": 1
+        }
+      ],
+      [
+        2.5,
+        "fx",
+        "tenShot_fire",
+        {
+          "x": 0.1,
+          "y": 0.85,
+          "d": 1
+        }
+      ],
+      [
+        2.5,
+        "fx",
+        "nAttack_hit",
+        {
+          "d": 9.7,
+          "y": 1
+        }
+      ],
+      [
+        2.5,
+        "fx",
+        "nAttack_hit",
+        {
+          "d": 9.7,
+          "y": 1
+        }
+      ]
+    ]
+  },
+  "bountyHunt": {
+    "why": "TTO1102:Rabbit.<RPC_bountyHunt>d__352::MoveNext@0x1E30840 (pseudo/Rabbit.c:3251-3674; plans/fx_rabbit/tto.md 2.1): Row6Begin(bountyHunt) = PlayAnimation(clip, 0.1), Once (:3321; Rabbit::Row6Begin@0x1E10F50 :38981); cooldown agiAdjust(120) (:3329); Row6Voice(contract1, contract2) = voices/contract1 or contract2, Random.Range(0, 2), volume 1 for the owner (:3331; Row6Voice@0x1E12B10 :38831-38896); Until(start + 0.4) (:3381): Row6Sound(truceTrading, 0.8) (:3394; sounds/, x 0.7 for others, Row6Sound@0x1E12290 :38898-38930) and PosterFly from Row6Hand(false) = mountHand_L (:3403; Row6Hand@0x1E11AB0 :39306; the clip at 0.4 s: 0.039 m left, 0.884 up, 0.349 ahead, checks/fx_rabbit_research/tto/bones.txt): <PosterFly>d__353::MoveNext@0x1E28850 (:556-786) spawns bountyHunt_poster there with the hero's rotation (:614), flies it 0.25 s (:628) to the target's chest + 0.6 up (:654; Row6Chest@0x1E11140 = the collider's bounds centre, the standard target body 0.6 m up 10 m ahead) along lerp(from, to, clamp01(4t)) + up x 0.8 x 4t (1 - 4t) (:667-693), turning about its own forward 900 deg/s (:715), then Destroy (:733) and bountyHunt_pin at the chest, identity (:764) (its own sound truceTrading_fail 0.6), with the Bounty status (eStatus 719, 12 s, :769) and BountyWatch (:772); Until(start + 0.85) (:3410): bountyHunt_flare at Row6Muzzle, identity (:3431; Row6Muzzle@0x1E11BF0 :39352-39490: a child named fire / Fire / muzzle under mountHand_R, else mountHand_R + 0.35 x forward (:39468); no Rabbit gun has one, data/rabbit/props_weapons.json: 0.205 right, 1.082 up, 0.475 ahead at 0.85 s) and Row6Sound(shotgun, 0.8) (:3433); BountyOrders (:3436) sends Contract's units, none here; the hired guns at Until(start + HiredGunAt[i]) = 1.15 / 1.35 / 1.55 (:3464; Rabbit::.cctor@0x1E12F10 :41886: HiredGunAt [1.15, 1.35, 1.55], HiredGunAngle [-65, 65, 180]): gun = spot + AngleAxis(HiredGunAngle[i], up) x vFlat(hero - spot) x 14 + up x 7 (:3533-3602; spot = the target's feet, dir (0, 0, -1)): (12.688, 7, 4.083), (-12.688, 7, 4.083), (0, 7, 24); bountyHunt_muzzle at the gun, LookRotation(chest - gun) (:3613-3618), bountyHunt_tracer = Row6Tracer(gun, chest) (:3625; Row6Tracer@0x1E12940 :41234: Instantiate at the gun, identity, RabbitTracer.Set(gun, chest)), bountyHunt_hit at the chest, LookRotation(gun - chest) (:3637-3642), Row6Sound(deadShot, 0.8) (:3643), HiredGunHit (:3654, no raycast, no effect); Until(start + 1.8) (:3474): Row6End (:3665), the clip's 1.8 s. Left out: the Bounty look on the foe (bountyFx, CharacterControl::AddRabbitRow6Fx@0x24AE1D0; Sheep decision 4) and the kill claim (BountyClaim@0x1E05700 / BountyClaimFx@0x1E05380: bountyHunt_claim + truceTrading_success; needs a kill)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "contract1|contract2"
+      ],
+      [
+        0.4,
+        "sound",
+        "truceTrading",
+        {
+          "vol": 0.8
+        }
+      ],
+      [
+        0.4,
+        "fx",
+        "tto/bountyHunt_poster",
+        {
+          "x": -0.039,
+          "y": 0.884,
+          "d": 0.349,
+          "to": [
+            0,
+            1.2,
+            10
+          ],
+          "kill": 0.25
+        }
+      ],
+      [
+        0.65,
+        "fx",
+        "tto/bountyHunt_pin",
+        {
+          "y": 0.6,
+          "d": 10
+        }
+      ],
+      [
+        0.85,
+        "fx",
+        "tto/bountyHunt_flare",
+        {
+          "x": 0.205,
+          "y": 1.082,
+          "d": 0.475
+        }
+      ],
+      [
+        0.85,
+        "sound",
+        "shotgun",
+        {
+          "vol": 0.8
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/bountyHunt_muzzle",
+        {
+          "x": 12.688,
+          "y": 7.0,
+          "d": 4.083,
+          "rot": [
+            24.567,
+            -65.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/bountyHunt_tracer",
+        {
+          "x": 12.688,
+          "y": 7.0,
+          "d": 4.083,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/bountyHunt_hit",
+        {
+          "y": 0.6,
+          "d": 10,
+          "rot": [
+            -24.567,
+            115.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.15,
+        "sound",
+        "deadShot",
+        {
+          "vol": 0.8
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/bountyHunt_muzzle",
+        {
+          "x": -12.688,
+          "y": 7.0,
+          "d": 4.083,
+          "rot": [
+            24.567,
+            65.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/bountyHunt_tracer",
+        {
+          "x": -12.688,
+          "y": 7.0,
+          "d": 4.083,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/bountyHunt_hit",
+        {
+          "y": 0.6,
+          "d": 10,
+          "rot": [
+            -24.567,
+            -115.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.35,
+        "sound",
+        "deadShot",
+        {
+          "vol": 0.8
+        }
+      ],
+      [
+        1.55,
+        "fx",
+        "tto/bountyHunt_muzzle",
+        {
+          "x": 0.0,
+          "y": 7.0,
+          "d": 24.0,
+          "rot": [
+            24.567,
+            180.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.55,
+        "fx",
+        "tto/bountyHunt_tracer",
+        {
+          "x": 0.0,
+          "y": 7.0,
+          "d": 24.0,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.55,
+        "fx",
+        "tto/bountyHunt_hit",
+        {
+          "y": 0.6,
+          "d": 10,
+          "rot": [
+            -24.567,
+            0.0,
+            0
+          ]
+        }
+      ],
+      [
+        1.55,
+        "sound",
+        "deadShot",
+        {
+          "vol": 0.8
+        }
+      ]
+    ]
+  },
+  "coinRicochet": {
+    "why": "TTO1102:Rabbit.<RPC_coinRicochet>d__343::MoveNext@0x1E36300 (pseudo/Rabbit.c:6311-6692; plans/fx_rabbit/tto.md 2.2), no voice: Row6Begin(coinRicochet) (:6371); cooldown agiAdjust(60) (:6379); the four hang spots hang[i] = TransformPoint(CoinHang[i]) at the cast (:6469; Rabbit::.cctor@0x1E12F10 :41886: (-0.9, 1.55, 1.6), (-0.3, 1.85, 1.9), (0.3, 1.75, 1.8), (0.9, 1.5, 1.55), x right, z ahead); Until(start + 0.3) (capstone 0x1E36D77, checks/fx_rabbit_research/tto/coin_movenext.asm): Row6Sound(coin, 1) (:6493), coinRicochet_flick owned at Row6Hand(false) = mountHand_L with the hero's rotation (:6494-6508; the clip at 0.3 s: 0.098 m left, 1.068 up, 0.192 ahead, bones.txt), four coinRicochet_coin there, identity (:6526), each CoinRise(coin, hand, hang[i], delay 0.04 i) (:6509, :6543; <CoinRise>d__346::MoveNext@0x1E27890 :440-539: e = 1 - (1 - clamp01((now - t0 - delay) / 0.35))^2, position = lerp(hand, hang, e) + up x 0.08 sin(40 delay + 6 Time.time) :469-524; part P2 on the coin, its Coin node spun 900 deg/s by RabbitSpin, part P1); coin k at Until(start + CoinShotAt[k]) = 0.75 / 0.95 / 1.15 / 1.35 (capstone 0x1E36963; CoinShotAt, the .cctor): the coin destroyed (:6628: kill = CoinShotAt[k] - 0.3), coinRicochet_shot = Row6Tracer(Row6Muzzle, coin) (:6632-6636; Row6Muzzle = mountHand_R + 0.35 forward, no gun has a muzzle child: bones.txt at each shot), coinRicochet_ping at the coin, identity (:6645; its own sound gilShot 0.75), CoinChain -> <CoinRicochets>d__348::MoveNext@0x1E27210 (:6648; :173-423): hop 0 CoinNext(coin, the selected target, 18 m) (:303-311) = the target; coinRicochet_ricochet (coin 4, the cash-out coin k = CoinShotAt.Length - 1 (:235): coinRicochet_cashTracer) = Row6Tracer(coin, Row6Chest) (:393-404; the coin's spot is hang[k] with the bob at the shot's clip time, decision in question 3); Waits.Get(0.07) (:408): coinRicochet_hit (cash out: coinRicochet_cashout) at the chest, identity (:269), Row6Sound(gilShot_hit 0.7, or diamondShot 0.7 for the cash out) only when hop > 0 or cash out (:276; the volume 0.7 from the instructions, capstone 0x1E27439, ricochets.asm); hops 2-3 look for another foe within 9 m (:303): none here, so each coin hits once (no miss tracer: that is hop 0 only, :353-357); Until(start + 1.9) (capstone 0x1E369CF): Row6End (:6561), the clip's 1.9 s. Left out: the Gilded look on the foe (gildedFx, AddRabbitRow6Fx; Sheep decision 4) and the gold chat (CoinSettle@0x1E06F80)",
+    "cues": [
+      [
+        0.3,
+        "sound",
+        "coin"
+      ],
+      [
+        0.3,
+        "fx",
+        "tto/coinRicochet_flick",
+        {
+          "x": -0.098,
+          "y": 1.068,
+          "d": 0.192
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "tto/coinRicochet_coin",
+        {
+          "x": -0.098,
+          "y": 1.068,
+          "d": 0.192,
+          "to": [
+            -0.9,
+            1.55,
+            1.6
+          ],
+          "delay": 0.0,
+          "kill": 0.45
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "tto/coinRicochet_coin",
+        {
+          "x": -0.098,
+          "y": 1.068,
+          "d": 0.192,
+          "to": [
+            -0.3,
+            1.85,
+            1.9
+          ],
+          "delay": 0.04,
+          "kill": 0.65
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "tto/coinRicochet_coin",
+        {
+          "x": -0.098,
+          "y": 1.068,
+          "d": 0.192,
+          "to": [
+            0.3,
+            1.75,
+            1.8
+          ],
+          "delay": 0.08,
+          "kill": 0.85
+        }
+      ],
+      [
+        0.3,
+        "fx",
+        "tto/coinRicochet_coin",
+        {
+          "x": -0.098,
+          "y": 1.068,
+          "d": 0.192,
+          "to": [
+            0.9,
+            1.5,
+            1.55
+          ],
+          "delay": 0.12,
+          "kill": 1.05
+        }
+      ],
+      [
+        0.75,
+        "fx",
+        "tto/coinRicochet_shot",
+        {
+          "x": -0.03,
+          "y": 0.9,
+          "d": 0.454,
+          "to": [
+            -0.9,
+            1.472,
+            1.6
+          ]
+        }
+      ],
+      [
+        0.75,
+        "fx",
+        "tto/coinRicochet_ping",
+        {
+          "x": -0.9,
+          "y": 1.472,
+          "d": 1.6
+        }
+      ],
+      [
+        0.75,
+        "fx",
+        "tto/coinRicochet_ricochet",
+        {
+          "x": -0.9,
+          "y": 1.472,
+          "d": 1.6,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        0.82,
+        "fx",
+        "tto/coinRicochet_hit",
+        {
+          "y": 0.6,
+          "d": 10
+        }
+      ],
+      [
+        0.95,
+        "fx",
+        "tto/coinRicochet_shot",
+        {
+          "x": 0.021,
+          "y": 0.904,
+          "d": 0.43,
+          "to": [
+            -0.3,
+            1.918,
+            1.9
+          ]
+        }
+      ],
+      [
+        0.95,
+        "fx",
+        "tto/coinRicochet_ping",
+        {
+          "x": -0.3,
+          "y": 1.918,
+          "d": 1.9
+        }
+      ],
+      [
+        0.95,
+        "fx",
+        "tto/coinRicochet_ricochet",
+        {
+          "x": -0.3,
+          "y": 1.918,
+          "d": 1.9,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.02,
+        "fx",
+        "tto/coinRicochet_hit",
+        {
+          "y": 0.6,
+          "d": 10
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/coinRicochet_shot",
+        {
+          "x": 0.056,
+          "y": 0.904,
+          "d": 0.407,
+          "to": [
+            0.3,
+            1.7,
+            1.8
+          ]
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/coinRicochet_ping",
+        {
+          "x": 0.3,
+          "y": 1.7,
+          "d": 1.8
+        }
+      ],
+      [
+        1.15,
+        "fx",
+        "tto/coinRicochet_ricochet",
+        {
+          "x": 0.3,
+          "y": 1.7,
+          "d": 1.8,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.22,
+        "fx",
+        "tto/coinRicochet_hit",
+        {
+          "y": 0.6,
+          "d": 10
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/coinRicochet_shot",
+        {
+          "x": 0.089,
+          "y": 0.9,
+          "d": 0.376,
+          "to": [
+            0.9,
+            1.526,
+            1.55
+          ]
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/coinRicochet_ping",
+        {
+          "x": 0.9,
+          "y": 1.526,
+          "d": 1.55
+        }
+      ],
+      [
+        1.35,
+        "fx",
+        "tto/coinRicochet_cashTracer",
+        {
+          "x": 0.9,
+          "y": 1.526,
+          "d": 1.55,
+          "to": [
+            0,
+            0.6,
+            10
+          ]
+        }
+      ],
+      [
+        1.42,
+        "fx",
+        "tto/coinRicochet_cashout",
+        {
+          "y": 0.6,
+          "d": 10
+        }
+      ],
+      [
+        1.42,
+        "sound",
+        "diamondShot",
+        {
+          "vol": 0.7
+        }
+      ]
+    ]
+  },
+  "medicTurret": {
+    "why": "TTO1102:Rabbit.<RPC_medicTurret>d__334::MoveNext@0x1E420E0 (pseudo/Rabbit.c:13058-13300; plans/fx_rabbit/tto.md 2.3 and its Verification 2): Row6Begin(medicTurret) (:13131); cooldown agiAdjust(90) (:13139); Row6Voice(lifeShot1, lifeShot2) (:13141); medicTurret_cast owned at the hero, the hero's rotation (:13153); Until(start + 0.55) (:13158): Row6Sound(backpack_hit, 0.9) (:13172), the spot 1.8 m ahead (no wall within 2.3 m, :13212-13234) on the ground (Row6Ground :13254) -> RPC_medicTurret_create@0x1E0DE50 (:39868-40089): an older turret destroyed (:39906-39916), medicTurret at the spot, LookRotation(flat aim) = the hero's facing (:39948-39959), RabbitMedicTurret.Init (:40056), medicTurret_deploy at the spot, identity (:40085); Until(start + 1.3): Row6End (:13280-13292), the clip's 1.3 s. The turret's life is its part's (RabbitMedicTurret, pseudo_c6_extra/rabbit/RabbitMedicTurret.c; tto.md Verification 2's P5): the Model grows over 0.45 s (:225-252); beats at 0.75 + 1.5 k s after the spawn (:142, :397-404), each Fire (:1181-1392): medicTurret_beat at the turret (BeatFx :1251 -> Rabbit.c:40376), the head snapped to the ally (:1321-1327), medicTurret_shot from the Muzzle node with RabbitTracer.Set(muzzle, the ally's chest) and the capsule (Rabbit.c:40218-40344) flown 0.25 s by Rabbit.TurretCapsule (Rabbit.c:24911-25135), which spawns medicTurret_hit at the chest and lifeShot / boostShot / heatShot (Random.Range(1, 4), RMT.c:471) at the feet for 2 s (:25097-25130); the ally = the Rabbit (MedicTurretPick: the lowest HP share within 10 m, her included, the Race 4 turret skipped, Rabbit.c:40141-40209; ally [0, 0.7, 0] = her collider centre, checks/fx_rabbit_research/tto/cc.txt); the game's 15 s cut at 10 s after the spawn (the 10 s rule, Monkey decision 30's end): end 10 = Die -> RPC_dead (RMT.c:1393-1537): medicTurret_break at it, the Model shrunk over 0.4 s, gone: kill 10.4; 7 beats (1.3 ... 10.3 s from the cast). builds: the capsule's drops (BB's copies, Bison decision 43), written as one a|b pick: the part draws one per beat, so the check expects none of them; the tto/ prefabs come from SKILL_FX; replace: one turret at a time, the older one removed at the new one's spawn (RPC_medicTurret_create Rabbit.c:39906-39916; plans/fx_rabbit/decisions.md 33)",
+    "builds": [
+      "lifeShot|boostShot|heatShot"
+    ],
+    "cues": [
+      [
+        0,
+        "voice",
+        "lifeShot1|lifeShot2"
+      ],
+      [
+        0,
+        "fx",
+        "tto/medicTurret_cast"
+      ],
+      [
+        0.55,
+        "sound",
+        "backpack_hit",
+        {
+          "vol": 0.9
+        }
+      ],
+      [
+        0.55,
+        "fx",
+        "tto/medicTurret",
+        {
+          "d": 1.8,
+          "end": 10,
+          "kill": 10.4,
+          "ally": [
+            0,
+            0.7,
+            0
+          ],
+          "replace": true
+        }
+      ],
+      [
+        0.55,
+        "fx",
+        "tto/medicTurret_deploy",
+        {
+          "d": 1.8
+        }
+      ]
+    ]
+  },
+  "wave": {
+    "why": "Rabbit.cs RPC_emotion ($RPC_emotion$27480, :42560-43265): every emote's voice at 0, before its clip: pvoice, Time.time > actionTime + 2, own hero / game code 31 / a mission teammate (:42625-42659); emo_chat loads chat + Random.Range(1, 4) (:42677-42683), every other emo_<name> Voices/<name> (Substring(4) :42691), played only if it loads (:42697-42703); the clip with a 0.2 s fade, no effect, no Sounds/ load; the rip's Rabbit voices have hi, wave, ty, bow, laugh, sleep, cheer, beg, cry, battle, pose, chat1-3 and no sit, talk or dance (container.txt); emo_hi (:42757) and emo_wave (:42763) both play wave (:43198): voice hi or wave",
+    "cues": [
+      [
+        0,
+        "voice",
+        "hi|wave"
+      ]
+    ]
+  },
+  "bow": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_ty (:42772) and emo_bow (:42778) both play bow (:43190); both voices are in the Rabbit's rip (container.txt): voice ty or bow (as wave takes hi or wave)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "ty|bow"
+      ]
+    ]
+  },
+  "laugh": {
+    "why": "Rabbit.cs RPC_emotion (:42560): voice at 0, Voices/<name> (:42691, PlayOneShot :42703); emo_laugh (:42785-42791)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "laugh"
+      ]
+    ]
+  },
+  "sleep": {
+    "why": "Rabbit.cs RPC_emotion (:42560): voice at 0, Voices/<name> (:42691, PlayOneShot :42703); emo_sleep (:42817-42823)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "sleep"
+      ]
+    ]
+  },
+  "cheer": {
+    "why": "Rabbit.cs RPC_emotion (:42560): voice at 0, Voices/<name> (:42691, PlayOneShot :42703); emo_cheer (:42829-42835)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "cheer"
+      ]
+    ]
+  },
+  "beg": {
+    "why": "Rabbit.cs RPC_emotion (:42560): voice at 0, Voices/<name> (:42691, PlayOneShot :42703; the Rabbit's rip has beg, container.txt); emo_beg (:42841-42847)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "beg"
+      ]
+    ]
+  },
+  "cry": {
+    "why": "Rabbit.cs RPC_emotion (:42560): voice at 0, Voices/<name> (:42691, PlayOneShot :42703); emo_cry (:42853-42859)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "cry"
+      ]
+    ]
+  },
+  "talk": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_chat (:42873) plays talk (:43167) with Voices/chat + Random.Range(1, 4) = chat1-3 (:42677-42683; the rip has chat1-3); emo_talk (:42867) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+      [
+        0,
+        "voice",
+        "chat1|chat2|chat3"
+      ]
+    ]
+  },
+  "battle": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_battle (:43136-43142): voice battle (:42691, PlayOneShot :42703); RPC_activateIcon1 loops the clip without it (:48104-48122, no tile, Penguin decision 19)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "battle"
+      ]
+    ]
+  },
+  "pose": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice Voices/pose (:42691, PlayOneShot :42703; in the rip) at 0, before the clip is chosen by the worn set (:42880-43126): pose with no full set (:43126)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose5": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose5 with w_rab5 + a_rab5 + c_rab5 (:42884-42902)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose15": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose15 with a_rab15 + c_rab15 (no weapon test, :42911-42923)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose25": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose25 with w_rab25 + a_rab25 + c_rab25 (:42931-42949)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose35": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose35 with w_rab35 + a_rab35 + c_rab35 (:42958-42976)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose45": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose45 with w_rab45 + a_rab45 + c_rab45 (:42985-43003)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose46": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose46 with w_rab46 + c_all46 (:43066-43078)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose58": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose58 with w_rab58 + a_all58 + c_all58 (:43012-43030)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose65": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose65 with w_rab65 + a_rab65 + c_rab65 (:43039-43057)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "pose66": {
+    "why": "Rabbit.cs RPC_emotion (:42560): emo_pose's voice pose at 0 (:42691, :42703), then pose66 with w_rab66 + c_all66 (:43106-43118)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "pose"
+      ]
+    ]
+  },
+  "ko": {
+    "why": "Rabbit.cs RPC_ko ($RPC_ko$27649, :48227-48570): ko clip (animation.Play :48441) and voice ko1 or ko2 at 0 (own hero, else a mission teammate :48453-48459; Random.Range(0, 2) :48476, loads :48486 / :48517, PlayOneShot :48560 / :48563), getUp after 3 s (Yield(2, 3) :48568, :48343), standby 1 s later (:48556, :48367), no effect; RPC_dead ($RPC_dead$27656, :48603-48940) plays the same clip (Rewind + Play :48797-48800) and puts deadEffect at the hero's position and rotation first, on every path (:48806-48812, before the pvoice gate :48818; the prefab field, also Effects/deadEffect in the container; EffectControl life 3, an ImageEmitter 0.8 m up after 0.3 s and two LineEmitters, probe_summary.txt), then dead1 or dead2 (Random.Range(0, 2) :48847, :48857 / :48888, PlayOneShot :48929 / :48932): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / mole.json: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+      [
+        0,
+        "voice",
+        "ko1|ko2",
+        {
+          "p": 0.5,
+          "roll": "!dead"
+        }
+      ],
+      [
+        0,
+        "voice",
+        "dead1|dead2",
+        {
+          "p": 0.5,
+          "roll": "dead"
+        }
+      ],
+      [
+        0,
+        "fx",
+        "deadEffect",
+        {
+          "p": 0.5,
+          "roll": "dead"
+        }
+      ]
+    ]
+  }
+}

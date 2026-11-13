@@ -48,6 +48,42 @@ export default function register(api) {
     } };
   });
 
+  // ---------- the rotation modes 2 / 3 (EffectControl.cs:303-416), for a child's EffectControl and the root's ----------
+  // Sets node's rotation in the effect's Unity space (the mirror group; the parent's turn taken out, identity for a root)
+  const faceTurn = (fx, node, mode, cam) => {
+    let q = null;
+    if (mode === 2) {                                                         // faceCamera: :372 transform.LookAt(camera)
+      const me = V().setFromMatrixPosition(fx.uMatrix(node));
+      const f = nz(camera.getWorldPosition(V()).applyMatrix4(fx.mirrorInv).sub(me));
+      const x = nz(V().crossVectors(V(0, 1, 0), f));                          // Quaternion.LookRotation(f, up): x = up x f
+      if (f.lengthSq() && x.lengthSq())
+        q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, V().crossVectors(f, x), f));
+    } else if (mode === 3) {                                                  // faceUp: :398 FromToRotation(forward, vFlat(camera forward))
+      const f = nz(V(cam.fwd.x, 0, cam.fwd.z));                               // Math.vFlat (Math.cs:824-827)
+      if (f.lengthSq()) q = new THREE.Quaternion().setFromUnitVectors(V(0, 0, 1), f);
+    }
+    if (q) node.quaternion.copy(fx.uQuat(node.parent).invert().multiply(q));
+  };
+
+  // ---------- the root's EffectControl: modes 2 / 3 (plans/fx_rabbit/parts.md part 5 + Verification 4) ----------
+  // class Fx keeps the root's EffectControl (life, afterLife, followState, velocity); index.html calls this once when its
+  // effectRotationMode is 2 or 3. BB turns the root every frame of its live phase (age < life), with or without an owner;
+  // after it the rotation is left as it is. With followPosition and an owner (the cue's `owner` [x, y, d], the owner's
+  // transform position in the mirror group's Unity space: Stat Scan's scanned target) it then puts the root at
+  // owner + R x (spawn - owner) (:375-381, :407; the offset taken in world space at Init, :96-104), so the mark swings
+  // round the owner as the view turns. No owner (bounce1 / bounce2, Instantiated): it only turns.
+  api.part("EffectControl(root)", (fx, node, c) => {
+    const mode = c.effectRotationMode;
+    if (mode !== 2 && mode !== 3) return null;
+    const own = c.followPosition && fx.at.owner ? vA(fx.at.owner) : null, off = own && node.position.clone().sub(own);
+    return { node, update(dt, cam) {
+      if (fx.age >= (fx.ec || c).life) return;             // fx.ec: a cue's life wins (Fx constructor); a cut sets age = life
+      faceTurn(fx, node, mode, cam);
+      if (own) node.position.copy(own).add(off.clone().applyQuaternion(node.quaternion));
+      node.updateMatrixWorld(true);                        // parts drawn later this frame see the turn
+    } };
+  });
+
   // ---------- EffectControl below the root ----------
   const STOPPED = /ParticleEmitter$|^ImageEmitter$/;       // what the after-life stops (EffectControl.cs:430-498)
   api.part("EffectControl", (fx, node, c, mat, nodeDef, data) => {
@@ -55,8 +91,6 @@ export default function register(api) {
     // = the effect's Unity space (the mirror group), the hero's own frame; the hero never moves on the page
     const vel = (c.velocity || []).some(x => x) ? vA(c.velocity).applyQuaternion(fx.uQuat(node)) : null;
     let t = 0, stopping = true;                            // stopping = the game's PX4cOk0le2j (true from the constructor, :38)
-    const parentQ = () => fx.uQuat(node.parent);           // identity when the parent is the mirror group
-    const setWorldQuat = q => node.quaternion.copy(parentQ().invert().multiply(q));
     const under = o => { for (; o; o = o.parent) if (o === node) return true; return false; };
     return { node, update(dt, cam) {
       t += dt;                                             // :164
@@ -77,19 +111,9 @@ export default function register(api) {
         // :303-416 the rotation modes, no owner
         const mode = c.effectRotationMode;
         if (mode === 0) { if (c.followPosition) t = c.life; }                // normal: :311-326, no owner = the after-life
-        else if (mode === 2) {                                                // faceCamera: :372 transform.LookAt(camera)
-          const me = V().setFromMatrixPosition(fx.uMatrix(node));
-          const f = nz(camera.getWorldPosition(V()).applyMatrix4(fx.mirrorInv).sub(me));
-          const x = nz(V().crossVectors(V(0, 1, 0), f));                      // Quaternion.LookRotation(f, up): x = up x f
-          if (f.lengthSq() && x.lengthSq())
-            setWorldQuat(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, V().crossVectors(f, x), f)));
-          // followPosition would then read the missing owner's transform (:381): a NullReferenceException that ends the
-          // game's Update there, so nothing more
-        } else if (mode === 3) {                                              // faceUp: :398 FromToRotation(forward, vFlat(camera forward))
-          const f = nz(V(cam.fwd.x, 0, cam.fwd.z));                           // Math.vFlat (Math.cs:824-827)
-          if (f.lengthSq()) setWorldQuat(new THREE.Quaternion().setFromUnitVectors(V(0, 0, 1), f));
-          // followPosition: the same missing owner (:407), nothing more
-        }
+        // faceCamera (2) / faceUp (3): faceTurn above. followPosition would then read the missing owner's transform
+        // (:381, :407): a NullReferenceException that ends the game's Update there, so nothing more
+        else if (mode === 2 || mode === 3) faceTurn(fx, node, mode, cam);
         // followObject (1) and freeze (4) do nothing without an owner (:343-345, :392-394)
       } else if (stopping) {
         // :421-512 once: the legacy ParticleEmitters (emit = false) and ImageEmitters (repeatForever = false) on this

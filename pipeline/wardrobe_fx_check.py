@@ -174,7 +174,8 @@ def builds(e):
 
 def names(cls, kind):
     return sorted({n for c in all_cues(cls) if c[1] == kind for n in str(c[2]).split("|")}
-                  | {n for e in CUES[cls].values() for k, n in builds(e) if k == kind})
+                  # (a builds name "a|b": a part's random pick, built in full, not expected: the Rabbit's turret drops)
+                  | {n for e in CUES[cls].values() for k, b in builds(e) if k == kind for n in b.split("|")})
 
 
 def expected(entries):
@@ -223,12 +224,19 @@ OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", 
         "tune", "firePoint", "tilt", "pick", "playAudio", "clip", "host", "pair", "trigger", "finish", "ride", "shots",
         "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg",
         "alpha", "standing", "hide", "moves", "turn", "attach", "lavu", "unsummon", "boost", "rise", "head", "top", "dive", "alt",
-        "enable", "atBone", "k", "off", "floor"}   # floor: the Panda's QA (index.html Fx, clipped at the ground)
+        "enable", "atBone", "k", "off", "floor",   # floor: the Panda's QA (index.html Fx, clipped at the ground)
+        # 2026-11-13, the Rabbit (plans/fx_rabbit/decisions.md 20, 22-24, 29, 31, 56): yaw (one random angle per play per name,
+        # index.html cueOf), sphere (a random flat offset within r), replace (an older live copy disposed at the spawn), owner
+        # (the root EffectControl's followPosition owner, fxparts/control.js), ally / delay (fxparts/tto_rabbit.js's turret and
+        # coins); a rot list may hold "random" (Random.Range(0, 360) per spawn); kind rides api.spawn only, never a cue
+        "yaw", "sphere", "replace", "owner", "ally", "delay"}
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
 # ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
 # (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
 # Dragon), and no kill = hidden until the next pick (after a cast-bar skill, Clear Arrow's hand arrow)
-KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp", "propAnim")   # propAnim: the worn prop's own clip (the Mole, decision 43)
+# propCopy: 2026-11-13, the Rabbit's Ten Shot ([t, "propCopy", slot, {"bone", "kill"}]: a copy of the worn prop on a hero
+# bone, index.html HeroPropCopy; plans/fx_rabbit/decisions.md 34): FX.spawned "propCopy:<slot>" only when a prop is worn there
+KINDS = ("fx", "voice", "sound", "skin", "clone", "lift", "hideProp", "propAnim", "propCopy")   # propAnim: the worn prop's own clip (the Mole, decision 43)
 PROP_SLOTS = ("R", "L", "Head", "Back")                          # index.html C.props' keys
 HIDE_TARGETS = PROP_SLOTS + ("hero",)                            # index.html fxDue's hideProp (HeroPropHide, heroHide)
 # order ("cycle": a pool whose plays take its members in turn), a member's standby (its step's end) and name (its tile's):
@@ -283,6 +291,12 @@ def file_errors(cls):
                              for n in c[2].split("|") if LIFT_NAMES and n not in LIFT_NAMES]
                 elif c[1] == "propAnim":                    # the worn prop's own clip once (index.html propAnimPlay)
                     errs += [f"{cls}: {key}: propAnim {n} is not a prop slot (R, L, Head, Back)" for n in c[2].split("|") if n not in PROP_SLOTS]
+                elif c[1] == "propCopy":                    # a copy of the worn prop on a bone (index.html HeroPropCopy)
+                    o = c[3] if len(c) > 3 and isinstance(c[3], dict) else {}
+                    if c[2] not in PROP_SLOTS:
+                        errs.append(f"{cls}: {key}: propCopy {c[2]} is not a prop slot (R, L, Head, Back)")
+                    if not isinstance(o.get("bone"), str):
+                        errs.append(f"{cls}: {key}: propCopy {c[2]}: bone must name the hero bone it goes on")
                 elif c[1] == "hideProp":                    # the worn prop's meshes hidden (index.html HeroPropHide)
                     errs += [f"{cls}: {key}: hideProp {n} is not a prop slot (R, L, Head, Back) or hero" for n in c[2].split("|")
                              if n not in HIDE_TARGETS]

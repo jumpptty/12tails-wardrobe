@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, HelixRibbonEmitter, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, ProjectileControl, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, HelixRibbonEmitter, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LightGolem, LightGolemAI, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, PowerUpRotation, ProjectileControl, Rabbit.CoinRise, Rabbit.PosterFly, Rabbit.TurretCapsule, RabbitMedicTurret, RabbitSpin, Rabbit_acidicField, Rabbit_healingField, Rabbit_mall, Rabbit_potion, Rabbit_sniperCamera, Rabbit_stickyGum, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -19,7 +19,7 @@ like a Sheep's heal): counted apart, never this class's skills.
 | monkey | 51 | 50 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | panda | 71 | 70 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 28 |
 | penguin | 48 | 48 | 0 |  | 28 |
-| rabbit | 84 | 66 | 18 | Rabbit_potion 13, Rabbit_acidicField 1, ParticleSystemRenderer 1, ParticleSystem 1, Rabbit_healingField 1, Rabbit_sniperCamera 1, Rabbit_stickyGum 1 | 24 |
+| rabbit | 84 | 83 | 1 | ParticleSystemRenderer 1, ParticleSystem 1 | 24 |
 | sheep | 51 | 51 | 0 |  | 27 |
 | whale | 51 | 45 | 6 | whale_kingdomKnight 2, Whale_flyingShield 1, ParticleSystemRenderer 1, ParticleSystem 1, Whale_homingShield 1, Whale_javelin 1 | 28 |
 | wolf | 69 | 69 | 0 |  | 28 |
@@ -31,15 +31,10 @@ Own effects that need the part (all classes), and how many of those it alone blo
 
 | part | effects | blocks alone | classes |
 |---|---|---|---|
-| Rabbit_potion | 13 | 13 | rabbit |
 | whale_kingdomKnight | 2 | 2 | whale |
 | Whale_javelin | 1 | 1 | whale |
 | Whale_homingShield | 1 | 1 | whale |
 | Whale_flyingShield | 1 | 1 | whale |
-| Rabbit_stickyGum | 1 | 1 | rabbit |
-| Rabbit_sniperCamera | 1 | 1 | rabbit |
-| Rabbit_healingField | 1 | 1 | rabbit |
-| Rabbit_acidicField | 1 | 1 | rabbit |
 | ParticleSystemRenderer | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 | ParticleSystem | 11 | 0 | bison, cat, chameleon, mole, monkey, panda, rabbit, whale |
 
@@ -50,18 +45,13 @@ Each step: the part that makes the most own effects ready, given the ones above 
 
 | step | part | newly ready | ready after |
 |---|---|---|---|
-| 0 | (built today) | 666 | 666 / 699 |
-| 1 | Rabbit_potion | 13 | 679 / 699 |
-| 2 | whale_kingdomKnight | 2 | 681 / 699 |
-| 3 | Whale_javelin | 1 | 682 / 699 |
-| 4 | Whale_homingShield | 1 | 683 / 699 |
-| 5 | Whale_flyingShield | 1 | 684 / 699 |
-| 6 | Rabbit_stickyGum | 1 | 685 / 699 |
-| 7 | Rabbit_sniperCamera | 1 | 686 / 699 |
-| 8 | Rabbit_healingField | 1 | 687 / 699 |
-| 9 | Rabbit_acidicField | 1 | 688 / 699 |
-| 10 | ParticleSystemRenderer | 0 | 688 / 699 |
-| 11 | ParticleSystem | 11 | 699 / 699 |
+| 0 | (built today) | 683 | 683 / 699 |
+| 1 | whale_kingdomKnight | 2 | 685 / 699 |
+| 2 | Whale_javelin | 1 | 686 / 699 |
+| 3 | Whale_homingShield | 1 | 687 / 699 |
+| 4 | Whale_flyingShield | 1 | 688 / 699 |
+| 5 | ParticleSystemRenderer | 0 | 688 / 699 |
+| 6 | ParticleSystem | 11 | 699 / 699 |
 
 ## Per effect
 
@@ -543,7 +533,9 @@ Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so no
 
 ### rabbit
 
-- `acidicField` (Rabbit.cs:10119): needs Rabbit_acidicField
+Effects this scan does not see (2026-11-13, plans/fx_rabbit/parts.md "Read this first" 7, decisions.md 57): the hero prefab's fields in the Resources container, built by name: castStar (the field castStar1) and castLight (RPC_cast1's ring of stars and bottle lights), deadEffect; the Mall's stalls mall1-5 (`Effects/mall` + the outfit colour, `Rabbit.cs:33507`: Rabbit_mall, data only); the drinkers' status looks autoLife, enlarge, reduce, miracleDrop (`CharacterControl.cs`, built, not cued: looks on others); the summon Characters/Elementals/LightGolem/LightGolem (EXTRA_FOLDERS; LightGolem + LightGolemAI). Every one ready. Missing from both games' data (the code logs "Cannot find"; nothing drawn): snipeShot_hit, kneeShot_hit, herbFinder, contract_ring, fourShot_hit, circleShot_hit, tenShot_hit, mall, mall0, mall6.
+
+- `acidicField` (Rabbit.cs:10119): ready
 - `acidicField_fire` (Rabbit.cs:10172): ready
 - `allHpDrug1` (Rabbit.cs:45475): ready
 - `allKoDrug1` (Rabbit.cs:45581): ready
@@ -568,7 +560,7 @@ Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so no
 - `diamondShot_fire` (Rabbit.cs:38214): ready
 - `diamondShot_hit` (Rabbit.cs:11405): ready
 - `diamondShot_ring` (Rabbit.cs:38544): ready
-- `extravagance_ring` (Rabbit.cs:40021): needs ParticleSystem, ParticleSystemRenderer
+- `extravagance_ring` (Rabbit.cs:40021): needs ParticleSystem, ParticleSystemRenderer (its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material: Gil, star5; BB's own materials): drawn)
 - `fourShot_fire` (Rabbit.cs:32314): ready
 - `fromTheAbove_ring` (Rabbit.cs:21830): ready
 - `gilShot_fire` (Rabbit.cs:30320): ready
@@ -577,13 +569,13 @@ Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so no
 - `gorgonShot_fire` (Rabbit.cs:29605): ready
 - `gorgonShot_hit` (Rabbit.cs:10452): ready
 - `gorgonShot_ring` (Rabbit.cs:29974): ready
-- `healingField` (Rabbit.cs:11295): needs Rabbit_healingField
+- `healingField` (Rabbit.cs:11295): ready
 - `healingField_fire` (Rabbit.cs:11355): ready
 - `heatShot` (Rabbit.cs:10308): ready
-- `hpPot1` (Rabbit.cs:24375): needs Rabbit_potion
-- `hpPot2` (Rabbit.cs:24414): needs Rabbit_potion
-- `hpPot3` (Rabbit.cs:24453): needs Rabbit_potion
-- `hpPot4` (Rabbit.cs:24492): needs Rabbit_potion
+- `hpPot1` (Rabbit.cs:24375): ready
+- `hpPot2` (Rabbit.cs:24414): ready
+- `hpPot3` (Rabbit.cs:24453): ready
+- `hpPot4` (Rabbit.cs:24492): ready
 - `hpPot_hit` (Rabbit.cs:9964): ready
 - `immuneShot` (Rabbit.cs:10222): ready
 - `lifeShot` (Rabbit.cs:10351): ready
@@ -598,12 +590,12 @@ Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so no
 - `mpPot_hit` (Rabbit.cs:9880): ready
 - `nAttack_fire` (Rabbit.cs:17537): ready
 - `nAttack_hit` (Rabbit.cs:9125): ready
-- `randomPot1` (Rabbit.cs:26173): needs Rabbit_potion
-- `randomPot2` (Rabbit.cs:26204): needs Rabbit_potion
-- `randomPot3` (Rabbit.cs:26235): needs Rabbit_potion
-- `randomPot4` (Rabbit.cs:26266): needs Rabbit_potion
-- `randomPot5` (Rabbit.cs:26297): needs Rabbit_potion
-- `randomPot6` (Rabbit.cs:26328): needs Rabbit_potion
+- `randomPot1` (Rabbit.cs:26173): ready
+- `randomPot2` (Rabbit.cs:26204): ready
+- `randomPot3` (Rabbit.cs:26235): ready
+- `randomPot4` (Rabbit.cs:26266): ready
+- `randomPot5` (Rabbit.cs:26297): ready
+- `randomPot6` (Rabbit.cs:26328): ready
 - `rapidTrance_potion` (Rabbit.cs:28987): ready
 - `rapidTrance_ring` (Rabbit.cs:29062): ready
 - `replenishment_ring` (Rabbit.cs:12843): ready
@@ -613,14 +605,14 @@ Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so no
 - `shootingArray_ring` (Rabbit.cs:35793): ready
 - `shotgun_fire` (Rabbit.cs:36211): ready
 - `shotgun_hit` (Rabbit.cs:11057): ready
-- `sniperCamera` (Rabbit.cs:18660): needs Rabbit_sniperCamera
-- `spPot1` (Rabbit.cs:25246): needs Rabbit_potion
-- `spPot2` (Rabbit.cs:25285): needs Rabbit_potion
-- `spPot3` (Rabbit.cs:25324): needs Rabbit_potion
+- `sniperCamera` (Rabbit.cs:18660): ready
+- `spPot1` (Rabbit.cs:25246): ready
+- `spPot2` (Rabbit.cs:25285): ready
+- `spPot3` (Rabbit.cs:25324): ready
 - `spPot_hit` (Rabbit.cs:9918): ready
 - `statScan` (Rabbit.cs:22512): ready
 - `statScan_dust` (Rabbit.cs:22545): ready
-- `stickyGum` (Rabbit.cs:10045): needs Rabbit_stickyGum
+- `stickyGum` (Rabbit.cs:10045): ready
 - `tenShot_fire` (Rabbit.cs:39437): ready
 - `tenShot_ring` (Rabbit.cs:39112): ready
 - `truceTrading_fail` (Rabbit.cs:34859): ready

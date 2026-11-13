@@ -53,10 +53,23 @@ CLIP_SKILLS = {
     # the Panda's fujinKen1-3 are Fuujin Ken (the Bible's key spells it with two u's: panda_fuujinKen1 / 5; 2026-11-13,
     # plans/fx_panda/decisions.md 60, skills_a.md Read this first 7)
     "panda": {"fujinKen1": ["fuujinKen"], "fujinKen2": ["fuujinKen"], "fujinKen3": ["fuujinKen"]},
+    # the Rabbit's maim clip is Maim Shot (2026-11-13, plans/fx_rabbit/decisions.md 13, skills_a.md Verification 4; the
+    # pools gilShot / mix3 / mix4 / medicalShot give their members their icons through the cue file)
+    "rabbit": {"maim": ["maimShot"]},
 }
 # pool members that are one skill's ranks, each a cast of its own (the Mole's TNT 1-4, decisions.md 12): the Bible key of
 # their own rank's icon
-RANK_ICONS = {"mole": {f"tnt{n}": f"mole_tnt{n}" for n in range(1, 5)}}
+# (the Rabbit's: the Bible card's own icon where its picture differs from the highest-numbered key's, 2026-11-13,
+# plans/fx_rabbit/decisions.md 13, skills_a.md Read this first 8, skills_b.md Verification 5; cAttack and customizedShotgun
+# the editor's, compared the same way: cards rabbit_cAttack3 / rabbit_customizedShotgun2 against the 4 keys)
+RANK_ICONS = {"mole": {f"tnt{n}": f"mole_tnt{n}" for n in range(1, 5)},
+              "rabbit": {"backpack": "rabbit_backpack2", "circleShot": "rabbit_circleShot2", "fourShot": "rabbit_fourShot2",
+                         "gorgonShot": "rabbit_gorgonShot2", "mall": "rabbit_mall2", "shake": "rabbit_shake3",
+                         "miracleBlend": "rabbit_miracleBlend1", "stickyGum": "rabbit_stickyGum2",
+                         "acidicField": "rabbit_acidicField2", "rapidTrance": "rabbit_rapidTrance1",
+                         "statScan": "rabbit_statScan1", "shootingArray": "rabbit_shootingArray2",
+                         "millionaire": "rabbit_millionaire2", "truceTrading": "rabbit_truceTrading2",
+                         "cAttack": "rabbit_cAttack3", "customizedShotgun": "rabbit_customizedShotgun2"}}
 
 
 # skills the game plays with no body animation, shown as idle-stance tiles (index.html SEQ "<Name>: root@<t>", 2026-11-10;
@@ -95,7 +108,11 @@ OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "ed
                        "stoneSentinel": ["sentinalGuard1", "sentinalGuard2", "sentinalGuard0"]},
             # the Panda's Sacred Sage Technique on the charge's clips, Delay Qi on Qi Strike's and the idle hold (2026-11-13,
             # plans/fx_panda/decisions.md 7, 12, 60, effect_only.md Verification 5)
-            "panda": {"sacredSageTechnique": ["cAttack1", "cAttack2"], "delayQi": ["qiStrike1", "root", "qiStrike2"]}}
+            "panda": {"sacredSageTechnique": ["cAttack1", "cAttack2"], "delayQi": ["qiStrike1", "root", "qiStrike2"]},
+            # the Rabbit's Customized Shotgun on the Normal Attack's clip, From the Above on Bounce's clips, Contract on Truce
+            # Trading's clip and the bow (2026-11-13, plans/fx_rabbit/decisions.md 13, attacks_emotes.md Verification 3,
+            # effect_only.md Verification 4, skills_b.md Verification 6)
+            "rabbit": {"customizedShotgun": ["nAttack"], "fromTheAbove": ["bounce1", "bounce2"], "contract": ["truceTrading", "bow"]}}
 
 
 def bible_icons():

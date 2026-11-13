@@ -90,7 +90,16 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # fxparts/tto_panda.js (TTO's HelixRibbonEmitter, the Panda.NineDragon / Panda.NineKing movers, the Tempest Dance
          # trails' hook, the ERB / Standard Surface shaders; TTO prefabs, so not scanned here). raijinKen_hit's
          # ParticleSystem is grafted from TTO's copy (NOTES below)
-         "HelixRibbonEmitter"}
+         "HelixRibbonEmitter",
+         # 2026-11-13, the Rabbit (plans/fx_rabbit/decisions.md 49-53, 57): Rabbit_potion / Rabbit_sniperCamera (layouts only,
+         # the scope's deadShot by the cue's playAudio), the four 0-byte scripts (data only: the page skips a script with no
+         # part), Contract's Light Golem (fxparts/rabbit.js, its root clip looped; LightGolemAI data only); TTO's RabbitSpin,
+         # RabbitMedicTurret, PowerUpRotation and the Rabbit.TurretCapsule / PosterFly / CoinRise movers (fxparts/tto_rabbit.js;
+         # TTO prefabs, not scanned here); control.js's EffectControl(root) (the root's faceCamera / faceUp, every class).
+         # extravagance_ring's ParticleSystems are grafted from TTO's copy (NOTES below)
+         "Rabbit_potion", "Rabbit_sniperCamera", "Rabbit_acidicField", "Rabbit_healingField", "Rabbit_stickyGum", "Rabbit_mall",
+         "LightGolem", "LightGolemAI", "RabbitMedicTurret", "RabbitSpin", "Rabbit.TurretCapsule", "Rabbit.PosterFly",
+         "Rabbit.CoinRise", "PowerUpRotation"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -118,6 +127,9 @@ NOTES = {
         "threeStep": "its three TrailRenderers are off in the prefab (m_Enabled 0) and switched by the hero's code "
                      "(`Panda.cs:20873-21277`): built hidden, the cue's `enable` shows them (fxparts/trail.js): drawn",
     },
+    "rabbit": {"extravagance_ring": "its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) are "
+                                    "grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material: Gil, "
+                                    "star5; BB's own materials): drawn"},
     "mole": {n: "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn" for n in ("bazooka_ring", "napalm_ring", "warCapital")},
 }
 CLASS_NOTES = {
@@ -154,6 +166,14 @@ CLASS_NOTES = {
               "setColor(1, 0, 0) `:35484-35496`), drunk (`:35535`, on the target: not cued). Three prefabs in "
               "heroes/panda/effects no BB or TTO code loads (so not listed here; never cued): drunkenFist_hit, "
               "qiStrike_emblem, windcloud_hit."],
+    "rabbit": ["Effects this scan does not see (2026-11-13, plans/fx_rabbit/parts.md \"Read this first\" 7, decisions.md 57): "
+               "the hero prefab's fields in the Resources container, built by name: castStar (the field castStar1) and castLight "
+               "(RPC_cast1's ring of stars and bottle lights), deadEffect; the Mall's stalls mall1-5 (`Effects/mall` + the "
+               "outfit colour, `Rabbit.cs:33507`: Rabbit_mall, data only); the drinkers' status looks autoLife, enlarge, reduce, "
+               "miracleDrop (`CharacterControl.cs`, built, not cued: looks on others); the summon "
+               "Characters/Elementals/LightGolem/LightGolem (EXTRA_FOLDERS; LightGolem + LightGolemAI). Every one ready. Missing "
+               "from both games' data (the code logs \"Cannot find\"; nothing drawn): snipeShot_hit, kneeShot_hit, herbFinder, "
+               "contract_ring, fourShot_hit, circleShot_hit, tenShot_hit, mall, mall0, mall6."],
 }
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it

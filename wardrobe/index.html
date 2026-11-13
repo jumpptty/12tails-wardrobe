@@ -1361,8 +1361,18 @@ const SEQ = {
     // effects on the idle stance, each step one effect's life (2026-11-13, plans/fx_penguin/effect_only.md; the user
     // 2026-11-10: effect-only tiles)
     "Mana Arc: root@2", "Dispell: root@2", "Double Cast: root@1.5", "Triple Cast: root@1.5", "Frost Spike: root@1"],
-  rabbit: ["Charge Attack: cAttack1 cAttack2* cAttack3", "Mix: mix1 mix2*@0 mix3~", "Sticky Gum: mix1 mix2*@0 mix4~", "Bounce: bounce1 bounce2",
-    "Mall: mall1* mall2*"],
+  // the Rabbit (2026-11-13, plans/fx_rabbit/decisions.md 1-10, skills_b.md Verification 6): the Normal Attack one shot
+  // (Bouncing Bullet with the passives on), Customized Shotgun its own tile on the same clip (decision 2); the Charge
+  // Attack's scope 1.0 s after the press (Rabbit.cs:19032), held 4 s to Dead Shot's x3 (decision 3); the channel hosts
+  // renamed Cast / Field Cast (hidden: the pools mix3 and mix4 keep every member's tile, poolChains' taken, decision 7),
+  // the bar at magAdjust's 0.1 s floor; Bounce 8 s in the air under the hide to bounce2 at 9.5 s (decision 5); From the
+  // Above (#421, no clip of its own) on Bounce's steps (decision 4); Mall's 3 s holds (decision 6); Truce Trading's cheer or
+  // cry, an even pick (decision 8); Contract's 0.1 s bar, then the summon and the bow (decision 9). The TTO skills stay
+  // single clips, no Medic Turret line (decision 10)
+  rabbit: ["Normal Attack: nAttack", "Customized Shotgun: nAttack", "Charge Attack: cAttack1@1 cAttack2*@4 cAttack3",
+    "Cast: mix1@0.6 mix2*@0.1 mix3~", "Field Cast: mix1@0.6 mix2*@0.1 mix4~", "Bounce: bounce1@9.5 bounce2!",
+    "Mall: mall1*@3 mall2*!@2 sit*~@3", "From the Above: bounce1@9.5 bounce2!",
+    "Truce Trading: truceTrading*@0.12 cheer*~@2|cry*~@2", "Contract: truceTrading*@0.1 bow~@1.2"],
   // the Sheep (plans/fx_sheep, decisions.md 12, 16, 17): Normal Attack's stage 2 at 0.7 s and stage 3 at 0.7 + 0.8 = 1.5 s
   // (RPC_nAttack2's Yield(2, actionTime - Time.time + 0.7) Sheep.cs:18060, RPC_nAttack3's + 1.5 :18496, actionTime never
   // reset; plans/fx_sheep/attacks_emotes.md "Normal Attack stage times"; were 0.8 / 1.8 from the skill details); Soul of
@@ -3470,7 +3480,12 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
   // the Panda (2026-11-13, plans/fx_panda/decisions.md 16): Qi Strike and Delay Qi on the same steps, each its own icon;
   // Raijin Ken and Sacred Sage Technique on the charge's clips, Tiger Toss on the grab, the effect-only tiles
   panda: { "@QiStrike": "qiStrike", "@RaijinKen": "raijinKen", "@TigerToss": "tigerToss", "@MysticSage": "mysticSage",
-    "@SafeGuard": "safeGuard", "@SacredSageTechnique": "sacredSageTechnique", "@DelayQi": "delayQi" } };
+    "@SafeGuard": "safeGuard", "@SacredSageTechnique": "sacredSageTechnique", "@DelayQi": "delayQi" },
+  // the Rabbit (2026-11-13, plans/fx_rabbit/decisions.md 13): Customized Shotgun on the Normal Attack's clip, From the
+  // Above (passive) on Bounce's, Truce Trading and Contract (else the Truce Trading tile shows Contract's icon too: OWN_TILE
+  // gives contract the truceTrading clip, skills_b.md Verification 6)
+  rabbit: { "@CustomizedShotgun": "customizedShotgun", "@FromtheAbove": "fromTheAbove", "@TruceTrading": "truceTrading",
+    "@Contract": "contract" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -4079,6 +4094,11 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // THREE.Matrix4, the hero's bone `name` (C.byName) as a Unity transform in fx's mirror group (mirror^-1 x its world x
 // MIRROR_X, as a cue's bone), null when the hero or the bone is missing; a TrailRenderer switched off in the prefab is
 // built hidden, and the cue's enable ([[t, nodeName, on], ...]) shows / hides it by its node's name (fxparts/trail.js)
+// 2026-11-13, the Rabbit (plans/fx_rabbit/parts.md "Interfaces" 1, decisions.md 21, 53): a part "EffectControl(root)" is
+// built once per Fx whose root EffectControl has effectRotationMode 2 (faceCamera) or 3 (faceUp), as build(fx, fx.root,
+// fx.ec, null, the root's nodeDef, data) after every component (the root's own EffectControl is class Fx's, so the
+// "EffectControl" part never sees it); it turns the root while fx.age < ec.life (fxparts/control.js; statScan, bounce1,
+// bounce2), reading the cue's owner (fx.at.owner)
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
@@ -4109,7 +4129,11 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   "monkey", "elementals", "tto_monkey",
   // the Panda's (2026-11-13, plans/fx_panda/parts.md "Who builds what", decisions.md 51, 54): TTO's HelixRibbonEmitter,
   // Panda.NineDragon / Panda.NineKing, fx:tto/tempestDance_trails, the ERB / Standard Surface shaders (tto_panda.js)
-  "tto_panda"];
+  "tto_panda",
+  // the Rabbit's (2026-11-13, plans/fx_rabbit/parts.md "Who builds what", decisions.md 30-34, 51-52): Contract's LightGolem
+  // (rabbit.js); TTO's RabbitSpin, Rabbit.PosterFly, Rabbit.CoinRise, Rabbit.TurretCapsule, RabbitMedicTurret,
+  // PowerUpRotation (tto_rabbit.js). EffectControl(root), the root's rotation modes for every class, is control.js's
+  "rabbit", "tto_rabbit"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
@@ -4305,6 +4329,14 @@ class Fx {
     // a cue's life (2026-11-13, the Chameleon's Final Entrapment cage: effectControl.life = mDuration, Chameleon.cs:9161-9167;
     // plans/fx_chameleon/parts.md Interfaces 4): the root EffectControl read with that life (the data's own stays as it is)
     if (this.ec && at.life != null) this.ec = { ...this.ec, life: at.life };
+    // the root EffectControl's faceCamera (2) / faceUp (3) (2026-11-13, the Rabbit's statScan, bounce1, bounce2: the game
+    // turns the root every live frame, EffectControl.cs:368-407; plans/fx_rabbit/parts.md part 5, Interfaces 1): a part
+    // (fxparts/control.js), with the life above
+    const rootMode = FXPARTS["EffectControl(root)"];
+    if (rootMode && (this.ec?.effectRotationMode === 2 || this.ec?.effectRotationMode === 3)) {
+      const em = rootMode(this, this.root, this.ec, null, def.nodes[0], d);
+      if (em) this.emitters.push(em);
+    }
     this.stepGen = FX.stepGen;                 // the sequence step it was made in (fxStart: a followState cut across a step change)
     this.bone = at.bone || null;
     // a cue with both bone and rot: rot is the localRotation under the bone (2026-11-13, the Bison's Over Power horn on
@@ -4461,7 +4493,10 @@ class Fx {
       }
     }
     for (const s of this.loops) if (!this.attached(s.node)) s.h.stop();   // its node destroyed: its looping sound with it
-    if (!this.ec && !this.emitters.some(e => this.attached(e.node))) this.dispose();
+    // nothing left to draw and no EffectControl: gone, unless a cue's kill ends it (2026-11-13, the Rabbit's sniperCamera: a
+    // Transform, its script and the playOnAwake-off deadShot AudioSource, playAudio 0.1, Destroyed 0.2 s after the release,
+    // Rabbit.cs:19254; plans/fx_rabbit/decisions.md 39: it went on its first frame, before its sound)
+    if (!this.ec && this.killAt == null && !this.emitters.some(e => this.attached(e.node))) this.dispose();
   }
   // once: a cue's kill, its life's end, a new pick (fxClear), a class change; each emitter's own dispose?() too (2026-11-10,
   // plans/fx_penguin/parts.md Interfaces 3: what a part changed outside its node, the snowman's hidden hero, its own
@@ -4876,6 +4911,20 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         the spawn: Tempest Dance's limb trails stop emitting, fx:tto/tempestDance_trails) (fxparts/tto_panda.js); floor
 //         (true: every mesh of the effect clipped at the hero's ground, as the game's ground hides what dives under it: the
 //         rising dragons, Fx; the Panda's QA)
+// 2026-11-13, the Rabbit (plans/fx_rabbit/decisions.md 20, 22-24, 31-34, parts.md "Interfaces" 1-4): yaw (a name: one
+//         Random.Range(0, 360) per play per name, FX.yaws; x / d turned left about the hero by it and a rot list's yaw less
+//         it: the potions' and stars' ring, RPC_cast1's one draw), sphere (r: x / d moved by vFlat(r x Random.onUnitSphere),
+//         per cue: Millionaire's coins), rot may hold "random" in its list (that angle Random.Range(0, 360) per cue:
+//         [270, "random", 0]), replace (true: every living copy of the effect disposed before the spawn, the game's
+//         Destroy-then-Instantiate: the fields, the gum, tto/medicTurret); the parts' (fx.at): owner ([x, y, d], the
+//         EffectControl's owner's transform: with followPosition the root's spot swings round it as it turns, Stat Scan on
+//         the target, fxparts/control.js EffectControl(root)), ally ([x, y, d]: the Medic Turret's ally chest, the capsule's
+//         drop spot), delay (Coin Ricochet's bob phase), kind (the capsule's drop: lifeShot / boostShot / heatShot, given by
+//         the turret part through api.spawn, never in a cue file) (fxparts/tto_rabbit.js)
+//   kind  "propCopy": [t, "propCopy", slot ("R", "L", "Head", "Back"), {"bone": <hero bone>, "kill": s}]: a copy of the
+//         prop worn in the slot (api.propModel's build, its weapon_fx particles too) on that hero bone at local zero /
+//         identity from t for s seconds (none: until the next pick), gone on a new pick or a class change, hidden with the
+//         whole hero; nothing when no prop is worn there (HeroPropCopy; Ten Shot's second gun, Instantiate(mWep1))
 // An entry with "skills" may carry "order": "cycle" (the Mole's War Factory, decision 13): one skill, its members taken in
 // the file's order, one per play (the turn kept across plays and tiles, a new class starts again), no tile of their own
 // (poolChains); a member's "standby" (seconds) ends that play's step there; a member's "name" is its tile's name where the
@@ -4893,8 +4942,11 @@ const randRot = () => {
   return [e.x, e.y, e.z].map(r => r * 180 / Math.PI);
 };
 // a cue's rot word (cueOf, api.spawn): "random" = Random.rotation; "randomYaw" = Euler(0, Random.Range(0, 360), 0), the int
-// Range (2026-11-13, the Mole's dig_dirt, Mole.cs:21792; plans/fx_mole/decisions.md 44)
-const rotOf = r => r === "random" ? randRot() : r === "randomYaw" ? [0, randInt(0, 359), 0] : r || null;
+// Range (2026-11-13, the Mole's dig_dirt, Mole.cs:21792; plans/fx_mole/decisions.md 44); "random" inside a rot list = that
+// angle Random.Range(0, 360), the int Range, per cue (2026-11-13, the Rabbit's Millionaire coins [270, "random", 0],
+// plans/fx_rabbit/decisions.md 24, skills_b.md P2)
+const rotOf = r => r === "random" ? randRot() : r === "randomYaw" ? [0, randInt(0, 359), 0]
+  : Array.isArray(r) ? r.map(v => (v === "random" ? randInt(0, 359) : v)) : r || null;
 // a name list's pick: random, or by the outfit's colour number with pick "color" (the n-th name, 1 = the first; the
 // first when the outfit has no such number: 2026-11-13, the Mole's King Kaiser, Fire Barrage's planes and Bombardment's
 // bombers, Math.div(Skin, 100), Mole.cs:35709-35776, :29096-29163; plans/fx_mole/decisions.md 35, effect_only.md P1)
@@ -4909,6 +4961,21 @@ const cueOf = c => {
   if (Array.isArray(o.spread)) {
     q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
     if (!o.rot && (q.x || q.d)) q.rot = [0, Math.atan2(q.x, q.d) * 180 / Math.PI, 0];   // LookRotation(flat): yaw = atan2(x, z)
+  }
+  // sphere r (2026-11-13, the Rabbit's Millionaire coins at hero + vFlat(2 x Random.onUnitSphere), plans/fx_rabbit/
+  // decisions.md 24, skills_b.md P2): x and d moved by the flat part of a uniform point on a sphere of radius r, per cue
+  if (o.sphere) {
+    const u = 2 * Math.random() - 1, a = 2 * Math.PI * Math.random(), s = Math.sqrt(1 - u * u);
+    q.x += o.sphere * s * Math.cos(a); q.d += o.sphere * s * Math.sin(a);
+  }
+  // yaw name (2026-11-13, the Rabbit's potion and star rings: RPC_cast1's one Random.Range(0, 360), Rabbit.cs:20286;
+  // plans/fx_rabbit/decisions.md 23, skills_b.md P1): one angle per play per name (FX.yaws, drawn again with FX.rolls), the
+  // spot turned left by it about the hero (Math.rotateH: + turns left) and a rot list's yaw less it (LookRotation(rotateH(
+  // forward, R)) = yaw -R)
+  if (o.yaw) {
+    const deg = ((FX.yaws ||= {})[o.yaw] ??= randInt(0, 359)), R = deg * Math.PI / 180, x = q.x, d = q.d;
+    q.x = x * Math.cos(R) - d * Math.sin(R); q.d = d * Math.cos(R) + x * Math.sin(R);
+    if (Array.isArray(q.rot)) q.rot = [q.rot[0], q.rot[1] - deg, q.rot[2]];
   }
   return q;
 };
@@ -4994,6 +5061,9 @@ const HERO_SKINS = {
   // the Panda's Ashura (2026-11-13, plans/fx_panda/decisions.md 33, parts.md part 3): the ashura status's setColor(1, 0, 0)
   // on every renderer under her (CharacterControl.cs:35484-35496), back to 0.86 at its end (:15830-15840)
   "ashura": () => ({ tint: [1 / 0.86, 0, 0] }),
+  // the Rabbit's Rapid Trance (2026-11-13, plans/fx_rabbit/decisions.md 35, skills_b.md P5): the rapidTrance status's
+  // setColor(0.48, 0.43, 0.78) on every renderer under her (CharacterControl.cs:37520-37529); grow 1 = no growth
+  "rapidTrance": () => ({ grow: 1, tint: [0.48 / 0.86, 0.43 / 0.86, 0.78 / 0.86] }),
   // the Chameleon's own-team looks (2026-11-13, plans/fx_chameleon/parts.md part 10, decisions.md 45-46): the blend status
   // (Charge Attack's charge, Perfect Blend, Silent Walk; CharacterControl.cs:36850-36935) gives every Diffuse renderer
   // FX/Blend with its mainTexture, the invisible status (True / Mass Invisibility, Clear Arrow's condition; :32630-32690,
@@ -5205,6 +5275,37 @@ function wfxHidden(root) {
   for (const h of LOOK.props) if (h.all && C.props[h.slot] === root) return true;
   for (const k of LOOK.hides) if (k instanceof HeroPropHide) for (let o = root; o; o = o.parent) if (o === C.root) return true;
   return false;
+}
+// a "propCopy" cue's prop (2026-11-13, the Rabbit's Ten Shot: Instantiate(mChar.mWep1) parented to mountHand_L,
+// localPosition 0, localRotation identity, from 0.2 s, destroyed at the standby, Rabbit.cs:38896-38981; plans/fx_rabbit/
+// parts.md part 6, Interfaces 2, decisions.md 34): a fresh copy of the prop worn in the slot, built as setProp builds it
+// (api.propModel: buildProp + finishProp + skinProp, its weapon_fx particles with it), on the hero's bone at local zero /
+// identity, its world scale the worn prop's (Unity keeps the world scale on a reparent). Under the hero, so a whole-hero
+// hiding (heroHide) and a skin cue's look take it too; never under the piece menu's ray. No such bone or no prop model:
+// nothing (alive false). Kept with the effects (FX.live: its kill, a new pick or a class change ends it; Fx's shape for
+// the checks: name, emitters, attached, group, loops)
+class HeroPropCopy {
+  constructor(slot, at = {}) {
+    this.name = "propCopy:" + slot; this.alive = false; this.age = 0; this.emitters = []; this.loops = []; this.group = new THREE.Group();
+    this.killAt = at.kill;
+    const bone = C?.byName?.[at.bone], worn = C?.props?.[slot], o = bone && worn ? propModel(slot) : null;
+    if (!o) return;
+    bone.updateWorldMatrix(true, false); worn.updateWorldMatrix(true, false);
+    o.position.set(0, 0, 0); o.quaternion.identity();
+    o.scale.copy(worn.getWorldScale(V()).divide(bone.getWorldScale(V())));
+    o.traverse(m => { if (m.isMesh) m.raycast = () => {}; });
+    bone.add(o);
+    this.model = o; this.alive = true;           // (fxTick's lookSync takes it into a hiding or a skin look already holding)
+  }
+  attached() { return false; }
+  update(dt) { this.age += dt; if (this.killAt != null && this.age >= this.killAt) this.dispose(); }
+  dispose() {
+    if (!this.alive) return;
+    this.alive = false;
+    const o = this.model;
+    o.userData.mixer?.stopAllAction(); o.parent?.remove(o);   // its weapon_fx particles go once it leaves the stage (fxTick)
+    o.traverse(m => m.geometry?.dispose());
+  }
 }
 // a "clone" cue's copy of the hero (2026-11-13, the Bat's Shadow Illusion: plans/fx_bat/parts.md part 6, decisions.md
 // 21, 22). Bat_illusion.summon (Bat_illusion.cs:60-410) dresses the clone as the Bat is (her weapon, accessory and trinket
@@ -5420,7 +5521,12 @@ const sfxFile = c => (c.kind === "voice" ? "v_" + c.name : c.name);
 // w_bsn62 legendHammerR has no prop, w_bsn68 none mapped; w_bsn69 = timeHammer)
 const ITEM_SETS = { bisonHammer: ["stoneClub", "toyHammer", "bdWeapon", "defenderHammer", "defenderHammerR", "barbell", "warlordHammer",
   "warlordHammerR", "hallowLance", "havocHammer", "havocHammerR", "havocHammerV", "superStarBass", "mummyMace", "goldenHammer",
-  "royalHammer", "royalHammerR", "specialHammer", "legendHammer", "legendHammerR", "timeHammer"] };
+  "royalHammer", "royalHammerR", "specialHammer", "legendHammer", "legendHammerR", "timeHammer"],
+  // rabbitShotgun (2026-11-13, plans/fx_rabbit/decisions.md 2, attacks_emotes.md "Parts needed" 1): the props of BB's
+  // isShotgun, Rabbit.cs:11136-11256 (TTO1102 Rabbit::isShotgun the same), through item_map.json's rabbit.weapon (w_rab50
+  // and w_rab51 are both royalGun, w_rab55 has no item): the Normal Attack's shotgun shot (Customized Shotgun)
+  rabbitShotgun: ["traderGun", "traderGunR", "merchantGun", "merchantGunR", "flowerGun", "antShotgun", "antShotgunR",
+    "royalGun", "royalGunR", "timeShotgun"] };
 // [slot, item | [items] | "<set>"]: whether the hero wears one of them there (a set name first, else the one item)
 function wearing(w) {
   const it = C?.state?.[w[0]];
@@ -5466,7 +5572,7 @@ function fxStart(clip, step = 0) {
     cues = e.skills[FX.pick].cues || [];
     if (e.skills[FX.pick].standby != null) FX.stepDur = e.skills[FX.pick].standby;
   }
-  if (step === 0 || !FX.rolls) FX.rolls = {};
+  if (step === 0 || !FX.rolls) { FX.rolls = {}; FX.yaws = {}; }   // yaws: a cue's yaw angles (cueOf), drawn per play as the rolls
   const rolled = c => {                          // roll "!name": the cue plays exactly when "name"'s roll failed
     if (c.p == null) return true;
     if (!c.roll) return Math.random() < c.p;
@@ -5489,7 +5595,8 @@ function fxStart(clip, step = 0) {
   FX.cycle = (own?.everyCycle || e?.everyCycle) && C.action ? { act: C.action, last: C.action.time } : null;
   for (const c of FX.cues) {
     if (c.kind === "clone") skeletonUtils().catch(() => {});   // the copy's module, ahead of its time
-    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && c.kind !== "hideProp" && c.kind !== "propAnim" && Sound.ctx)
+    else if (c.kind !== "fx" && c.kind !== "skin" && c.kind !== "lift" && c.kind !== "hideProp" && c.kind !== "propAnim"
+      && c.kind !== "propCopy" && Sound.ctx)
       for (const n of c.tune || [c.name]) Sound.get(C.cls, sfxFile({ ...c, name: n })).catch(() => {});
   }
 }
@@ -5577,6 +5684,12 @@ function fxDue(t, inclusive) {
       const f = new HeroPropHide(c.name, c.kill, c.all); FX.live.push(f);
       FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
     }
+    else if (c.kind === "propCopy") {           // a copy of the worn prop on a hero bone (HeroPropCopy); none worn: nothing
+      if (!C.props[c.name]) continue;
+      const f = new HeroPropCopy(c.name, c);
+      if (!f.alive) continue;
+      FX.live.push(f); FX.spawned[f.name] = (FX.spawned[f.name] || 0) + 1;
+    }
     else if (c.kind !== "fx") Sound.play(cls, sfxFile(c), c.vol);
     else { const gen = FX.stepGen; fxData(cls).then(d => {   // gen: the step this cue fired in (the spawn comes a tick later)
       if (C?.cls !== cls) return;
@@ -5594,6 +5707,10 @@ function fxDue(t, inclusive) {
         FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
         return;
       }
+      // replace (2026-11-13, the Rabbit's fields and gum, the Medic Turret: the game Destroys the old one and Instantiates
+      // a new one, Rabbit.cs:10063, :10137, :11313, TTO1102 Rabbit.c:39906-39916; plans/fx_rabbit/decisions.md 22, 33,
+      // skills_b.md P3): every living copy of this effect goes first, so its drop clip and sound start again
+      if (c.replace) for (const x of FX.live) if (x.alive && x instanceof Fx && x.name === c.name) x.dispose();
       const f = new Fx(cls, c.name, d, c); f.cutAt = c.cut; f.killAt = c.kill; f.stepGen = gen; FX.live.push(f);
       FX.spawned[c.name] = (FX.spawned[c.name] || 0) + 1;
     }).catch(console.error); }
