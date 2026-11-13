@@ -1984,3 +1984,14 @@ should be required), up to 60 characters, one plain line (the Worker's `clean`).
   sets keep `title` when set. Tests: node 9 pass (one new), unit tests 66 OK (one new).
 - Deployed from a clean worktree of 578705e (C:\work\12tails-wardrobe-hotfix, branch title-field), because the Mole
   build was editing index.html in the main folder at the time; the same edits were made there too.
+
+## 2026-11-13 (office), the team's sets taken down (the user re-uploads them)
+
+User: "take down, DeetaeZ, rabbit and cat skins from the public site, I will try uploading them myself using the new
+pipeline" then "compile them on desktop". wardrobe/data/team_sets.json now holds no sets and data/team/ is gone (the
+Cat knight, Rabbit summer uniforms A and B, DeetaeZ's Whale legend set: every set it had), locally and online. Re-running
+`pipeline/wardrobe_team_sets.py` would write them back: don't, unless the user asks. The original PNGs (the sources in the
+git-ignored plans/reskins/, checked against the published webp: same sizes, mean difference under 1/255) were copied to
+the office PC's Desktop `wardrobe_reupload\<set>\12tails_<class in Thai>_<item>.png`, the names the page's drag-and-drop
+reads (dropMany), one folder per look (the Cat knight's folder name carries its face, 23). Published and deployed from a
+clean worktree again (the Mole build was editing index.html).
