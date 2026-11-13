@@ -2158,3 +2158,30 @@ user's review). One editor after four builders (mole, robots, tto_mole, page_pip
     effects and the far TNTs outside the default camera; the white stage's faint glows; propAnim's recoil and the
     Trumpet's tune (the gate counts them, a screenshot cannot show them); KaiserWarhead / the 8.1 MB fx.json on a slow PC.
 
+## 2026-11-13 (office), outfits drawn as the game draws them: opaque
+
+User: "Players use my wardrobe to plan what the skin will looks like in the game. Fix the wardrobe to use game logic
+ASAP". **The game:** every class's `<Class>Equipment.cs` (the outfit's material method) blends the face overlay onto the
+outfit texture (`pixels2[i] = a * face + (1 - a) * base` over the top-left 256 x 256), writes the result into
+`new Texture2D(512, 512, TextureFormat.RGB24, true)` and draws it with `new Material(Shader.Find("Diffuse"))`, colour
+0.86 grey. RGB24 has no alpha channel and Diffuse ignores alpha: **no part of an outfit is see-through in the game**, and
+where a skin has alpha 0 its colour under it shows. The Rabbit alone has a second branch: when the game's own texture
+is `ARGB32` it keeps ARGB32 and uses `Transparent/Diffuse` (an alpha blend). It never runs for BB: the rip's import
+settings give every outfit texture `textureFormat: 10` (DXT1) or `3` (RGB24), none 4 / 5. In the wardrobe's data only
+ToT's student sheets have alpha (ToT is another client, local only, its shader unread).
+- **index.html:** `outfitCut(o)` = 0 (no alpha test) for BB / TTO outfits, 0.5 for ToT's; used by setOutfit, the look
+  cards' render and the 3D file's export (`fileMaterial(..., alphaTest)`, glTF OPAQUE); `composeTexture` makes a skin
+  opaque before it enters the canvas (`solidPixels`: a canvas would store alpha-0 texels as black; the game keeps their
+  colour); the pick (`pieceAt`) and the hover overlay take the material's own alpha test instead of a fixed 0.5. Props
+  unchanged: they already follow each game material's shader (`game_shader()`, 2026-11-12). TTO's outfit shader is not
+  read: TTO outfits are treated as BB's (their textures have no alpha, so only a skin on one could differ).
+- **Check:** `uv run --no-project --with playwright python -I pipeline/wardrobe_outfit_alpha_check.py` (a skin with a red
+  hole at alpha 0 on the Cat's summer: no alpha test, the hole opaque and red; the ToT student keeps 0.5; no page errors).
+  Two traps it hit: `wardrobe.show()` can return before the class has loaded, and `wardrobe.debug().C` is the C of that
+  moment (a class load replaces it): read `wardrobe.debug().C` fresh each time. Also passed: wardrobe_sets_check and
+  wardrobe_menu_check (errors []), unit tests, node 9/9.
+- **Skins made by hiding are changed by this** (now shown as in the game): the Whale crown (the hem's holes, the
+  pearls' squares, the chain and coin), the Cat shorts (the wristband, the top's knot, the braces' middle), and the
+  earlier Cat knight (the shield) and Bat robe (the tie, the buckle). Their painters must paint those parts instead.
+- Deployed from a clean worktree of 074e4d4 (C:\work\12tails-wardrobe-hotfix, branch outfit-opaque), as the last two
+  deploys, because the Mole build is editing index.html here: the same edits are in this folder's index.html.

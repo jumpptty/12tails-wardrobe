@@ -773,6 +773,15 @@ function persist() { if (!C) return; saved[C.cls] = { ...C.state }; saved.cls = 
 // the outfit's recolour edition (user 2026-11-05: a set's R / V pieces recolour the outfit too): "" | "R" | "V", when
 // this outfit has it in this colour (wardrobe_editions.py: outfits.json "editions": {R: [colours]})
 const edOf = (o, color, ed) => (ed && o.editions?.[ed]?.includes(color) ? ed : "");
+// Outfits are drawn as the game draws them (user 2026-11-13: "Players use my wardrobe to plan what the skin will looks
+// like in the game. Fix the wardrobe to use game logic"): BB's <Class>Equipment.cs composes the worn texture (the face
+// blended on) into a TextureFormat.RGB24 texture and draws it with plain Shader.Find("Diffuse"): no alpha channel, no
+// cut-out. Every BB outfit texture is DXT1 / RGB24 (the rip's import settings), so the Rabbit's one Transparent/Diffuse
+// branch (an ARGB32 texture) never runs. So no part of an outfit is see-through in the game, whatever a skin's alpha
+// says, and a skin's colour under alpha 0 is what shows. ToT's student sheets (another client, local only) keep their
+// own alpha and the old cut-out.
+const outfitCut = o => (o.tot ? 0.5 : 0);
+const solidPixels = d => { const x = new Uint8ClampedArray(d); for (let i = 3; i < x.length; i += 4) x[i] = 255; return x; };
 async function composeTexture(o, color, face, ed = "") {
   const skin = SKINS.get(skinKey("outfits", o.name));     // the visitor's own skin for this outfit: every colour, face on top
   // the own texture loads even under a skin: an upload then reads its size from the cache, with no request
@@ -781,7 +790,8 @@ async function composeTexture(o, color, face, ed = "") {
   const k = skin ? skin.w / base.naturalWidth : 1;
   const cv = document.createElement("canvas"); cv.width = base.naturalWidth * k; cv.height = base.naturalHeight * k;
   const g = cv.getContext("2d");
-  if (skin) g.putImageData(new ImageData(skin.data, skin.w, skin.h), 0, 0); else g.drawImage(base, 0, 0);
+  // (opaque before it enters the canvas: a canvas keeps alpha-0 texels as black, the game keeps their colour)
+  if (skin) g.putImageData(new ImageData(outfitCut(o) ? skin.data : solidPixels(skin.data), skin.w, skin.h), 0, 0); else g.drawImage(base, 0, 0);
   try {
     const f = await loadImage(`${DATA}${C.cls}/faces/${face}.webp`);
     // skins.py: the face block = 256 px wide x half the sheet tall, top left. ToT's student sheets ("face": "quarter",
@@ -816,7 +826,7 @@ async function setOutfit(name, color, edition = C.state.edition) {
   const tex = await composeTexture(o, color, C.state.face, edition);
   for (const m of C.meshes) { C.tri.remove(m); m.geometry.dispose(); }
   C.meshes = [];
-  const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.DoubleSide, alphaTest: 0.5 });
+  const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.DoubleSide, alphaTest: outfitCut(o) });
   const front = mat.clone();                 // the same texture, front faces only (stacked meshes)
   front.side = THREE.FrontSide;
   for (const d of o.meshes) {
@@ -2317,7 +2327,7 @@ async function makePiece(slot, item, { pose = "idle", face = null } = {}) {   //
       outfitTex = await composeTexture(o, color, face ?? K.state.face, K.state.edition); own.push(outfitTex);
       tag = `${color}${edOf(o, color, K.state.edition)}`;
     }
-    const mat = new THREE.MeshLambertMaterial({ name: item, map: outfitTex, side: THREE.DoubleSide, alphaTest: 0.5 }), front = mat.clone();
+    const mat = new THREE.MeshLambertMaterial({ name: item, map: outfitTex, side: THREE.DoubleSide, alphaTest: outfitCut(o) }), front = mat.clone();
     front.side = THREE.FrontSide; front.name = item + "_front";
     R = freshRig(K); object = R.tri;
     for (const d of o.meshes) {
@@ -2421,7 +2431,7 @@ function fileTexture(pngs, blob, repeat, name) {
   pngs.set(key, blob);
   return t;
 }
-const fileMaterial = (name, color, map, front) => new THREE.MeshStandardMaterial({ name, color, map, metalness: 0, roughness: 1, alphaTest: 0.5,
+const fileMaterial = (name, color, map, front, alphaTest = 0.5) => new THREE.MeshStandardMaterial({ name, color, map, metalness: 0, roughness: 1, alphaTest,
   side: front ? THREE.FrontSide : THREE.DoubleSide });
 // GLTFExporter draws every picture through a canvas again; this plugin hands it the PNG bytes texPNG gave instead
 function exactPNG(writer, pngs) {
@@ -2462,7 +2472,7 @@ async function pieceFile(piece, pngs) {
     return texs.get(key);
   };
   const fileMat = m => (mats.has(m) ? mats.get(m) : mats.set(m, (async () => fileMaterial(m.name || (m.userData.tex || item).replace(/\.\w+$/, ""),
-    m.color, await texFor(m), m.side === THREE.FrontSide))()).get(m));
+    m.color, await texFor(m), m.side === THREE.FrontSide, m.alphaTest))()).get(m));
   for (const o of meshes) {
     const ms = await Promise.all([].concat(o.material).map(fileMat)), mat = Array.isArray(o.material) ? ms : ms[0], g = o.geometry, a = g.attributes;
     const src = { pos: a.position.array, nrm: a.normal?.array, uv: a.uv?.array, idx: g.index.array, groups: g.groups.map(x => [x.start, x.count, x.materialIndex]) };
@@ -2562,7 +2572,7 @@ function pieceAt(x, y) {                 // the worn piece under a screen point:
   for (const h of ray.intersectObjects(roots, true)) {
     if (!shown(h.object)) continue;
     const mat = Array.isArray(h.object.material) ? h.object.material[h.face?.materialIndex ?? 0] : h.object.material;
-    if (alphaAt(mat?.map, h.uv) < 128) continue;            // a cut-out the game's alphaTest 0.5 does not draw
+    if (mat?.alphaTest && alphaAt(mat.map, h.uv) < mat.alphaTest * 255) continue;   // a cut-out its material does not draw (an outfit has none)
     if (C.meshes.includes(h.object)) return { slot: "outfit", item: C.state.outfit, tex: "" };
     const slot = ["R", "L", "Head", "Back"].find(s => { for (let o = h.object; o; o = o.parent) if (o === C.props[s]) return true; return false; });
     if (slot) return { slot, item: C.state[slot], tex: mat?.userData.tex ?? null };
@@ -2881,7 +2891,7 @@ function hoverOverlays(roots, makeMat) {
 }
 // the overlay materials: the original's texture and alpha test (hair cards and cut-outs keep their shape)
 function overlayMat(m, frag, vert = null, opts = {}) {
-  const x = new THREE.MeshLambertMaterial({ map: m.map || null, alphaTest: .5, side: m.side, transparent: true, depthWrite: false,
+  const x = new THREE.MeshLambertMaterial({ map: m.map || null, alphaTest: m.alphaTest ?? .5, side: m.side, transparent: true, depthWrite: false,
     polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4, ...opts });
   x.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, { uGlow: HU.glow, uY: HU.y, uH: HU.h, uK: HU.k, uW: { value: opts.w || 0 } });
