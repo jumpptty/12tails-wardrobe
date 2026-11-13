@@ -83,7 +83,14 @@ BUILT = {"EffectControl", "RingEmitter", "ImageEmitter", "LineEmitter", "Ellipso
          # modules. volcanicEruption's ParticleSystems are grafted from TTO's copy (NOTES below)
          "Monkey_fireBall", "Monkey_earthPulse", "Monkey_lavu", "Monkey_runicFlame", "Monkey_runicSand", "Rotate",
          "Phoenix_fireBall", "Phoenix_skyCrimson_fire", "Phoenix", "Ja", "Gadina", "Buiten", "Gaos", "Phoenix_AI", "Ja_AI",
-         "Gadina_AI", "Gaos_AI"}
+         "Gadina_AI", "Gaos_AI",
+         # 2026-11-13, the Panda (plans/fx_panda/parts.md "Who builds what", decisions.md 51-58): no new BB script (every Panda
+         # prefab's parts were built); trail.js builds a disabled TrailRenderer hidden and the cue's `enable` switches it
+         # (threeStep, NOTES below); index.html's HERO_SKINS ashura (the red Panda) is a hero look, not a part;
+         # fxparts/tto_panda.js (TTO's HelixRibbonEmitter, the Panda.NineDragon / Panda.NineKing movers, the Tempest Dance
+         # trails' hook, the ERB / Standard Surface shaders; TTO prefabs, so not scanned here). raijinKen_hit's
+         # ParticleSystem is grafted from TTO's copy (NOTES below)
+         "HelixRibbonEmitter"}
 # a line after an effect in the "Per effect" list, and a class's own notes under its heading (2026-11-13, the Bison:
 # decisions.md 40, 45, 46): what this scan cannot see
 NOTES = {
@@ -105,6 +112,12 @@ NOTES = {
     "monkey": {"volcanicEruption": "its ParticleSystems / ParticleSystemRenderers (Unity 3.5 Shuriken, not decoded from BB) "
                                    "are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by material, BB's "
                                    "own materials): drawn"},
+    "panda": {
+        "raijinKen_hit": "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted "
+                         "from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Cloud1 material): drawn",
+        "threeStep": "its three TrailRenderers are off in the prefab (m_Enabled 0) and switched by the hero's code "
+                     "(`Panda.cs:20873-21277`): built hidden, the cue's `enable` shows them (fxparts/trail.js): drawn",
+    },
     "mole": {n: "its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, matched by node name and material, BB's own materials): drawn" for n in ("bazooka_ring", "napalm_ring", "warCapital")},
 }
 CLASS_NOTES = {
@@ -134,6 +147,13 @@ CLASS_NOTES = {
                "(ALIASES: elementals/gaos/effects); the summons Characters/Elementals/Phoenix/Phoenix4, Ja4, Gadina4, Buiten4, "
                "Gaos (EXTRA_FOLDERS), their AudioClip fields exported as sounds (SOUND_REFS); the Lavu serpent's "
                "lavu_summon (SOUND_ALIASES). Every one ready."],
+    "panda": ["Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so not scanned above; every one "
+              "ready; 2026-11-13, plans/fx_panda/parts.md \"Read this first\" 3, decisions.md 58): delayQi (`:35342`, on the "
+              "Panda, parented), drunken (`:35396`, on the Panda at the bounds centre + 0.5 x height), paralysis (`:35443`, on "
+              "the target: not cued), ashura (`:35500`, on the Panda's Root bone; with the hero look HERO_SKINS ashura, "
+              "setColor(1, 0, 0) `:35484-35496`), drunk (`:35535`, on the target: not cued). Three prefabs in "
+              "heroes/panda/effects no BB or TTO code loads (so not listed here; never cued): drunkenFist_hit, "
+              "qiStrike_emblem, windcloud_hit."],
 }
 EMITTERS = {"RingEmitter", "ImageEmitter", "LineEmitter", "VortexEmitter", "EmblemEmitter", "BoltEmitter", "TrailEmitter"}
 # not parts: MeshRenderer is an emitter's own renderer (else counted as StaticMesh); physics draws nothing (the game uses it

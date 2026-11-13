@@ -338,7 +338,11 @@ SHURIKEN_FROM_TTO = {"bison": ["magmaClutter_ring2"], "cat": ["supportFire_hit"]
                      # the Monkey's (2026-11-13, plans/fx_monkey/decisions.md 59, parts.md "Extractor lines"): BB Bomb2 /
                      # ExplosionRay / Bomb4 -> tto_Bomb2 / tto_ExplosionRay / tto_Bomb4 on the three "Particle System"
                      # nodes, one match each, by the Chameleon's route
-                     "monkey": ["volcanicEruption"]}
+                     "monkey": ["volcanicEruption"],
+                     # the Panda's (2026-11-13, plans/fx_panda/parts.md part 2, decisions.md 55): raijinKen_hit's node
+                     # "ParticleSystem" (BB Cloud1, addsoft) <- TTO node 1 (tto_Cloud1), the 32-puff burst at 0.4 s, by the
+                     # Chameleon's route
+                     "panda": ["raijinKen_hit"]}
 SHURIKEN_MAT = {"bison": ("Bomb2", "magmaClutter_ring1"),   # (BB material, a BB effect of the class that has it)
                 "cat": ("Bomb2", "supportFire_hit")}
 # a summon's gameplay scripts, kept by name only (no layout: CharacterControl's 684 bytes are the character's stats and

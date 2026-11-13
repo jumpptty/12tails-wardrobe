@@ -95,10 +95,16 @@ export default function register(api) {
   // m_Time (each point's life), m_StartWidth at the node / m_EndWidth at the tail, m_Colors (5 packed RGBA keys, head to
   // tail), m_MinVertexDistance, m_Autodestruct (the object is destroyed once it has been idle for m_Time), its own
   // materials in `mats` (the node's `mats` may be a legacy particle renderer's).
+  // A TrailRenderer switched off in the prefab (m_Enabled false) is built hidden, and the cue's enable ([[t, nodeName, on],
+  // ...], seconds after the spawn) switches it by its node's name: the newest due entry sets it (2026-11-13, the Panda's
+  // Three Steps, whose code turns its three blade trails on and off, Panda.cs:20873-21277; plans/fx_panda/parts.md part 1,
+  // Interfaces 2). APPROXIMATED: hidden drops its points (Unity's may keep them); none of Three Steps' is switched on twice
   api.part("TrailRenderer", (fx, node, c, _mat, _nodeDef, data) => {
     const name = c.mats?.[0];
-    if (c.m_Enabled === false || !name || !data.materials?.[name]) return null;
+    if (!name || !data.materials?.[name]) return null;
     const m = fxMesh(node, fxMaterial(fx.cls, name, data.materials[name]));
+    if (c.m_Enabled === false) m.visible = false;
+    const en = (fx.at?.enable || []).filter(e => e[1] === node.name).sort((a, b) => a[0] - b[0]);
     // packed colour: r in the low byte, as the legacy particles' colorAnimation keys (index.html legacyParticles)
     const key = x => { const v = (x?.rgba ?? 0xffffffff) >>> 0; return [(v & 255) / 255, ((v >>> 8) & 255) / 255, ((v >>> 16) & 255) / 255, (v >>> 24) / 255]; };
     const keys = [0, 1, 2, 3, 4].map(i => key(c.m_Colors?.[`m_Color[${i}]`]));
@@ -107,6 +113,7 @@ export default function register(api) {
     let time = 0, added = false, side0 = V(1, 0, 0);
     return { node, renderer: m, update(dt) {
       time += dt;
+      for (const e of en) if (e[0] <= time) m.visible = !!e[2];             // the newest due switch (sorted by time)
       if (!m.visible) { pts.length = 0; return; }
       const um = pose(fx, node), head = V().setFromMatrixPosition(um);
       while (pts.length && time > pts[0].time + life) pts.shift();          // a point lives m_Time

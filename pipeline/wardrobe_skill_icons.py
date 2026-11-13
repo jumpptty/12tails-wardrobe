@@ -50,6 +50,9 @@ CLIP_SKILLS = {
     # plans/fx_monkey/decisions.md 18, tto.md S2)
     "monkey": {"earthPulse": ["titanicEarthPulse"], "jaAscension": ["ja", "jaAscension"], "buitenBastion": ["buiten", "buitenBastion"],
                "solarCall": ["jaAscension"], "golemCall": ["runeGolem"], "sanctumRaise": ["buitenBastion"]},
+    # the Panda's fujinKen1-3 are Fuujin Ken (the Bible's key spells it with two u's: panda_fuujinKen1 / 5; 2026-11-13,
+    # plans/fx_panda/decisions.md 60, skills_a.md Read this first 7)
+    "panda": {"fujinKen1": ["fuujinKen"], "fujinKen2": ["fuujinKen"], "fujinKen3": ["fuujinKen"]},
 }
 # pool members that are one skill's ranks, each a cast of its own (the Mole's TNT 1-4, decisions.md 12): the Bible key of
 # their own rank's icon
@@ -68,7 +71,9 @@ EFFECT_ONLY = {"bison": ["berserkerRush", "furyTrance"], "sheep": ["quickHeal"],
                "mole": ["reload", "fireBarrage", "bombardment", "synchroMole"],
                # the Monkey's Instant Cast, Fire Rune, Earth Rune and Blazing Fire (2026-11-13, plans/fx_monkey/decisions.md 18,
                # effect_only.md Verification 3: Fire Avatar - Fireball takes the Fireball's icon through SEQ_SKILL)
-               "monkey": ["instantCast", "fireRune", "earthRune", "blazingFire"]}
+               "monkey": ["instantCast", "fireRune", "earthRune", "blazingFire"],
+               # the Panda's Mystic Sage and Safe Guard (2026-11-13, plans/fx_panda/decisions.md 11, 60, effect_only.md)
+               "panda": ["mysticSage", "safeGuard"]}
 # sequences that are one skill on a shared clip (index.html SEQ_SKILL): their skill's icon, with that clip (the Bat's
 # Nightmare and Mind Control: cast3 then channel, plans/fx_bat/skills_b.md Verification 3; the Cat's Even Odds on the
 # gamble clip and Nine Lives' ko then getUp, plans/fx_cat/effect_only.md block 4, decisions.md 8, 11, 12)
@@ -87,7 +92,10 @@ OWN_TILE = {"sheep": {"sealOfAttack": ["cast3"], "sealOfDefense": ["cast3"], "ed
             # skills_a.md Verification 7, skills_b.md Verification 3)
             "monkey": {"mikeBlink": ["nAttack1", "nAttack2"], "mikeCircle": ["cAttack1", "cAttack2"], "lavu": ["cast3"],
                        "volcanicEruption": ["cast3"], "summonGaos": ["damageCast2", "cast3"], "fireKeep": ["damageCast2", "root", "cast3"],
-                       "stoneSentinel": ["sentinalGuard1", "sentinalGuard2", "sentinalGuard0"]}}
+                       "stoneSentinel": ["sentinalGuard1", "sentinalGuard2", "sentinalGuard0"]},
+            # the Panda's Sacred Sage Technique on the charge's clips, Delay Qi on Qi Strike's and the idle hold (2026-11-13,
+            # plans/fx_panda/decisions.md 7, 12, 60, effect_only.md Verification 5)
+            "panda": {"sacredSageTechnique": ["cAttack1", "cAttack2"], "delayQi": ["qiStrike1", "root", "qiStrike2"]}}
 
 
 def bible_icons():
@@ -106,7 +114,8 @@ def main():
         cls = c["cls"]
         best = {}                                    # skill -> (rank, key): the highest rank the Bible has
         for k in icons:
-            m = re.fullmatch(rf"{cls}_([A-Za-z]+?)(\d*)", k)
+            # ("&": the Panda's panda_wind&cloud2 / panda_rain&storm2, plans/fx_panda/decisions.md 60)
+            m = re.fullmatch(rf"{cls}_([A-Za-z&]+?)(\d*)", k)
             if m:
                 r = int(m.group(2) or 0)
                 if m.group(1) not in best or r > best[m.group(1)][0]:

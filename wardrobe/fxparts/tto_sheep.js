@@ -229,15 +229,19 @@ export default function register(api) {
     if (!C || !m0 || c.m_Enabled === false || nd.active === false) return null;
     const P = c.m_Parameters || {}, wc = C.curveFn(P.widthCurve), mult = P.widthMultiplier ?? 1, gc = C.gradFn(P.colorGradient);
     const mesh = lineMesh(node, m0), life = c.m_Time ?? 5, md2 = (c.m_MinVertexDistance ?? 0.1) ** 2, pts = [];
-    let time = 0;
-    return { node, update(dt, cam) {
+    let time = 0, off = false;
+    // emitOff(): TrailRenderer.emitting = false, the hero's code (2026-11-13, the Panda's Tempest Dance trails,
+    // Panda::TempestTrails@0x1D5F010; plans/fx_panda/parts.md Interfaces 5): no new point from then on and the line no
+    // longer joined to the node, the old points run out their m_Time. Not stop(): the page calls stop?.() on every emitter
+    // at an EffectControl's life end, and TTO's EffectControl stops only ParticleSystems
+    return { node, emitOff() { off = true; }, update(dt, cam) {
       time += dt;
       const head = worldPos(fx, node);
       while (pts.length && time - pts[0].time > life) pts.shift();
-      if (c.m_Emitting !== false && (!pts.length || pts[pts.length - 1].p.distanceToSquared(head) > md2)) pts.push({ p: head, time });
+      if (!off && c.m_Emitting !== false && (!pts.length || pts[pts.length - 1].p.distanceToSquared(head) > md2)) pts.push({ p: head, time });
       if (c.m_Autodestruct && !pts.length) return "destroy";
-      const L = [head];
-      for (let i = pts.length - 1; i >= 0; i--) if (pts[i].p.distanceToSquared(L[L.length - 1]) > 1e-12) L.push(pts[i].p);
+      const L = off ? [] : [head];
+      for (let i = pts.length - 1; i >= 0; i--) if (!L.length || pts[i].p.distanceToSquared(L[L.length - 1]) > 1e-12) L.push(pts[i].p);
       drawLine(fx, node, mesh, L, t => wc(t) * mult, t => gc(t), cam);
     } };
   });

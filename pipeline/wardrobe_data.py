@@ -46,7 +46,7 @@ mp = lambda p: [-p[0], p[1], p[2]]
 mq = lambda q: [q[0], -q[1], -q[2], q[3]]
 
 cat = subprocess.run([sys.executable, "-P", os.path.join(TOOLS, "aa_catalog.py"), os.path.join(ASSETS, "catalog.bin"),
-                      "--grep", r"heroes/[a-z]+/(armors/[a-z]+_[a-z0-9]+|armors/materials/[a-z]+_[a-z0-9]+|animations/[a-z0-9_]+)$"],
+                      "--grep", r"heroes/[a-z]+/(armors/[a-z]+_[a-z0-9]+|armors/materials/[a-z]+_[a-z0-9]+|animations/[a-z0-9_&]+)$"],
                      capture_output=True, text=True, encoding="utf-8", check=True).stdout
 addr = {}
 for line in cat.splitlines():
@@ -207,7 +207,7 @@ for cls in CLASSES:
     faces.sort(key=lambda x: x["n"])
     # ---- clips ----
     clips = {}
-    for a in sorted(x for x in addr if re.fullmatch(rf".*heroes/{cls}/animations/[a-z0-9_]+", x)):
+    for a in sorted(x for x in addr if re.fullmatch(rf".*heroes/{cls}/animations/[a-z0-9_&]+", x)):
         t, iid, _ = addr[a]
         try:
             obj = container[iid].read()

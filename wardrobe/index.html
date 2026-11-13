@@ -1329,9 +1329,22 @@ const SEQ = {
     "Ja Ascension: damageCast1 damageCast2*~@0.1 solarCall~0.15 root*~@12.9",
     "Bastion Buiten: damageCast1 damageCast2*~@0.1 buitenBastion~0.15 root*~@10.3",
     "Rune Golem: damageCast1 damageCast2*~@0.1 golemCall~0.15 root*~@11.9"],
-  panda: ["Normal Attack: nAttack1 nAttack2 nAttack3 nAttack4 nAttack5", "Charge Attack: cAttack1 cAttack2*@3",
-    "Raijin Ken: cAttack1 cAttack2* raijinKen1 raijinKen2", "Fuujin Ken: fujinKen1 fujinKen2*@8 fujinKen3", "Qi Strike: qiStrike1@4 qiStrike2~",
-    "Tempest Dance: tempestDance*@5 tempestDanceEnd"],
+  // the Panda (plans/fx_panda, 2026-11-13, decisions.md 1-16): Normal Attack's stages 0.6 / 1.5 / 2.4 / 3.0 s after stage 1
+  // (Combo 4; attacks_emotes.md Read this first 1); Charge Attack's cAttack1 0.7 s, the looped cAttack2 held 3 s (the SEQ
+  // rule), RPC_cAttack0's CrossFade(root, 0.2) (key @ChargeAttack:cAttack1|2); Raijin Ken's 5 s hold (Panda.cs:41896),
+  // raijinKen1 at 5.0, standby 7.5 (decision 3); Ashura Fist in Ashura's tile (decision 4); the grab 0.2 s, then the toss
+  // or a climb (decision 5); Qi Strike with Delay Qi on: the 4 s charge, the 3 s idle hold, the release (Panda.cs:23036;
+  // decision 6), Delay Qi its own tile on the same steps (key @DelayQi:root, decision 7); Fuujin Ken's 1.0 / 9.0 / 9.7 s
+  // (decision 8); Roll Around's 6 s mRollTimer (decision 9); Tempest Dance's end with Row6Begin's 0.1 s fade (decision 10);
+  // Mystic Sage and Safe Guard (procs, no clip) on the idle stance for the effect's 1 s (decision 11); Sacred Sage
+  // Technique its own tile on the charge's clips (decision 12). Wind & Cloud / Rain & Storm: single-clip tiles, no line
+  // (decision 15)
+  panda: ["Normal Attack: nAttack1@0.6 nAttack2@0.9 nAttack3@0.9 nAttack4@0.6 nAttack5", "Charge Attack: cAttack1@0.7 cAttack2*@3 root~@0.2",
+    "Raijin Ken: cAttack1@0.7 cAttack2*@4.3 raijinKen1@1.7 raijinKen2", "Fuujin Ken: fujinKen1 fujinKen2*@8 fujinKen3",
+    "Qi Strike: qiStrike1@4 root*~@3 qiStrike2~", "Delay Qi: qiStrike1@4 root*~@3 qiStrike2~",
+    "Tempest Dance: tempestDance*@5 tempestDanceEnd^", "Ashura: ashura@1.2 ashuraFist", "Tiger Toss: grab@0.2 tigerToss",
+    "Climbing Cliff: grab@0.2 climbingCliff", "Crumbling Mountain: grab@0.2 crumblingMountain", "Roll Around: rollAround*@6",
+    "Mystic Sage: root*@1", "Safe Guard: root*@1", "Sacred Sage Technique: cAttack1@0.7 cAttack2*@3 root~@0.2"],
   // the Penguin (plans/fx_penguin, 2026-11-10): Normal Attack's stage 2 at 0.5 s and stage 3 at 1.0 s after stage 1
   // (RPC_nAttack2's Yield(2, actionTime - Time.time + 0.5) Penguin.cs:17877, RPC_nAttack3's + 1 :18332, actionTime never
   // reset :17857-17860; plans/fx_penguin/attacks_emotes.md "Normal Attack stage times"; the first step keeps the page's
@@ -3453,7 +3466,11 @@ const SEQ_SKILL = { bison: { "@BerserkerRush": "berserkerRush", "@FuryTrance": "
   monkey: { "@MikeBlink": "mikeBlink", "@MikeCircle": "mikeCircle", "@Lavu": "lavu", "@VolcanicEruption": "volcanicEruption",
     "@SummonGaos": "summonGaos", "@FireKeep": "fireKeep", "@EarthFormAttack": "earthForm", "@SentinelGuard": "stoneSentinel",
     "@Upheaval": "lavu", "@InstantCast": "instantCast", "@FireRune": "fireRune", "@EarthRune": "earthRune",
-    "@FireAvatar-Fireball": "fireBall", "@BlazingFire": "blazingFire", "@Phoenix-Fireball": "phoenix" } };
+    "@FireAvatar-Fireball": "fireBall", "@BlazingFire": "blazingFire", "@Phoenix-Fireball": "phoenix" },
+  // the Panda (2026-11-13, plans/fx_panda/decisions.md 16): Qi Strike and Delay Qi on the same steps, each its own icon;
+  // Raijin Ken and Sacred Sage Technique on the charge's clips, Tiger Toss on the grab, the effect-only tiles
+  panda: { "@QiStrike": "qiStrike", "@RaijinKen": "raijinKen", "@TigerToss": "tigerToss", "@MysticSage": "mysticSage",
+    "@SafeGuard": "safeGuard", "@SacredSageTechnique": "sacredSageTechnique", "@DelayQi": "delayQi" } };
 function moveSkillIcons(name) {
   const own = SEQ_SKILL[C?.cls]?.[name] || chainOf(name)?.skill;   // (a pool member's tile: its own skill, poolChains)
   if (own) {
@@ -4058,6 +4075,10 @@ const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(
 // parts' (fx.at.clip: fxparts/robots.js's King Kaiser plays it, then root). A cue's host + bone: the bone is that node of the newest
 // living Fx whose name starts with host (else the hero's bone). A cue's playAudio: the first playOnAwake-off AudioSource
 // starts that many seconds after the spawn (in fx.sounds / fx.loops: Fx.dispose stops it)
+// 2026-11-13, the Panda (plans/fx_panda/parts.md "Interfaces" 1, 2, 8; decisions.md 51, 53): api.boneMatrix(name, fx) = a
+// THREE.Matrix4, the hero's bone `name` (C.byName) as a Unity transform in fx's mirror group (mirror^-1 x its world x
+// MIRROR_X, as a cue's bone), null when the hero or the bone is missing; a TrailRenderer switched off in the prefab is
+// built hidden, and the cue's enable ([[t, nodeName, on], ...]) shows / hides it by its node's name (fxparts/trail.js)
 const FXPARTS = {}, FXSHADERS = {};   // FXSHADERS: a part module's material for a data blend name (api.shader)
 const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhug", "arcribbon", "groundfollower", "shuriken",
   "alphatimer", "sheep", "tto_sheep", "penguin", "tto_penguin", "bat", "particles", "audiocontrol", "light", "tto_bat",
@@ -4085,12 +4106,15 @@ const FX_PART_FILES = ["control", "vortex", "emblem", "trail", "mesh", "groundhu
   // FX/Lavu (mesh.js); the summons Phoenix, Ja, Gadina, Buiten, Gaos and the armours (elementals.js); TTO's Eric/URP
   // Particles shaders, the Sigils' FX_Magic_Circle scroll, SunCrownFx, Monkey.SunComet, Monkey.SolarCollapse,
   // MonkeyRow6Rise, RuneGolem (tto_monkey.js)
-  "monkey", "elementals", "tto_monkey"];
+  "monkey", "elementals", "tto_monkey",
+  // the Panda's (2026-11-13, plans/fx_panda/parts.md "Who builds what", decisions.md 51, 54): TTO's HelixRibbonEmitter,
+  // Panda.NineDragon / Panda.NineKing, fx:tto/tempestDance_trails, the ERB / Standard Surface shaders (tto_panda.js)
+  "tto_panda"];
 let fxPartsReady = null;
 function loadFxParts() {
   const api = { THREE, part: (type, build) => { FXPARTS[type] = build; }, shader: (blend, make) => { FXSHADERS[blend] = make; }, shaders: FXSHADERS, V, vA, nz, rnd, clamp01, ramp, fxMesh, setMesh,
     fxMaterial, hermite, texLoader, camera, renderer, scene, Sound, FX, DATA, hero: () => C, heroHide, worn: slot => C?.state?.[slot] || null,
-    spawn: fxSpawn, pointLight, releaseLight, propModel, shellMaterial, fontText, propPoint };
+    spawn: fxSpawn, pointLight, releaseLight, propModel, shellMaterial, fontText, propPoint, boneMatrix };
   return fxPartsReady ||= Promise.all(FX_PART_FILES.map(f => import(`./fxparts/${f}.js`)
     .then(m => m.default?.(api)).catch(e => console.warn("effect part", f, e))));
 }
@@ -4245,6 +4269,13 @@ class Fx {
         // a cue's scale: a number, or [x, y, z] (2026-11-10, plans/fx_penguin/tto.md P5: constellation_lineFire's
         // localScale (1, 1, segment length), Penguin.c:22904)
         o.position.set(at.x || 0, at.y || 0, at.d || 0); o.scale.fromArray(n.scale || [1, 1, 1]);
+        // a cue's atBone (2026-11-13, the Panda's climb flashes: Instantiate at Root.position + 0.3 x forward, not parented,
+        // Panda.cs:8757, :9791; plans/fx_panda/decisions.md 26, 41, skills_a.md P2): the root put once at that hero bone's
+        // position now (Unity's world, the mirror's space) + x / y / d along her facing, her facing (+ rot); no such bone:
+        // the normal spot
+        const ab = at.atBone && C?.byName?.[at.atBone];
+        if (ab) { this.group.updateMatrixWorld(true); ab.updateWorldMatrix(true, false);
+          o.position.add(ab.getWorldPosition(V()).applyMatrix4(this.mirror.matrixWorld.clone().invert())); }
         if (Array.isArray(at.scale)) o.scale.multiply(vA(at.scale)); else o.scale.multiplyScalar(at.scale || 1);
         // Unity's Quaternion.Euler turns z, then x, then y: three's intrinsic "YXZ"; inside the mirror Unity's numbers apply as they are
         if (at.rot) o.quaternion.setFromEuler(new THREE.Euler(...at.rot.map(v => v * Math.PI / 180), "YXZ"));
@@ -4299,14 +4330,21 @@ class Fx {
     // floor hides what is under it; the page has no floor that hides (the camera may look from below), so every mesh under
     // such a child gets its own copy of its material clipped at the floor (world y of the hero's ground; renderer
     // localClippingEnabled), drawing only what is above it, as the game shows
+    const floor = [new THREE.Plane(V(0, 1, 0), -(this.group.position.y - this.liftY))];
+    const clipMat = m0 => {                        // clone() leaves out the shader hooks fxMaterial's blends put on
+      if (!m0 || m0.clippingPlanes) return m0;
+      const m = m0.clone(); m.onBeforeCompile = m0.onBeforeCompile; m.customProgramCacheKey = m0.customProgramCacheKey;
+      m.clippingPlanes = floor; return m; };
+    const clipFloor = node => node.traverse(o => { if (o.isMesh && o.material) {   // a material list too (the dragons' skins)
+      o.material = Array.isArray(o.material) ? o.material.map(clipMat) : clipMat(o.material); o.userData.ownMaterial = true; } });
     for (const s of this.subs) if ((s.ec.velocity || []).some(x => x)) {
       s.vel = vA(s.ec.velocity).applyQuaternion(this.uQuat(s.node));
-      const floor = [new THREE.Plane(V(0, 1, 0), -(this.group.position.y - this.liftY))];
-      s.node.traverse(o => { if (o.isMesh && o.material && !o.material.clippingPlanes) {
-        const m0 = o.material, m = m0.clone();     // clone() leaves out the shader hooks fxMaterial's blends put on
-        m.onBeforeCompile = m0.onBeforeCompile; m.customProgramCacheKey = m0.customProgramCacheKey;
-        m.clippingPlanes = floor; o.material = m; o.userData.ownMaterial = true; } });
+      clipFloor(s.node);
     }
+    // a cue's floor (2026-11-13, the Panda's QA): every mesh of the effect clipped at the same floor, for a prefab whose own
+    // Animation carries a mesh down through the ground (Rising Dragons' and Nine Dragons' kingRise dragons dive 14-24 m
+    // under it at their end, and rise out of it), which the game's ground hides
+    if (at.floor) clipFloor(this.group);
     scene.add(this.group);
     this.group.updateMatrixWorld(true);
   }
@@ -4375,7 +4413,7 @@ class Fx {
         s.node.position.add(d);
       }
       if (this.age >= s.ec.life + (s.ec.afterLife || 0)) {
-        s.node.traverse(o => { if (o.userData.ownMaterial) o.material.dispose(); });
+        s.node.traverse(o => { if (o.userData.ownMaterial) for (const m of [].concat(o.material)) m?.dispose(); });
         s.node.parent?.remove(s.node); continue;
       }
       if (this.age >= s.ec.life && !s.stopped) {
@@ -4434,7 +4472,7 @@ class Fx {
     for (const s of this.loops) s.h?.stop();
     this.alive = false; scene.remove(this.group);
     for (const e of this.emitters) try { e.dispose?.(); } catch (x) { console.warn("effect part dispose", this.name, x); }
-    this.group.traverse(o => { o.geometry?.dispose(); if (o.userData.ownMaterial) o.material.dispose(); });
+    this.group.traverse(o => { o.geometry?.dispose(); if (o.userData.ownMaterial) for (const m of [].concat(o.material)) m?.dispose(); });
   }
 }
 
@@ -4828,6 +4866,16 @@ function legacyParticles(fx, node, em, an, rd, mat) {
 //         ("upheaval": Lavu spawned summoned, in its upheaval state), release (age: back to standby), unsummon (age: its 1 s
 //         fade) (fxparts/monkey.js); rise (the comet's Bezier lift), head (the crown's height), top / dive (the Solar
 //         Collapse's rise and dive time) (fxparts/tto_monkey.js)
+// 2026-11-13, the Panda (plans/fx_panda/decisions.md 26, 35, 36, 41, 51, 54): x / y / d may each be [lo, hi] (a float drawn
+//         per cue when the clip starts, Unity's float Random.Range; spread still adds after it: Pummel's ogre arms,
+//         cueOf's rangeOf); atBone (a hero bone: the effect put once at that bone's position at the spawn + x / y / d along
+//         her facing, turned to her facing (+ rot), not parented; no such bone: the normal spot; the climbs' hit flashes at
+//         Root + 0.3 m, Fx); enable ([[seconds after the spawn, nodeName, on], ...]: a TrailRenderer under that node shown
+//         from the newest due on, hidden by a later off; one switched off in the prefab starts hidden: Three Steps' blade
+//         trails, fxparts/trail.js); the parts' (fx.at): k (the dragon's index 0-7, Panda.NineDragon), off (seconds after
+//         the spawn: Tempest Dance's limb trails stop emitting, fx:tto/tempestDance_trails) (fxparts/tto_panda.js); floor
+//         (true: every mesh of the effect clipped at the hero's ground, as the game's ground hides what dives under it: the
+//         rising dragons, Fx; the Panda's QA)
 // An entry with "skills" may carry "order": "cycle" (the Mole's War Factory, decision 13): one skill, its members taken in
 // the file's order, one per play (the turn kept across plays and tiles, a new class starts again), no tile of their own
 // (poolChains); a member's "standby" (seconds) ends that play's step there; a member's "name" is its tile's name where the
@@ -4851,9 +4899,12 @@ const rotOf = r => r === "random" ? randRot() : r === "randomYaw" ? [0, randInt(
 // first when the outfit has no such number: 2026-11-13, the Mole's King Kaiser, Fire Barrage's planes and Bombardment's
 // bombers, Math.div(Skin, 100), Mole.cs:35709-35776, :29096-29163; plans/fx_mole/decisions.md 35, effect_only.md P1)
 const pickOf = (ns, pick) => pick === "color" ? ns[(+C?.state?.color || 1) - 1] ?? ns[0] : ns[Math.floor(Math.random() * ns.length)];
+// a cue's x / y / d: a number, or [lo, hi] = a float drawn per cue when the clip starts (Unity's float Random.Range, both
+// ends in; 2026-11-13, the Panda's Pummel ogre arms, Panda.cs:24565, :24601; plans/fx_panda/decisions.md 41, skills_a.md P3)
+const rangeOf = v => (Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v || 0);
 const cueOf = c => {
   const o = c[3] && typeof c[3] === "object" ? c[3] : { d: c[3] || 0, cut: c[4] }, ns = String(c[2]).split("|");
-  const q = { ...o, at: c[0], kind: c[1], name: pickOf(ns, o.pick), d: o.d || 0, x: o.x || 0, y: o.y || 0,
+  const q = { ...o, at: c[0], kind: c[1], name: pickOf(ns, o.pick), d: rangeOf(o.d), x: rangeOf(o.x), y: rangeOf(o.y),
     rot: rotOf(o.rot), vol: o.vol ?? 1, cut: o.cut, p: o.p, roll: o.roll, scale: o.scale, kill: o.kill, to: o.to, bone: o.bone };
   if (Array.isArray(o.spread)) {
     q.x += randInt(o.spread[0], o.spread[1]); q.d += randInt(o.spread[0], o.spread[1]);
@@ -4940,6 +4991,9 @@ const HERO_SKINS = {
   // 0.8 - 0.05 x 5, 0.8 - 0.05 x 5) (:34713-34729); Titan Form 2: + (0.3 x 2 + 0.2), setColor(0.6, 0.7, 1) (:35209-35225)
   "enrage": () => ({ grow: 1.25, tint: [1.05 / 0.86, 0.55 / 0.86, 0.55 / 0.86] }),
   "titanForm": () => ({ grow: 1.8, tint: [0.6 / 0.86, 0.7 / 0.86, 1 / 0.86] }),
+  // the Panda's Ashura (2026-11-13, plans/fx_panda/decisions.md 33, parts.md part 3): the ashura status's setColor(1, 0, 0)
+  // on every renderer under her (CharacterControl.cs:35484-35496), back to 0.86 at its end (:15830-15840)
+  "ashura": () => ({ tint: [1 / 0.86, 0, 0] }),
   // the Chameleon's own-team looks (2026-11-13, plans/fx_chameleon/parts.md part 10, decisions.md 45-46): the blend status
   // (Charge Attack's charge, Perfect Blend, Silent Walk; CharacterControl.cs:36850-36935) gives every Diffuse renderer
   // FX/Blend with its mainTexture, the invisible status (True / Mass Invisibility, Clear Arrow's condition; :32630-32690,
@@ -5334,11 +5388,20 @@ function propPoint(slot, name, fx) {
   n.updateWorldMatrix(true, false); fx.mirror.updateWorldMatrix(true, false);
   return n.getWorldPosition(V()).applyMatrix4(fx.mirror.matrixWorld.clone().invert());
 }
+// api.boneMatrix(name, fx) (2026-11-13, plans/fx_panda/parts.md Interfaces 1, decisions.md 51): the hero's bone `name` as a
+// Unity transform in fx's mirror group, mirror^-1 x the bone's world x MIRROR_X (as a cue's bone, Fx.update), or null
+// when there is no hero or no such bone (Tempest Dance's limb trails, fxparts/tto_panda.js)
+function boneMatrix(name, fx) {
+  const b = C?.byName?.[name];
+  if (!b || !fx?.mirror) return null;
+  b.updateWorldMatrix(true, false); fx.mirror.updateWorldMatrix(true, false);
+  return fx.mirror.matrixWorld.clone().invert().multiply(b.matrixWorld).multiply(MIRROR_X);
+}
 // api.spawn (2026-11-13, plans/fx_bat/parts.md Interfaces 4; the comment above FX_PART_FILES)
 function fxSpawn(name, at = {}, opts = {}) {
   const cls = C?.cls, d = opts.data || FX.json[cls], ns = String(name).split("|"), n = pickOf(ns, at.pick);
   if (!cls || !d?.effects?.[n]) { FX.missing[n] = 1; return null; }
-  const q = { ...at, kind: "fx", name: n, d: at.d || 0, x: at.x || 0, y: at.y || 0, rot: rotOf(at.rot) };
+  const q = { ...at, kind: "fx", name: n, d: rangeOf(at.d), x: rangeOf(at.x), y: rangeOf(at.y), rot: rotOf(at.rot) };
   const f = new Fx(cls, n, d, q); f.cutAt = q.cut; f.killAt = q.kill;
   if (opts.followNode) {
     const l = opts.local || {}, lq = new THREE.Quaternion();

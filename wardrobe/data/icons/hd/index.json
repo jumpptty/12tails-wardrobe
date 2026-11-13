@@ -1395,10 +1395,32 @@
     "crumblingMountain"
    ]
   },
+  "deathBlow": {
+   "icon": "icons/hd/panda/deathBlow.webp",
+   "clips": [
+    "stasisBlow"
+   ]
+  },
+  "delayQi": {
+   "icon": "icons/hd/panda/delayQi.webp",
+   "clips": [
+    "qiStrike1",
+    "root",
+    "qiStrike2"
+   ]
+  },
   "drunkenFist": {
    "icon": "icons/hd/panda/drunkenFist.webp",
    "clips": [
     "drunkenFist"
+   ]
+  },
+  "fuujinKen": {
+   "icon": "icons/hd/panda/fuujinKen.webp",
+   "clips": [
+    "fujinKen1",
+    "fujinKen2",
+    "fujinKen3"
    ]
   },
   "heavenPalm": {
@@ -1411,6 +1433,12 @@
    "icon": "icons/hd/panda/lotusPalm.webp",
    "clips": [
     "lotusPalm"
+   ]
+  },
+  "mysticSage": {
+   "icon": "icons/hd/panda/mysticSage.webp",
+   "clips": [
+    "root"
    ]
   },
   "nAttack": {
@@ -1477,6 +1505,19 @@
    "icon": "icons/hd/panda/rushingFalcon.webp",
    "clips": [
     "rushingFalcon"
+   ]
+  },
+  "sacredSageTechnique": {
+   "icon": "icons/hd/panda/sacredSageTechnique.webp",
+   "clips": [
+    "cAttack1",
+    "cAttack2"
+   ]
+  },
+  "safeGuard": {
+   "icon": "icons/hd/panda/safeGuard.webp",
+   "clips": [
+    "root"
    ]
   },
   "spTransfer": {

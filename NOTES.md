@@ -2034,6 +2034,9 @@ writes decisions.md and splits the builders; office paths are written into it, c
   The Monkey and the Mole went live together in version 59b73956 (data-c4c13d8692, from a worktree of c8ea0e2 with
   bb_rip_fix linked in): every class 33 faces, the Monkey's 23 outfit colours and 2 outfits back too; checked live
   headless (no 404, no page error).
+- The Panda built (planner + two builders: tto_panda, page_pipeline; editor; QA, which added the `floor` clip for the
+  two dragons under the ground): gates passed, committed and deployed (its section below). Its editor also fixed the
+  "&" in wardrobe_data.py's clip filter; the data rebuild is the home PC's (HANDOFF).
 
 ## 2026-11-13 (office), the Mole's effects: built and cued
 
@@ -2416,3 +2419,206 @@ user's review). One editor after four builders (monkey, elementals, tto_monkey, 
   (x, z), the outermost layer, side-facing texels on both models): the coat's sides take her side panels with the big
   white eye and its leaves where her skirt reaches (`COAT_SIDE` 3 cm, 61 % taken); the coat's longer hem keeps its
   re-coloured paint.
+- **The helmeted one: don't force it; the coat's front pieces and border** (user, with the chest and the inner dress's
+  front boxed: "it is too forced to match the reference on uneven texture meant for an entirely different things, in
+  this case, don't force it, just use other designs that respect the model there"; "the coat front piece, please try a
+  better job at trying to use reference image patterns"; tracing the coat's front edge: "add reference image silver
+  lining border along the edges of the coat too"). (1) The capelet, the collar, the throat ornament and the inner
+  dress's front are **royal's own forms in her colours** again (cloth = her purple, what royal draws light = her
+  silver, the gold zigzag faint; the collar's other face her cowl's black and red): no reading of her bodice there.
+  (2) The coat: plain cloth base (royal's own edging and zigzag gone), her back and side readings as before, and on
+  each **front piece her panel's own pattern**: the eye in its diamond frame with four leaves, from her sheet
+  (`SIGIL` box x 350-420, y 144-254), upright at z 0.66, 16.5 x 26 cm, only its drawn lines (what differs from the
+  box's median cloth colour) so no box shows. (3) **Her silver border** along every edge of the coat: its colours from
+  her sheet (the stroke beside the sigil, x 430-446, y 150-228), drawn as a band by the distance to the coat island's
+  edge (`M.edge`): dark line, silver with a light middle, dark line, a lilac glow inside.
+- **The helmeted one: the front piece is the inner dress's centre panel** (user, boxing it beside hers: "front piece
+  stills fail to resemble the reference pattern, not even close"; "I want thicker silver lining with brighter tone to
+  contrast, now it just blends in"). I had read "the coat front piece" as the coat's two front flaps and put the panel
+  back to royal's own ornaments: wrong piece. Now the panel (island at sheet 300,162; its texels hold y <= 0, mirrored)
+  is her centre column read from the front with |y|: her bodice (both halves: it is not mirrored) and her tabard
+  (island 19, its y >= 0 texels only: the rest are other faces), `borrow(scale=(1, TABARD_FIT 1.35, 1))` so her wider
+  tabard's silver border stays inside the narrower panel; a plain dark cloth where she shows nothing (within 0.8 cm,
+  65 % taken). Result: the pointed tabard with its border, V and leaf ornament matches; the waist disc comes out as
+  its outer ring only (its inner rings are not picked up: open); above the waist the panel is mostly under royal's
+  throat ornament. The coat's lining: `LINING` 6.5 texels wide (3.5 before), from her border's grey up to near white,
+  a darker line each side.
+- **The helmeted one: the front piece fitted to its own shape; the waist sigil; skin at the chest; a thinner lining**
+  (user, tracing the piece's outline with its two tails: "you copied the pattern with no extra thoughts that the actual
+  shape of the front piece is like this, please optimize the pattern to fit well with that model in mind"; "the prior
+  silver lining is now too thick, maybe 60%"; "add circle sigil from the ref image here too"; "show some skin under
+  the complex 3d shapes above, no need to match the ref exactly"). The piece (half-width 5.7-9.6 cm, splits into two
+  tails at z 0.49; her tabard ends in one point) below `TAB_TOP` 0.935: her tabard's inside (V, curls with leaves,
+  diamond) laid across the piece's own width at every height (u = |y| / the piece's edge there = the same share of
+  her tabard's width; her top down to `HER_LOW` 0.56 onto the piece's top down to the split), plain cloth on the tails,
+  and the silver border along the piece's real outline round both tails (`PANEL_RIM`; distance to the island's edge,
+  the mirror seam at y = 0 left out). The waist sigil is drawn (`DISC`: silver rim, dark ring, silver ring, dark
+  middle), not read: her own is half a disc standing off the body. Skin above a neckline (`NECK` 1.085, rising to
+  the sides, her silver edge) on the piece's top, from her sheet's chest skin; royal's hanging tab stays dark (a
+  pendant; island 236,286 painted skin is not the visible tab). `LINING` 3.9 (60 % of 6.5).
+
+## 2026-11-13 (office), the Panda's effects: built and cued
+
+From plans/fx_panda/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
+user's review). One editor after two builders (tto_panda, page_pipeline), on the office PC.
+- **Parts (new):** fxparts/tto_panda.js (TTO's HelixRibbonEmitter, nine instances: the Tempest Dance aura / end / pulse,
+  Yin Yang Fist's charge and seal, yinYang; the code movers Panda.NineDragon (the cued hand spot, the code's cubic Bezier
+  bowing to the side of `k`'s parity, to `to` in clamp(1.6 d / 22, 0.35, 0.7) s, NineVanish) and Panda.NineKing
+  (0.4 s weave to `to` + 0.8 up, NineVanish: Body / HeadGlow / HeadHalo hidden, the ParticleSystems stopped, "destroy"
+  0.5 s later); the hook fx:tto/tempestDance_trails (the four limb trails on the hero's Hand_R / Hand_L / Foot_R / Foot_L
+  through api.boneMatrix, placed before the trails sample, `off` = emitOff); the shaders ERB/Particles/Add_CenterGlow,
+  ERB/Particles/Blend_CenterGlow (noiseTex loaded by the part, white when absent) and Particles/Standard Surface (lit,
+  flatShading, `_BumpMap` left out: APPROX)); fxparts/tto_sheep.js: TrailRendererModern's `emitOff()` (no `stop()`);
+  fxparts/trail.js: a TrailRenderer off in the prefab is built hidden and the cue's `enable` ([[t, node, on], ...])
+  switches it by node name (Three Steps' fxNode1-3; a trail with no enable list is as before). index.html
+  (page_pipeline): SEQ / SEQ_SKILL panda (decisions 1-16), HERO_SKINS `ashura` (tint 1 / 0.86, 0, 0), the cue option
+  `atBone` (spawned once at the hero bone's world position + x / y / d along her facing, not parented), range-valued
+  x / y / d (`rangeOf` in cueOf and api.spawn: a float per play), api.boneMatrix(name, fx), FX_PART_FILES += tto_panda,
+  the cue-format and part-loader comments. wardrobe_fx.py: SHURIKEN_FROM_TTO panda raijinKen_hit (no SHURIKEN_MAT).
+  wardrobe_fx_tto.py: SKILL_FX panda (15), CODE_MOVERS nineDragons_dragon / _king, `material()` saves `_Noise` as
+  noiseTex / noiseScale / noiseOffset. wardrobe_data.py: the clip filter `animations/[a-z0-9_&]+` at :49 and :210 (not
+  run: the Panda's data rebuild is the home PC's, HANDOFF). Nothing the video repo reads was renamed.
+- **Cues** (wardrobe/fx_cues/panda.json, 56 keys, 212 cues: 140 fx, 52 voice, 18 sound, 1 skin, 1 hideProp; 69 effect
+  names, 13 of them TTO; assembled by checks/fx_panda_build/editor/assemble.py, git-ignored, from attacks_emotes' block (17
+  keys), skills_a's (14), skills_b's (16, with its Verification 2's raijinKen1 + the 1 s hideProp hero and Verification
+  3's tigerToss splash at d 10), effect_only Verification 5's first five, tto Verification's block (4 keys, 54 cues)).
+  Applied on top: decision 24 (Heaven Palm's blasts at the nominal 1.2 / 1.8 / 2.2 / 2.6 s, its why says so); decision 3
+  and 9 (the Raijin Ken / Roll Around whys quote the page's SEQ lines, no `!` / `^`); decision 31 (delayQi kill 3, not
+  parts Verification 5's 6); decision 52 (`wind&cloud` / `rain&storm` held back for the home rebuild). The empty
+  `@RaijinKen:cAttack2` / `raijinKen2` entries stay as records (decision 61; the check accepts an empty list).
+- **Tiles / icons:** wardrobe_skill_icons.py CLIP_SKILLS panda fujinKen1-3 -> fuujinKen, EFFECT_ONLY panda mysticSage /
+  safeGuard, OWN_TILE panda sacredSageTechnique / delayQi, the Bible-key pattern `([A-Za-z&]+?)` (decision 60); rerun:
+  panda 33 HD icons for 46 clips (6 new webp: deathBlow, delayQi, fuujinKen, mysticSage, sacredSageTechnique, safeGuard;
+  index.json panda only, no other class changed). No NEVER_PLAYED / LIFTS / LOWER_RANK for the Panda.
+- **Check / inventory:** wardrobe_fx_check.py OPTS += enable, atBone, k, off; a cue's x / y / d must be a number or
+  [lo, hi] with lo <= hi. wardrobe_fx_inventory.py BUILT += HelixRibbonEmitter (TTO, not scanned), NOTES panda
+  (raijinKen_hit's graft, threeStep's switched trails: drawn), CLASS_NOTES panda (the five CharacterControl status looks,
+  the three dead prefabs); rerun: the Panda 70 / 71 ready (the 1 left: raijinKen_hit's grafted ParticleSystem, drawn).
+- **Data:** `wardrobe_fx_tto.py panda`: 15 TTO effects, 45 materials, 44 textures, 10 sounds; `wardrobe_fx.py panda`: 56
+  effects, 65 materials, 61 textures, 118 sounds (the raijinKen_hit graft line printed). data/panda/fx.json 71 effects
+  (3.7 MB), sfx/ 120 files, 56 new textures in data/fx/tex: all new files, to commit with the run; the other PC pulls.
+- **Judgement calls (mine):** the whys of Heaven Palm, Raijin Ken and Roll Around rewritten only where decisions.md
+  changed their numbers or lines; the range test in the check (lo <= hi); the dead prefabs in the inventory's class note
+  (the scan lists only code-loaded prefabs, so a per-effect note would never print); wardrobe_skill_icons.py,
+  wardrobe_fx_check.py and wardrobe_fx_inventory.py kept LF as they were in this checkout.
+- **Gate:** files-only (every class with cues) "no problems"; `wardrobe_fx_check.py ... checks/fx_panda dark --cls panda`
+  exit 0, errors [], 43 tile plays, every expected effect spawned (by name: the dragon and the King, risingDragon_hit,
+  the limb trails, the seal and burst, threeStep, the ashura skin, the hideProp hero); the page and shared parts changed (index.html's atBone / ranges / boneMatrix, trail.js, tto_sheep.js, the check), so also `--cls wolf,sheep,penguin,bat,bison,cat,chameleon,mole,monkey` in one run (checks/fx_panda_regress): exit 0, errors [], 408 tile plays; unit tests 67 OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py checks/fx_panda_build/editor/weapon_fx_check.png` OK. index.html LF. Not committed.
+- **Left out:** Wind & Cloud and Rain & Storm (their clips are not in clips.json until the home PC's wardrobe_data.py
+  rebuild with the `&` filter; then the two cue entries from effect_only Verification 5 and the build line of decision
+  52: HANDOFF); tempestDance_counter and yinYang (built, not cued: decision 37); drunk and paralysis on the target
+  (decision 38); the three dead prefabs (decision 49); sacredSage_ring / heavenBreath_ring (in neither game, decision 48);
+  decisions 46-47 and 50's camera effects, texts, numbers, steering.
+- **For the QA pass:** nothing has been looked at in a screenshot yet: the three new shaders (the burst's ERB glows, the
+  bamboo / leaves / smoke under Standard Surface's flat shading), the helix ribbons, the dragons' Bezier from the hands
+  (the headless first frame stalled: the first sample after 0.03 s is at 2.68 s, so the dragons and the King were seen
+  only in the spawn tally) and the King's weave, the limb trails on the hands and feet and their fade from 5.75 s, Three
+  Steps' trails switching (sampled only at 0 and 1.24 s), the climbs' flashes at the Root bone + 0.3 m, Pummel's arms
+  scattered, the red Ashura Panda, the 1 s hidden Panda under raijinKen_hit's kick, Raijin Ken's grafted puffs,
+  Crushing Monolith's three doubles round the 10 m target. These want wardrobe_fx_shots.py's virtual clock. Rolled
+  procs the gate does not expect: KO's deadEffect (p 0.5); Stasis / Death Blow are one tile each.
+- **For the Bible (offer, not written):** decisions.md's last section.
+- **QA pass (13/11/2026, office).** Shot with `wardrobe_fx_shots.py --jobs` (virtual clock; jobs
+  checks/fx_panda_qa/jobs.json from make_jobs.py, 52 jobs, every Panda tile: Normal Attack (bare and with the Champion
+  gauntlets), Charge Attack, Sacred Sage Technique, Raijin Ken to 8 s (side, front, behind; and gauntlets worn for the
+  hide), Fuujin Ken to 9.9 s, Qi Strike and Delay Qi to 8.2 s, Tempest Dance to 6.6 s (side, front, near), Ashura to 11 s
+  (bare and with gauntlets), Tiger Toss, Climbing Cliff, Crumbling Mountain (side, behind, far), Roll Around to 6 s, Mystic
+  Sage, Safe Guard, Stasis Blow, Death Blow, Combo Link, Drunken Fist to 10.2 s, Heaven / Lotus Palm, Pummel, Roll, Three
+  Steps (side, top, near), Rushing Falcon, Tower Rush, Rising Vortex, Rising Dragons, Water Monkey / Crane, Sp Transfer,
+  the three TTO tiles (Nine Dragons to 5 s from side, front, behind and far; Tempest Dance; Yin Yang Fist to 3.5 s), KO
+  (dead forced, and as rolled), getUp, run, the eight voiced emotes, clap, wai, dance, fishingPanda) on the dark and the
+  white stage: 681 shots each. Sheets: checks/fx_panda_qa/sheets_dark, sheets_white (git-ignored; shots and logs under
+  run/). No page error, no stalled render loop, no failed job (the only console lines: swiftshader's glBlitFramebuffer
+  feedback warning).
+  - What matches (boxes in the hero's frame, +x = her left): the Combo's punches at 0.1 / 0.3 and 0.8 / 1.0 s, the wheel
+    from 1.6 s, Aura Blast from 3.3 s (each stage one 1/30 s frame off the anchors, the clock's step); the charge's two
+    rings 0.7-3.7 s; Raijin Ken's ring1 to 5 s, ring2 at 5.0 (its own second pulse at 7.0 s: the prefab's 2 s Delay
+    emitters), the kick from 12-19 m up onto the target from 5.5 s and its splash at the target, the Panda hidden 5.5-6.5 s
+    with her gauntlets (hero meshes drawn 0, hidden 3) and back at 6.6 s; Fuujin Ken's ring1, the cyclone and clouds
+    (+-13 m) to 9.0 s and ring3 at 9.0; Qi Strike's 4 s ring, Delay Qi's glow at her feet 4.0-7.0 s, delayQi_fire and the
+    burst at 7.0 s (Delay Qi's tile the same); Tempest Dance's helix aura, the eight gusts 0.3-4.5 s, the four limb trails
+    on hands and feet riding her jumps (to 2.9 m up) and stopping from 5.75 s (gone by 6.1 s), the end's helix from
+    5.75 s; Ashura's ring at 0.4 s, the red Panda 0.8-10.8 s (her worn gauntlets red too) and back at 11 s, the Root
+    flame on her, Ashura Fist's eruption at 2.1 s; Tiger Toss at 0.8 s and the splash at (0, 0, 10) at 0.9 s; the climbs'
+    flashes left where Root + 0.3 m was at each spawn while she climbs to 4 m; Crushing Monolith's three doubles round
+    the target (rising to 3 m, landing at 2.8 s, fading); Roll Around's ring each round to 6 s; Mystic Sage's cyan
+    double 1 m behind her, Safe Guard's shell; Stasis / Death Blow's ring, blow and end dust; Combo Link's ring at 0.4 s;
+    Drunken Fist's spins at 0.2 / 0.5 s and the drunken stars to 10 s; Heaven Palm's four blasts at the target from 1.2 /
+    1.8 / 2.2 / 2.6 s (x 1.5); Lotus Palm's flash at (0, 1, 9.7) at 1.4 s; Pummel's dust, ogre and ten arms scattered both
+    sides 0.25-0.7 s; Three Steps' trails switched (fxNode1 at 0.2 / 0.45, fxNode2 at 0.6, none at 0.9-1.1, fxNode3 at
+    1.25 / 1.35, gone by 1.5 s at the cut); Rushing Falcon, Tower Rush's ogre, Rising Vortex, Water Monkey / Crane's
+    clones on her; Sp Transfer's bolt to (0, 0.6, 9.9) 0.5-0.8 s; Nine Dragons' cast, the eight dragons from her hands
+    arcing R / L in turn onto the target (0.4-1.9 s), the bites, the King's weave 1.6-2.0 s, kingRise, the eight strikes
+    and the fall at 3.35 s; Yin Yang Fist's charge, the seal at her feet from 0.55 s (+-8 m), the burst with its upright
+    disc, bamboo, leaves and smoke from 1.75 s (the three new shaders compile and draw); KO's deadEffect.
+  - **Bug found and fixed (index.html Fx, wardrobe/fx_cues/panda.json, wardrobe_fx_check.py):** Rising Dragons'
+    `risingDragon` and Nine Dragons' `tto/nineDragons_kingRise` carry their dragons with the prefab's own Animation out
+    of the ground and down through it at the end (14 m and up to 24 m under the floor), which the game's ground hides;
+    the page drew them whole under the floor (the dragon's lower half below the ground ring while it rose, its tail
+    hanging under the floor to 4.1 s / 4.2 s). New cue option `floor` (true: every mesh of the effect clipped at the
+    hero's ground, the same clip the Chameleon's falling bolts got, now one helper `clipFloor`), set on those two cues
+    (their whys say so); OPTS += floor. The helper also takes a material list (the dragons' skins are one: the old code's
+    `m0.clone()` would have thrown on it) and the two dispose lines free each material of a list. Shots:
+    checks/fx_panda_qa/fix_sheets.
+  - Looked into, not bugs: raijinKen_ring2 drawing again at 7.0-7.5 s (two of its emitters have Delay 2.0 in the
+    prefab); the cyan Panda double behind her in Heaven Palm / Lotus Palm / Water Monkey / Crane (the rings' own
+    mesh); Climbing Cliff's blue figure beside her (climbingCliff_ring's mesh); the Three Steps trails drawn round her,
+    not on her hands (the prefab's Animation carries them along the dash she does not make, decision 20); the Tempest
+    Dance aura's age jumping to its after-life at 5.0 s (followState's cut, as the Bat's castRing); skinned meshes'
+    boxes reading far off (the box tool takes their bind-space bounds: the King's y -7..6); the dragons' boxes living
+    to 1.2 s after their 0.7 s flight (NineVanish's 0.5 s with the trail fading); Pummel's arms at opacity 0 for the last
+    0.2 s of their 0.5 s life (the prefab's fade).
+  - Gates: `wardrobe_fx_check.py ... checks/fx_panda_qa/gate dark --cls panda` exit 0, errors [] (43 tile plays, on the
+    final code); files-only every class "no problems"; the page's shared Fx code changed, so also `--cls
+    wolf,sheep,penguin,bat,bison,cat,chameleon,mole,monkey` (checks/fx_panda_qa/regress): exit 0, errors [] (408 tile plays); unit tests 67
+    OK, node 9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_weapon_fx_check.py` OK; index.html LF.
+    Not committed.
+  - For the user's eye: the floor clip on the two dragon effects (the dragons now rise out of the ground; a camera
+    orbited under the floor no longer sees them below it); Tempest Dance's pale helix on the white stage; Fuujin Ken's
+    clouds 13 m out and the target-point effects outside the default camera's frame, as for the other classes; the
+    Yin Yang burst's upright disc filling the near view; decisions.md's overnight calls and the editor's judgement calls
+    above.
+- **The helmeted one: cleavage at the chest, the front piece's seam** (user: "add some breast cleavage texture, can copy
+  form Bat texture we have"; "fix the seam"). (1) The seam was a stripe of plain cloth down the piece's middle: her
+  tabard's own middle is its island's edge, left unread (inset), so spots at u ~ 0 found no texel within reach. Inset
+  1.5 texels now, and near the middle (u < 0.25) her nearest texel is taken from up to 2 cm. (2) The chest's light and
+  shade come from the Bat's **summer** texture: its skin between and above the bikini's cups (skin picked by colour),
+  read `CLEAVE_UP` 8 cm higher and `CLEAVE_WIDE` 1.3 x wider, put through her skin's colours. (3) **Royal's hanging
+  tab**: its front face is part of the capelet's island (the middle, z < 1.21, x > 0.11), only its back face is the
+  island at 236,286. Two passes painted the back face alone and the tab stayed dark; found by listing every island at
+  the chest's middle with its position and present colour. Both faces are skin with the cleavage's shade now: the
+  tab reads as the chest.
+- **The cleavage redone under the trinket** (user: "it should be underneath the trinket, the trinket itself shouldn't get
+  recolored to show cleavage"): royal's hanging tab (both faces) keeps its own dark paint again; the cleavage is on the
+  chest behind it only: the summer texture's shade (`CLEAVE_WIDE` 1.9, `CLEAVE_K` 4.5) plus each breast's round
+  (`BREAST`: a light on top, a soft line under). From the front the trinket covers the middle 3 cm each side, so only
+  a sliver of the chest shows beside it: the shading is slight there, more from the side.
+- **The cleavage drawn, not shaded** (user, with a close-up: "I checked visually, there's no cleavage at all"). Measured on
+  the texture by position: the summer texture's shade was there, but grey (the skin ramp's dark end) and almost all
+  within 3 cm of the middle, behind the trinket; beside it the skin was flat. Now drawn as her own sheet draws hers:
+  each breast's upper line from the meeting point (`CLEAVE`: z 1.122) up and out to |y| 5.5 cm, so it crosses the
+  chest that shows beside the trinket: a warm dark line (her strokes' colour, warmed), a soft shade on the sternum's
+  side, a light on the breast's side, and the line between the breasts below the meeting point. The summer-texture
+  reading, `CLEAVE_UP / _K / _WIDE` and `BREAST` are gone.
+- **The cleavage copied from the Bat's summer texture; the lining on the coat's inside** (user, of the two lines I had
+  drawn: "why do you think a straight line is fit to represent a cleavage?"; "the right robe piece, the silver lining
+  didn't align nicely along the edge of the coat like the left side, is it a mirrored skin problem?"). (1) The drawn
+  lines are gone. The chest takes the summer texture's own painted chest: its skin between and above the bikini's cups
+  (picked by colour), seen from the front, read `CLEAVE_UP` 10 cm higher (the cups' meeting point on the neckline)
+  and `CLEAVE_WIDE` 1.5 x wider; only its light and shade (luminance as a share of the summer skin's, `CLEAVE_K`),
+  warm-tinted, on her skin (its colours carried the bikini's cool edge). plans/reskins/bat/eyes/chest_under_trinket.png
+  = that paint from the front with nothing over it: a soft crease with round shades. From the front the trinket
+  covers the crease; the sides' soft shade shows. Eight Bat outfits' chests were laid side by side first (summer,
+  bathRobe and queen paint a bare chest). (2) **Not a mirror problem**: 99.5 % of the coat's texels have a triangle
+  on each side. The idle pose swings her left flap open and shows the coat's INSIDE (its own island, 452,337), whose
+  sheet border is not the cloth's edge, so its lining ran astray. The inside now takes the lining by its distance on
+  the body to the outside island's border (2.4 mm per sheet texel there; 9 % of the inside lies within the lining).
+  Tried and dropped: the mesh's open edges as "the real hem" (`open_edges`): the coat is a closed shell, it has none.
+- **The chest is the breasts' underside** (user: "it doesn't show in the model still, because the position should be the
+  underboob, not the upper cleavage, so there's a little of manual repositioning and improvisation left for you").
+  Read off the mesh (the panel's top, per height): above z ~1.175 it comes forward and faces down (nz -0.35..-0.6),
+  below it is the near-upright ribs (nz -0.17). The summer cleavage copy is gone. Painted on that shape, soft and
+  warm: the fold under each breast (`FOLD`: lowest z 1.172 at |y| 4.5 cm, rising to the middle), the underside in
+  shade above it, the cast shade on the ribs below it fading down. It shows from the front beside the trinket (the
+  fold lies at the top of the skin that shows). eyes/chest_under_trinket.png = the paint alone, chest_closeup.png =
+  the model from three angles.

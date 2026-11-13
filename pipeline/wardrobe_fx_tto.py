@@ -217,6 +217,21 @@ SKILL_FX = {
         "runeGolem_dust", "runeGolem_fistHit", "runeGolem_pound", "runeGolem_quakeCharge", "runeGolem_quake",
         "runeGolem_crumble", "stoneAegis", "runeFracture",
     ],
+    # plans/fx_panda/parts.md "LAYOUTS" (2026-11-13, decisions.md 55): the 15 prefabs of the released Nine Dragons, Tempest
+    # Dance (+ End) and Yin Yang Fist (Clap and Wai have none); tempestDance_counter and the yinYang status look are built,
+    # not cued (decision 37)
+    "panda": [
+        # Nine Dragons: TTO1102:Panda.<RPC_nineDragons>d__331::MoveNext@0x1d899a0, <NineDragon>d__336@0x1d6f860,
+        # <NineKing>d__339@0x1d701c0
+        "nineDragons_cast", "nineDragons_dragon", "nineDragons_bite", "nineDragons_king", "nineDragons_kingRise",
+        "nineDragons_fall",
+        # Tempest Dance (+ End): <RPC_tempestDance>d__346@0x1d9b1b0, TempestTrails@0x1d5f010, RPC_tempestCounter@0x1d59f30,
+        # <RPC_tempestDanceEnd>d__355@0x1d9ad20
+        "tempestDance_aura", "tempestDance_trails", "tempestDance_pulse", "tempestDance_counter", "tempestDance_end",
+        # Yin Yang Fist: <RPC_yinYangFist>d__357@0x1dcdc50, <YinYangSeal>d__358@0x1dce740; the status look
+        # CharacterControl::AddYinYangFx@0x24af630
+        "yinYangFist_charge", "yinYangFist_seal", "yinYangFist_burst", "yinYang",
+    ],
 }
 # a class's effects outside heroes/<cls>/effects/ (Tto tries them after it, in this order; plans/fx_monkey/decisions.md 60,
 # tto.md P1, parts.md T1 and Verification 3): the boosted Ja's / Buiten's auras and the Rune Golem with its effects
@@ -291,6 +306,13 @@ CODE_MOVERS = {
     # over `dive` s (u^2) (<RPC_solarCollapse>d__363, Monkey.c:17382-17739)
     "sunAvatar_comet": "Monkey.SunComet",
     "sunAvatar_dive": "Monkey.SolarCollapse",
+    # TTO1102:Panda.<NineDragon>d__336::MoveNext@0x1d6f860 (pseudo/Panda.c:75-387): a cubic Bezier from the hand to the
+    # prey + 0.6 up in clamp(1.6 d / 22, 0.35, 0.7) s, NineFly@0x1d53f80 (turned along its motion), NineVanish@0x1d55070
+    # at the end (wardrobe/fxparts/tto_panda.js; plans/fx_panda/parts.md T2)
+    "nineDragons_dragon": "Panda.NineDragon",
+    # <NineKing>d__339::MoveNext@0x1d701c0 (:405-766, disasm_NineKing.txt): 0.4 s from the spawn to the landing point
+    # + 0.8 up, weaving, NineVanish at the end
+    "nineDragons_king": "Panda.NineKing",
 }
 # Unity's built-in meshes, which no bundle holds: a PPtr into "Library/unity default resources" by its path id (the
 # mesh-particle renderers of emperorPenguin_launch's Ring1-3 and emperorPenguin_goal's Net / Net2 use the Quad,
@@ -508,8 +530,13 @@ class Build:
         sh = self.tto.deref(o.assets_file, t["m_Shader"])
         shn = sh.read_typetree().get("m_ParsedForm", {}).get("m_Name", "?") if sh is not None else "?"
         props = t["m_SavedProperties"]
-        tex, scale, offset, scale_tex = None, [1, 1], [0, 0], None
+        tex, scale, offset, scale_tex, noise = None, [1, 1], [0, 0], None, None
         for k, v in props["m_TexEnvs"]:
+            if k == "_Noise":                      # the ERB/Particles shaders' second texture (2026-11-13, plans/fx_panda/
+                to = self.tto.deref(o.assets_file, v["m_Texture"])   # parts.md T4, Q5: tto_Add_noise -> Gradient4)
+                if to is not None:
+                    noise = {"noiseTex": self.texture(to), "noiseScale": [num(v["m_Scale"]["x"]), num(v["m_Scale"]["y"])],
+                             "noiseOffset": [num(v["m_Offset"]["x"]), num(v["m_Offset"]["y"])]}
             if k == "_ScaleTex":                   # TTO/ChameleonSpirit's scale pattern (2026-11-13, plans/fx_chameleon/parts.md T2:
                 to = self.tto.deref(o.assets_file, v["m_Texture"])   # chmRow6_phantomSpirit / _goldSpirit -> chmRow6_scalesTile)
                 if to is not None:
@@ -525,6 +552,8 @@ class Build:
                         "tint": colors.get("_TintColor"), "color": colors.get("_Color")}
         if scale_tex:                              # exported like _MainTex (data/fx/tex/<name>.webp; fxparts/tto_chameleon.js)
             self.mats[n]["scaleTex"] = scale_tex
+        if noise:                                  # exported the same way (fxparts/tto_panda.js's ERB shaders)
+            self.mats[n].update(noise)
         if not shn.startswith("Legacy Shaders/"):  # TTO's own shaders, Standard, Particles/Standard Unlit: every number
             self.mats[n]["props"] = {**{k: num(v) for k, v in props["m_Floats"]}, **colors}
         return n

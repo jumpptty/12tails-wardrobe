@@ -1,1 +1,503 @@
-{}
+{
+  "nAttack1": {
+    "why": "Panda.cs RPC_nAttack1 (:15126-15845), Combo stage 1 (doNormalAttack :7924-7930): at 0 attack / myCommand nAttack1 / addTimeOut(nAttack, 1.5) (:15721-15730), PlayAnimation(nAttack1, 0.2) (:15742), moveSpeed 0, the voice nAttack1 (own hero or a mission teammate :15754-15776, load :15789, PlayOneShot :15823), Yield(2, 0.1) (:15837); 0.1 s (case 2 :15243): moveSpeed 5 (:15254); mission / arena only (mGameType > 4 :15259, kept: the Sheep / Penguin precedent): Effects/nAttack_punch (:15271) Instantiated at position + TransformDirection(0, 0.5, -0.1) with the hero's rotation (:15283; EffectControl life 0.2, velocity (0, 0, 8): it flies 1.6 m ahead), own hero: PlayOneShot(punch1Fx) (:15297-15303; the prefab field punch1Fx = Sounds/punch1, checks/fx_panda_research/attacks_emotes/probe_fields.txt, field_keys.txt); the hit box (1, 1, 2, 1) at the hero (:15357) reaches 2 m, not the 10 m target: no nAttack_hit1 (RPC_nAttack1_hit :15412, on a landed hit only), no Shadow Fist / Combo Plus / gear procs (:15397-15439); Yield(3, 0.2) (:15829); 0.3 s (case 3 :15453): nAttack_punch at TransformDirection(-0.1, 0.45, 0) (:15488) and PlayOneShot(punch2Fx) = Sounds/punch2 (:15502-15508), same mission gate (:15464); Yield(4, 0.2) (:15841); 0.5 s: moveSpeed 0 (:15659), Yield(5, 0.1) (:15835); 0.6 s: standby unless stage 2 was pressed (:15676-15696); the hero's 2 m run forward (5 m/s from 0.1 to 0.5 s) is played in place (Penguin decision 8, Cat decision 20)",
+    "cues": [
+      [0, "voice", "nAttack1"],
+      [0.1, "fx", "nAttack_punch", {"y": 0.5, "d": -0.1}],
+      [0.1, "sound", "punch1"],
+      [0.3, "fx", "nAttack_punch", {"x": -0.1, "y": 0.45}],
+      [0.3, "sound", "punch2"]
+    ]
+  },
+  "nAttack2": {
+    "why": "Panda.cs RPC_nAttack2 (:15898-16631), Combo stage 2 (Combo #101, pressed 0.3-0.8 s after stage 1, doNormalAttack :7674-7706): the entry sets attack / myCommand nAttack2 (:16592-16595) and waits Yield(2, actionTime - Time.time + 0.6) (:16621; actionTime is stage 1's): the clip 0.6 s after stage 1; at 0 PlayAnimation(nAttack2, 0) cut in (:16015), moveSpeed 4 (:16025), addTimeOut (:16030), the voice nAttack2 (load :16094, PlayOneShot :16608), Yield(3, 0.2) (:16617); 0.2 s (case 3 :16119): mission only (:16130) nAttack_punch at TransformDirection(0, 0.5, -0.1), hero's rotation (:16154), own hero PlayOneShot(punch1Fx) = Sounds/punch1 (:16168-16174); Yield(4, 0.2) (:16613); 0.4 s (case 4 :16324): nAttack_punch at the same offset (:16359) and PlayOneShot(punch2Fx) = Sounds/punch2 (:16373-16379); the 2 m boxes' hits (:16209-16305, :16399-16495) never reach the 10 m target; Yield(5, 0.2) (:16603); 0.6 s: moveSpeed -2 (:16525), Yield(6, 0.3) (:16627); 0.9 s: standby unless stage 3 was pressed (:16542-16567)",
+    "cues": [
+      [0, "voice", "nAttack2"],
+      [0.2, "fx", "nAttack_punch", {"y": 0.5, "d": -0.1}],
+      [0.2, "sound", "punch1"],
+      [0.4, "fx", "nAttack_punch", {"y": 0.5, "d": -0.1}],
+      [0.4, "sound", "punch2"]
+    ]
+  },
+  "nAttack3": {
+    "why": "Panda.cs RPC_nAttack3 (:16681-17511), Combo stage 3 (Combo #102, pressed 1.0-1.44 s after stage 1, doNormalAttack :7734-7766): entry attack / myCommand nAttack3 (:17462-17465), Yield(2, actionTime - Time.time + 1.5) (:17501): the clip 1.5 s after stage 1; at 0 PlayAnimation(nAttack3, 0) cut in (:16798), moveSpeed 0, addTimeOut, the voice nAttack3 (load :16872, PlayOneShot :17475), Yield(3, 0.1) (:17484); 0.1 s (case 3 :16897): moveSpeed 5 (:16908); mission only (mGameType <= 4 skips it, :16913): Effects/nAttack_wheel (:16927) by createEffect at the hero's position with rotation x Euler(270, 90, 0) (:16939; EffectControl life 0.7, followPosition, plays its own Sounds/wheel); Yield(4, 0.1) (:17507); hits at 0.2, 0.4, 0.6 s (cases 4-6, Yield 0.2 each :17478, :17497, :17491; 3 x 3 m box, no effect, no sound) that never reach the 10 m target; 0.8 s moveSpeed 0 (:17400), Yield(8, 0.1) (:17489); 0.9 s standby unless stage 4 was pressed (:17417-17437)",
+    "cues": [
+      [0, "voice", "nAttack3"],
+      [0.1, "fx", "nAttack_wheel", {"rot": [270, 90, 0]}]
+    ]
+  },
+  "nAttack4": {
+    "why": "Panda.cs RPC_nAttack4 (:17568-18066), Combo stage 4 (Combo #103, pressed after 1.7 s, doNormalAttack :7794-7818): entry attack / myCommand nAttack4 (:18032-18035), Yield(2, actionTime - Time.time + 2.4) (:18064): the clip 2.4 s after stage 1; at 0 PlayAnimation(nAttack4, 0) cut in (:17685), moveSpeed 0, the voice nAttack4 (load :17759, PlayOneShot :18059), Yield(3, 0.3) (:18053); 0.3 s (case 3 :17784): moveSpeed 10 (:17795), own hero in a mission / arena (isMine :17800, mGameType > 4 :17808; kept): PlayOneShot(punch2Fx) = Sounds/punch2 (:17816); no effect in this stage; Yield(4, 0.2) (:18048); 0.5 s: moveSpeed 0 (:17835), the 2 x 2 m box hit (:17858-17959; never the 10 m target), Yield(5, 0.2) (:18057); 0.7 s standby unless stage 5 was pressed (:17987-18007)",
+    "cues": [
+      [0, "voice", "nAttack4"],
+      [0.3, "sound", "punch2"]
+    ]
+  },
+  "nAttack5": {
+    "why": "Panda.cs RPC_nAttack5 (:18110-18831), Combo stage 5 (Combo #104, pressed after 2.6 s, doNormalAttack :7840-7874), Aura Blast #401 on (passives rule; getAuraBlastLv = hasSkill(401) :9681): entry attack / myCommand nAttack5 (:18781-18784), Yield(2, actionTime - Time.time + 3) (:18802): the clip 3.0 s after stage 1; at 0 PlayAnimation(nAttack5, 0) cut in (:18216), moveSpeed 0, addTimeOut; the voice: with Aura Blast in a mission / arena (:18267-18273, kept) auraBlast1 or auraBlast2 (Random.Range(0, 2) :18279, loads :18291 / :18323, PlayOneShot :18798 / :18806), else nAttack5 (:18355, :18829); Yield(3, 0.3) (:18813); 0.3 s (case 3 :18380): moveSpeed -4 (:18391), own hero in a mission (:18396-18402): PlayOneShot(punch1Fx) = Sounds/punch1 (:18408); Aura Blast in a mission (:18430-18436): Effects/auraBlast (:18450) by createEffect at position + 0.5 up with rotation x Euler(270, 90, 0) (:18462; EffectControl life 1, plays its own Sounds/auraBlast), then Yield(4, 0.2) (Block_6 -> IL_1267 :18827); 0.5 s (case 4 :18605): moveSpeed 0, FindAreaTarget(hero, 2, 3) (:18629: a 2 m circle round the hero, never the 10 m target), Yield(6, 0.3) (:18817); 0.8 s standby (:18717-18739); without Aura Blast (not shown) the 3 m box at 0.3 s (:18508) and the same 0.8 s",
+    "cues": [
+      [0, "voice", "auraBlast1|auraBlast2"],
+      [0.3, "sound", "punch1"],
+      [0.3, "fx", "auraBlast", {"y": 0.5, "rot": [270, 90, 0]}]
+    ]
+  },
+  "@ChargeAttack:cAttack1": {
+    "why": "Panda.cs RPC_cAttack1 (:18879-19478; doBeginCharge :8242-8263: standby or run, cAttack off timeout, #111, 0.1 s after the last action; no ashura status, else Ashura Fist :8215-8222), the Charge Attack tile's first step (keyed by the sequence: Raijin Ken also plays cAttack1 / cAttack2, with its own voices and rings, RPC_raijinKen :42066, :41688): at 0 attack / actionTime / myCommand cAttack1 / addTimeOut(cAttack, 1) (:19330-19342), PlayAnimation(cAttack1, 0) cut (:19351), the voice cAttack1 or cAttack2 (Random.Range(0, 2) :19386, loads :19396 / :19427, PlayOneShot :19469 / :19465; own hero or a mission teammate :19357-19379), Yield(2, 0.7) (:19467): cAttack2 at 0.7 s (the step @0.7)",
+    "cues": [
+      [0, "voice", "cAttack1|cAttack2"]
+    ]
+  },
+  "@ChargeAttack:cAttack2": {
+    "why": "Panda.cs RPC_cAttack1 case 2 (:19006-19115), 0.7 s after the press, still attack / cAttack1: mission / arena only (mGameType > 4 :19022, kept): Effects/cAttack_ring by createEffect at the hero with its rotation (:19034-19046; EffectControl life 600, followPosition, followState; its looping Sounds/cAttack_ring), with Aura Field #411 on (passives rule; getAuraFieldLv :9688) Effects/auraField_ring there too (:19060-19084; life 99, followPosition, followState; its 3 m ImageEmitter field); then PlayAnimation(cAttack2, 0) cut in, wrapMode Loop (:19100-19105); the hold loop every fixed update (:19125-19323): each 1 s in a mission the SP gain (:19148-19190), Sacred Sage (#343 / #344) only when SP > 100 and HP below max (:19195-19247: nothing at full HP, the Mole's Super Dig heal precedent), Aura Field's SP to an ally within 8 m (:19257-19315: no ally, nothing drawn); held 3 s (the SEQ's @3, the SEQ rule's 3 s for a hold the player ends): doReleaseCharge (:8325-8337) -> RPC_cAttack0 sets myCommand cAttack0 (:19676), which ends both followState effects (EffectControl.cs:226-232 compares actionState and myCommand): cut 3",
+    "cues": [
+      [0, "fx", "cAttack_ring", {"cut": 3}],
+      [0, "fx", "auraField_ring", {"cut": 3}]
+    ]
+  },
+  "@SacredSageTechnique:cAttack1": {
+    "why": "Sacred Sage Technique rides the Charge Attack (RPC_cAttack1 -> $RPC_cAttack1$25194, Panda.cs:18879-19480): the charge start as the Charge Attack's (actionState attack, myCommand cAttack1, PlayAnimation(cAttack1, 0) :19351, voice cAttack1 / cAttack2 by Random.Range(0, 2) :19386, :19396 / :19427, PlayOneShot Block_41 / IL_183; Yield 0.7 s :19467). Copy the Charge Attack tile's cAttack1 cues here if its owner adds any (plans/fx_panda/effect_only.md)",
+    "cues": [
+      [0, "voice", "cAttack1|cAttack2"]
+    ]
+  },
+  "@SacredSageTechnique:cAttack2": {
+    "why": "Sacred Sage Technique 2 (#344, passives on; Heaven Breath #443 on): at 0.7 s the charge's case 2 (Panda.cs:19006-19112, real game modes, :19022): cAttack_ring at the hero's position and rotation (:19046; EffectControl life 600, followState: it ends when the charge does, cut 3, the step's end), with Aura Field #411 auraField_ring there too (:19084; life 99, followState), PlayAnimation(cAttack2, 0) looped (:19100), tTime = now (:19110). The tick (:19140-19250) runs once a second from tTime + 1 (:19148): SP + clamp(ceil(0.02 x 3 x ATK), 6, 12) with Charge Attack 3 (#112, #113: chargeLv 3, :19161-19190); when SP is then above 100 and HP below max (:19195-19201) with #343 / #344 (level 2, :19207-19222) the owner calls RPC_sacredSage (:19236, ActionEvent :19247). The tile shows the first tick, 1.0 s into cAttack2 (the Panda close to 100 SP, hurt). RPC_sacredSage (Panda.cs:9211-9441): voice sacredSage1 / sacredSage2 by Random.Range(0, 2) (:9247; :9259 / :9290, PlayOneShot :9271 / :9302), SP to 0 (50 with Revised Skill #404, :9315-9334), then with Heaven Breath the heavenBreath_ring createEffect (:9345-9357) and the heal 50 + 50 x 2 + 2 x Lv HP, Lv / 10 MP with the message Heaven Breath Technique! (:9377-9380) (without it sacredSage_ring, :9397-9409, and Sacred Sage Technique!, :9429-9432). Neither ring is in the game's data (the BB rip: KeyError; TTO's catalog: not there either), so the game logs Cannot find ... and draws no ring: the voice is the skill's only look (plans/fx_panda/effect_only.md, open question 2)",
+    "cues": [
+      [0, "fx", "cAttack_ring", {"cut": 3}],
+      [0, "fx", "auraField_ring", {"cut": 3}],
+      [1, "voice", "sacredSage1|sacredSage2"]
+    ]
+  },
+  "ashura": {
+    "why": "Panda.cs RPC_ashura (:30346-30843), Ashura 2 (#272; addTimeOut 300 s :30659): clip (0.2 fade, Once, :30668-30671) and voice ashuraGate1 / ashuraGate2 (Random.Range(0, 2) :30709-30792) at 0; Yield(2, 0.4) (:30785): Effects/ashuraRing at the hero, hero rotation (createEffect :30498-30510; EffectControl 1, followPosition; plays its own Sounds/ashura_ring); the local player's motion blur (:30532) left out; Yield(3, 0.4) (:30806): at 0.8 s the ashura status, chaAdjust(24) = 24 s at CHA 1, on the own client (RPC_AddStatus :30572), whose apply does setColor(1, 0, 0) on every renderer under the hero (CharacterControl.cs:35488-35497, :21702-21800: HERO_SKINS ashura, tint 1 / 0.86, 0, 0) and puts Effects/ashura (named ashuraFx; a LineEmitter, no EffectControl) under the Root bone, localPosition 0, Euler(0, 0, 0), scale 1 (CharacterControl.cs:35500-35515), both undone by the removal (:15830-15846): cut at 10 s, single (a refreshed status applies once); the +5 x sLv SP every 0.5 s draws nothing; Yield(4, 0.4) (:30798): standby at 1.2 s (:30598); the next charge press starts RPC_ashuraFist (doBeginCharge :8215-8231): the SEQ's ashura@1.2 ashuraFist",
+    "cues": [
+      [0, "voice", "ashuraGate1|ashuraGate2"],
+      [0.4, "fx", "ashuraRing"],
+      [0.8, "skin", "ashura", {"kill": 10}],
+      [0.8, "fx", "ashura", {"bone": "Root", "kill": 10, "single": true}]
+    ]
+  },
+  "ashuraFist": {
+    "why": "Panda.cs RPC_ashuraFist (:30843-31420), Ashura's charge-press replacement under the ashura status (doBeginCharge :8215-8231, the status level 2): clip cut in (PlayAnimation(ashuraFist, 0), Once, :31281-31284) and voice ashuraFist1 / ashuraFist2 (Random.Range(0, 2) :31322-31411) at 0; Yield(2, 0.3) (:31398): moveSpeed 6 (:30987; the 3.6 m lunge, the hero does not travel); Yield(3, 0.6) (:31416): at 0.9 s stop (:31009) and Effects/ashuraFist Instantiated at the hero's position, Quaternion.identity (:31020-31032; EffectControl 1 + 1; plays its own Sounds/ashuraFist); the local player's camera shake (:31052) left out; two hits 0.2 s apart in a 3 m circle (FindAreaTarget :31197, hit :31230, Yield(4, 0.2) :31414) never reach the 10 m target; at 1.3 s sp = 0 and standby (:31118-31141)",
+    "cues": [
+      [0, "voice", "ashuraFist1|ashuraFist2"],
+      [0.9, "fx", "ashuraFist"]
+    ]
+  },
+  "climbingCliff": {
+    "why": "Panda.cs RPC_climbingCliff (:27194-27752), Climbing Cliff (one rank; started by Tiger Toss's grab on a target at least 3 m tall with SP < 40, RPC_grab :26178-26256): clip cut in (PlayAnimation(climbingCliff, 0), Once, :27607-27610), noForce 2 s (:27619, nothing drawn), voice climbingCliff (one file, :27651-27669) and Effects/climbingCliff_ring at the hero, hero rotation (createEffect :27693-27711; EffectControl 3, followPosition, followState) at 0; the toast ClimbingCliff! (:27687) left out; 18 ticks of 0.1 s (i >= 18 :27347, Yield(2, 0.1) :27750): on i = 1, 3, ... 15 a hit on the selected target itself (ActorNrList[tID] :27500, hit :27516, no range test: it lands with the target at 10 m too; every hit assumed landed) and then RPC_climbingCliff_hit at the Root bone's position + 0.3 x forward (mHitPos = Root :27725, :27538) = Effects/climbingCliff_hit Instantiated there, LookRotation(the hero's forward) (:8734-8760; EffectControl 1; plays its own Sounds/nAttack_hit1): atBone Root, d 0.3; the step back at -4 m/s on ticks 12-16 (:27566, :27580) not travelled; standby at 1.8 s (:27370): the ring's followState cut 1.8",
+    "cues": [
+      [0, "voice", "climbingCliff"],
+      [0, "fx", "climbingCliff_ring", {"cut": 1.8}],
+      [0.1, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [0.3, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [0.5, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [0.7, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [0.9, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [1.1, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [1.3, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}],
+      [1.5, "fx", "climbingCliff_hit", {"atBone": "Root", "d": 0.3}]
+    ]
+  },
+  "crumblingMountain": {
+    "why": "Panda.cs RPC_crumblingMountain (:27796-28616), Crumbling Mountain with Crushing Monolith #432 on (passives rule; started by the grab on a tall target with SP >= 40, RPC_grab :26209-26224): clip cut in (PlayAnimation(crumblingMountain, 0), Once, :28392-28395), noForce 3 s (:28404), voice climbingCliff (:28436-28454) and climbingCliff_ring at the hero (createEffect :28478-28496; EffectControl 3, followPosition, followState) at 0; #432 (:28513): three Effects/crushingMonolith (the Panda doubles: SkinnedMeshRenderer, Animation, AlphaTimer; EffectControl 3 + 1, followPosition, followState) at the target's position - (radius + 0.1) x forward with LookRotation(-forward), + (radius + 0.1) x right with LookRotation(-right), - (radius + 0.1) x right with LookRotation(right) (createEffect :28565-28575): the target at the 10 m point with the standard body radius 0.3 (plans/fx_bat/decisions.md 3) = d 9.6 rot [0, 180, 0], x 0.4 d 10 rot [0, -90, 0], x -0.4 d 10 rot [0, 90, 0]; 28 ticks of 0.1 s (i >= 28 :27949, Yield(2, 0.1) :28611): on i = 2, 5, 9, 10, 11, 15-22 (13 hits, :28044-28116) hit(432) on the selected target (:28181; no range test, assumed landed) and RPC_crushingMonolith_hit at Root.position + 0.3 x forward (:28203) = Effects/crushingMonolith_hit there, LookRotation(forward) (:9768-9794; EffectControl 1; plays its own Sounds/crushingMonolith_hit): atBone Root, d 0.3 (without #432 climbingCliff_hit, :28223-28245); at i = 16 (1.6 s) voice crumblingMountain (:28267-28332; the toast left out); the step back on ticks 24-27 (:28351, :28365) not travelled; standby at 2.8 s (:27972): the ring's and the doubles' followState cut 2.8",
+    "cues": [
+      [0, "voice", "climbingCliff"],
+      [0, "fx", "climbingCliff_ring", {"cut": 2.8}],
+      [0, "fx", "crushingMonolith", {"d": 9.6, "rot": [0, 180, 0], "cut": 2.8}],
+      [0, "fx", "crushingMonolith", {"x": 0.4, "d": 10, "rot": [0, -90, 0], "cut": 2.8}],
+      [0, "fx", "crushingMonolith", {"x": -0.4, "d": 10, "rot": [0, 90, 0], "cut": 2.8}],
+      [0.2, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [0.5, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [0.9, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.0, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.1, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.5, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.6, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.6, "voice", "crumblingMountain"],
+      [1.7, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.8, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [1.9, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [2.0, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [2.1, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}],
+      [2.2, "fx", "crushingMonolith_hit", {"atBone": "Root", "d": 0.3}]
+    ]
+  },
+  "comboLink": {
+    "why": "Panda.cs RPC_comboLink (:40418-40751), Combo Link #442 (one rank; the dispatcher refuses it with no team combo, :6187-6208: the tile assumes one, as Detonate assumes its nuke): clip (0.2 fade, Once, :40672-40675) and Effects/comboLink_ring at the hero, hero rotation (createEffect :40684-40702; EffectControl 1 + 1, followPosition; plays its own Sounds/comboLink_ring) at 0, no voice; the local player's motion blur (:40725) left out; Yield(2, 0.4) (:40749): atkUp (5, chaAdjust(6), +n ATK) on the own client (:40570; CharacterControl.cs:33176-33186, deltaAtk only) and the toast (:40576), nothing drawn; Yield(3, 0.4) (:40747): standby at 0.8 s (:40602)",
+    "cues": [
+      [0, "fx", "comboLink_ring"]
+    ]
+  },
+  "drunkenFist": {
+    "why": "Panda.cs RPC_drunkenFist (:31474-32638), Drunken Fist 2 with Drunken Plus 2 (#304) and Drunken Spin #403 (passives rule): clip (0.2 fade, Once, :32467-32470), moveSpeed 3 (:32476) and voice drunkenFist1 / drunkenFist2 (Random.Range(0, 2) :32508-32563) at 0; the drunken status at level 2 for chaAdjust(12) = 12 s on the own client (:32576-32591), whose apply puts Effects/drunken (named drunkenFx; legacy particles, no EffectControl) at the CharacterController's bounds centre + 0.5 x height up = 0.49 + 0.4 = 0.89 m (rip Panda.prefab m_Center y 0.49, m_Height 0.8, lines 709-715), Quaternion.identity, parented to the hero (CharacterControl.cs:35396-35405), destroyed with the status (:15786-15793): kill 10 (the 10 s cut), single; Yield(2, 0.2) (:32619): at 0.2 s Drunken Spin (getDrunkenSpinLv :31621) Effects/drunkenSpin at position + TransformDirection(0, 0.5, 0.5), the hero's rotation (Instantiate :31633-31645; plays its own Sounds/drunkenFist; drunkenFist without #403, :31660-31680) and hit 1; Yield(3, 0.3) (:32611): at 0.5 s stop (:31853), drunkenSpin again (:31858-31882), hit 2; Yield(4, 0.07) / Yield(5, 0.13) / Yield(6, 0.16) (:32615, :32623, :32636): speed 7 at 0.57, speed 9 and hit 3 at 0.7, stop and hit 4 at 0.86 (:32075, :32102, :32250); the four 1 m boxes (:31718, :31940, :32115, :32263) never reach the 10 m target, so no drunk status on a foe; Yield(7, 0.34) (:32625): standby at 1.2 s (:32397)",
+    "cues": [
+      [0, "voice", "drunkenFist1|drunkenFist2"],
+      [0, "fx", "drunken", {"y": 0.89, "kill": 10, "single": true}],
+      [0.2, "fx", "drunkenSpin", {"y": 0.5, "d": 0.5}],
+      [0.5, "fx", "drunkenSpin", {"y": 0.5, "d": 0.5}]
+    ]
+  },
+  "fujinKen1": {
+    "why": "Panda.cs RPC_fuujinKen (:40786-41483), Fuujin Ken #434 (one rank; addTimeOut 240 s :41124): clip (0.2 fade, Once, :41139-41144), noForce 9 s (:41159), voice fuujinKen1 / fuujinKen2 (Random.Range(0, 2) :41193-41248; the rip spells them fuujinken1 / 2) and Effects/fuujinKen_ring1 at the hero, hero rotation (createEffect :41261-41279; EffectControl 1 + 1, followPosition; plays its own Sounds/fuujinken1) at 0; Yield(2, 0.5) (:41465): at 0.5 s Effects/fuujinKen_ring2, the tornado, at the hero (createEffect :40922-40940; EffectControl 8 + 1, followPosition, followState: its life ends at 8.5 s, before the 9.7 s standby, so no cut; Animation, AudioControl, EmitterControl; its own looping Sounds/fuujinken2); the local player's motion blur (:40967) left out; Yield(3, 0.5) (:41475): fujinKen2 at 1.0 s (the SEQ's next step)",
+    "cues": [
+      [0, "voice", "fuujinKen1|fuujinKen2"],
+      [0, "fx", "fuujinKen_ring1"],
+      [0.5, "fx", "fuujinKen_ring2"]
+    ]
+  },
+  "fujinKen3": {
+    "why": "Panda.cs RPC_fuujinKen after the 20th tick (i >= 20 :41296; fujinKen2 cut in and looped at 1.0 s :40994-40999, ticks Yield(4, 0.4) :41463: the SEQ's fujinKen2*@8; each tick's 12 m pull, FindAreaTarget :41352, draws nothing, fuujinKen_hit only on enemies within 2 m :41414-41420, never the 10 m target): at 9.0 s fujinKen3 cut in (PlayAnimation(fujinKen3, 0), Once, :41300-41303) and Effects/fuujinKen_ring3 at the hero, hero rotation (createEffect :41306-41322; EffectControl 2); Yield(5, 0.7) (:41461): standby at 9.7 s (:41057)",
+    "cues": [
+      [0, "fx", "fuujinKen_ring3"]
+    ]
+  },
+  "heavenPalm": {
+    "why": "Panda.cs RPC_heavenPalm (:39643-40353), Heaven Palm 2 (#364; a target skill, tID == 0 does nothing :40131: the target at the 10 m point): clip (0.2 fade, Once, :40176-40179), moveSpeed -2 (:40185), noForce 4 s (:40188), voice heavenPalm1 / heavenPalm2 (Random.Range(0, 2) :40220-40275) and Effects/heavenPalm_ring at the hero, hero rotation (createEffect :40288-40304; EffectControl 3.6, followPosition, followState: its life ends before the 3.7 s standby, no cut; the heavenPalm_shadow mesh plays root) at 0; Yield(2, 0.7) (:40336): moveSpeed -1 and hitTime 1.2 (:39801, :39821); every frame (YieldDefault(3) :40339) until actionTime + 2.8 (:39928) the hero faces the target (:39969), and on the own client the first frame after actionTime + hitTime (Time.time <= ... skips, :39982; 1/60 s late at 60 fps, cued at the nominal 1.2, 1.8, 2.2, 2.6 s: plans/fx_panda/decisions.md 24, one frame model per class) hitTime steps 1.2 -> 1.8 -> 2.2 -> 2.6 -> 99 (:40012-40054) and RPC_heavenPalm_hit(the target's position, :39964, :40060) = Effects/heavenPalm Instantiated there, Quaternion.identity, localScale 1.5 at sLv 2 (:9539-9548; EffectControl 2; plays its own Sounds/heavenPalm_hit): the target's feet, d 10, scale 1.5; the camera shake and blur (:39996, :40006) left out; the (2 sLv + 2 + SF) m area hit (:40077) draws nothing more; Yield(4, 0.5) (:40341): stop at 3.3 s (:39850); Yield(5, 0.4) (:40348): standby at 3.7 s (:39876)",
+    "cues": [
+      [0, "voice", "heavenPalm1|heavenPalm2"],
+      [0, "fx", "heavenPalm_ring"],
+      [1.2, "fx", "heavenPalm", {"d": 10, "scale": 1.5}],
+      [1.8, "fx", "heavenPalm", {"d": 10, "scale": 1.5}],
+      [2.2, "fx", "heavenPalm", {"d": 10, "scale": 1.5}],
+      [2.6, "fx", "heavenPalm", {"d": 10, "scale": 1.5}]
+    ]
+  },
+  "lotusPalm": {
+    "why": "Panda.cs RPC_lotusPalm (:39066-39599), Lotus Palm 2 (#362; a target skill, tID == 0 does nothing :39276: the target at the 10 m point): clip (0.2 fade, Once, :39337-39342), noForce 2 s (:39357), voice lotusPalm1 / lotusPalm2 (Random.Range(0, 2) :39391-39446) and Effects/lotusPalm_ring at the hero, hero rotation (createEffect :39459-39477; EffectControl 2, followPosition, followState; the lotusPalm_shadow mesh plays root; plays its own Sounds/lotusParm_ring) at 0; every frame (YieldDefault(2) :39597) the hero faces the target (:39573-39579) until Time.time >= actionTime + 1.4 (:39494): RPC_lotusPalm_hit at target.collider.ClosestPointOnBounds(mPos + up) (:39510-39513), before the hit roll (:39528), so drawn on a dodge too = Effects/lotusPalm there, LookRotation(the hero's forward) (:9466-9489; EffectControl 1; plays its own Sounds/lotusPalm_hit): the standard target body's (plans/fx_bat/decisions.md 4) closest point to (0, 1, 0) is (0, 1, 9.7); Yield(3, 0.4) (:39593): standby at 1.8 s (:39224): the ring's followState cut 1.8",
+    "cues": [
+      [0, "voice", "lotusPalm1|lotusPalm2"],
+      [0, "fx", "lotusPalm_ring", {"cut": 1.8}],
+      [1.4, "fx", "lotusPalm", {"y": 1, "d": 9.7}]
+    ]
+  },
+  "pummel": {
+    "why": "Panda.cs RPC_pummel (:24301-25119), Pummel 2 (#223) with Ogre Impact #422 (passives rule): clip (0.1 fade, Once, :24910-24915), voice pummel1 / pummel2 (Random.Range(0, 2) :24959-25014) and Effects/pummel_dust Instantiated at the hero, hero rotation (:25027-25045; EffectControl 0.5) at 0; Yield(2, 0.1) (:25111): moveSpeed 16 (:24448; the 1.6 m lunge, not travelled); Yield(3, 0.1) (:25115): at 0.2 s stop (:24475) and #422 Effects/pummel_ogre at the hero (createEffect :24480-24504; EffectControl 1, followPosition, followState; StaticMesh + AlphaTimer; plays its own Sounds/pummel_ogre; its life ends at the 1.2 s standby, no cut); five jabs (i < 5 :24743) at 0.2 + 0.1 k: the Ogre box FindRecTarget(2, 2, 3, 3) (:24765; no punch1Fx with #422, :24778) never reaches the 10 m target (no pummel_hit, :24818-24828); after each jab Yield(4, 0.05) (:25117): Effects/pummel_ogreArm1 at position + TransformDirection(Random.Range(0.2, 0.6), Random.Range(0.5, 1.5), Random.Range(0.5, 0.7)), the hero's rotation (:24547-24565; EffectControl 0.5, velocity (0, 0, 2) turned by the rotation, StaticMesh + AlphaTimer), Yield(5, 0.05) (:25087): Effects/pummel_ogreArm2 at TransformDirection(Random.Range(-0.6, -0.2), Random.Range(0.5, 1.5), Random.Range(0.5, 0.7)) (:24583-24601), i++ and the next jab at once (:25077): arms at 0.25 + 0.1 k and 0.3 + 0.1 k (x / y / d ranges: part P3); Yield(7, 0.1) (:25096): moveSpeed -6 at 0.8 (:24637); Yield(8, 0.2) (:25092): stop at 1.0 (:24664); Yield(9, 0.2) (:25106): standby at 1.2 s (:24690)",
+    "cues": [
+      [0, "voice", "pummel1|pummel2"],
+      [0, "fx", "pummel_dust"],
+      [0.2, "fx", "pummel_ogre"],
+      [0.25, "fx", "pummel_ogreArm1", {"x": [0.2, 0.6], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.3, "fx", "pummel_ogreArm2", {"x": [-0.6, -0.2], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.35, "fx", "pummel_ogreArm1", {"x": [0.2, 0.6], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.4, "fx", "pummel_ogreArm2", {"x": [-0.6, -0.2], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.45, "fx", "pummel_ogreArm1", {"x": [0.2, 0.6], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.5, "fx", "pummel_ogreArm2", {"x": [-0.6, -0.2], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.55, "fx", "pummel_ogreArm1", {"x": [0.2, 0.6], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.6, "fx", "pummel_ogreArm2", {"x": [-0.6, -0.2], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.65, "fx", "pummel_ogreArm1", {"x": [0.2, 0.6], "y": [0.5, 1.5], "d": [0.5, 0.7]}],
+      [0.7, "fx", "pummel_ogreArm2", {"x": [-0.6, -0.2], "y": [0.5, 1.5], "d": [0.5, 0.7]}]
+    ]
+  },
+  "qiStrike1": {
+    "why": "Panda.cs RPC_qiStrike1 (:22845-23290), Qi Strike 3 (#213) with Delay Qi #214 and Qi Burst #412 (passives rule): clip (0.2 fade, Once, :23132-23135), voice qiStrike1 / qiStrike2 (Random.Range(0, 2) :23173-23228) and Effects/qiStrike_ring at the hero, hero rotation (createEffect :23241-23259; EffectControl 6, followPosition, followState; plays its own looping Sounds/qiStrike1) at 0; every frame (YieldDefault(2) :23287) the hero faces the target (:23014) until actionTime + 1 + sLv = 4 s (:23028; the SEQ's qiStrike1@4): #214 starts RPC_delayQi (:23036-23042), which sets myCommand delayQi (:24146): the ring's followState ends it (EffectControl.cs:226-232 compares actionState and myCommand): cut 4, at the step change (index.html fxStart)",
+    "cues": [
+      [0, "voice", "qiStrike1|qiStrike2"],
+      [0, "fx", "qiStrike_ring", {"cut": 4}]
+    ]
+  },
+  "@QiStrike:root": {
+    "why": "Panda.cs RPC_delayQi (:23981-24272), Delay Qi #214 at the end of Qi Strike's charge (:23036-23042): myCommand delayQi (:24146), voice delayQi (one file, :24181-24199), Effects/delayQi_ring at the hero, hero rotation (createEffect :24211-24229; EffectControl 1; plays its own Sounds/delayQi), CrossFade(root, 0.2) (:24246: the SEQ's root*~) and the delayQi status at sLv 3 for chaAdjust(3) + 3 x getQiBurstLv() = 6 s (:24255), whose apply puts Effects/delayQi (named delayQiFx; EffectControl 12, a LineEmitter) under the hero, localPosition 0, scale 1 (CharacterControl.cs:35342-35371), all at 0; Yield(2, 0.2) (:24269): standby (:24110); the hold lasts until the next attack press releases RPC_qiStrike2 at the status level (doNormalAttack :7896-7930), at most 6 s: held 3 s (the SEQ rule's at least 3 s for a hold the player ends), the release removing the status and its delayQiFx (:23742-23748; CharacterControl.cs:15753-15757): kill 3",
+    "cues": [
+      [0, "voice", "delayQi"],
+      [0, "fx", "delayQi_ring"],
+      [0, "fx", "delayQi", {"kill": 3}]
+    ]
+  },
+  "qiStrike2": {
+    "why": "Panda.cs RPC_qiStrike2 (:23328-23931), Delay Qi's release at sLv 3: clip (0.2 fade, Once, :23665-23668), moveSpeed 16 (:23680; the 3.2 m dash, not travelled), voice qiStrike3 (one file, :23712-23730), the delayQi status removed (:23742-23748) and Effects/delayQi_fire Instantiated at the hero, hero rotation (:23753-23771; EffectControl 1; plays its own Sounds/delayQi), Qi Burst #412 (getQiBurstLv :23786): Effects/qiBurst at the hero, hero rotation (createEffect :23792-23810; EffectControl 2, followPosition, followState; the StaticMesh fist with Animation root; qiStrike without #412, :23827-23845), the local player's motion blur (:23871) left out, and Sounds/qiStrike (PlayOneShot :23877-23893) at 0; Yield(2, 0.2) (:23929): stop (:23475) and the 1 + 5 m box (:23503) never reaches the 10 m target (no qiStrike_hit, :23532-23542); Yield(3, 0.4) (:23927): standby at 0.6 s (:23604): qiBurst's followState cut 0.6",
+    "cues": [
+      [0, "voice", "qiStrike3"],
+      [0, "sound", "qiStrike"],
+      [0, "fx", "delayQi_fire"],
+      [0, "fx", "qiBurst", {"cut": 0.6}]
+    ]
+  },
+  "roll": {
+    "why": "Panda.cs RPC_roll (:19727-20128), Roll 2 (max rank: only moveSpeed and the lock levels change, :19973, :19976): clip, 0.2 s fade (:19964), voice roll1 / roll2 (Random.Range(0, 2) :20008, loads :20020 / :20051, PlayOneShot :20032 / :20063) and Sounds/roll, the hero's (load :20082, PlayOneShot :20092) at 0; no effect is loaded; the roll forward (6 + 4 sLv m/s, then 4 + 3 sLv after Yield 0.1 :20125, :19870) is left out (the hero does not travel, Bison decision 17); Yield 0.7 (:20123): standby 0.8 s (:19894)",
+    "cues": [
+      [0, "voice", "roll1|roll2"],
+      [0, "sound", "roll"]
+    ]
+  },
+  "rollAround": {
+    "why": "Panda.cs RPC_rollAround (:20159-20700), Roll Around #421 (its own tile, SEQ \"Roll Around: rollAround*@6\", plans/fx_panda/decisions.md 9): clip looped, 0.1 s fade (:20506-20509), removeLockStatus(5) (:20518; again every 0.5 s :20292-20303, gameplay), voice rollAround1 / rollAround2 (Random.Range(0, 2) :20550, loads :20562 / :20593, PlayOneShot :20574 / :20605) and rollAround_ring createEffect at the hero, hero rotation (:20624-20636; followPosition + followState, life 6, its own Sounds/rollAround_ring) at 0; the roll lasts mRollTimer = 6 s (:20650, standby :20425-20442 once Time.time passes it, WaitForFixedUpdate :20672): the ring's life ends there too, so no cut; the steering (:20318-20416) is left out (no travel)",
+    "cues": [
+      [0, "voice", "rollAround1|rollAround2"],
+      [0, "fx", "rollAround_ring"]
+    ]
+  },
+  "threeSteps": {
+    "why": "Panda.cs RPC_threeStep (:20721-21805), Three Steps 2 with Nine Steps #402 on (passives on): clip, 0.2 s fade (:21528), voice nineStep1 / nineStep2 in place of threeStep1 / 2 (getNineStepsLv() != 0 :21569; Random.Range(0, 2) :21575, loads :21587 / :21618, PlayOneShot :21599 / :21630; else :21642-21697) and threeStep createEffect at the hero, rotation x Euler(270, 90, 0) (:21716-21728; followPosition + followState, life 3, its Animation 'root' swings fxNode1-3, its own Sounds/threeSteps) at 0; its three TrailRenderers start disabled (rip prefab m_Enabled 0) and the hero's code switches them (:21742-21748): fxNode1 on at 0.1 (Yield 0.1 :21801, :20873), fxNode2 on at 0.4 (Yield 0.3 :21795, :20900), fxNode1 off at 0.5 (Yield 0.1 :21771, :21063), fxNode2 off at 0.8 (Yield 0.2 :21780 + 0.1 :21776, :21250), fxNode3 on at 1.2 (Yield 0.4 :21785, :21277): the new cue option enable (the part to build); the three hits at 0.4 / 0.7 / 1.3 s reach 1-2 m (FindRecTarget :20938, :21108, :21322; threeStep_hit only on a target, :8399-8412) and Nine Steps' whiteRamp on a hit (:21036) is the camera's: left out; Yield 0.1 (:21803): standby 1.4 s (:21458): threeStep's cut",
+    "cues": [
+      [0, "voice", "nineStep1|nineStep2"],
+      [0, "fx", "threeStep", {"rot": [270, 90, 0], "cut": 1.4, "enable": [[0.1, "fxNode1", true], [0.4, "fxNode2", true], [0.5, "fxNode1", false], [0.8, "fxNode2", false], [1.2, "fxNode3", true]]}]
+    ]
+  },
+  "rushingFalcon": {
+    "why": "Panda.cs RPC_rushingFalcon (:21885-22776), Rushing Falcon 2: clip, 0.2 s fade (:22596), voice rushingFalcon1 / rushingFalcon2 (Random.Range(0, 2) :22637, loads :22649 / :22680, PlayOneShot :22661 / :22692) and rushingFalcon createEffect at the hero, hero rotation (:22711-22721; followPosition + followState, life 2, its rings at 0.3 / 0.5 / 0.7 s are the three hits, its own Sounds/rushingFalcon) at 0; the dash (8 / 6 / 8 / 6 m/s from 0.1 s, :22032, :22059, :22227, :22377) is left out (no travel); hits at 0.3 / 0.5 / 0.7 s within 2 m (:22102, :22240, :22390; rushingFalcon_hit only on a target, :8449-8462); Yields 0.1 / 0.2 / 0.2 / 0.2 / 0.3 (:22754, :22763, :22759, :22767, :22775): standby 1.0 s (:22526): the effect's cut",
+    "cues": [
+      [0, "voice", "rushingFalcon1|rushingFalcon2"],
+      [0, "fx", "rushingFalcon", {"cut": 1.0}]
+    ]
+  },
+  "towerRush": {
+    "why": "Panda.cs RPC_towerRush (:25172-25811), Tower Rush 2 with Ogre Impact #422 on: clip, 0.1 s fade (:25641), voice towerRush1 / towerRush2 (Random.Range(0, 2) :25682, loads :25694 / :25725, PlayOneShot :25706 / :25737) and towerRush_ring Instantiated at the hero, hero rotation (:25756-25766; life 0.5, its own Sounds/towerRush) at 0; Yield 0.1 (:25799): the 16 m/s lunge (:25319, left out: no travel); Yield 0.1 (:25803): at 0.2 s moveSpeed 0 (:25346) and, hasSkill(422) (:25371), towerRush_ogre Instantiated at the hero, hero rotation (:25383-25395; life 1, its own Sounds/towerRush_ogre); the hit FindAreaTarget(pos, 4, 6) (:25424) misses the 10 m target (towerRush_hit only on a target, :8613-8626); Yield 0.3 (:25793): the -4 m/s step back (:25545, left out); Yield 0.3 (:25797): standby 0.8 s (:25571)",
+    "cues": [
+      [0, "voice", "towerRush1|towerRush2"],
+      [0, "fx", "towerRush_ring"],
+      [0.2, "fx", "towerRush_ogre"]
+    ]
+  },
+  "tigerToss": {
+    "why": "Panda.cs RPC_tigerToss (:26452-27190), Tiger Toss with Tiger Pounce #232 on, started 0.2 s into RPC_grab when the grabbed target is under 3 m and 60 weight (:26113-26142; SEQ \"Tiger Toss: grab@0.2 tigerToss\"; the toss assumes the grab held, as the Mole's Detonate assumes its nuke, plans/fx_mole/decisions.md 27): clip cut in (PlayAnimation(\"tigerToss\", 0) :26959), voice tigerToss1 / tigerToss2 (Random.Range(0, 2) :27003, loads :27015 / :27046) at 0; Yield 0.6 (:27127): tigerToss Instantiated at the hero + 1.2 m up, hero rotation (:26621-26633; life 2, its own Sounds/tigerToss) and the throw (removeStatus grab); Yield 0.1 (:27134): at 0.7 s Tiger Pounce's RPC_tigerPounce_hit at the thrown target's position, LookRotation(the hero's forward) (getTigerPounceLv :26758; Instantiate :8677-8690; its own Sounds/tigerPounce): an effect on the enemy, so at the 10 m target point (the standing rule; the same grabbed target skills_a's Crushing Monolith doubles stand at), d 10; the 3 m/s walk (:26968) left out; Yield 0.1 (:27132): standby 0.8 s (:26889)",
+    "cues": [
+      [0, "voice", "tigerToss1|tigerToss2"],
+      [0.6, "fx", "tigerToss", {"y": 1.2}],
+      [0.7, "fx", "tigerPounce_hit", {"d": 10}]
+    ]
+  },
+  "risingVortex": {
+    "why": "Panda.cs RPC_risingVortex (:28672-29351), Rising Vortex 2: clip, 0.2 s fade (:29136), voice risingVortex1 / risingVortex2 (Random.Range(0, 2) :29177, loads :29189 / :29220, PlayOneShot :29201 / :29232) and risingVortex createEffect at the hero, hero rotation (:29251-29261; followPosition + followState, life 2, its own Sounds/risingVortex) at 0; the pulls at 0.4 / 0.6 s reach 3 m (FindAreaTarget :28832, :28947; Yield 0.4 :29303, 0.2 :29288; risingVortex_hit only on a target :28861, :28976); Yield 0.1 + 0.3 (:29294, :29299): standby 1.0 s (:29066): the effect's cut",
+    "cues": [
+      [0, "voice", "risingVortex1|risingVortex2"],
+      [0, "fx", "risingVortex", {"cut": 1.0}]
+    ]
+  },
+  "risingDragons": {
+    "why": "Panda.cs RPC_risingDragons (:29356-30282), Rising Dragons 2: clip, 0.2 s fade (:30112), noForce 3 s (:30124), voice risingDragon1 / risingDragon2 (Random.Range(0, 2) :30156, loads :30166 / :30197, PlayOneShot :30258 / :30269) at 0; Yield 0.1 (:30240): risingDragon_ring createEffect at the hero, hero rotation (:29509-29521; followPosition, life 4, its own Sounds/risingDragons) and the owner's 10 s deltaRamp (:29548, camera: left out); Yield 0.2 (:30244): the 0.3 s lock within 3 m (:29580-29625, no look); Yield 0.1 (:30242): at 0.4 s risingDragon createEffect at the hero, hero rotation (:29665-29677; followPosition + followState, life 2.4 + 1, the flying dragon's SkinnedMesh and Animation) and a camera shake (:29699, left out); Yield 0.2 (:30256): eight uppercuts every 0.15 s from 0.6 s within 3 m (i < 8 :29974, :30010, Yield 0.15 :30263; risingDragon_hit only on a target :30039); Yield 0.3 (:30277): at 2.1 s the finisher, ashuraFist Instantiated at the hero, Quaternion.identity (:29770-29782; its own Sounds/ashuraFist), within 4 m (:29821), the -4 m/s step back (:29759, left out); Yield 0.4 + 0.1 (:30275, :30248): standby 2.6 s (:29922): risingDragon's cut; floor (the Panda's QA): the dragon rises out of the ground and dives 14 m under it at its end, which the game's ground hides",
+    "cues": [
+      [0, "voice", "risingDragon1|risingDragon2"],
+      [0.1, "fx", "risingDragon_ring"],
+      [0.4, "fx", "risingDragon", {"cut": 2.6, "floor": true}],
+      [2.1, "fx", "ashuraFist"]
+    ]
+  },
+  "waterMonkey": {
+    "why": "Panda.cs RPC_waterMonkey (:32706-33330), Water Monkey 2 with Time and Tide #413 on: clip, 0.2 s fade (:33118), voice waterMonkey1 / waterMonkey2 (Random.Range(0, 2) :33159, loads :33171 / :33202, PlayOneShot :33183 / :33214) and, getTimeAndTideLv() > 0 (:33227), timeAndTideMonkey createEffect at the hero, hero rotation (:33237-33247; life 2, the shadow clone's SkinnedMesh + AlphaTimer, its own Sounds/waterMonkey) in place of waterMonkey (:33272-33282) at 0; Yield 0.2 (:33323): the 3 m/s step (:32853, left out); Yield 0.3 (:33315): two hits at 0.5 / 0.7 s 1-2 m ahead (FindRecTarget :33020, Yield 0.2 :33311; waterMonkey_hit only on a target :33059); standby 0.9 s (:32964)",
+    "cues": [
+      [0, "voice", "waterMonkey1|waterMonkey2"],
+      [0, "fx", "timeAndTideMonkey"]
+    ]
+  },
+  "waterCrane": {
+    "why": "Panda.cs RPC_waterCrane (:33382-33990), Water Crane 2 with Time and Tide #413 on: clip, 0.2 s fade (:33675), voice waterCrane1 / waterCrane2 (Random.Range(0, 2) :33724, loads :33736 / :33767, PlayOneShot :33748 / :33779) and, getTimeAndTideLv() > 0 (:33792), timeAndTideCrane createEffect at the hero, hero rotation (:33804-33816; followPosition + followState, life 3, the shadow clone, its own Sounds/waterCrane) in place of waterCrane (:33841-33853) at 0; Yield 0.7 (:33975): two pulses at 0.7 / 0.9 s within 5 m (4 + Spirit Fist #433, FindAreaTarget :33886, Yield 0.2 :33983; waterCrane_hit only on a target :33921); Yield 0.6 (:33985): standby 1.7 s (:33593): the effect's cut",
+    "cues": [
+      [0, "voice", "waterCrane1|waterCrane2"],
+      [0, "fx", "timeAndTideCrane", {"cut": 1.7}]
+    ]
+  },
+  "stasisBlow": {
+    "why": "The stasisBlow clip: Stasis Blow (RPC_stasisBlow, PlayAnimation(\"stasisBlow\", 0.2) Panda.cs:34612) and Death Blow (RPC_deathBlow, the same clip :35430), one per play, even chance, picked anew on every play (one tile each, poolChains); both the same timeline: 3 m/s, Wind Walker #423's warp at 0.2 s when the spot 3 m short of the target is over 6 m away (:34192-34198, :35009-35015; with the 10 m target it is 7 m: left out, the hero does not travel), 10 m/s from 0.3 s, the hit at 0.5 s, 4 m/s from 0.6 s, standby 0.8 s; RPC_stasisBlow_hit and RPC_deathBlow_hit are empty in BB (:9125, :9138) and TTO (one stub, TTO1102 methods.tsv 0x33b5c0): no hit look in either game",
+    "skills": {
+      "stasisBlow": {
+        "why": "Panda.cs RPC_stasisBlow (:34040-34789), Stasis Blow 2: clip, 0.2 s fade (:34612), voice stasisBlow1 / stasisBlow2 (Random.Range(0, 2) :34653, loads :34665 / :34696, PlayOneShot :34677 / :34708) and stasisBlow_ring createEffect at the hero, hero rotation (:34727-34737; followState, life 2, its own Sounds/stasisBlow) at 0; Yield 0.2 (:34770): stasisBlow createEffect at the hero, rotation x Euler(270, 90, 0) (:34212-34224; followPosition + followState, life 1, its two trails swung by its Animation); Yield 0.1 (:34768), Yield 0.2 (:34777): the hit at 0.5 s (FindRecTarget from 2 m behind, 5 m long with Spirit Fist, :34312; paralysis :34361-34394; RPC_stasisBlow_hit :34401, empty); Yield 0.1 (:34784): stasisBlow_endDust Instantiated at the hero, hero rotation (:34464-34476; life 0.5); Yield 0.2 (:34779): standby 0.8 s (:34524): the cut of both followState effects",
+        "cues": [
+          [0, "voice", "stasisBlow1|stasisBlow2"],
+          [0, "fx", "stasisBlow_ring", {"cut": 0.8}],
+          [0.2, "fx", "stasisBlow", {"rot": [270, 90, 0], "cut": 0.8}],
+          [0.6, "fx", "stasisBlow_endDust"]
+        ]
+      },
+      "deathBlow": {
+        "why": "Panda.cs RPC_deathBlow (:34851-35610), Death Blow 2: clip stasisBlow, 0.2 s fade (:35430), voice deathBlow1 / deathBlow2 (Random.Range(0, 2) :35471, loads :35483 / :35514, PlayOneShot :35495 / :35526) and deathBlow_ring Instantiated at the hero, hero rotation (:35545-35555; life 2, its own Sounds/stasisBlow) at 0; Yield 0.2 (:35586): deathBlow createEffect at the hero, rotation x Euler(270, 90, 0) (:35027-35039; followPosition + followState, life 1); Yield 0.1 (:35601), Yield 0.2 (:35592): the hit and the lckAdjust(20 sLv) kill roll at 0.5 s (:35128, :35205; RPC_deathBlow_hit :35219, empty); Yield 0.1 (:35606): stasisBlow_endDust Instantiated at the hero, hero rotation (:35282-35294); Yield 0.2 (:35608): standby 0.8 s (:35342): deathBlow's cut",
+        "cues": [
+          [0, "voice", "deathBlow1|deathBlow2"],
+          [0, "fx", "deathBlow_ring"],
+          [0.2, "fx", "deathBlow", {"rot": [270, 90, 0], "cut": 0.8}],
+          [0.6, "fx", "stasisBlow_endDust"]
+        ]
+      }
+    }
+  },
+  "spTransfer": {
+    "why": "Panda.cs RPC_spTransfer (:35899-36480), Sp Transfer 2 (a friendly target, never the Panda herself: :6717-6728, so the ally stands at the 10 m point, as the Sheep's Revive / Gleaming Breath, plans/fx_sheep/decisions.md 1, 4): clip, 0.2 s fade (:36168), voice spTransfer1 / spTransfer2 (Random.Range(0, 2) :36219, loads :36231 / :36263, PlayOneShot :36459 / :36473) at 0; Yield 0.5 (:36457): spTransfer (a BoltEmitter) Instantiated at the hero + TransformDirection(0, 0.4, 0.5), Quaternion.identity (:36062-36080), its TargetPosition the ally's collider.bounds.center every frame (:36441: the 10 m target 0.6 m up, plans/fx_penguin/decisions.md 3: to); mTransferTime 0.3 s later (:36090): Destroy (:36300), the SP heal (:36329), standby 0.8 s (:36354)",
+    "cues": [
+      [0, "voice", "spTransfer1|spTransfer2"],
+      [0.5, "fx", "spTransfer", {"y": 0.4, "d": 0.5, "to": [0, 0.6, 10], "kill": 0.3}]
+    ]
+  },
+  "@RaijinKen:cAttack1": {
+    "why": "Panda.cs RPC_raijinKen (:41542-42250), Raijin Ken #444, its first step (SEQ \"Raijin Ken: cAttack1@0.7 cAttack2*@4.3 raijinKen1@1.7 raijinKen2\", plans/fx_panda/decisions.md 3): cAttack1 cut in (PlayAnimation(\"cAttack1\", 0) :42066), voice raijinKen1 / raijinKen2 (Random.Range(0, 2) :42107, loads :42119 / :42150, PlayOneShot :42131 / :42162; the rip's files are raijinken1 / 2.wav, Resources is case-blind) and raijinKen_ring1 createEffect at the hero, hero rotation (:42181-42191; followPosition + followState, life 5: it ends at 5.0 s, when raijinKen1 starts, its own looping Sounds/raijinken1; no cut, so the step change at 0.7 s keeps it) at 0; Yield 0.7 (:42228): cAttack2",
+    "cues": [
+      [0, "voice", "raijinKen1|raijinKen2"],
+      [0, "fx", "raijinKen_ring1"]
+    ]
+  },
+  "@RaijinKen:cAttack2": {
+    "why": "Panda.cs RPC_raijinKen, its second step: cAttack2 cut in and looped at 0.7 s (:41688-41693), facing the target each frame (:42023, YieldDefault :42224) until Time.time >= actionTime + 5 (:41896; actionTime = the cast, :42051; TTO1102 Panda.<RPC_raijinKen>d__236 the same =5): 4.3 s; nothing new is spawned (this key keeps the Charge Attack's cAttack2 cues off the Raijin Ken tile)",
+    "cues": []
+  },
+  "raijinKen1": {
+    "why": "Panda.cs RPC_raijinKen, at 5.0 s: raijinKen1 cut in (PlayAnimation(\"raijinKen1\", 0) :41912), raijinKen_ring2 createEffect at the hero, hero rotation (:41928-41940; followPosition, life 3, its own Sounds/raijinken2) and voice nAttack3, no pick (load :41991, PlayOneShot :42244) at 0; Yield 0.5 (:42220): at 0.5 s the leap's hide status for 1 s (addStatus(\"hide\", 1, 1) :41732, while actionState attack and myCommand raijinKen): its apply disables every Renderer under the hero (CharacterControl.cs:32818-32840), its removal enables them again (:14547-14560): the hero hidden 1 s, hideProp hero kill 1 (the Chameleon's Thunder Dragon, plans/fx_chameleon/decisions.md 49); and RPC_raijinKen_hit at fPos = the target's bounds centre - extents.x x the flat direction (:41753-41763): the 10 m target's front, (0, 0.6, 9.7) (centre 0.6 m up, radius 0.3: plans/fx_bat/decisions.md 3, 4), raijinKen_hit createEffect there, LookRotation(-hitDir) = facing the hero (:42515-42525; its Animation flies the kicking Panda image down to its root in 0.433 s while the hero is hidden; its ParticleSystem from TTO's copy, SHURIKEN_FROM_TTO; its effectCamera (:42546-42553), the whiteRamp (:42464) and the 8 m blast 0.4 s later (:42421) are the camera's and gameplay: left out); Yield 1.2 (:42242): raijinKen2",
+    "cues": [
+      [0, "fx", "raijinKen_ring2"],
+      [0, "voice", "nAttack3"],
+      [0.5, "fx", "raijinKen_hit", {"d": 9.7, "y": 0.6, "rot": [0, 180, 0]}],
+      [0.5, "hideProp", "hero", {"kill": 1}]
+    ]
+  },
+  "raijinKen2": {
+    "why": "Panda.cs RPC_raijinKen, at 6.7 s: raijinKen2 cut in (PlayAnimation(\"raijinKen2\", 0) :41813), moveSpeed 0 (:41808); Yield 0.8 (:42218): standby at 7.5 s (:41844); nothing is spawned (the entry records the step)",
+    "cues": []
+  },
+  "@MysticSage:root": {
+    "why": "Mystic Sage 2 (#372, passives on), a proc with no clip: on the Panda's own client, in the direct-damage AddDamage coroutine (CharacterControl.cs:31986-32133), with #371 / #372 (mMysticSageLv 2, :32051-32064), no mysticSage lockout, none of sleep / snowMan / petrify / paralysis, hp > 0 (:32068), sp >= msp (:32076) and a hit of more than 100 (:32084): the message Mystic Sage! (:32091), addTimeOut(mysticSage, 18 - 6 x 2 = 6 s, flat) (:32096) and RPC_mysticSage_hit at the hero (:32115, ActionEvent :32128; the junk guards on the path all false, worked by hand). RPC_mysticSage_hit (Panda.cs:9570-9668): Effects/mysticSage_hit (:9583) Instantiated at the hero's own transform, position and rotation (xouZty6Gud = this.transform, :57; :9595; EffectControl life 1, no followPosition / followState: the double, a StaticMesh with its 0.43 s Animation and AlphaTimer, and a Ring2 image burst), then voice mysticSage (:9644, PlayOneShot :9667; the owner passes the team gate). Nothing plays a clip: the tile shows it on the idle stance, on every play (no hit to wait for: the Penguin's Frost Spike, the Bison's Berserker Rush). The heal (ceil(0.5 x damage) HP 1 s later, CharacterControl.cs:32219, :30304) and the message draw nothing the page shows (plans/fx_panda/effect_only.md)",
+    "cues": [
+      [0, "fx", "mysticSage_hit"],
+      [0, "voice", "mysticSage"]
+    ]
+  },
+  "@SafeGuard:root": {
+    "why": "Safe Guard (#431, passives on), a proc with no clip: in the Panda block of RPC_AddStatus (CharacterControl.cs:13465-13505), with #431, no safeGuard cooldown (:13471) and a debuff status on its way (StatusData.isDebuffStatus, :13477): addTimeOut(safeGuard, agiAdjust(180)) (:13483), ActionEvent RPC_safeGuard_hit (:13503; the receive, Panda.cs:5214-5218 (code -431), has no isMine gate, so the owner draws it too), then break: the status is not applied. RPC_safeGuard_hit (Panda.cs:9721-9764): addTimeOut again (:9728), Effects/safeGuard_hit (:9737) createEffect at the hero's position and rotation (:9747; EffectControl life 1, followPosition: one safeGuard image 0.6 m up for 1 s and a ground RingEmitter 0.4 s); no voice, no sound. Nothing plays a clip: the tile shows it on the idle stance, on every play (no debuff to wait for: the Penguin's Frost Spike) (plans/fx_panda/effect_only.md)",
+    "cues": [
+      [0, "fx", "safeGuard_hit"]
+    ]
+  },
+  "@DelayQi:root": {
+    "why": "RPC_delayQi (Panda.cs:8549 -> $RPC_delayQi$25306 :23981-24275) plays no skill clip of its own: myCommand delayQi (:24146), voice delayQi (:24187, PlayOneShot :24199), delayQi_ring at the hero's position and rotation (:24217-24226; EffectControl life 1, its own AudioSource delayQi), animation.CrossFade(root, 0.2) (:24246: the idle stance, the step's ~), the delayQi status at the Qi Strike rank 3 for chaAdjust(3) + 3 x Qi Burst (#412 on) = 6 s (:24255); after 0.2 s actionState standby (:24110). The status's apply (CharacterControl.cs:35338-35375) Instantiates Effects/delayQi parented to the hero at local 0 (delayQiFx; EffectControl life 12, a repeating Ray4 LineEmitter); it goes with the status (removeStatus, :15753-15757), here at the release 3 s on (kill 3). The hold is 3 s, the tooltip's max 3 sec (PandaSkill_eng.cs:301; 6 s is the limit with Qi Burst: a release after it is a plain nAttack1) (plans/fx_panda/effect_only.md, open question 1); the Delay Qi tile's only own key (Verification 2026-11-13 item 1): its qiStrike1 / qiStrike2 steps take the plain qiStrike1 / qiStrike2 entries of plans/fx_panda/skills_a.md (fxStart's fallback, index.html:5323), and these cues are the same as skills_a's @QiStrike:root",
+    "cues": [
+      [0, "voice", "delayQi"],
+      [0, "fx", "delayQi_ring"],
+      [0, "fx", "delayQi", {"kill": 3}]
+    ]
+  },
+  "nineDragons": {
+    "why": "TTO1102:Panda.<RPC_nineDragons>d__331::MoveNext@0x1D899A0 (pseudo/Panda.c:13461-13690; plans/fx_panda/tto.md 2.1), the 10 m target clicked (Panda::Row6Target@0x1D5C4B0 keeps it: reach^2 < d^2 rejects, :40707; DoRow6Skill@0x1D520F0 toMark = vFlat(target - hero), :40522-40535): Row6Begin('nineDragons', clip nineDragons, Once; PlayAnimation fade 0.1, Panda::Row6Begin@0x1D5B700 :41500-41570); cooldown, noForce Lv 1 3 s on the Panda (no look); Row6Voice risingDragon1 / risingDragon2 (Random.Range(0, 2), voices/, Panda::Row6Voice@0x1D5C940); nineDragons_cast owned at the hero, its rotation (:13550; followPosition, its own AudioSource qiStrike 0.8). Dragons k = 0-7 at Until(start + 0.4 + 0.11 k) (:13587-13589), prey[k % N] = the target (:13610-13636), from Row6Hand(k even) = Hand_R, odd Hand_L (:13640; Panda::Row6Hand@0x1D5BE80; the hand spots: checks/fx_panda_research/tto/fk.py on the nineDragons clip, +-3 cm): <NineDragon>d__336@0x1D6F860 (Panda.c:75-401): end = NineAim (the target + 0.6 up, Panda::NineAim@0x1D52A30), flight = clamp(1.6 |from - end| / 22, 0.35, 0.7) = 0.7 (:177-189), c1 = from + 1.4 fwd + side (1.3 + 0.15 (k % 4)) + up (2.2 + 0.2 (k % 3)), side = +-right by k's parity (:140-223), nineDragons_dragon bare Instantiate at the hand (the cue's k: Panda.NineDragon computes side, c1, c2 and flight from it, its spawn spot and to), LookRotation(c1 - from) (:224-241); each frame Bezier(from, c1, end + 0.6 side + 2.4 up, end) (:255-310, Panda::Bezier@0x1D51F00) faced along its motion (NineFly@0x1D53F80); on arrival NineVanish@0x1D55070 (Body / HeadGlow / HeadHalo SetActive(false), its ParticleSystems Stop, Destroy 0.5: :42339-42421) and nineDragons_bite at getSpawnPos(end) = the target's feet, identity (:316-361), Row6Sound punch1 (k even) / punch2 at 0.9 (the owner's; 0.6 others; at most one per 0.06 s, :362-374). Until(start + 1.6) (capstone 0x1D8A02F): Row6Shake 0.3 (the player's camera: left out) and <NineKing>d__339@0x1D701C0 (Panda.c:405-765): nineDragons_king at hero + 0.4 fwd + 0.7 up, LookRotation(flat dir) (:465-557), 0.4 s to aim = the target's ground + 0.8 up with a weave side x 0.9 sin(2 pi u)(1 - u) and up x 0.6 sin(pi u) (:625-693; capstone 0x1D7086D, 0x1D7088F), NineVanish; at 2.0 nineDragons_kingRise at the landing point, LookRotation(dir) (:720-727), shake 0.5 (left out), NineCharge + NineKingLock (the lock status: no look); 8 strikes Until(rise + 0.15 k) (:743-750): NineKingHit@0x1D54120 on each struck foe -> RPC_risingDragon_hit(foe + 1 up, fwd)@0x1D58980: risingDragon_hit (BB's prefab, cued as the rip's copy, Bison decision 43) at the foe + 1 up, identity (:42692-42715, :38199-38212); Until(rise + 1.05 + 0.3) (capstone 0x1D70BF5-0x1D70BFD): nineDragons_fall at the landing point, LookRotation(dir) (:588-595), shake 0.6 (left out), NineFall (its 'Nine Dragons!' text is the player's screen: left out); Until(start + 3.9): Row6End (:13668-13680); floor on kingRise (the Panda's QA): its two dragons dive up to 24 m under the ground, which the game's ground hides",
+    "cues": [
+      [0, "voice", "risingDragon1|risingDragon2"],
+      [0, "fx", "tto/nineDragons_cast"],
+      [0.4, "fx", "tto/nineDragons_dragon", {"x": 0.101, "y": 0.371, "d": 0.225, "rot": [-49.03, 42.88, 0], "k": 0, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [0.51, "fx", "tto/nineDragons_dragon", {"x": -0.042, "y": 0.346, "d": 0.215, "rot": [-49.98, -46.01, 0], "k": 1, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [0.62, "fx", "tto/nineDragons_dragon", {"x": 0.109, "y": 0.368, "d": 0.209, "rot": [-50.73, 48.81, 0], "k": 2, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [0.73, "fx", "tto/nineDragons_dragon", {"x": -0.039, "y": 0.377, "d": 0.212, "rot": [-44.47, -51.34, 0], "k": 3, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [0.84, "fx", "tto/nineDragons_dragon", {"x": 0.106, "y": 0.352, "d": 0.222, "rot": [-51.48, 42.88, 0], "k": 4, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [0.95, "fx", "tto/nineDragons_dragon", {"x": -0.047, "y": 0.328, "d": 0.207, "rot": [-52.22, -46.01, 0], "k": 5, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [1.06, "fx", "tto/nineDragons_dragon", {"x": 0.106, "y": 0.378, "d": 0.216, "rot": [-45.98, 48.81, 0], "k": 6, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [1.1, "fx", "tto/nineDragons_bite", 10],
+      [1.1, "sound", "punch1", {"vol": 0.9}],
+      [1.17, "fx", "tto/nineDragons_dragon", {"x": -0.034, "y": 0.393, "d": 0.216, "rot": [-46.96, -51.34, 0], "k": 7, "to": [0.0, 0.6, 10.0], "kill": 1.2}],
+      [1.21, "fx", "tto/nineDragons_bite", 10],
+      [1.21, "sound", "punch2", {"vol": 0.9}],
+      [1.32, "fx", "tto/nineDragons_bite", 10],
+      [1.32, "sound", "punch1", {"vol": 0.9}],
+      [1.43, "fx", "tto/nineDragons_bite", 10],
+      [1.43, "sound", "punch2", {"vol": 0.9}],
+      [1.54, "fx", "tto/nineDragons_bite", 10],
+      [1.54, "sound", "punch1", {"vol": 0.9}],
+      [1.6, "fx", "tto/nineDragons_king", {"y": 0.7, "d": 0.4, "to": [0, 0, 10], "kill": 0.9}],
+      [1.65, "fx", "tto/nineDragons_bite", 10],
+      [1.65, "sound", "punch2", {"vol": 0.9}],
+      [1.76, "fx", "tto/nineDragons_bite", 10],
+      [1.76, "sound", "punch1", {"vol": 0.9}],
+      [1.87, "fx", "tto/nineDragons_bite", 10],
+      [1.87, "sound", "punch2", {"vol": 0.9}],
+      [2.0, "fx", "tto/nineDragons_kingRise", {"d": 10, "floor": true}],
+      [2.0, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.15, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.3, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.45, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.6, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.75, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [2.9, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [3.05, "fx", "risingDragon_hit", {"y": 1, "d": 10}],
+      [3.35, "fx", "tto/nineDragons_fall", 10]
+    ]
+  },
+  "tempestDance": {
+    "why": "TTO1102:Panda.<RPC_tempestDance>d__346::MoveNext@0x1D9B1B0 (pseudo/Panda.c:23122-23315; plans/fx_panda/tto.md 2.2): Row6Begin('tempestDance', clip tempestDance, Loop; fade 0.1) (:23164); addTimeOut 7.3 (:23171); Row6Voice rainStorm1 / rainStorm2 (:23172); tempestDance_aura owned at the hero, its rotation (:23188; followPosition + followState: its command changes to tempestDanceEnd at 5.0 s, so cut 5; its own looping AudioSource rainStorm 0.6); TempestTrails(true) (:23189; Panda::TempestTrails@0x1D5F010, Panda.c:43469-43705: each child of tempestDance_trails (Hand_R, Hand_L, Foot_R, Foot_L, TrailRenderers 0.3 / 0.3 / 0.38 / 0.38 s) instantiated under the hero's bone of its name, localPosition 0, localRotation identity, Clear(); off = emitting false, Destroy(trail.time + 0.05)); status tempestDance (309) 6 s on the Panda (no look: CharacterControl has none for it); the 0.3 s clock from start + 0.3 (:23231): each tick (pulse n = 0, 1, ...) with n even spawns tempestDance_pulse at the hero, its rotation, bare Instantiate (:23260-23281): 0.3, 0.9 ... 4.5 (8); TempestStorm (the owner's hits, r (3.5 + 1) m with Spirit Fist: the 10 m target is outside, so no Cut look and no Shadow Fist); at 5.0 s TempestFinish@0x1D5DBC0 (:23254-23256; Panda.c:44677-44760): StandbyEvent and RPC_tempestDanceEnd (the next step). The trails are switched off only by RPC_tempestDanceEnd's TempestTrails(false) 0.75 s into the end (Panda.c:23442): off 5.75 (fx:tto/tempestDance_trails, its TrailRendererModern emitOff), kill 5.75 + 0.38 + 0.05 = 6.18. Steering (TempestSteer) has no input on the page: the Panda stays put",
+    "cues": [
+      [0, "voice", "rainStorm1|rainStorm2"],
+      [0, "fx", "tto/tempestDance_aura", {"cut": 5}],
+      [0, "fx", "tto/tempestDance_trails", {"off": 5.75, "kill": 6.18}],
+      [0.3, "fx", "tto/tempestDance_pulse"],
+      [0.9, "fx", "tto/tempestDance_pulse"],
+      [1.5, "fx", "tto/tempestDance_pulse"],
+      [2.1, "fx", "tto/tempestDance_pulse"],
+      [2.7, "fx", "tto/tempestDance_pulse"],
+      [3.3, "fx", "tto/tempestDance_pulse"],
+      [3.9, "fx", "tto/tempestDance_pulse"],
+      [4.5, "fx", "tto/tempestDance_pulse"]
+    ]
+  },
+  "tempestDanceEnd": {
+    "why": "TTO1102:Panda.<RPC_tempestDanceEnd>d__355::MoveNext@0x1D9AD20 (pseudo/Panda.c:23333-23486; plans/fx_panda/tto.md 2.2), started by TempestFinish at 5.0 s: Row6Begin('tempestDanceEnd', clip tempestDanceEnd, Once; fade 0.1) (:23391); cooldown agiAdjust(75), the status removed (:23406-23413); Row6Voice waterCrane1 / waterCrane2 (:23415); Waits.Get(0.75) (:23419): TempestTrails(false) (:23442: the trails' stop, on the tempestDance cue), tempestDance_end at the hero, its rotation, bare Instantiate (:23468; its own AudioSource fuujinken2 1.0), Row6Shake 0.4 (the player's camera: left out), TempestEye (the owner's 5.5 m blast: the 10 m target is outside; its 'Eye of the Storm x N!' text needs 20 hits landed); Waits.Get(0.55) (:23449): Row6End at 1.3 s, the clip's length (:23435). The owner never glides (TempestGlide is the other clients' catch-up, :23376-23402)",
+    "cues": [
+      [0, "voice", "waterCrane1|waterCrane2"],
+      [0.75, "fx", "tto/tempestDance_end"]
+    ]
+  },
+  "yinYangFist": {
+    "why": "TTO1102:Panda.<RPC_yinYangFist>d__357::MoveNext@0x1DCDC50 (pseudo/Panda.c:29191-29300; plans/fx_panda/tto.md 2.3): Row6Begin('yinYangFist', clip yinYangFist, Once; fade 0.1) (:29224); cooldown agiAdjust(120) (:29232-29233); Row6Voice finalMove (one name, :29234); yinYangFist_charge owned at the hero, its rotation (:29248; followPosition, its own AudioSource qiStrike 0.8); Until(start + 0.55) (:29249): <YinYangSeal>d__358@0x1DCE740 (Panda.c:29553-29682) at the hero's position: the seal at getSpawnPos (the ground under her), yinYangFist_seal there, identity, bare Instantiate (:29583-29613; its own AudioSource fuujinken1 0.9), Row6Shake 0.55 (capstone 0x1DCE82E; the player's camera: left out); SealYin at sealStart + 0.4 k, k = 0-2 (:29619-29650; r 7 m: the 10 m target is outside, so no yinYang status look on it); Until(sealStart + 1.2) (capstone 0x1DCEAAF): yinYangFist_burst at the seal, identity (:29667; its own AudioSource raijinken_hit 1.0), Row6Shake 0.25 (left out), SealYang (r 7.5 m: outside); Until(start + 2.3): Row6End (:29287, :29264-29265)",
+    "cues": [
+      [0, "voice", "finalMove"],
+      [0, "fx", "tto/yinYangFist_charge"],
+      [0.55, "fx", "tto/yinYangFist_seal"],
+      [1.75, "fx", "tto/yinYangFist_burst"]
+    ]
+  },
+  "wave": {
+    "why": "Panda.cs RPC_emotion (:44265-45090): every emote's voice at 0, before its clip (:44450-44528; the voice option on, more than 2 s since the last action :44456, own hero / game code 31 / a mission teammate :44462-44482), emo_<name> = Voices/<name> (Substring(4) :44516, PlayOneShot :44528, only if the file loads :44522); no effect, no Sounds/; the rip's Panda voices have hi, ty, bow, laugh, sleep, cheer, cry, battle, chat1-5 and no wave, sit, beg, talk, pose, dance; emo_hi (:44582) and emo_wave (:44590) both play the wave clip (IL_133B :45032): emo_hi's voice hi, emo_wave silent (no Voices/wave): the tile takes the voiced one",
+    "cues": [
+      [0, "voice", "hi"]
+    ]
+  },
+  "bow": {
+    "why": "Panda.cs RPC_emotion (:44265): emo_ty (:44600) and emo_bow (:44607) both play the bow clip (:45018); both voices are in the rip (Voices/ty, Voices/bow; :44516, PlayOneShot :44528): one of the two, even chance",
+    "cues": [
+      [0, "voice", "ty|bow"]
+    ]
+  },
+  "laugh": {
+    "why": "Panda.cs RPC_emotion (:44265): voice at 0, Voices/<name> (:44516, PlayOneShot :44528); emo_laugh (:44614-44620)",
+    "cues": [
+      [0, "voice", "laugh"]
+    ]
+  },
+  "sleep": {
+    "why": "Panda.cs RPC_emotion (:44265): voice at 0, Voices/<name> (:44516, PlayOneShot :44528); emo_sleep (:44646-44652)",
+    "cues": [
+      [0, "voice", "sleep"]
+    ]
+  },
+  "cheer": {
+    "why": "Panda.cs RPC_emotion (:44265): voice at 0, Voices/<name> (:44516, PlayOneShot :44528); emo_cheer (:44658-44664)",
+    "cues": [
+      [0, "voice", "cheer"]
+    ]
+  },
+  "cry": {
+    "why": "Panda.cs RPC_emotion (:44265): voice at 0, Voices/<name> (:44516, PlayOneShot :44528); emo_cry (:44682-44688)",
+    "cues": [
+      [0, "voice", "cry"]
+    ]
+  },
+  "talk": {
+    "why": "Panda.cs RPC_emotion (:44265): emo_chat (:44703) plays the talk clip (:44996) with Voices/chat + Random.Range(1, 6) = chat1-5 (:44502-44508, PlayOneShot :44528; all five in the rip); emo_talk (:44696) plays it silent (no Voices/talk): the tile takes the chat's voice",
+    "cues": [
+      [0, "voice", "chat1|chat2|chat3|chat4|chat5"]
+    ]
+  },
+  "battle": {
+    "why": "Panda.cs RPC_emotion (:44265): emo_battle (:44966-44972): voice battle (:44516, PlayOneShot :44528); the mission's RPC_activateIcon1 loops the clip with no voice (:49930; no tile, Penguin decision 19): the tile takes the emote's voice",
+    "cues": [
+      [0, "voice", "battle"]
+    ]
+  },
+  "run": {
+    "why": "the run clip's AnimationEvents playLeftFootEvent at 0.1 s and playRightFootEvent at 0.4 s (the Panda prefab's Animation, checks/fx_panda_research/attacks_emotes/probe_fields.txt; the only events on its clips) -> Panda.cs:101-117: the hero's audio.PlayOneShot(footStep_left) = step_light1 / (footStep_right) = step_light3 (the fields :14554 / :14557, probe_fields.txt, field_keys.txt: Resources/sound/fx/), no player or mode test; every cycle of the run (everyCycle, as the Bat's and the Chameleon's)",
+    "everyCycle": true,
+    "cues": [
+      [0.1, "sound", "step_light1"],
+      [0.4, "sound", "step_light3"]
+    ]
+  },
+  "ko": {
+    "why": "Panda.cs RPC_ko (:50036-50380): PlayAnimation(ko, 0) (:50250) and the voice ko1 or ko2 at 0 (Random.Range(0, 2) :50285, loads :50295 / :50326, PlayOneShot :50368 / :50377), getUp after 3 s (Yield(2, 3) :50371, PlayAnimation(getUp, 0) :50152, silent), standby 1 s later (:50375, :50176), no effect; RPC_dead (:50413-50768) plays the same clip (Rewind + PlayAnimation(ko, 0) :50607-50610) with dead1 or dead2 at 0 (Random.Range(0, 2) :50645, :50657-50700) and always Effects/deadEffect at the hero's position and rotation (IL_3ED :50712-50729, reached by every voice path and with voices off; EffectControl life 3): one of the two at random, even chance (the Sheep's decision 11, as wolf.json / cat.json / mole's: roll dead, its voices with it; '!dead' = RPC_ko's)",
+    "cues": [
+      [0, "voice", "ko1|ko2", {"p": 0.5, "roll": "!dead"}],
+      [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
+      [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 Written by `pipeline/wardrobe_fx_inventory.py` (do not edit by hand; run it again). Effects = the prefabs in a
 class's own Effects folder (`heroes/<cls>/effects`) that its `<Class>.cs` loads: skills, hits, buffs, projectiles,
 not only skills. Physics parts (colliders, Rigidbody) are left out: they draw nothing.
-Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, ProjectileControl, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
+Ready = every part is one the page builds today (AlphaTimer, Animation, AudioControl, AudioSource, AutoGyroGun, BarrelBot, BarrelBotAI, BatSwarmFlap, Bat_echoes, Bat_guardianOfTheNight, Bat_illusion, Bat_illusionFire, Bat_mirageOrb, Bat_nAttack, Bison_c6Arc, Bison_earthRupture, Bison_overLord, Bison_row6Fx, BoltEmitter, Buiten, Cat_grandCasinoArcade, Cat_supportFire, Chameleon_campFire, Chameleon_nAttack, Chameleon_needlePrison, CharacterControl, EffectControl, EffectControl(child), EllipsoidParticleEmitter, EmblemEmitter, EmitterControl, Gadina, Gadina_AI, Gaos, Gaos_AI, GroundConformParticles, HelixRibbonEmitter, ImageEmitter, Ja, Ja_AI, KingKaiser, KingKaiserAI, Light, LineEmitter, ManaVortex, Mole_bazooka, Mole_cartBomb, Mole_flameCarnival, Mole_grenadeCluster, Mole_mine, Mole_missile, Mole_mortarShot, Mole_nAttack, Mole_napalm, Mole_stunGrenade, Mole_stunMine, Mole_timeNuke, Mole_warCapital, Mole_warMissile, Monkey_earthPulse, Monkey_fireBall, Monkey_lavu, Monkey_runicFlame, Monkey_runicSand, ParticleAnimator, ParticleRenderer, Penguin_arcticEmperor, Penguin_cosmicFriday, Penguin_iceBlock, Penguin_manaMissile, Penguin_nAttack, Penguin_snowMan, Penguin_tornado, Penguin_typhoon, Phoenix, Phoenix_AI, Phoenix_fireBall, Phoenix_skyCrimson_fire, ProjectileControl, RingEmitter, Rotate, ShatterMesh, Sheep_cAttack, Sheep_edenSanctuary, Sheep_homingLight, Sheep_nAttack, Sheep_seal, SkinnedMeshRenderer, StaticMesh, StatusControl, TrailEmitter, TrailRenderer, UVScroll, VortexEmitter, WorldParticleCollider, rotationControl) and `wardrobe_fx.py`
 extracts it (checked in memory). Each class's code also loads its pet's and other classes' effects (shown on it,
 like a Sheep's heal): counted apart, never this class's skills.
 
@@ -416,6 +416,8 @@ Effects this scan does not see (2026-11-13, plans/fx_monkey/attacks_emotes.md pa
 
 ### panda
 
+Status looks `CharacterControl.cs` loads for the Panda (not in `Panda.cs`, so not scanned above; every one ready; 2026-11-13, plans/fx_panda/parts.md "Read this first" 3, decisions.md 58): delayQi (`:35342`, on the Panda, parented), drunken (`:35396`, on the Panda at the bounds centre + 0.5 x height), paralysis (`:35443`, on the target: not cued), ashura (`:35500`, on the Panda's Root bone; with the hero look HERO_SKINS ashura, setColor(1, 0, 0) `:35484-35496`), drunk (`:35535`, on the target: not cued). Three prefabs in heroes/panda/effects no BB or TTO code loads (so not listed here; never cued): drunkenFist_hit, qiStrike_emblem, windcloud_hit.
+
 - `ashuraFist` (Panda.cs:29770): ready
 - `ashuraRing` (Panda.cs:30498): ready
 - `auraBlast` (Panda.cs:18450): ready
@@ -456,7 +458,7 @@ Effects this scan does not see (2026-11-13, plans/fx_monkey/attacks_emotes.md pa
 - `qiStrike` (Panda.cs:23833): ready
 - `qiStrike_hit` (Panda.cs:8519): ready
 - `qiStrike_ring` (Panda.cs:23247): ready
-- `raijinKen_hit` (Panda.cs:42515): needs ParticleSystem, ParticleSystemRenderer
+- `raijinKen_hit` (Panda.cs:42515): needs ParticleSystem, ParticleSystemRenderer (its ParticleSystem / ParticleSystemRenderer (Unity 3.5 Shuriken, not decoded from BB) are grafted from TTO's copy by `wardrobe_fx.py` (SHURIKEN_FROM_TTO, BB's Cloud1 material): drawn)
 - `raijinKen_ring1` (Panda.cs:42181): ready
 - `raijinKen_ring2` (Panda.cs:41928): ready
 - `rainStorm` (Panda.cs:38305): ready
@@ -473,7 +475,7 @@ Effects this scan does not see (2026-11-13, plans/fx_monkey/attacks_emotes.md pa
 - `stasisBlow` (Panda.cs:34212): ready
 - `stasisBlow_endDust` (Panda.cs:34464): ready
 - `stasisBlow_ring` (Panda.cs:34727): ready
-- `threeStep` (Panda.cs:21716): ready
+- `threeStep` (Panda.cs:21716): ready (its three TrailRenderers are off in the prefab (m_Enabled 0) and switched by the hero's code (`Panda.cs:20873-21277`): built hidden, the cue's `enable` shows them (fxparts/trail.js): drawn)
 - `threeStep_hit` (Panda.cs:8412): ready
 - `tigerPounce_hit` (Panda.cs:8690): ready
 - `tigerToss` (Panda.cs:26621): ready

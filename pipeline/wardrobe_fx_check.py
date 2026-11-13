@@ -212,13 +212,18 @@ def expected(entries):
 # fxStart); the summons' and armours' (fxparts/elementals.js): alpha, standing, hide, moves, turn, attach, boost; Lavu's
 # (fxparts/monkey.js): lavu, unsummon (release is already the Chameleon's); the TTO parts' (fxparts/tto_monkey.js): rise,
 # head, top, dive
+# 2026-11-13, the Panda (plans/fx_panda/decisions.md 26, 35, 36, 41, 59): enable (Three Steps' trails switched on / off by
+# node name, fxparts/trail.js), atBone (spawned at a hero bone's world position, index.html Fx), k and off (the TTO parts',
+# fxparts/tto_panda.js: a Nine Dragons dragon's index, the limb trails' emitOff time); x / y / d may be [lo, hi] (a float
+# drawn per play, index.html cueOf: Pummel's ogre arms)
 OPTS = {"d", "x", "y", "rot", "vol", "cut", "p", "roll", "scale", "kill", "to", "bone", "spread", "i", "n", "ignite", "hideHero", "notWorn",
         "worn", "end", "single", "anims", "flip", "pulse", "gather", "gatherTo", "hand", "eclipse", "recall", "home",
         "strafe", "speed", "fatal", "slot", "r", "life", "stop", "all", "bow", "face", "slide", "slots", "ghost", "shatterGhosts",
         "lockOnly", "release", "from", "tint", "radius",
         "tune", "firePoint", "tilt", "pick", "playAudio", "clip", "host", "pair", "trigger", "finish", "ride", "shots",
         "rideEnd", "tier", "sink", "kicks", "fold", "launch", "egg",
-        "alpha", "standing", "hide", "moves", "turn", "attach", "lavu", "unsummon", "boost", "rise", "head", "top", "dive", "alt"}
+        "alpha", "standing", "hide", "moves", "turn", "attach", "lavu", "unsummon", "boost", "rise", "head", "top", "dive", "alt",
+        "enable", "atBone", "k", "off", "floor"}   # floor: the Panda's QA (index.html Fx, clipped at the ground)
 # lift: 2026-11-13, the Bison's Titan Drop (index.html LIFTS); hideProp: 2026-11-13, the Cat's throws hiding the worn weapon
 # ([t, "hideProp", slot, {"kill": s}], index.html HeroPropHide; plans/fx_cat/decisions.md 47); 2026-11-13, the Chameleon
 # (plans/fx_chameleon/decisions.md 13, 48, 49): "hero" (the whole hero, her props and their weapon_fx particles: Thunder
@@ -262,6 +267,10 @@ def file_errors(cls):
             for c in cues:
                 ok = (isinstance(c, list) and 3 <= len(c) <= 5 and isinstance(c[0], (int, float)) and c[1] in KINDS
                       and isinstance(c[2], str) and (len(c) < 4 or isinstance(c[3], (int, float)) or (isinstance(c[3], dict) and set(c[3]) <= OPTS)))
+                if ok and len(c) > 3 and isinstance(c[3], dict):     # x / y / d: a number or [lo, hi] (the Panda's, cueOf)
+                    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+                    ok = all(num(v) or (isinstance(v, list) and len(v) == 2 and all(map(num, v)) and v[0] <= v[1])
+                             for o, v in c[3].items() if o in ("x", "y", "d"))
                 if not ok:
                     errs.append(f"{cls}: {key}: bad cue {c}")
                 elif c[1] == "skin":
