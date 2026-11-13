@@ -1082,6 +1082,20 @@ class PublishTest(unittest.TestCase):
         result = wp.publish(w.src, w.out, w.rip, fallback_rip=None)
         self.assertIn("cat/flag", dropped_names(result, "back_trinkets"))
 
+    def test_unreadable_rip_file_without_bb_rip_fix_stops_the_publish(self):
+        """The office's zero-filled Monkey PNGs: with no data/bb_rip_fix at all (a fresh git worktree: it is git-ignored)
+        the publish stops instead of dropping the pictures (2026-11-13: the Monkey lost its 23 BB faces online with
+        "check: no problems"); with the folder there, a file it lacks is dropped as before."""
+        w = make_world(self.tmp)
+        w.add_face(5)
+        w.finish()
+        (w.heroes / "cat" / "armors" / "overlay" / "Cat5.png").write_bytes(bytes(400))     # the office's damage: zeros
+        with self.assertRaises(wp.BBDataError):
+            w.publish()
+        (w.data / "bb_rip_fix").mkdir()
+        result = w.publish()
+        self.assertIn("cat/5", dropped_names(result, "faces"))
+
     def test_reborn_multi_stream_mesh_reads_positions(self):
         """Reborn's skinned meshes (2026-11-10, the office's 4 Monkey trinkets) keep UVs and bone weights in streams 1-2:
         positions come from stream 0's own stride; data that doesn't add up to the streams is refused."""

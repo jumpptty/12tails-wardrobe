@@ -670,6 +670,11 @@ class Run:
             if fix.exists():
                 self.warnings.append(f"{Path(bb_file).name}: the rip's copy can't be read; used BB's game data (bb_rip_fix)")
                 return fix
+            # no bb_rip_fix folder at all (git-ignored, so a fresh git worktree lacks it): the office's publishes from
+            # worktrees on 2026-11-13 dropped the Monkey's 23 BB faces this way with "check: no problems"; stop instead
+            if not (self.data / "bb_rip_fix").is_dir():
+                raise BBDataError(f"{bb_file} can't be read and {self.data / 'bb_rip_fix'} is missing: run "
+                                  "pipeline/bb_rip_fix.py, or copy / link that folder from the main checkout")
             return bb_file
 
     def picture(self, rel, bb_file, how):

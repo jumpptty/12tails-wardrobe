@@ -2022,6 +2022,19 @@ writes decisions.md and splits the builders; office paths are written into it, c
   reversed out of a copy, the copy staged with `git update-index --cacheinfo`) and NOTES.md without its three sections;
   never `git add -A` here while another session has work in the tree.
 
+- **Bug (user: "Check the deployed Monkey, it is missing a lot of faces"):** every publish from a git worktree at the
+  office dropped the Monkey's 23 BB faces (0-22; only TTO's 23-32 online) with "check: no problems": the office rip's
+  52 Monkey PNGs are zero-filled and the publish repairs them from wardrobe/data/bb_rip_fix/ (BBRip.usable), which is
+  git-ignored, so a fresh worktree has none. Since this morning's ชื่อผลงาน / takedown deploys (mine, worktrees) and the
+  other session's d4adea35. Fixed: `usable()` now raises BBDataError when a rip file can't be read and the bb_rip_fix
+  folder is missing (test: test_unreadable_rip_file_without_bb_rip_fix_stops_the_publish); a worktree publish needs
+  `New-Item -ItemType Junction <worktree>\wardrobe\data\bb_rip_fix -Target <main>\wardrobe\data\bb_rip_fix`.
+  Also found: the other session's d4adea35 (10:29, built from 074e4d4) had replaced my Mole deploy 9c8368b1 (10:22),
+  so the Mole was offline until the Monkey's deploy. Both wardrobe peer sessions were told (SendMessage).
+  The Monkey and the Mole went live together in version 59b73956 (data-c4c13d8692, from a worktree of c8ea0e2 with
+  bb_rip_fix linked in): every class 33 faces, the Monkey's 23 outfit colours and 2 outfits back too; checked live
+  headless (no 404, no page error).
+
 ## 2026-11-13 (office), the Mole's effects: built and cued
 
 From plans/fx_mole/ (six reports, each with its "## Verification", which wins; decisions.md decided overnight for the
@@ -2371,3 +2384,35 @@ user's review). One editor after four builders (monkey, elementals, tto_monkey, 
   of each side's triangles): summer's arms, hands and legs are 97-99 % shared by both sides, the bracelet is the right
   wrist's only, the hip cloth and torso are not shared. rose/arms_bare_vs_sleeve.png = A the sleeve on both | B bare on
   both (her lace glove on the forearm: look/summer_lace.png); the working file is still A until the user picks.
+- The user picked **bare arms** ("bare arms look better"): rose(arms="lace") is the default now (bare upper arms, her lace
+  glove on both forearms); look/summer.png, sheet.png and compare.png are that version.
+- **The helmeted one, the user's review** (the forehead, the chest, the dress's middle, the coat's two front edges and
+  the panel between them circled: "attempt the better job at trying to use reference texture around these parts.
+  Also face 11 looks more like her"). `borrow(view=1 | -1, within=)` (new): a part is read **as seen from the front or
+  the back**: nearest in (y, z) only, of her layers there the one in front, front-facing texels on both sides, and
+  only where she has something within `within` (the rest keeps its paint). Royal's coat and dress hang differently
+  from her dress, so nearest-on-the-body had given bands; the view reading gives: the dress front 0.4 cm median (90 %
+  taken), the chest ornament (royal's jabot halves = her two eye-disc cups) 0.2 cm, the capelet's front (bare chest,
+  shoulder pieces), the coat's front and back where her skirt panels are (55 % / 61 % taken: her trims and scrolls;
+  the coat's wider, longer rest keeps its re-coloured paint), the helmet's brow band and eye disc on the fringe's top.
+  The hand-placed eye emblem on the centre panel is gone: on her model the big eyes sit on the side panels, the
+  centre is the plain pointed tabard under the waist disc. Royal's gold zigzag is now a faint line. Face 11.
+- The white-haired one's skin is on the office Desktop for the user's own upload: `wardrobe_reuploadat_cult_face21  12tails_ค้างคาว_summer.png` (1024 px, opaque; outfit summer, face 21, no head piece).
+- **The opaque-outfit deploy d4adea35 had two side effects** (found by the effects session, 2026-11-13): built in a fresh
+  git worktree of 074e4d4, it lacked the git-ignored `wardrobe/data/bb_rip_fix/` (the office's repair of 52 zero-filled
+  Monkey PNGs), so the publish dropped the Monkey's 23 BB faces (live: faces 23-32 only) while printing "check: no
+  problems"; and it replaced the effects session's Mole deploy 9c8368b1 of seven minutes earlier, taking the Mole's
+  effects offline. The effects session republishes from current main with the folder linked in and makes
+  wardrobe_publish.py stop when the folder is missing. Rule for this session's deploys from now on: from the main
+  folder at current main (or a worktree with bb_rip_fix linked: New-Item -ItemType Junction), and tell the other
+  session first.
+- **The helmeted one: the whole headband, the coat's side sigils** (user: "why only half? bring the full headband texture
+  (on the hair itself like you did, we don't have an option)"; "texture of the side coat could use some white eye sigils
+  from the ref coat"). (1) **Why half:** her helmet is itself a mirrored part: ref_maps holds only its y >= 0 half
+  (the last triangle drawn per texel), so the Bat's other half found nothing within reach. `absy=True` reads it for
+  both sides. The band + eye disc (her helmet below `BAND_TOP` 1.635, the dome left out) now goes on the hair AND the
+  bare forehead between the strands, worn `BAND_DROP` 1.2 cm lower than hers (`borrow(shift=)`) so the hood's edge
+  clears the disc; 0.2 cm median, 79 % taken. (2) `borrow(view=1, axis=1)`: a reading **from the side** (nearest in
+  (x, z), the outermost layer, side-facing texels on both models): the coat's sides take her side panels with the big
+  white eye and its leaves where her skirt reaches (`COAT_SIDE` 3 cm, 61 % taken); the coat's longer hem keeps its
+  re-coloured paint.
