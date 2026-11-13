@@ -3026,4 +3026,11 @@ bible hub, some might be there already".
 - Checked: unit tests (`test_wardrobe_icons_upscale`, a publish test for the proof), a headless page pass at 2x device
   pixels over every topic's picker (201 icon and ui pictures, none under 128 px but the five potions and the TTO mark, no
   console errors), and a publish into a scratch folder.
-- Not deployed: the public copy still shows the game-size icons until the next publish + deploy.
+- **Deployed** (user: "you may deploy"): published from the main folder at 07b2b9a (check: no problems, no upscale
+  refused, the same drop counts as the live copy's), from an empty folder with the Worker script: 2,889 files uploaded,
+  6,679 already there, version `9cf1cf7c-bd28-4796-ae8a-0df240c9fb17`, `data-c9333e34e6` (it replaced the office's
+  `data-aec559a710`). Compared with the live copy first, every page / JSON / script file: besides the icons, the copy
+  differed by the page's three CSS comments, LF for CRLF in fxparts and fx_cues, and the Panda's Wind & Cloud and Rain &
+  Storm (5bb4936, committed at home and not yet deployed: meta.json, panda/clips.json, panda/fx.json, fx_cues/panda.json,
+  icons/hd/index.json), which went live with it. Live: icons 128 px (portraits 150 px), `icons/hd/panda/wind&cloud.webp`
+  200, every class 33 faces, /api/community answering, `upscaled.json` not there.
