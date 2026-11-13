@@ -499,5 +499,42 @@
       [0, "voice", "dead1|dead2", {"p": 0.5, "roll": "dead"}],
       [0, "fx", "deadEffect", {"p": 0.5, "roll": "dead"}]
     ]
+  },
+  "wind&cloud": {
+    "why": "Panda.cs RPC_windCloud ($RPC_windCloud$25591 :36529-38050; checker-derived 2026-11-13, plans/fx_panda/effect_only.md Verification item 3): at 0 attack / myCommand windCloud / addTimeOut(wind&cloud, agiAdjust(120)) (:37793-37802), PlayAnimation(wind&cloud, 0.2) Once (:37811-37814), the voice windCloud1 or windCloud2 (Random.Range(0, 2) :37852, loads :37864 / :37895, PlayOneShot :37876 / :37907; pvoice, own hero or a mission teammate :37823-37845), Sounds/windCloud (IL_E97 :37919-37938, every path), Spirit Fist #433 on (:38003), Yield(2, 0.3) (:38004); the 13 states chain 2 -> 14, each Yield(k) once (:37977-38047): 0.3 (case 2 :36657) windCloud Instantiated at position + 0.5 forward, Quaternion.identity (:36699; a RingEmitter on the ground, EffectControl life 2, no follow: the identity rotation changes nothing on a ring), no punch (Block_225 -> Yield(3, 0.3) :38027-38028, :38017); 0.6 (case 3) the same + 0.5 forward (:36742) and own hero PlayOneShot(punch1Fx) = Sounds/punch1 (:36748-36754); 0.9 (case 4) at the hero (:36851) + punch1 (:36863); 1.2 (case 5) - 0.3 right (:36960) + punch1 (:36974); 1.5 (case 6) - 0.3 right (:37012) + punch1 (:37024); 1.7 (case 7) at the hero (:37116) + punch1 (:37128); 2.1 (case 8) + 0.3 right (:37220) + punch1 (:37232); 2.5 (case 9) + 0.5 right (:37324) + punch1 (:37336); 2.8 (case 10) moveSpeed 2 (:37422); 2.9 / 3.0 (cases 11, 12) + 0.4 forward (:37455, :37559) + punch1 (:37467, :37571); 3.2 (case 13) moveSpeed 0 and the last hit (:37657-37670); 3.3 (case 14) standby (:37741); no mGameType gate on any of it (none in :36650-37722); every hit is FindAreaTarget(hero, (3 + 1) x rangeMod, 2) (:36768 ...): 4 m, never the 10 m target, no hit look (windcloud_hit is loaded by no code, parts.md); the clip is 3.6 s (AnimationClip/wind&cloud.anim); the hero's walk (moveSpeed 3, 1, 2) played in place (Penguin decision 8, Cat decision 20)",
+    "cues": [
+      [0, "voice", "windCloud1|windCloud2"],
+      [0, "sound", "windCloud"],
+      [0.3, "fx", "windCloud", {"d": 0.5}],
+      [0.6, "fx", "windCloud", {"d": 0.5}],
+      [0.6, "sound", "punch1"],
+      [0.9, "fx", "windCloud"],
+      [0.9, "sound", "punch1"],
+      [1.2, "fx", "windCloud", {"x": -0.3}],
+      [1.2, "sound", "punch1"],
+      [1.5, "fx", "windCloud", {"x": -0.3}],
+      [1.5, "sound", "punch1"],
+      [1.7, "fx", "windCloud"],
+      [1.7, "sound", "punch1"],
+      [2.1, "fx", "windCloud", {"x": 0.3}],
+      [2.1, "sound", "punch1"],
+      [2.5, "fx", "windCloud", {"x": 0.5}],
+      [2.5, "sound", "punch1"],
+      [2.9, "fx", "windCloud", {"d": 0.4}],
+      [2.9, "sound", "punch1"],
+      [3.0, "fx", "windCloud", {"d": 0.4}],
+      [3.0, "sound", "punch1"]
+    ]
+  },
+  "rain&storm": {
+    "why": "Panda.cs RPC_rainStorm ($RPC_rainStorm$25622 :38147-38998; checker-derived 2026-11-13, plans/fx_panda/effect_only.md Verification item 3): at 0 attack / myCommand rainStorm / addTimeOut(rain&storm, agiAdjust(180)) (:38821-38830), PlayAnimation(rain&storm, 0.2) Once (:38839-38842), the voice rainStorm1 or rainStorm2 (Random.Range(0, 2) :38880, loads :38890 / :38921, PlayOneShot Block_133 :38987 / Block_102 :38972; pvoice, own hero or a mission teammate :38851-38873), Yield(2, 0.2) (:38979); then Yield(3, 0.5) :38970, (4, 0.6) :38994, (5, 0.6) :38962, (6, 0.3) :38964, (7, 0.2) :38960, (8, 0.4) :38977: Effects/rainStorm createEffect at the hero, Quaternion.identity, at 0.2 (case 2 :38317), 0.7 (:38360), 1.3 (:38468), 1.9 (:38565), 2.2 (:38657), no mode gate; each EffectControl life 2 + afterLife 1, followPosition, followState, its own Sounds/rainStorm (probe, checks/fx_panda_research/verify/ae_eo/probe_wc_rs_summary.txt): the action changes at the standby, 2.8 s (case 8 :38769-38779): cut 2.8; hits at 0.7-2.2 are FindAreaTarget(hero, (5 + 1) x rangeMod, 2) (:38390 ...): 6 m with Spirit Fist #433, never the 10 m target; the clip is 3.0 s (AnimationClip/rain&storm.anim); moveSpeed 3 / 4 played in place",
+    "cues": [
+      [0, "voice", "rainStorm1|rainStorm2"],
+      [0.2, "fx", "rainStorm", {"cut": 2.8}],
+      [0.7, "fx", "rainStorm", {"cut": 2.8}],
+      [1.3, "fx", "rainStorm", {"cut": 2.8}],
+      [1.9, "fx", "rainStorm", {"cut": 2.8}],
+      [2.2, "fx", "rainStorm", {"cut": 2.8}]
+    ]
   }
 }

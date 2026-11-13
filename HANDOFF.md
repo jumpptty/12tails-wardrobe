@@ -57,11 +57,6 @@ NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the
 
 ## Home PC
 
-- **The Panda's two "&" clips (a data rebuild):** Wind & Cloud and Rain & Storm have body clips (`wind&cloud`,
-  `rain&storm`) that the clip-name filter dropped. The filter is fixed (`pipeline/wardrobe_data.py`, `[a-z0-9_&]+`,
-  committed 2026-11-13 at the office), but `wardrobe/data/panda/clips.json` still lacks them: rebuild the Panda's data
-  at home (the full data build reads the game rips), commit + push; then give those two skills tiles and cues (left out
-  of the Panda's build: plans/fx_panda/decisions.md).
 - FYI: the Bible commit `0704e0f6` (reference notes on skill animations and weapon codes) was made at the office and
   not pushed; pull it there before editing those four reference files at home.
 
@@ -93,9 +88,10 @@ NOTES.md "two Bat skins after two in-game enemies" and the bullets after it; the
 
 - **Effects + sounds: the run continues at the office (2026-11-13)** (`plans/goal_fx_all_classes.md`, NOTES.md "the run
   resumed"). Done, committed and live: Wolf, Sheep, Penguin, Bat, Bison, Cat, Chameleon, Mole, Monkey, Panda,
-  Rabbit. Researched (reports committed): Whale. Left: the Whale build. For the user's ear: the Monkey's
+  Rabbit (the Panda's Wind & Cloud and Rain & Storm added at home 2026-11-13). Researched (reports committed): Whale.
+  Left: the Whale build (started at home 2026-11-13). For the user's ear: the Monkey's
   sounds come from BB's resources container (every WAV in the rip's monkey/sounds is zero-filled). The workflow is
-  `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; office paths inside). For the user's review: every
+  `pipeline/workflow_class_fx.js` (Workflow tool, scriptPath; args `pc: "home"` for D:/ paths, office by default). For the user's review: every
   class's `plans/fx_<cls>/decisions.md` (decided overnight / unattended) and the QA contact sheets
   `checks/fx_<cls>_qa/sheets_dark|white/index.html` (git-ignored: Mole to Rabbit's are on the office PC).
 - Settled since 2026-11-09 (no longer open): the backdrop is a manual toggle, white by default (the พื้นหลัง button);

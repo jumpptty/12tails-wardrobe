@@ -3,7 +3,7 @@
 (The user, 2026-11-13: "finish all classes skill sfx and vfx all skills, commit push and deploy"; the overnight run
 stopped at 07:05 after five classes; resumed 2026-11-13 at the office: "goal prompt to finish what we started".)
 
-Run unattended until done or until the usage guard says stop. Don't ask the user questions: decide by the standing
+Run unattended until done. Don't ask the user questions: decide by the standing
 rules below, and write every judgement call into NOTES.md as you go.
 
 Read first: CLAUDE.md, NOTES.md (its skill-effects sections, especially "every class's skill effects: the run" and the
@@ -43,10 +43,7 @@ released}`). Per class:
    (`<repo>` = this folder's absolute path on the PC you are on). Then curl https://12tails-wardrobe.jumpthai.workers.dev
    for a 200 and the new data folder.
 
-Usage guard (CLAUDE.md, 98 %): before the first workflow start `py -3 -I pipeline/usage_watch.py 98 300` in the
-background and keep it running. On REACHED: stop the workflow, start no new agent or class, commit and push everything
-(finished and partial reports, code, data), say in NOTES.md which agents finished and which files are partial, add a
-HANDOFF.md item to resume on either PC. Deploy only classes that passed step 5. A BLIND line: note it, carry on.
+No usage guard (lifted for good, user 2026-11-13; CLAUDE.md). Deploy only classes that passed step 5.
 
 Keep workflows under 10 agents each. Never write in the video or Bible repos. When everything is done: one summary in
 NOTES.md, HANDOFF.md's "Next up" closed or narrowed, this file deleted, a final commit, push and deploy, and a closing

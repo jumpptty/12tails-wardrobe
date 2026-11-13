@@ -1477,6 +1477,12 @@
     "raijinKen2"
    ]
   },
+  "rain&storm": {
+   "icon": "icons/hd/panda/rain&storm.webp",
+   "clips": [
+    "rain&storm"
+   ]
+  },
   "risingDragons": {
    "icon": "icons/hd/panda/risingDragons.webp",
    "clips": [
@@ -1567,6 +1573,12 @@
    "icon": "icons/hd/panda/waterMonkey.webp",
    "clips": [
     "waterMonkey"
+   ]
+  },
+  "wind&cloud": {
+   "icon": "icons/hd/panda/wind&cloud.webp",
+   "clips": [
+    "wind&cloud"
    ]
   },
   "yinYangFist": {

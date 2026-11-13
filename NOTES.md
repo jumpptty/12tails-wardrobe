@@ -2962,3 +2962,28 @@ user's review). One editor after three builders (rabbit, generic, page_pipeline)
   painters, the skill, the two Bat skins' look files and mock sheets, the Cat knight's two files (not the user's
   reference pictures, not plans/reskins/bat/ref (game files: rebuilt at home), not _cache / shots; the Whale, the Cat
   shorts and the Rabbit folders stay on the office PC, unpicked).
+
+## 2026-11-13 (home), the Panda's Wind & Cloud and Rain & Storm (the HANDOFF item)
+
+- Data: `uv run --no-project --with UnityPy --with pillow python pipeline/wardrobe_data.py --only panda --no-props`
+  (TTO 2026-11-04 bundles from the video folder): clips.json gains exactly `wind&cloud` (3.6 s) and `rain&storm`
+  (3.0 s), skill, not TTO; nothing else in it changed. **Gotcha:** the run also rewrote 55 Panda outfit textures (WebP
+  re-encoded by this uv env's Pillow: same pictures, mean 1 level off, max ~38) and dropped the ToT `student` outfit
+  from outfits.json (meta.json's outfits 22 -> 21), which only `wardrobe_tot.py` adds back. Kept only the real change:
+  the textures, outfits.json and meta.json restored from git, then meta.json's Panda `clips` set to the new ones
+  (same compact JSON; the rest byte for byte). A future `--only <cls>` rebuild: diff before committing, and run
+  `wardrobe_tot.py --only <cls>` after it if the outfits are kept.
+- Icons: `wardrobe_skill_icons.py` (its `&` pattern was already in): icons/hd/panda/wind&cloud.webp, rain&storm.webp
+  and their index.json entries; nothing else changed.
+- Cues: the two entries of plans/fx_panda/effect_only.md Verification item 3, verbatim, appended to
+  wardrobe/fx_cues/panda.json (21 + 6 cues).
+- Effects: `wardrobe_fx.py panda --fx windCloud,rainStorm --voices windCloud1,windCloud2,rainStorm1,rainStorm2
+  --sounds windCloud,punch1`: fx.json gains only `windCloud` and `rainStorm`; new sfx v_windCloud1/2, windCloud (the
+  rest already there, identical).
+- Gate: files-only, every class: "no problems".
+- Gate: `wardrobe_fx_check.py D:/12tails-wardrobe checks/fx_panda_amp dark --cls panda`: exit 0, errors [], sound ctx
+  running (90 loaded); `wind&cloud` spawns its windCloud rings from 0.29 s, `rain&storm` its rainStorm bursts; the peak
+  shots show both, each tile with its Bible icon. No page or shared code changed, so no regression run.
+- The usage guard's `--once` read weekly 98.0 % right before the Whale's workflow; the user then: "lift the usage guard
+  permanently" (CLAUDE.md and plans/goal_fx_all_classes.md updated: no guard any more). `pipeline/workflow_class_fx.js`
+  now takes `pc: "home"` (D:/ paths, the video folder's TTO 2026-11-04 bundles; default stays the office).
