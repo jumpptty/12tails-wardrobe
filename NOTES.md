@@ -3453,3 +3453,43 @@ user's review: 67 decisions). One editor after three builders (whale, tto_whale,
   tot/. A headless pass on the live page: the Whale's 32 skill tiles; Leviathan Breach, 12th Kingdom Knight and Javelin
   spawn their effects; no page or console errors. The PC was shut down after it, with the Bat skin session's work
   still uncommitted on its disk (HANDOFF "Home PC: the Bat skin session's work is not committed").
+
+## 2026-11-14 (home), one weapon topic
+
+User: "having 2 weapons slot is confusing to the users, merge the 2 slots to one which applies both main and sub weapon",
+then "when you are done, commit push deploy this work".
+- **The panel:** อาวุธหลัก + อาวุธที่ 2 are one topic, **อาวุธ** (TOPICS "R"). Row 4 = อาวุธ + ประดับ; ท่าทาง spans row 5,
+  its ring capped at a half block's size (desktop and short screens; on a phone a topic is ring + name in a row anyway).
+- **A pick wears the game's whole weapon** (index.html `weaponOf` / `setWeapon`, above buildSets):
+  - a two-piece code (item_map.json: Chameleon bow + arrow, Whale lance + shield): the first piece in R, the second in L
+    (the Whale's hands: SWAP_HANDS, unchanged);
+  - `<name>_L` / `_R` pieces each in its own hand (Panda's gloves, the Wolf's hallowSaw / specialSword);
+  - the Wolf's other swords in both hands: WolfEquipment.getWeapon(code, 1 / 2) loads the same prefab for hand 1
+    (mount_Hand_L) and hand 2 (mount_Hand_R), except w_wlf35 / w_wlf59's `_l` / `_r` (DecompiledSource/WolfEquipment.cs
+    :594, :805, :940-1010);
+  - everything else in R only. PandaEquipment.getWeapon("w_pnd5", isLeft: true) loads nothing (:442): holyThread is
+    one-handed, so the sets no longer put it in both hands (`dualSame` did that for any class with a "#2" placement and
+    no code pairs: the Panda as well as the Wolf; it is `BOTH_HANDS` = the Wolf now);
+  - ToT's student pieces (no code) pair by the coded pairs' word endings: studentBow + studentArrow, studentLance +
+    studentShield (the student sets get the arrow / shield too now; local only).
+- **Internals unchanged:** C.state.R / L and C.props.R / L, the sets, looks (LOOK_SLOTS), skins, the effects (propModel /
+  propCopy "L"), `wardrobe.show`, the community import's slot names, so the video repo and every check script still
+  work. The picker lists one tile per weapon (its R piece; the search also finds it by the other piece's name); the
+  pressed tile and the ring = `wornIn("R")` (R, else the weapon of what L holds: an old saved or shared look with a free
+  left-hand piece still shows something).
+- **Every other way a piece goes on wears its whole weapon** (`wearPiece`): the piece menu's ใส่ชิ้นนี้ and ถอดอาวุธออก
+  (both hands off), the viewer's ใส่, a skin upload or a community skin on a piece not worn, a dropped file
+  (`equipPieces`: a list naming one hand only; a look naming both hands keeps each piece as listed). A weapon piece's
+  menu has **อีกชิ้นของอาวุธนี้: <name>** (the other piece's own menu, at the same place): the arrow / shield / left glove
+  has no tile of its own any more, so its PNG / GLB download and skin upload are reached from the weapon tile's
+  right-click too; a click on it on the model works as before (slot L; SLOT_TH.L = อาวุธ; เปลี่ยนอาวุธ opens the one topic).
+- **Check:** `pipeline/wardrobe_weapon_slot_check.py` (headless; every class's tiles and hands against item_map.json
+  worked out apart from the page, a pick / ไม่ใส่ / one undo per class, the Chameleon's arrow menu and its other-piece
+  link, the panel and its three rings one size at 1920x1200, 1366x768 and 390x844): 97 ok, exit 0. Unit tests 81 OK, node
+  9 pass, test_adopt_from_video.ps1 fails 0; `wardrobe_menu_check.py` and `wardrobe_sets_check.py` exit 0 (foreign
+  weapons 0); `wardrobe_weapon_fx_check.py` OK (a first run on a cold disk cache
+  timed out; HEAD's page also took 58 s to load cold, and warm both show flamingBrand's effect within 2 s). Playwright pinned `==1.65.1` (chromium 1254; the newest wants a browser not installed).
+- **Committed alone:** the Bat / Cat skin sessions' uncommitted files stay out, its SKINS.cut / SKINS.face hunk in
+  index.html too (the commit's page = HEAD's + this change, built with `git merge-file`; HEAD's + both = the working
+  file). The publish takes the page from `git archive` of the commit and the data from the main folder (`--src` /
+  `--data`), so the deploy carries no uncommitted work either.

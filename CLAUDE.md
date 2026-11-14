@@ -49,7 +49,7 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   `node --test pipeline/test_site_worker.mjs`;
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
-  (the piece menu), `wardrobe_sets_check.py`, `wardrobe_fx_check.py`, `wardrobe_outfit_alpha_check.py` (outfits opaque, as the game's
+  (the piece menu), `wardrobe_sets_check.py`, `wardrobe_weapon_slot_check.py` (the one weapon topic), `wardrobe_fx_check.py`, `wardrobe_outfit_alpha_check.py` (outfits opaque, as the game's
   RGB24 + Diffuse) (headless Playwright), and an isolated Playwright context for anything else so the user's own browser window is left alone.
 - Painting a skin (a reskin / repaint, `pipeline\wardrobe_bat_robe.py` and its like): open the live view for the user
   before the first pass (user 2026-11-12: "please remember the script for this live view, it's really good"):
