@@ -885,6 +885,38 @@ class PublishTest(unittest.TestCase):
         self.assertEqual([s["id"] for s in json.loads((d / "team_sets.json").read_text("utf-8"))["sets"]], ["team-a"])
         self.assertTrue((d / "team/cat/team-a_0.webp").exists() and (d / "team/cat/team-a_p.webp").exists())
 
+    def test_nicknames_follow_published_items(self):
+        """nicknames.json (the Bible's nicknames, 2026-11-14): a row goes online when its tile does (an edition row by
+        its outfit); a TTO piece not released stays out, its model name with it."""
+        w = self.world()
+        dump(w.data / "nicknames.json", {
+            "cat": {"outfits": {"a": {"nick": "70 ดล", "lv": 72}, "a|R": {"nick": "70 ดด"}, "ttoGown": {"nick": "ชุดลับ"}},
+                    "weapons": {"knife": {"nick": "วุธแชมป์", "lv": -68, "game": ["G.Champion Knife"]}},
+                    "trinkets": {"ttoFlag": {"nick": "ธงลับ"}}},
+            "all": {"trinkets": {"ttowing": {"nick": "ปีกลับ"}}}})
+        w.publish()
+        got = json.loads((data_dir(w) / "nicknames.json").read_text("utf-8"))
+        self.assertEqual(got, {"cat": {"outfits": {"a": {"nick": "70 ดล", "lv": 72}, "a|R": {"nick": "70 ดด"}},
+                                       "weapons": {"knife": {"nick": "วุธแชมป์", "lv": -68, "game": ["G.Champion Knife"]}}}})
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_nickname_rows_follow_the_page_s_names_not_icons_json_s(self):
+        """A row is kept by the published item's own name: icons.json may spell it in another case or not have it
+        (the Bison's PoseidonHelmet, 2026-11-14 review), and the page looks the row up by the item's name."""
+        w = make_world(self.tmp)
+        w.add_prop("weapons", "spear", "Cat_spear.png")                  # published, no icons.json entry
+        w.finish()
+        dump(w.data / "nicknames.json", {"cat": {"weapons": {"spear": {"nick": "หอกดัง"}}}})
+        w.publish()
+        got = json.loads((data_dir(w) / "nicknames.json").read_text("utf-8"))
+        self.assertEqual(got, {"cat": {"weapons": {"spear": {"nick": "หอกดัง"}}}})
+
+    def test_nicknames_json_written_when_the_data_has_none(self):
+        w = self.world()
+        w.publish()
+        self.assertEqual(json.loads((data_dir(w) / "nicknames.json").read_text("utf-8")), {})
+        self.assertEqual(wp.check(w.out), [])
+
     def test_community_json_written_when_the_data_has_none(self):
         w = self.world()
         w.publish()

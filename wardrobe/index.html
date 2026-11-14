@@ -294,6 +294,7 @@ main.inset .cm-card { top: 96px; }
 .pk-body.face-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .pk-item { position: relative; border: 1px solid var(--line); background: var(--weave), var(--panel); border-radius: 6px; padding: 8px 8px 7px;
   display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+.pk-item.is-nick { border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); background: var(--weave), color-mix(in srgb, var(--gold) 8%, var(--panel)); }
 .pk-item[aria-pressed=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
 .pk-item .pic { position: relative; width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 4px; overflow: hidden; container-type: inline-size; }
 .pk-item .pic img { width: min(88%, 112px); height: auto; max-height: 88%; object-fit: contain; }   /* the icons are 128 px (2x upscales, wardrobe_icons_upscale.py) */
@@ -323,6 +324,13 @@ main.inset .cm-card { top: 96px; }
 .pk-item .lbl { font-size: 12.5px; font-weight: 500; line-height: 1.3; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pk-body.face-grid .lbl { font-size: 13px; }
 .pk-item[aria-pressed=true] .lbl { color: var(--gold); }
+/* a nicknamed tile (2026-11-14, "swap"): the nickname over the name; the padding keeps Thai marks above (ป์, ั) and below
+   inside the label's clip */
+.pk-item .lbl.nk-main { color: var(--gold); font-weight: 600; font-size: 13px; padding: 2px 0 1px; }
+.pk-item .nk-sub { margin-top: -4px; font-size: 10.5px; line-height: 1.3; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* worn: a nicknamed label is gold already, so the worn one shows a solid gold ring and its name line lights up */
+.pk-item.is-nick[aria-pressed=true] { box-shadow: inset 0 0 0 2px var(--gold); }
+.pk-item[aria-pressed=true] .nk-sub { color: var(--text); }
 .pk-item .dot { position: absolute; right: 7px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--tto); }
 .pk-item .dot.tot { background: var(--tot); }   /* ToT's own pieces (wardrobe_tot.py, local copy only) */
 .pk-item .dot.tto-mark { right: 5px; top: 5px; width: 20px; height: 20px; border-radius: 0; background: none; object-fit: contain;
@@ -670,6 +678,7 @@ new ResizeObserver(resize).observe(stage);        // window and panel size chang
 // ---------- state ----------
 let meta, C = null;          // C = the loaded class
 let ICONS = {};              // icons.json: per class, outfit / prop name -> {icon, codes}
+let NICK = {};               // nicknames.json: the players' nicknames from the Bible's class guide (nickOf)
 let PL = {};                 // placements.json: TTO's per-hero, per-code mounts
 let UI = { heroes: {}, emotion: [], skills: {} };   // ui.json: class portraits, emotion and skill icon names
 let HDI = {};                                       // icons/hd/index.json: the Bible's upscaled skill icons (pipeline/wardrobe_skill_icons.py)
@@ -1650,6 +1659,24 @@ const SLOT_KEY = { R: "weapons", L: "weapons", Head: "accessories", Back: "trink
 // Panda's paired gloves are props <name>_L / <name>_R: the game adds the hand to the mapped name
 const iconOf = (slot, name) => ICONS[C.cls]?.[slot]?.[name] || ICONS[C.cls]?.[slot]?.[name.replace(/_[LRlr]$/, "")]
   || ICONS.all?.[slot]?.[name.toLowerCase()];                  // shared items: keyed by lower-case name
+// the players' nicknames for popular items (user 2026-11-14: "nickname should work in search box", "see nicknamed items
+// from the class guide in the bible hub ... sort them first at the top for the wardrobe"): nicknames.json, copied from the
+// Bible's GEAR_NICKNAMES / GEAR_LV / GEAR_DATA by pipeline/wardrobe_nicknames.py. A tile's row {nick, lv, game} is looked
+// up like its icon; an outfit edition's by "<name>|<R|V>" only (an R tile without a nickname of its own shows none)
+const nickOf = (kind, name, ed = "") => { if (!name || !C) return undefined; const t = NICK[C.cls]?.[kind];
+  return (ed ? t?.[name + "|" + ed] : t?.[name] || t?.[name.replace(/_[LRlr]$/, "")] || NICK.all?.[kind]?.[name.toLowerCase()]) || undefined; };
+// the class guide's order (its classGuideGearSortKey): nicknamed first, among them no level, then rank-gated (highest rank
+// first), then level highest first; the rest keep their order (ties too)
+const nickKey = r => !r?.nick ? [1, 0, 0] : r.lv === undefined ? [0, 0, 0] : r.lv < 0 ? [0, 1, r.lv] : [0, 2, -r.lv];
+const nickSort = (list, rowOf) => list.map((x, i) => [nickKey(rowOf(x)), i, x])
+  .sort((a, b) => a[0][0] - b[0][0] || a[0][1] - b[0][1] || a[0][2] - b[0][2] || a[1] - b[1]).map(e => e[2]);
+// the search (user 2026-11-14: "add search box by name"): the tile's name, the game's own name (the Bible's) and the
+// nickname, in any case and with or without spaces ("70ดล" finds "70 ดล")
+const squash = s => String(s || "").replace(/\s+/g, "").toLowerCase();
+const findText = (...parts) => squash(parts.flat(2).filter(Boolean).join(" "));
+const nickWords = r => (r ? [r.nick, r.game] : []);
+const matches = (q, text) => { const s = squash(q); return !s || text.includes(s); };
+const NOT_FOUND = `<p class="pk-note">ไม่พบที่ค้นหา</p>`;
 // the panel's rows (user 2026-11-07): class / colour / face; the gear set (full row); hat + outfit; weapon + back; moves
 // (one weapon topic since 2026-11-14: the R topic is the weapon, both hands; see setWeapon)
 const TOPICS = [["class", "อาชีพ"], ["color", "สี"], ["face", "หน้า"], ["set", "ชุดเซ็ต"], ["Head", "หมวก"], ["outfit", "ชุด"],
@@ -1793,7 +1820,15 @@ async function buildSets() {
     }
   }
   sets.sort((a, b) => (!!b.outfit - !!a.outfit) || (b.pieces - a.pieces) || a.label.localeCompare(b.label));
-  return (C.sets = sets);
+  return (C.sets = nickSort(sets, setNick));         // the nicknamed sets first (2026-11-14), in the class guide's order
+}
+// a set's pieces as [kind, name, edition] and its nickname row (2026-11-14): its outfit's in the set's own edition (legend R =
+// 70 ดด whatever the colour; an edition with no nickname of its own does not borrow the plain outfit's), else the first of
+// its weapon, hat and back that has one
+const setPieces = s => [["outfits", s.outfit, s.v || ""], ["weapons", s.R || s.L, ""], ["weapons", s.L && s.L !== s.R ? s.L : null, ""],
+  ["accessories", s.Head, ""], ["trinkets", s.Back, ""]].filter(p => p[1]);
+function setNick(s) {
+  return [nickOf("outfits", s.outfit, s.v || ""), nickOf("weapons", s.R || s.L), nickOf("accessories", s.Head), nickOf("trinkets", s.Back)].find(r => r?.nick);
 }
 const setEd = s => { const o = C.outfits.find(x => x.name === s.outfit); return o ? edOf(o, C.state.color, s.v) : ""; };
 // the R / V toggle (user 2026-11-07: "failed to change the whole set"): an edition is the outfit's recolour AND the same
@@ -3209,18 +3244,30 @@ function camStep(dt) {
   if (w.t >= w.dur) camFinish();
   return true;
 }
+// the pickers' order (2026-11-14): the outfit tiles ({o, e}: each R / V edition a tile of its own) and a slot's pieces
+// (the weapon picker: one tile per weapon, its R piece), nicknamed first (nickSort); the Cat's hood heads its hats
+const outfitTiles = () => nickSort(C.outfits.flatMap(o => [{ o, e: "" }, ...Object.keys(o.editions || {}).sort().map(e => ({ o, e }))]),
+  x => nickOf("outfits", x.o.name, x.e));
+function pickerProps(t, list) {
+  const kind = SLOT_KEY[t], base = t === "Head" && BASE_HEAD[C.cls];
+  const items = nickSort(list.filter(p => t !== "R" || weaponMain(p.name) === p.name), p => nickOf(kind, p.name));
+  if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
+  return items;
+}
 // the open picker's tiles in their order (the search applied), else the slot's whole list as the picker shows it
 async function viewList(slot) {
   if (openTopic === slot) return [...$("pkBody").querySelectorAll(".pk-cell:not([data-ed])")].map(c => c.dataset.item);
-  if (slot === "outfit") return C.outfits.map(o => o.name);
-  const list = (await propList(SLOTS[slot])).filter(p => slot === "R" ? weaponMain(p.name) === p.name : slot !== "L" || weaponOf(p.name).L === p.name).map(p => p.name);
+  if (slot === "outfit") return [...new Set(outfitTiles().map(x => x.o.name))];
+  const all = await propList(SLOTS[slot]);
+  const list = (slot === "L" ? all.filter(p => weaponOf(p.name).L === p.name) : pickerProps(slot, all)).map(p => p.name);
   return [...new Set(list)];
 }
 // the open picker marks the piece the viewer shows, and its header says what a tile click does while it is open (F4)
 function syncViewing() {
   const S = Showcase, body = $("pkBody");
   body.querySelectorAll(".pk-item[data-viewing]").forEach(b => b.removeAttribute("data-viewing"));
-  if (S.on && S.cur && openTopic === S.cur.slot) body.querySelector(`.pk-cell[data-item="${CSS.escape(S.cur.item)}"] > .pk-item`)?.setAttribute("data-viewing", "");
+  // the outfit's own tile, not an R / V tile of it (since 2026-11-14 an edition tile can be sorted before its outfit)
+  if (S.on && S.cur && openTopic === S.cur.slot) body.querySelector(`.pk-cell[data-item="${CSS.escape(S.cur.item)}"]:not([data-ed]) > .pk-item`)?.setAttribute("data-viewing", "");
   $("pkHint").hidden = !(S.on && VIEW_SLOTS.has(openTopic));
 }
 // phase: "off" | "in" (the character fading out) | "on" | "out" (the piece fading out, then the camera easing back)
@@ -3748,9 +3795,11 @@ function closePicker() {
   if (held && t) document.querySelector(`#topics [data-t="${t}"]`)?.focus();   // not on a hidden input
 }
 // a picker tile; o = { title, face, fb: the stand-in when there is no icon, over: drawn over the picture, dot: "tto" | "tot" }
+// o.nick (a nicknamed tile, the user's pick of four looks, 2026-11-14: "swap"): the nickname in gold in the name's place,
+// the name small under it, the tile edged a little gold
 const item = (attr, lbl, pressed, src, o = {}) =>
-  `<button type="button" class="pk-item" ${attr} aria-pressed="${pressed}"${o.title ? ` title="${o.title}"` : ""}><span class="pic${o.face ? " face" : ""}">${pic(src, o.face, o.fb)}${o.over || ""}</span>` +
-  `<span class="lbl">${lbl}</span>${!o.dot ? "" : o.dot === "tot" ? `<i class="dot tot" title="ของจาก ToT"></i>` : ttoMark(o.face ? "หน้าจาก TTO" : "ของจาก TTO")}</button>`;
+  `<button type="button" class="pk-item${o.nick ? " is-nick" : ""}" ${attr} aria-pressed="${pressed}"${o.title ? ` title="${o.title}"` : ""}><span class="pic${o.face ? " face" : ""}">${pic(src, o.face, o.fb)}${o.over || ""}</span>` +
+  (o.nick ? `<span class="lbl nk-main">${esc(o.nick)}</span><span class="nk-sub">${lbl}</span>` : `<span class="lbl">${lbl}</span>`) + `${!o.dot ? "" : o.dot === "tot" ? `<i class="dot tot" title="ของจาก ToT"></i>` : ttoMark(o.face ? "หน้าจาก TTO" : "ของจาก TTO")}</button>`;
 // TTO's mark (user 2026-11-09: "Change the pink dot to TTO small logo instead"): TTO's own logo on its tiles, in the menu
 const ttoMark = (title, cls = "dot tto-mark") => `<img class="${cls}" alt="TTO" title="${title}" src="${UI_DIR}tto.webp">`;
 const badge = x => (x.tot ? "tot" : x.tto);           // pink dot = TTO's own, blue = ToT's own (wardrobe_tot.py)
@@ -3776,6 +3825,8 @@ async function openPicker(t, opts = {}) {
   openTopic = t; renderTopics();
   const name = TOPICS.find(x => x[0] === t)[1], tools = $("pkTools");
   const tab = tools.querySelector(".pk-tab:focus")?.dataset.g;
+  // a redraw of the open picker (a skin, an edition) keeps what was typed in its search box, and the box's focus
+  const box0 = redraw ? tools.querySelector("input[type=search]") : null, q0 = box0?.value || "", typing = !!box0 && document.activeElement === box0;
   $("pkTitle").textContent = name; tools.innerHTML = ""; $("picker").hidden = false; document.querySelector(".app").classList.add("picking");
   setInset();
   if (!redraw) body.innerHTML = "";          // the set / prop lists load async: no clicks on the last picker's tiles meanwhile
@@ -3804,14 +3855,27 @@ async function openPicker(t, opts = {}) {
     const sets = await buildSets();
     if (openTopic !== t) return;
     // the character's colour has its own topic now (สี, user 2026-11-07); a set keeps the colour when it changes the outfit
-    tools.innerHTML = `<span class="pk-note"><span class="num">${sets.length}</span> เซ็ต กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
-    body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับ">`
-      + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
-      + (sets.length ? sets.map((s, i) => `<button type="button" class="pk-item" data-s="${i}" aria-pressed="${setWorn(s)}">` +
-        `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span><span class="lbl">${setNameHTML(s)}</span>` +
-        `<span class="cnt"><span class="num">${s.pieces}</span> ชิ้น</span><span class="parts">${setParts(s)}</span></button>`).join("")
-        : `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>`);
-    pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])));
+    // (2026-11-14) a search box: the set's name and nickname, and each piece's name, game name and nickname; ถอดทั้งหมด
+    // is always there. A nicknamed set: its nickname over its name (setNick), the tooltip keeps the name
+    tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`
+      + `<span class="pk-note"><span class="num">${sets.length}</span> เซ็ต กดครั้งเดียวใส่ครบทุกชิ้น</span>`;
+    const inp = tools.querySelector("input");
+    inp.value = q0;
+    const find = s => findText(setName(s), s.theme, setPieces(s).map(([k, n, e]) => [n, humanize(n + e), nickWords(nickOf(k, n, e))]));
+    const draw = () => {
+      const shown = sets.map((s, i) => [s, i]).filter(([s]) => matches(inp.value, find(s)));
+      body.innerHTML = `<button type="button" class="pk-item" data-s="clear" aria-pressed="${isBare()}" title="ชุดพื้นฐาน ไม่มีอาวุธ หมวก หรือของประดับ">`
+        + `<span class="pic"><span class="none">✕</span></span><span class="lbl">ถอดทั้งหมด</span><span class="parts"></span></button>`
+        + (!sets.length ? `<p class="pk-note">อาชีพนี้ไม่มีเซ็ตที่มี 2 ชิ้นขึ้นไป</p>` : !shown.length ? NOT_FOUND
+          : shown.map(([s, i]) => { const nk = setNick(s)?.nick;
+            return `<button type="button" class="pk-item${nk ? " is-nick" : ""}" data-s="${i}" aria-pressed="${setWorn(s)}" title="${esc(setName(s))}">` +
+              `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span>` +
+              (nk ? `<span class="lbl nk-main">${esc(nk)}</span><span class="nk-sub">${setNameHTML(s)}</span>` : `<span class="lbl">${setNameHTML(s)}</span>`) +
+              `<span class="cnt"><span class="num">${s.pieces}</span> ชิ้น</span><span class="parts">${setParts(s)}</span></button>`; }).join(""));
+      pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])));
+    };
+    inp.oninput = draw; draw();
+    if (typing || (!redraw && !matchMedia("(hover: none), (pointer: coarse)").matches)) inp.focus({ preventScroll: true });
   } else if (t === "class") {
     body.innerHTML = meta.classes.map(c => item(`data-c="${c.cls}"`, CLASS_TH[c.cls] || c.cls, c.cls === C.cls, UI.heroes?.[c.cls], { fb: noIcon(c.cls) })).join("");
     pick(b => loadClass(b.dataset.c), "โหลดอาชีพนี้ไม่สำเร็จ ลองกดอีกครั้ง");
@@ -3819,13 +3883,27 @@ async function openPicker(t, opts = {}) {
     // each R / V edition is a tile of its own right after its outfit (user 2026-11-09: "Panda doesn't have Worm R in the
     // armor selection"; until then only a set reached one). One skin covers every edition: its tools stay on the plain
     // tile, and an edition tile (data-ed) is no extra piece for the viewer's list
+    // (2026-11-14) nicknamed tiles first (an edition tile by its own nickname, so legend R can lead while legend stays
+    // below), and a search box like the pieces'
     const worn = (n, e) => n === C.state.outfit && e === (C.state.edition || "");
-    body.innerHTML = C.outfits.map(o => cell("outfit", o.name, item(`data-o="${o.name}" data-e=""`, nameHTML(o.name), worn(o.name, ""),
-      iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name) }))
-      + Object.keys(o.editions || {}).sort().map(e => `<div class="pk-cell" data-slot="outfit" data-item="${o.name}" data-ed="${e}">`
-        + item(`data-o="${o.name}" data-e="${e}"`, nameHTML(o.name + e), worn(o.name, e), outfitIcon(o.name, e),
-          { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name + e) }) + `<span class="sk-ui"></span></div>`).join("")).join("");
-    pick(b => wearOutfit(b.dataset.o, b.dataset.e));
+    const tiles = outfitTiles();
+    tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`;
+    const inp = tools.querySelector("input");
+    inp.value = q0;
+    const draw = () => {
+      const shown = tiles.filter(({ o, e }) => matches(inp.value, findText(o.name, humanize(o.name + e), nickWords(nickOf("outfits", o.name, e)))));
+      body.innerHTML = shown.map(({ o, e }) => !e
+        ? cell("outfit", o.name, item(`data-o="${o.name}" data-e=""`, nameHTML(o.name), worn(o.name, ""),
+          iconOf("outfits", o.name)?.icon, { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name), nick: nickOf("outfits", o.name)?.nick }))
+        : `<div class="pk-cell" data-slot="outfit" data-item="${o.name}" data-ed="${e}">`
+          + item(`data-o="${o.name}" data-e="${e}"`, nameHTML(o.name + e), worn(o.name, e), outfitIcon(o.name, e),
+            { dot: badge(o), fb: noIcon(o.name), title: humanize(o.name + e), nick: nickOf("outfits", o.name, e)?.nick }) + `<span class="sk-ui"></span></div>`).join("")
+        + (shown.length ? "" : NOT_FOUND);
+      pick(b => wearOutfit(b.dataset.o, b.dataset.e));
+      syncViewing();
+    };
+    inp.oninput = draw; draw();
+    if (typing || (!redraw && !matchMedia("(hover: none), (pointer: coarse)").matches)) inp.focus({ preventScroll: true });
   } else if (t === "face") {
     body.innerHTML = C.faces.map(f => item(`data-f="${f.n}"`, `หน้า <span class="num">${f.n}</span>`, f.n === C.state.face, faceSrc(f.n), { dot: f.tto, face: true })).join("");
     pick(b => setColorOrFace(null, +b.dataset.f));
@@ -3860,21 +3938,24 @@ async function openPicker(t, opts = {}) {
     if (openTopic !== t) return;
     tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`;
     const inp = tools.querySelector("input");
+    inp.value = q0;
+    const kind = SLOT_KEY[t], base = t === "Head" && BASE_HEAD[C.cls];
     const draw = () => {
-      const q = inp.value.toLowerCase();
       // a weapon's tile is its R piece; its other piece (arrow, shield, the left glove) comes with it. The search also finds
-      // a weapon by its other piece's name
-      const find = p => (p.name + " " + humanize(p.name) + (t === "R" && weaponOf(p.name).L ? " " + weaponOf(p.name).L + " " + humanize(weaponOf(p.name).L) : "")).toLowerCase();
-      const items = list.filter(p => t !== "R" || weaponMain(p.name) === p.name).filter(p => !q || find(p).includes(q));
-      const base = t === "Head" && BASE_HEAD[C.cls];
-      if (base) items.sort((a, b) => (b.name === base) - (a.name === base));
+      // a weapon by its other piece's name, game name and nickname
+      const find = p => { const o = t === "R" && weaponOf(p.name).L;
+        return findText(p.name, humanize(p.name), nickWords(nickOf(kind, p.name)), o ? [o, humanize(o), nickWords(nickOf(kind, o))] : []); };
+      const items = pickerProps(t, list).filter(p => matches(inp.value, find(p)));
       body.innerHTML = (base ? "" : item(`data-p=""`, "ไม่ใส่", !wornIn(t), null, { fb: glyph(t) })) + items.map(p => cell(t, p.name,
-        item(`data-p="${p.name}"`, nameHTML(p.name), p.name === wornIn(t), iconOf(SLOT_KEY[t], p.name)?.icon, { dot: badge(p), fb: noIcon(p.name), title: humanize(p.name) }))).join("");
+        item(`data-p="${p.name}"`, nameHTML(p.name), p.name === wornIn(t), iconOf(kind, p.name)?.icon,
+          { dot: badge(p), fb: noIcon(p.name), title: humanize(p.name), nick: nickOf(kind, p.name)?.nick }))).join("")
+        + (items.length ? "" : NOT_FOUND);
       pick(b => (t === "R" ? setWeapon(b.dataset.p || null) : setProp(t, b.dataset.p || null)));
       syncViewing();
     };
     inp.oninput = draw; draw();
-    if (!matchMedia("(hover: none), (pointer: coarse)").matches) inp.focus({ preventScroll: true });   // touch: focusing pops the keyboard over the sheet
+    // touch: focusing pops the keyboard over the sheet; a redraw keeps the focus where it was
+    if (typing || (!redraw && !matchMedia("(hover: none), (pointer: coarse)").matches)) inp.focus({ preventScroll: true });
   }
   syncViewing();
   if (redraw) { body.scrollTop = keepScroll; return; }
@@ -5968,10 +6049,11 @@ renderer.setAnimationLoop(() => {
 resize();
 renderTopics();                  // the panel's layout at once, empty rings (V6b): nothing pops in when the data arrives
 // the first data in parallel (F13)
-const [meta0, icons0, pl0, map0, ui0] = await Promise.all([getJSON(DATA + "meta.json").catch(e => { err(e, "โหลดห้องแต่งตัวไม่สำเร็จ ลองรีเฟรชหน้านี้"); throw e; }),
+const [meta0, icons0, pl0, map0, ui0, nick0] = await Promise.all([getJSON(DATA + "meta.json").catch(e => { err(e, "โหลดห้องแต่งตัวไม่สำเร็จ ลองรีเฟรชหน้านี้"); throw e; }),
   getJSON(DATA + "icons.json").catch(() => ({})), getJSON(DATA + "placements.json").catch(() => ({})),
-  getJSON(DATA + "item_map.json").catch(() => ({})), getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} }))]);
-meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0;
+  getJSON(DATA + "item_map.json").catch(() => ({})), getJSON(DATA + "ui.json").catch(() => ({ heroes: {}, emotion: [], skills: {} })),
+  getJSON(DATA + "nicknames.json").catch(() => ({}))]);
+meta = meta0; ICONS = icons0; PL = pl0; ITEMMAP = map0; UI = ui0; NICK = nick0;
 // online the Worker lists the skins approved in Discord right now (a ✅ on the phone is enough); else (the local server,
 // Discord down) the published community.json from the PC import
 (LIVE_COMMUNITY ? getJSON("api/community").catch(() => getJSON(DATA + "community.json")) : getJSON(DATA + "community.json")).catch(() => ({}))
@@ -5992,7 +6074,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, get SETS() { return SETS; } }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, openPicker, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, get SETS() { return SETS; } }),   // scripted checks only
 };
 </script>
 </body>

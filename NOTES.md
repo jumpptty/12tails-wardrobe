@@ -3500,3 +3500,68 @@ then "when you are done, commit push deploy this work".
   royalShield too, ไม่ใส่ takes both off, no errors. Trap: this PC's `core.autocrlf` makes `git archive` write CRLF into
   the text files, so fxparts/whale.js, fxparts/bat.js and fx_cues/panda.json went up as CRLF (harmless: same code; the
   next deploy from the main folder puts the LF ones back). Next time: `git -c core.autocrlf=false archive`.
+
+## 2026-11-14 (home), search and the Bible's nicknames in the pickers (started)
+
+User: "in the set selection and each piece selections, some pieces or sets are rarely of audience interest 1. add search
+box by name 2. nickname should work in search box 3. see nicknamed items from the class guide in the bible hub, not all
+will be in the wardrobe, but sort them first at the top for the wardrobe".
+- **Today:** the hat / weapon / back pickers already have a ค้นหา box (the model name read as words, plus a weapon's other
+  piece); the outfit (ชุด) and set (ชุดเซ็ต) pickers have none. Tile names are the model names made readable (ruling R61),
+  not the game's names: the Bible's GEAR_DATA has the game's English name per item code (w_wlf50 "Fenrir Sword" =
+  royalSword).
+- **The nicknames:** the Bible's `12t_projects/bible/index.html`, `const GEAR_NICKNAMES = {code: nickname}` (one line,
+  ~line 33051; 495 codes: w 205, a 111, c 107, t 50, b 12, p 10), the class guide's gear picker (nicknamed first, then
+  GEAR_LV: no level, rank-gated, level highest first; classGuideGearSortKey). Mapped through icons.json's `codes` (an
+  outfit edition's code from its edition icon, armor/rab62 -> a_rab62): 41-61 tiles per class land (Chameleon / Whale more:
+  bow + arrow, lance + shield), no tile gets two different nicknames; 55 codes have no tile: boots, pets, the armlet rings,
+  and c_pgn51, c_pgn62, t_bsn62, t_cat62, t_mnk62, t_shp62, w_bsn12 (no item in item_map.json).
+- **Looks mocked** (`pipeline/wardrobe_nick_mocks.py`, the Rabbit's weapon and outfit pickers; `checks/nick_mocks/compare.html`):
+  order only / the nickname in place of the name, the name small under it (the Bible's way) / a gold chip on the icon's
+  corner / the name, then the nickname in gold under it. The game's icons already carry the tier stars (yellow = ดล,
+  red = ดด).
+- **The look picked: "swap"** (user: "swap: ชื่อเล่นแทนชื่อ ชื่อเดิมตัวเล็กข้างใต้ (แบบไบเบิล)"). Design
+  `plans/wardrobe_nicknames_design.md`, plan `plans/wardrobe_nicknames_plan.md` (built in this session, "build it all here").
+- **Data:** `pipeline/wardrobe_nicknames.py` (tests `test_wardrobe_nicknames.py`) reads GEAR_NICKNAMES / GEAR_LV / GEAR_DATA
+  (each one JSON line in the Bible's page) and icons.json, writes `wardrobe/data/nicknames.json` (108 KB) shaped like
+  icons.json: `{cls | all: {kind: {item | "item|R": {nick, lv, game: [game names]}}}}`; rows with game names only stay
+  (search). Rerun when the Bible's nicknames change (either PC: it needs only the Bible's page). The publish keeps the rows
+  of published tiles only (`publish_nicknames`, after publish_icons; ROOT_JSON has nicknames.json): a row's key is a model
+  name, so an unreleased TTO piece's row would name it online.
+- **Page** (`wardrobe/index.html`): `NICK` (loaded with icons.json, `{}` when missing), `nickOf(kind, name, ed)` (looked up
+  like iconOf; an edition tile only by its own `name|ed`, so legend R never borrows legend's nickname), `nickSort` (stable;
+  the class guide's classGuideGearSortKey: nicknamed first, no level, rank-gated highest rank first (Champion -68 before
+  RP -58), then level highest first, so 70 ดด (lv 74) leads 70 ดล (72)), `findText` / `matches` (lower case, spaces
+  removed: "70ดล" finds "70 ดล"). `outfitTiles()` (each R / V edition a tile, sorted on its own row: an edition can lead
+  while its plain outfit stays below) and `pickerProps(t, list)` (the weapon picker's R pieces, nickSort, the Cat's hood
+  first as before) give the pickers' order, and `viewList` uses them when the picker is closed (the viewer's ← / →).
+  The ชุด and ชุดเซ็ต pickers got a ค้นหา box like the pieces'; every search matches the name, the game's name and the
+  nickname (a weapon's other piece's too; a set: its name, nickname and each piece's); nothing found = ไม่พบที่ค้นหา
+  (ถอดทั้งหมด / ไม่ใส่ stay); a redraw of the open picker keeps the query and the box's focus. Sets: `setNick(s)` = the
+  outfit's row in the set's own edition (s.v, not the colour's setEd), else weapon, hat, back; buildSets returns
+  `nickSort(sets, setNick)`, so the panel's teaser shows nicknamed sets too. A set with no nicknamed outfit takes its
+  piece's: the Rabbit's poseidon set reads วุธดันน้ำ. Label: `item()`'s `o.nick` -> `.lbl.nk-main` (gold 600 13 px,
+  2 px top padding so ป์ / ั้ are not clipped) over `.nk-sub` (10.5 px, the old label), `.pk-item.is-nick` a gold-tinted
+  edge; the tooltip keeps the name. `wardrobe.debug().openPicker` added (scripted checks).
+- **Check:** `pipeline/wardrobe_nick_check.py` (all classes: order worked out in Python from nicknames.json, labels, the
+  space-less nickname search, a game-name search, nonsense -> the note, a redraw keeps the query, the viewer's →, sets the
+  same; screenshots of the Rabbit's weapon / outfit / set pickers at 1366x768 and 390x844 in checks/nick_check/).
+- **Final review (a fresh reviewer) and its fixes:** (1) icons.json spells some names in another case than the page's items
+  (the Bison's `PoseidonHelmet` = the page's poseidonHelmet, the Panda's `shinjitsu` = shinJitsu, the Wolf's headPhone1 / 2;
+  iconOf misses them too: those tiles have no icon, untouched here), so their nicknames (หมวกดันน้ำ, 48 ดด) never showed:
+  the script now keys rows by the page's own spelling (`page_items(data)`: each class's outfits.json / props_*.json names,
+  name without _L / _R, the shared table in lower case) and counts rows with no page item as unmatched (85 now: the 70 ดด
+  weapons / hats w_*62 / c_*62 and a few trinkets have no model in the wardrobe; 39-57 nicknamed tiles per class); the
+  publish keeps rows by the published items' names, not icons.json's (`publish_nicknames(run, outfits, props)`). Edition
+  rows stay even with no R tile (legend|R: the legend R set reads 70 ดด). (2) The viewer's dashed mark took the first
+  `.pk-cell[data-item]`, now often an R / V tile sorted before its outfit: `:not([data-ed])`. (3) A worn nicknamed tile looked
+  like its neighbours (the gold label was the worn mark): worn = a solid 2 px gold inner ring, the name line in the text
+  colour (`checks/nick_check/worn_R_1366_fixed.png`). The check covers all three (every nicknamed row shows on its tile,
+  the viewing mark, a worn tile's name colour and edge), each seen failing first (on the old data / page).
+- **Left as they are (the reviewer's minors):** the closed-picker outfit order in the viewer counts an outfit at its first
+  tile (an edition tile can lead) while the open picker counts plain cells; findText flattens two levels (deeper arrays
+  match through the string join); an outfit edition whose icon is null would keep its code on the plain tile (none today).
+  The ชุด / ชุดเซ็ต search boxes take the focus on open like the hat / weapon / back pickers, so W / A / S / D, Space and R
+  type into them there too.
+- **Menu check flake:** run beside another browser check it timed out twice (page.goto, page.screenshot 30 s); alone it
+  passes, HEAD's page passed too. Run the browser checks one after another.

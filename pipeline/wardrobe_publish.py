@@ -75,7 +75,7 @@ MAX_FILES = 20_000                       # Cloudflare Pages, free plan: files a 
 MAX_FILE_BYTES = 25 * 1024 * 1024        # and bytes a file
 PROP_KINDS = {"weapons": "weapons", "accessories": "headpieces", "trinkets": "back_trinkets"}   # data file -> report kind
 SHARED_KINDS = ("accessories", "trinkets")        # the page loads all/props_<kind>.json for these
-ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.json")
+ROOT_JSON = ("meta.json", "icons.json", "placements.json", "item_map.json", "ui.json", "nicknames.json")
 PAGE_FILES = ("wardrobe_icon.svg", "wardrobe.ico")   # copied from --src next to the page: its tab icon (and the .ico)
 # the effects' own folders, copied from --src next to the page (the page loads fx_cues/<cls>.json and fxparts/<file>.js
 # relative to itself): the cue files (one per class, {} = none) and the effect part modules (2026-11-09)
@@ -1018,6 +1018,25 @@ def publish_icons(run, outfits, props):
     return out
 
 
+def publish_nicknames(run, outfits, props):
+    """nicknames.json (the Bible's nicknames, pipeline/wardrobe_nicknames.py, 2026-11-14) with the rows of published
+    items only, by the item's own name as the page looks it up (icons.json can spell it in another case): a row's key is
+    a model name (an outfit edition's is "<name>|<R|V>"), so an unreleased TTO piece's row would name it online."""
+    names = {cls: {"outfits": {o["name"] for o in os_}} for cls, os_ in outfits.items()}
+    shared = {}
+    for (cls, kind), ps in props.items():
+        names.setdefault(cls, {}).setdefault(kind, set()).update(n for p in ps for n in (p["name"], strip_hand(p["name"])))
+        shared.setdefault(kind, set()).update(p["name"].lower() for p in ps)
+    out = {}
+    for cls, kinds in run.load("nicknames.json", default={}).items():
+        for kind, rows in kinds.items():
+            pub = shared.get(kind, set()) if cls == "all" else names.get(cls, {}).get(kind, set())
+            kept = {k: r for k, r in rows.items() if k.split("|")[0] in pub}
+            if kept:
+                out.setdefault(cls, {})[kind] = kept
+    run.write_json("nicknames.json", out)
+
+
 def published_models(cls, kind, outfits, props):
     """The item_map.json model names of one class and kind that are published, in the map's own spelling: armor
     models are <Class>_<outfit>, Panda's gloves map to <name> for props <name>_L / _R, shared ("all") models are lower
@@ -1162,6 +1181,7 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
     publish_community(run, outfits, props)
     icons = publish_icons(run, outfits, props)
     publish_item_map(run, outfits, props)
+    publish_nicknames(run, outfits, props)
     publish_placements(run, icons)
     publish_ui(run, classes, tto_clips, emo)
     publish_hd_icons(run, pub_clips)
