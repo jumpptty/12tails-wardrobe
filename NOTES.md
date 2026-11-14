@@ -3565,3 +3565,12 @@ will be in the wardrobe, but sort them first at the top for the wardrobe".
   type into them there too.
 - **Menu check flake:** run beside another browser check it timed out twice (page.goto, page.screenshot 30 s); alone it
   passes, HEAD's page passed too. Run the browser checks one after another.
+- **Committed and deployed** (user: "commit push deploy"): af187f7 (this work's hunks only: the skin sessions' SKINS.cut /
+  SKINS.face hunk in index.html and their NOTES / HANDOFF sections stay uncommitted). Published with `--src` = a
+  `git -c core.autocrlf=false archive` of af187f7's wardrobe/ (no data) and `--data` = the main folder's: 9,744 files (+1,
+  nicknames.json), +91 KB, check no problems, drop counts unchanged, data folder `data-7e216fdf3f` (new: the data changed);
+  nicknames.json online keeps 1,937 of 1,941 rows (4 unreleased TTO pieces'); `wardrobe_dist_check.py` passed. Deployed from
+  an empty folder with the Worker script: 26 files uploaded (nicknames.json, and the fxparts / fx_cues the last deploy sent
+  as CRLF, back to LF), version `169e1a57-f6ed-4623-b256-59dffd9b041e`. Live (isolated headless context): nicknames.json
+  200, the weapon / outfit / set pickers each have the ค้นหา box, nicknamed tiles first with their labels, the set search
+  "70ดล" leaves ถอดทั้งหมด + legend R + legend, no page errors (`checks/nick_check/live_set_search.png`).
