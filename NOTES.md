@@ -3493,3 +3493,10 @@ then "when you are done, commit push deploy this work".
   index.html too (the commit's page = HEAD's + this change, built with `git merge-file`; HEAD's + both = the working
   file). The publish takes the page from `git archive` of the commit and the data from the main folder (`--src` /
   `--data`), so the deploy carries no uncommitted work either.
+- **Deployed** (version `d1b095c0-7cd8-44c2-b497-b1d42317afea`, `data-627300df13` unchanged): published with `--src` = a
+  `git archive` of 9b1f6df's wardrobe/ (no data) and `--data` = the main folder's (check: no problems; 9,743 files, the page
+  +15 KB; `wardrobe_dist_check.py` passed), deployed from an empty folder with the Worker script: 6 files uploaded. Live:
+  the page = the build, topics without L, the Whale's 43 weapon tiles (local 44: studentLance is ToT), royalLance wears
+  royalShield too, ไม่ใส่ takes both off, no errors. Trap: this PC's `core.autocrlf` makes `git archive` write CRLF into
+  the text files, so fxparts/whale.js, fxparts/bat.js and fx_cues/panda.json went up as CRLF (harmless: same code; the
+  next deploy from the main folder puts the LF ones back). Next time: `git -c core.autocrlf=false archive`.
