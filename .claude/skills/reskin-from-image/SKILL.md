@@ -110,6 +110,59 @@ A set = the outfit and its own head piece, weapons and trinket. Never ToT's stud
     (the normal's z) per height. A surface that comes forward and faces down is an underside: it takes a fold and a
     cast shade, not the detail that belongs higher up. A borrowed painting goes where that anatomy is on THIS mesh.
 
+17. **"Don't force it" is not "don't copy it".** (user 2026-11-14: "Why do you hesitate to copy the back design from the
+    reference image?") A complaint about one badly pasted fragment ("a forced painting") is about that fragment. Where
+    the reference HAS a design for a part (her back panel), copy it first, whole, fitted to the piece (rule 12); offer
+    own designs only where the reference shows nothing or the user asks for them. When the user suggests one idea (a
+    dark red belt), the mocks include own designs in the reference's other colours too, not five takes on the idea.
+18. **Clean AND detailed: never trade one for the other.** ("the patterns are beautiful but it is not sharp, some of it
+    still looks like water color"; then, after a pass that left plain cloth: "you are starting to lose way too much
+    details on the robe".) Remove the mess, keep the motif: (a) upscale the reference's sheet first
+    (`wardrobe_skin_upscale.py`, twice -> `<name>_x4.png`) and read BETWEEN its texels (`wardrobe_borrow.fine`), never
+    one reference texel per many outfit texels; (b) lay only what the reference draws (`strokes`: lines, eyes, leaves)
+    on one clean cloth, never its cloth, borders and hems along with them; (c) one layer of the reference per spot
+    (a depth buffer), or its layers alternate texel by texel: hatching, dark dots; (d) finish with the upscale of the
+    painted skin (1024 -> 2048, under the send route's 4 MB).
+19. **Review on the model yourself, in rounds, before the user sees it** ("see the model in 3D and reiterate until
+    everything looks clean"; "I expect quite much more"). After every pass: `wardrobe_skin_views.py --per-job` from
+    eight sides, close up, at two heights (`--at Spine1 --lift -0.42 / 0.12 --zoom 3.4`), and from below where the user
+    looked from below. Look for: ragged or saw-tooth edges, single dark or light texels in a row (a mask cut by
+    per-texel normals along the mesh's triangle edges: close the mask), stray strokes, flat grey patches, tints.
+    Fix and render again until a round shows nothing; only then report. Previews for the user: eight sides, full body,
+    a sheet per variant ("the preview should be 8 angles view fullbody").
+20. **Paint on the 3D surface, not from one view** ("it's almost like a cheap attempt at projection, can you fix this as
+    if you are an 3D model artist drawing directly on the 3D model?"). A reading from the front paints what the front
+    cannot see (the forehead behind the fringe, seen from below) and skips faces that point sideways. Wrap round the
+    part instead (the angle about its axis and the height: the helmet band round the fringe, on every face of the
+    strands), decide per island what a surface IS (fringe = band, side locks = hair, skin = no metal).
+21. **Mirrored halves and posed halves.** A piece whose halves share texels cannot carry a leaning or one-sided
+    pattern, and slanted strokes meet as chevrons at its middle. A "skewed" or "clipping" look from straight ahead or
+    behind is then the pose (the idle turns the hips; the coat's back halves follow one leg each and cross under the
+    belt): check with a grid skin (`--islands --rays 2`), say so with the game's own outfit beside it, and keep
+    designs off the zone where the halves cross rather than drawing across it.
+22. **A texture the user did not ask to keep is theirs to take back** (hair: asked for, shown, "it looks too much":
+    off behind a switch, not deleted). Keep such layers switchable (`HAIR_TEX`, `SIGIL_HIP`, `BELT`, `COAT_BACK`).
+    Texture on plain parts means shading, folds, grain ("don't add more patterns").
+
+23. **A pattern must connect on the assembled model: no cuts of the painter's own making** (user 2026-11-14: "just
+    looking sharp is not enough, you have to make sure each UV islands connects cleanly when it assemble in the model
+    too, this is why I tell you to paint directly on the model"; "explain why your own painting can cause such an
+    unclean cut when the UV map is not even the problem?"). The cuts were inside ONE island, made by the reading's own
+    limits: (a) a reading from one view (front, side) is only valid where the surface faces that view, so it needs a
+    limit where the surface turns away, and a limit across a motif is a cut; (b) a seam between two readings on one
+    piece (her tabard below a height, her bodice above it). So: (1) never read by view on a surface that turns:
+    unroll both surfaces instead (the angle round the part's own axis x a fixed radius, and the height: `unroll`, `cyl`)
+    so a motif keeps its shape all the way round; (2) one piece = one reading of one motif, top to bottom; (3) a motif
+    ends where the reference's design ends, or behind something that covers it (the belt), never at a fade in open
+    cloth; (4) `strokes()` prints how many drawn texels each of its limits ends (reach / her island's rim / the mask)
+    and `--cuts` writes a skin with them marked (red / yellow / green): render it and look at every mark before
+    reporting; (5) no stray crumbs: stroke fragments under 30 texels are dropped.
+24. **Make-up on a face preset** ("be a professional makeup artist ... anime eyelashes"): the page draws the preset
+    over the skin (the sheet's top-left 256 x 256 texels), so paint round its eyes, placed from the preset's own
+    picture (the lid's top edge per column: `eye_makeup`): tapered curved lashes on the outer half, a wing past the
+    outer corner, short lower lashes; drawn at 6 x and averaged down. What lies under the preset's opaque or
+    half-opaque parts (its own lid highlight) does not show: check the composite, not the skin alone.
+
 ## Still applies
 
 - The live view from CLAUDE.md ("Painting a skin"), opened before the first pass.

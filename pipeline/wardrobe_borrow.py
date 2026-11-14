@@ -111,9 +111,53 @@ def ref_maps(obj, tex, K, cache, sub=None, cls="bat", body="summer", mirror=Fals
         np.savez_compressed(f, pos=pos.astype(np.float32), nrm=nrm.astype(np.float32), covered=cov, A=A, t=t, err=err)
     d = np.load(f)
     cov = d["covered"]
+    # a sharp copy of the sheet beside it (<name>_x4.png: wardrobe_skin_upscale.py, twice; user 2026-11-14 of patterns read
+    # from the 512 px sheet: "beautiful but it is not sharp, some of it still looks like water color"): .hi, read between
+    # its texels by fine(); .rgb is then that copy made smaller, not the small sheet made larger
+    x4 = Path(tex).with_name(Path(tex).stem + "_x4.png")
+    hi_im = None
+    if x4.exists():
+        # the upscaler's light and dark, the small sheet's own colours (it tinted some grey lines green): Y from the
+        # sharp copy, Cb / Cr from the sheet itself made larger
+        big = Image.open(x4).convert("YCbCr")
+        hi_im = Image.merge("YCbCr", [big.split()[0], *im.resize(big.size, Image.BICUBIC).convert("YCbCr").split()[1:]]).convert("RGB")
+    hi = np.asarray(hi_im).astype(float) if hi_im is not None else None
+    rgb = np.asarray((hi_im if hi_im is not None else im).resize((W, H), Image.LANCZOS)).astype(float)
     return SimpleNamespace(pos=d["pos"].astype(float), nrm=d["nrm"].astype(float), covered=cov, lab=ndimage.label(cov)[0],
-                           edge=ndimage.distance_transform_edt(cov), rgb=np.asarray(im.resize((W, H), Image.LANCZOS)).astype(float),
+                           edge=ndimage.distance_transform_edt(cov), rgb=rgb, hi=hi,
                            err=float(d["err"]), A=d["A"], t=d["t"])
+
+
+def bilinear(img, x, y):
+    """img (H, W, 3) at the pixel coordinates x, y (arrays; a pixel's middle = its index), between its pixels."""
+    return np.stack([ndimage.map_coordinates(img[..., c], [y, x], order=1, mode="nearest") for c in range(3)], -1)
+
+
+def fine(R, yy, xx, dk, key):
+    """The reference's colour for outfit texels that each found the reference texel (yy, xx) as their nearest, read
+    BETWEEN texels from the sharp sheet (R.hi) instead of as that one texel's colour: where the outfit's piece is larger
+    than hers, many of its texels share one of hers (blocks, ragged edges: "water color"). dk = how far, in the key
+    space the pair was matched in (key(p): (N, 3) body points -> (N, d)), the outfit's point lies from that texel's
+    own; turned into a step on her sheet by the sheet's own directions there (the neighbours' places, least squares),
+    at most one texel. Without R.hi: the texel's colour, as before."""
+    if getattr(R, "hi", None) is None:
+        return R.rgb[yy, xx]
+    H, W = R.covered.shape
+    def tang(dy, dx):
+        y1, x1, y0, x0 = np.clip(yy + dy, 0, H - 1), np.clip(xx + dx, 0, W - 1), np.clip(yy - dy, 0, H - 1), np.clip(xx - dx, 0, W - 1)
+        ok = R.covered[y1, x1] & R.covered[y0, x0] & (R.lab[y1, x1] == R.lab[yy, xx]) & (R.lab[y0, x0] == R.lab[yy, xx])
+        return (key(R.pos[y1, x1]) - key(R.pos[y0, x0])) / 2, ok
+    pu, oku = tang(0, 1)
+    pv, okv = tang(1, 0)
+    a, b, c, e, f = (pu * pu).sum(1), (pu * pv).sum(1), (pv * pv).sum(1), (pu * dk).sum(1), (pv * dk).sum(1)
+    det = a * c - b * b
+    ok = oku & okv & (det > 1e-16)
+    det = np.where(ok, det, 1.0)
+    du, dv = np.where(ok, (c * e - b * f) / det, 0), np.where(ok, (a * f - b * e) / det, 0)
+    far = (np.abs(du) > 1.5) | (np.abs(dv) > 1.5)                 # matched from beyond the texel's neighbourhood (an island's edge
+    du, dv = np.where(far, 0, du).clip(-1, 1), np.where(far, 0, dv).clip(-1, 1)      # carried on): its own colour, or the step saw-tooths
+    s = R.hi.shape[0] / H
+    return bilinear(R.hi, (xx + 0.5 + du) * s - 0.5, (yy + 0.5 + dv) * s - 0.5)
 
 
 def isl(X, K, x, y):
@@ -150,7 +194,8 @@ def borrow(out, M, dst, R, src, absy=False, inset=1.5, name="", flip=False, view
         d, j = d[r, pick], j[r, pick]
     else:
         d, j = tree.query(key(q))
-    col = R.rgb[sm][j]
+    ys_, xs_ = np.where(sm)
+    col = fine(R, ys_[j], xs_[j], key(q) - key(sp[j]), key)
     if within is None:
         out[dst] = col
     else:

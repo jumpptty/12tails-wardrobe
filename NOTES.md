@@ -2988,6 +2988,179 @@ user's review). One editor after three builders (rabbit, generic, page_pipeline)
   permanently" (CLAUDE.md and plans/goal_fx_all_classes.md updated: no guard any more). `pipeline/workflow_class_fx.js`
   now takes `pc: "home"` (D:/ paths, the video folder's TTO 2026-11-04 bundles; default stays the office).
 
+## 2026-11-14 (home), the helmeted Bat skin: finding the coat's band
+
+- References rebuilt at home (`wardrobe_enemy_ref.py`, the HANDOFF line) and `wardrobe_bat_enemies.py eyes` run: its
+  look/royal.png does **not** match the committed one (72k texels differ, all on the coat's outside island 441,190:
+  the silver lining sits further in and the gutter takes the cloth). On the model the two look nearly the same. The
+  committed file (= the one on the office Desktop) was made before the mock passes changed the lining code (the back's
+  mirror seam), so the painter's defaults no longer reproduce it exactly. The committed png is kept; the rebuild sits in
+  eyes/_cache/royal_rebuilt.png (not for git).
+- **`pipeline/wardrobe_skin_views.py`** (new): skins on the hero from any yaw:pitch (below too), zoom and aim height;
+  `--islands` numbers every UV island where it shows (rays through the page, uv -> island) with a legend (island ->
+  sheet point, z range, size). Royal's islands at the back: 9 = the coat's outside (441,190), 26 = its inside
+  (452,338), **33 = a zigzag strip round the coat's back at hip height (499,425; bind z 0.54-0.64)**: royal's own
+  belt, a separate island, painted as plain coat cloth today. eyes/views_band/sheet.png shows it in red.
+- **Belt mocks on island 33** (user: "Yes, it's the zig zag"). `belt(J, strip, silver)` replaces the office's belt round the
+  coat at z 0.84 (the wrong piece; its royal_belt_plates / _weave_eye and belt_variants.png removed). Laid out on the
+  strip's own shape: s = arc length along it from the back's middle (the strip's end, a mirror seam; 67 cm along the zigzag
+  per half on the body), v = across it from its sheet rows (it lies upright in the sheet, sheet x 494-505, y 363-487;
+  v flipped so 0 = its top edge). Each design a height field shaded as relief lit from above, in her wings' edge red,
+  a fine grain, silver cord piping both edges: I tooled vine, J braid (chevron plait), K studs + an eye clasp at the
+  back's middle, L scales, M basket weave. `wardrobe_bat_enemies.py belts` writes look/royal_belt_<key>.png only;
+  the sheet: `wardrobe_skin_views.py ... --views 200:-10,150:-25,180:-45 --zoom 6 --aim 0.36` ->
+  eyes/views_belts/sheet.png (a row per design, "now" first). `BELT` stays "none" until the user picks.
+- **Own designs too, previews from 8 sides full body** (user: "all these variants are from my dark red suggestions, come up
+  with your own design too, the preview should be 8 angles view fullbody"). `belt()` gains five in her other colours
+  (pal, read in eyes(): her sleeves' stripe tones 35,29,37 / 64,73,90, her wings' magenta 91,48,78 (x2 on the belt to
+  show), her eyes' lilac-white): N eyes (small eyes + silver diamonds on dark purple), O chain (silver oval links and
+  bars on near-black), P stripes (her sleeves' slanted stripes), Q contour (her wings' magenta lines + an eye at the
+  back's middle), R lattice (a pale silver band, a dark purple diamond lattice). `wardrobe_skin_views.py --per-job`
+  writes one sheet_<name>.png per skin (4 x 2, one crop for all its sides): eyes/views_belts8/sheet_<key>.png, with
+  sheet_now.png for the present skin. Seen: the red ones contrast most with the coat; the purple / grey ones (eyes,
+  chain, stripes, lattice) are quieter, the eyes and the chain read best of those.
+- **Picked: Q, the wing contour lines** (user: "I like contour"). `BELT = "contour"`; look/royal.png rebuilt (opaque;
+  pixel-identical to the mock). It also carries the painter's present coat lining (the rebuild noted above), not the
+  office Desktop file's. eyes/views_final/sheet_look.png = the 8 sides. The ten belt mock pngs are removed (their sheets
+  in eyes/views_belts8/ stay); `wardrobe_bat_enemies.py belts` writes them again.
+- **The head, the hair, the back, cloth, an upscale** (user, with close-ups from the live view; all in
+  `wardrobe_bat_enemies.py eyes`, look/royal.png):
+  - **The helmet band, painted on the 3D head** ("when I look from below ... the silver metallic part bled into Bat's
+    forehead and hair, it's almost like a cheap attempt at projection, can you fix this as if you are an 3D model
+    artist drawing directly on the 3D model?"; then "the metal part still bled into the hair left and right, but the
+    almond shape I redded should get the silver metal texture continued from the eye sigil ... no longer hair
+    (illusion)"). The band was a reading from the front (`take(view=1)`) on hair + head: it also painted the forehead's
+    skin behind the fringe (hidden from the front above z 1.53: measured with a front depth map of the hair; in full
+    view from below) and her helmet's lower sides onto the side locks. Now: the skin carries no metal; the band is on
+    the fringe island alone (90,174), on every face of it whichever way it points (the strands' side and under faces
+    carry it on: one piece of metal), read ROUND the head (the angle about the head's axis x 0.02, and the height:
+    `cyl`), her helmet's outward faces only. `BAND_ROUND` 95.
+  - **The hair = the user's hair picture** ("the texture missed some hair"; then a picture of flowing dark red locks:
+    "I want you to add hair texture too, don't have to be this exact texture"; of locks drawn by formula: "I don't
+    like your hair texture, can you try overlaying my reference picture instead?"). `hair_picture()`: the picture
+    (plans/reskins/bat/hair_ref.png, not for git: the user's; it came mid-turn and was read back out of the session's
+    jsonl, `attachment` records) laid on the body: across = the angle round the head (+ 0.8 x the distance from the
+    axis, or a lock's face that points round the head is one stretched column), counted from the front's / the back's
+    middle; down = down the hair; `HAIR_PIC_W` 0.28 wide, mirrored across, cross-faded down (a mirror drew diamonds).
+    Its light and dark through her hair's palette (174,139,149 / 217,178,193 / 243,210,221), the dark gaps deeper.
+    **The hair's halves share their texels** (a mirror at the back's middle): slanted strands meet as chevrons there,
+    so the picture's column where the strands run straightest lies on the middle (least slope of its light over a
+    40 px window). Royal's own strand painting stays under it at 0.7.
+  - **The coat's back** ("the back of the robe ... maybe it's from game model mirroring issues, but please fix if you
+    can, the back of the robe texture is also a bit bland"). Not mirroring: the dark column down the middle was her
+    back panel read onto the coat within 1.5 cm (`COAT_BACK` "ref"). Now `COAT_BACK = "wing"`: clean cloth, her wings'
+    eye on the upper back (z 0.83) and their flowing magenta lines over the whole back (the belt's lines). The designs
+    were re-placed round the belt (it lies at z 0.55-0.64; the old eye sat behind it): eye | wing | spine | hem |
+    plain, `... backs` -> look/royal_back_<key>.png (not for git), sheets eyes/views_backs8/sheet_back_<key>.png.
+    **The pale drop low on the back** = the coat's lining drawn on texels of the back's mirror seam at z 0.41-0.50
+    whose |y| reached 0.0058 (the seam test was |y| < 0.005: now 0.008).
+  - **The front piece "skewed to the Bat's right"**: not the paint. Its two halves are one set of texels mirrored at
+    y = 0 (40 triangles each side, the middle's vertices all at sheet x 315, mirror pairs' uv equal to 0.005 texel), so
+    a pattern cannot lean. The idle pose turns her hips about 10 degrees: from straight ahead the piece's right half
+    is foreshortened and the coat's right flap covers its edge; from yaw 350 it is symmetric. The game's own royal
+    paint leans the same way (eyes/views_front/sheet.png: original and look, yaw 0 and 350). Nothing changed.
+  - **Cloth on the sleeves and stockings** ("add a bit more texture ... (don't add more patterns, please add things
+    like texture, shading, or a bit of cloth wrinkles)"). `cloth_shade()`: light and shade multiplied onto the stripes
+    on the limb's own coordinates (`limb()`: the way along, the angle round its middle line): roundness, folds along
+    the sleeve (wardrobe_bat_robe.folds), creases at the elbow, the cuff, behind the knee and at the ankle, a sheen
+    down the stocking's front, knit rows / ribs and a grain. `SLEEVE_FOLDS`, `LEG_CREASES`.
+  - **Twice the size** ("is there a way to make the patterns looks more high res? can you try upscaling if it
+    helps?"). It helps: `pipeline/wardrobe_skin_upscale.py` (new; `py -3.10`, home PC: torch + CUDA) puts a skin
+    through the icons' Real-ESRGAN recipe in tiles (192 px + a 24 px margin thrown away) -> look/royal_2x.png, 2048 px.
+    The ragged edges of nearest-texel readings and the 1024 px stair-steps on drawn lines come out as clean strokes
+    (eyes/views_up/). As upscaled 5.0 MB, over the send route's 4 MB (LIMITS.fileBytes): saved at 7 bits a channel
+    (off by 1 level at most): 3.7 MB. The page wears any size (composeTexture: skin width / base width). Painting
+    at K = 4 instead was not tried (the painter's constants are K-aware only in part: belt relief, grain).
+- **`wardrobe_skin_views.py`** grew: `--at <bone> [--lift]` (the page's own camera target sits in front of the hero:
+  a view from below aimed with --aim looked at her chest), the shot read in the same task as the render (canvas
+  toDataURL: the page's loop and its orbit limits pulled a low camera back before an outside screenshot), `--per-job`.
+- **Her back panel copied whole; the hair picture off** (user: "Why do you hesitate to copy the back design from the
+  reference image? Also remove the hair texture for now, it looks too much."). The hesitation was a wrong reading of
+  2026-11-13's "forced painting ... your own designs" (said of one stray strip) and of the skill's rule 11; the rule's
+  own answer was there: "bring the reference's patterns as whole motifs placed on a fitting piece". `COAT_BACK =
+  "panel"` (coat_back): her back panel island (458,326: the pointed tabard, silver border, vine, two leaves, diamond),
+  her paint texel for texel inside its own outline, on the middle of the coat's back: `PANEL_WIDE` 1.25 x wider
+  (half-width 17 cm of the coat's 24 at the belt), its point raised from her z 0.37 to the hem's middle 0.405, a soft
+  shade along its edge, the coat's clean cloth outside; above it her dress's back at its own place (the emblem
+  between the shoulders). The wing / eye / spine / hem designs stay in the code. `HAIR_TEX = 0.0`: the hair is royal's
+  own strand painting in her palette (HAIR_K 1.25); hair_picture() and hair_ref.png are only needed when it is on.
+  look/royal.png + royal_2x.png (3.2 MB) rebuilt; eyes/views_final/sheet_look.png = the 2x from 8 sides.
+- **Clean and sharp: review rounds on the model** (user, with close-ups: "assume direct camera to the back side of the
+  robe, please fix so doesn't look like it is clipping"; "the patterns are beautiful but it is not sharp, some of it
+  still looks like water color"; "see the model in 3D and reiterate until everything looks clean"; then "you are
+  starting to lose way too much details on the robe"). Each round: paint, upscale, eight sides at two heights
+  (eyes/review_low, review_up: `wardrobe_skin_views.py --at Spine1 --lift -0.42 / 0.12 --zoom 3.4 --per-job`).
+  - **The back under the belt "clipping":** not the paint's seam. Under the belt the coat's back is a few large
+    triangles, each half skinned to its own leg (the middle's vertices to both thighs): in the idle pose the halves
+    shear and cross near the middle (a grid skin showed it: `--islands --rays 2` saves hits_<yaw>_<pitch>.npy), so a
+    shape drawn across the middle there is cut on one side. Nothing crosses it now: her back panel, smaller
+    (`PANEL_WIDE` 0.68, `PANEL_TO` 0.645), ends with its point on the belt; plain cloth under the belt.
+  - **Sharp:** her 512 px sheet upscaled twice (`wardrobe_skin_upscale.py`, --bits 8) -> ref/LadyNoir_x4.png (2048 px,
+    not for git; without it everything falls back to the small sheet). `ref_maps` loads it as R.hi (its light and
+    dark, the small sheet's own colours: the upscaler tinted grey lines green); `wardrobe_borrow.fine()` reads her
+    colour BETWEEN her texels (the outfit's point's offset from its matched texel, turned into a step on her sheet by
+    least squares over the neighbours' places; steps over 1.5 texels = matched from beyond an edge: none), used by
+    borrow(), the fringe band, the back panel, the front piece. Before, many outfit texels shared one of hers: blocks.
+  - **Clean:** the coat is ONE cloth now (form + drape folds, as its back was), not royal's paint through a ramp (its
+    light hem trim came out as a grey skirt). `strokes()`: only what she DRAWS there (differs from her cloth), never
+    from her island's rim, fading toward it; with `depth`, her outermost layer alone (a depth buffer per 4 mm cell;
+    picking among the nearest few flipped texel by texel: hatching, ragged edges). Used for the big eye on the coat's
+    sides (over the belt only: under it her panel's hem made ragged bands and thorns, the user's boxed spot) and the
+    emblem between the shoulders (|y| < 6 cm: beside it, stray hooks). The small sigil box on the front pieces is off
+    (`SIGIL_HIP`; it is the same motif as the side eye; wrapped round the body and trimmed to its own diamond if on).
+    The front piece: her tabard's top lies on the other side of her sheet's mirror line (y < 0), unread before: a comb
+    of teeth down the V; read as |y| now. The lining's outer dark line a full texel wide (a quarter-texel line broke
+    into teeth along the lapels). The sleeves' rings read between the profile's 2 mm steps (notched stripe edges).
+  - **Detail kept** (the "too much lost" round had only a small sigil per hip): the big side eye back, and her border's
+    second thinner line inside the silver lining along every edge and spike (`LINE2` 8.2 texels in).
+- **Black dots, connected patterns, lashes; the lessons written down** (user: "what are these? black dots"; "make sure
+  each UV islands connects cleanly when it assemble in the model"; "these two parts are the same piece, yet the
+  pattern got cut awkwardly"; "explain why your own painting can cause such an unclean cut"; "anime eyelashes";
+  "document all relevant lessons from this session").
+  - Dots across the side eye: (1) the side reading's target mask was a hard test on the coat's per-texel normals:
+    along the coat's own triangle edges (split normals) single texels fell out and kept the cloth colour; (2) her dark
+    under-panel island was read with her dress island: single texels found it nearer. The same on the forehead disc
+    (her helmet and brow layers flipping): the fringe band reads her outermost layer per 4 mm cell now.
+  - **The side eye is unrolled, not viewed** (`unroll`: the angle about each surface's own upright axis x 17 cm, and
+    the height; her dress round x -0.001, the coat round -0.032). Before: from the side (key x, z), limited by
+    normals: cut where the coat turns to its front (the stem's neck, the rear leaf). Now the whole motif: eye, frame,
+    four leaves, the stem up to her waist arc and down behind the belt (its lower limit z 0.585-0.595 is under the
+    belt all the way round). Limits left: the front lining (22-32 deg) and her back panel (138-150 deg).
+  - **The front piece is one reading**: `TAB_TOP` 1.0 (her tabard from under the waist sigil to the split);
+    `TAB_UPPER` (her bodice's lines above 0.935, the old seam) off.
+  - `strokes()` prints per limit how many drawn texels it ends; `--cuts` writes eyes/_cache/cuts_<name>.png (red
+    reach, yellow her island's rim, green the mask) to render with wardrobe_skin_views.py; fragments under 30 texels
+    are dropped; `key_src` for her own map.
+  - **`eye_makeup()`**: face 11's eyes located in the preset's picture; `LASHES` 5 tapered curved spikes on the outer
+    half of each upper lid (`LASH_LEN` 1.25), a wing past the outer corner, three short lower lashes; a plum shadow
+    (mostly hidden under the preset's own half-opaque lid highlight). eyes/review_face/sheet.png.
+  - Lessons: the skill's rules 17-24 (.claude/skills/reskin-from-image/SKILL.md) and the memory
+    `feedback_skin_polish_standards.md` (the user's standards: copy the reference's designs, clean AND detailed,
+    self-review in rounds on the model, 8-angle full-body previews, paint on the surface).
+- **Lashes, stronger: four strengths mocked** (user: "you can try more aggresive lashes"). `pipeline/wardrobe_bat_lashes.py`
+  (new): the skin painted once, the make-up put on a copy per variant (A now 5 lashes x 1.25 | B bold 6 x 1.7 | C
+  dramatic 7 x 2.2 | D extreme 8 x 2.8; `LASH_W` thickness, `LASH_FROM` the first lash's place along the lid; from
+  LASH_W 1.2 a second shorter wing and a fourth lower lash) -> eyes/lash_variants.png (flat, the preset on) and
+  eyes/views_lashes/sheet.png (the model, four angles). Defaults unchanged (A) until the user picks.
+- **Picked: C, with every lash rooted in the eye's line** (user: "C looks good, but make sure each eyelashes root reach the
+  eye edge, don't make it looks float in solitude on the face"). Defaults `LASHES` 7, `LASH_LEN` 2.2, `LASH_W` 1.45,
+  `LASH_FROM` 0.26. Roots: the eye's line = the largest connected dark piece of the preset's eye (before: any dark
+  texel in the eye's box, so the crease line over the lid or a stray mark could be a "lid"); an upper lash starts 1.6
+  texels inside its top edge; a lower lash on the line's lowest texel, and only where the line is the eye's lower
+  edge there (elsewhere the preset has no dark line to root on: those lower lashes are left out, one per eye stays).
+  `eye_makeup` now asserts it: with the preset laid on, no piece of lash may be a dark piece of its own (a failure
+  writes eyes/_cache/lash_loose.png, the loose pieces red). look/royal.png + royal_2x.png rebuilt.
+- **The outer corner is one arc** (user, an arrow at a notch under the outer lashes: "the far away eye lashes should extend
+  its root, forming a pretty arc from the eyes"). Before: two wings from one spot, a notch between them. Now the lid's
+  line is carried on as one tapering flick: it starts inside the lid's line at 0.80 of its length, as thick as the line
+  there, leaves along the lid's own direction (the slope of the line's middle over its outer third), then turns up
+  (`spike(via=)`); the three outermost lashes grow from the arc itself, each shorter than the last. Tried and
+  dropped: an arc through the preset's lowest corner tip (a heavy filled wedge). eyes/review_face/sheet.png.
+- **512 px for upload** (user: "skin reduce to 512x512 please, that's the max game can render"): look/royal_512.png = the
+  2048 px skin shrunk with Lanczos (sharper than painting at 512); on the home Desktop
+  `wardrobe_reupload\lady_noir_face11\12tails_ค้างคาว_Royal.png` (the hood was 512 already). look/royal_2x.png stays
+  for the wardrobe's own preview.
+
 ## 2026-11-13 (home), every icon upscaled
 
 User: "check all icons in the wardrobe app for any unupscaled ones, and upscale them"; then "you may check 12 tails
