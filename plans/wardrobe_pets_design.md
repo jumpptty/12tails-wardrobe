@@ -34,6 +34,14 @@ wardrobe is about seeing a whole look; in the game the pet is part of it.
   turn (about 40 deg as a starting point) and the height are a look: mocked side by side for the user to pick (CLAUDE.md:
   mock variants), on pets of different sizes (a small walker 1 m back, a 2 m one, a kite, a Lv 9 pet at 1.8x, which
   may reach into the hero: shown as the game has it, not moved).
+  **Picked 2026-11-18 by the controller from the mocks** (`checks/pet_mocks/index.html`, `pipeline/wardrobe_pet_mocks.py`;
+  the user was away: "I can't wait 1 hour"): **turn 40 deg, rise 0.10** (the direction's y over its horizontal
+  length), the same side as today's FIT_DIR: the hero stays a clear three-quarter view and every mocked pet (Small
+  Anubi Lv 9 at 1 m, Mini Mok Bug at 2 m, a kite, a balloon) shows beside her; 30 deg still overlaps the big pets, 55
+  deg turns her too far. **The block: layout B, สัตว์เลี้ยง beside ท่าทาง** (rows หมวก + ชุด, อาวุธ + ประดับ,
+  สัตว์เลี้ยง + ท่าทาง: an even two-by-two on desktop and phone; A crams three small blocks in one row, C shrinks every
+  block for an extra row). Phone fix needed: `.tname`'s `overflow: hidden; line-height: 1.3` clips the ้ over ี of
+  สัตว์เลี้ยง at the top.
 - **Size = the pet at its highest level (my call, from the user's "max rank everywhere", 2026-11-09, and "the meshes
   at max level" for Bloom Pulse, 2026-11-18).** BB scales a pet by the level digit of its code right after the spawn:
   `localScale = (level x 0.1 + 0.9)` (`SheepEquipment.cs:5021`, the same in all 12 Equipment files): Lv 1 = 1.0x,
