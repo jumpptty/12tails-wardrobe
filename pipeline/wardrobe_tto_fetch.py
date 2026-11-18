@@ -1,4 +1,4 @@
-"""Fetch and decrypt the TTO client's bundles for given addresses, into a dated folder.
+r"""Fetch and decrypt the TTO client's bundles for given addresses, into a dated folder.
 
     py -3 pipeline/wardrobe_tto_fetch.py --out tto_assets/2026-11-18 --grep "characters/pets?/" [--grep "<regex>" ...]
 
@@ -27,6 +27,14 @@ def bundles_for(rows, pattern):
     return {b for r in rows if len(r) >= 4 and rx.search(r[0]) for b in r[3].split()}
 
 
+def require_bundles(rows, pattern):
+    """bundles_for, but a pattern that matches nothing stops the run (a typo or a catalog without the addresses)."""
+    got = bundles_for(rows, pattern)
+    if not got:
+        sys.exit(f"no address in the catalog matches --grep {pattern!r}: nothing to fetch for it")
+    return got
+
+
 def catalog_rows(catalog, pattern):
     out = subprocess.run([sys.executable, "-P", os.path.join(TOOLS, "aa_catalog.py"), catalog, "--grep", pattern],
                          capture_output=True, text=True, encoding="utf-8", check=True).stdout
@@ -46,7 +54,7 @@ def main():
     need = set()
     for pat in a.grep:
         rows = catalog_rows(catalog, pat)
-        got = bundles_for(rows, pat)
+        got = require_bundles(rows, pat)
         print(f"{pat}: {len(rows)} addresses, {len(got)} bundles")
         need |= got
     todo = sorted(b for b in need if not os.path.exists(os.path.join(dec, b)))
