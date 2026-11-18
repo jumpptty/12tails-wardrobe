@@ -195,7 +195,8 @@ main.inset .cm-card { top: 96px; }
 .topics { flex: 1 0 auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px;
   grid-template-rows: minmax(96px, 1.1fr) minmax(96px, .8fr) repeat(3, minmax(104px, 1fr)); }   /* V3: the class and face rings first */
 /* rows (user 2026-11-07): 1 = class, colour, face; 2 = the gear set across the full row; 3 = hat + outfit; 4 = weapon + back;
-   5 = moves across the full row (one weapon topic since 2026-11-14; until then 4 = the two weapons, 5 = back + moves).
+   5 = pet + moves (สัตว์เลี้ยง beside ท่าทาง since 2026-11-19, the pets plan's layout B: an even two by two on a desktop
+   and a phone; 2026-11-14 to 11-19 ท่าทาง had row 5 alone; until 11-14 4 = the two weapons, 5 = back + moves).
    Row 1 has no titles (user: "self explanatory") and gives part of its height to the set row; class and face share one
    narrow box, top and bottom (user: "to give spaces to the color selection"), colour takes the rest of the row */
 /* the Ledger material (V4): a 6 px corner, a hairline gold-brown edge and the faint weave, no shadow */
@@ -228,7 +229,6 @@ main.inset .cm-card { top: 96px; }
 @media (hover: hover) { .csw:hover { opacity: 1; } }
 .csw[aria-pressed=true]::before { content: ""; position: absolute; left: 22%; right: 22%; bottom: -3px; height: 3px; border-radius: 2px; background: var(--gold); }
 .topic.set { grid-column: 1 / -1; justify-content: center; }
-.topic[data-t="move"] { grid-column: 1 / -1; }   /* the last row alone (above) */
 /* the special tile: the Bible's gilded frame (border set with longhands: the shorthand resets border-image), no glow */
 .topic.set { border-style: solid; border-width: 1px; border-color: transparent; border-image: var(--cg-gild) 14 / 14px / 3px stretch;
   border-radius: 3px; background: var(--weave), var(--panel); box-shadow: none; }
@@ -251,12 +251,6 @@ main.inset .cm-card { top: 96px; }
 .topic[aria-expanded=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
 .topic .tname { flex: none; font-size: 14px; font-weight: 700; line-height: 1.45; text-align: center; }
 .topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
-/* ท่าทาง across the last row (one weapon topic, 2026-11-14): its ring as big as a half-row block's, not the whole row's
-   (a half block's content = this one's / 2 - (2 x padding - gap) / 2: 10 px padding, 8 px gap; short screens 8 px padding) */
-@media (min-width: 761px) {
-  .topic[data-t="move"] .ring { --d: min(calc(50cqw - 14px), calc(100cqh - 26px)); }
-}
-@media (max-height: 1000px) and (min-width: 900px) { .topic[data-t="move"] .ring { --d: min(calc(50cqw - 12px), calc(100cqh - 26px)); } }
 .ring { flex: none; border-radius: 50%; border: 1px solid var(--ring-edge); background: var(--well); display: grid; place-items: center; overflow: hidden; }
 .ring img { width: 80%; height: 80%; max-width: 96px; max-height: 96px; object-fit: contain; }   /* the icons are 128 px (2x upscales, wardrobe_icons_upscale.py) */
 .ring.t-class img { width: 100%; height: 100%; max-width: 120px; max-height: 120px; }   /* the class portrait (150 px) is round already */
@@ -467,6 +461,11 @@ main.inset .cm-card { top: 96px; }
   .topics { flex: none; gap: 5px; grid-template-rows: 96px 40px repeat(3, 46px); }
   .topic { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 3px 8px 3px 10px; }
   .topic .tname { order: 1; font-size: 12px; line-height: 1.3; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+  /* สัตว์เลี้ยง's ้ over ี rises 1.5 px over its 15.6 px line (Prompt 700 12 px: ink 13.3 px over the baseline, the line's
+     baseline 11.8 px down), which the ellipsis' overflow cut off; padding on top makes the room, and as it has no mark
+     below, its ink (13.3 px) sits 2.65 px low of the line's middle: 5.3 px on top alone puts it mid-block by eye
+     (NOTES.md "Thai text: centring by eye"; pipeline/wardrobe_pet_check.py measures it). The other names stay put */
+  .topic[data-t="Pet"] .tname { padding-top: 5.3px; }
   .topic .ring { --d: min(calc(100cqh - 4px), 44px); margin: 0; }
   .topic.set { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; padding: 2px 8px 2px 10px; border-image-width: 12px; border-image-outset: 2px; }
   .set-head { flex: 1 1 auto; gap: 6px; }
@@ -1179,7 +1178,8 @@ async function setProp(slot, name) {
 // copy (the Bat's illusion copies the hero, not its pet). It follows the root's visibility (the render loop: ชมชิ้นส่วน
 // hides the character) and a whole-hero hide hides it too (lookSync; TTO1118:PetControl.OnParentHide@0x1a94140 hides a
 // pet with its owner). Saved per class like a worn piece (C.state.Pet); a pick is one undo step (tracked(() =>
-// setPet(name)): pickPet. Its piece menu (a click on it: pieceAt's slot "Pet", kind "pets") has wear / change / take off
+// setPet(name)): pickPet, the สัตว์เลี้ยง picker's tiles (openPicker "Pet"); with a pet out the camera's fit turns to show
+// it beside her (heroFitPose, FIT_DIR_PET). Its piece menu (a click on it: pieceAt's slot "Pet", kind "pets") has wear / change / take off
 // and the two downloads, through the props' own paths (makePiece, pieceFile, texPNG, dlName; user 2026-11-18: "the model
 // and texture should be downloadable like other assets, Same logic, TTO exclusive remains undownloadable"); not in v1: the
 // view-alone, a skin of the visitor's, the community's (plans/wardrobe_pets_design.md, non-goals)
@@ -1752,10 +1752,11 @@ const findText = (...parts) => squash(parts.flat(2).filter(Boolean).join(" "));
 const nickWords = r => (r ? [r.nick, r.game] : []);
 const matches = (q, text) => { const s = squash(q); return !s || text.includes(s); };
 const NOT_FOUND = `<p class="pk-note">ไม่พบที่ค้นหา</p>`;
-// the panel's rows (user 2026-11-07): class / colour / face; the gear set (full row); hat + outfit; weapon + back; moves
-// (one weapon topic since 2026-11-14: the R topic is the weapon, both hands; see setWeapon)
+// the panel's rows (user 2026-11-07): class / colour / face; the gear set (full row); hat + outfit; weapon + back; pet +
+// moves (one weapon topic since 2026-11-14: the R topic is the weapon, both hands; see setWeapon. The pet since
+// 2026-11-19: plans/wardrobe_pets_design.md, layout B)
 const TOPICS = [["class", "อาชีพ"], ["color", "สี"], ["face", "หน้า"], ["set", "ชุดเซ็ต"], ["Head", "หมวก"], ["outfit", "ชุด"],
-                ["R", "อาวุธ"], ["Back", "ประดับ"], ["move", "ท่าทาง"]];
+                ["R", "อาวุธ"], ["Back", "ประดับ"], ["Pet", "สัตว์เลี้ยง"], ["move", "ท่าทาง"]];
 
 // ---------- one weapon topic (user 2026-11-14: "having 2 weapons slot is confusing to the users, merge the 2 slots to one
 // which applies both main and sub weapon"). Until then อาวุธหลัก (R) and อาวุธที่ 2 (L) were picked apart. A pick now puts
@@ -2968,7 +2969,9 @@ const PM_ICON = Object.fromEntries(Object.entries({
 // community skin for a TTO piece either (user 2026-11-11: "TTO upload should work only on private version"). The
 // published copy sets it (wardrobe_publish.py); locally ?ttolock shows it
 const TTO_LOCK = new URLSearchParams(location.search).has("ttolock");
-const recOf = (slot, item) => (slot === "outfit" ? C.outfits.find(x => x.name === item) : (C.propLists[kindOf(slot)] || []).find(x => x.name === item)) || {};
+// (a pet whose file is not in yet: its index row, which says TTO's or not too)
+const recOf = (slot, item) => (slot === "outfit" ? C.outfits.find(x => x.name === item) : (C.propLists[kindOf(slot)] || []).find(x => x.name === item))
+  || (slot === "Pet" && PET_ROW[item]) || {};
 const ttoLocked = (slot, item) => TTO_LOCK && !!recOf(slot, item).tto;
 // community skins: the send dialog's Turnstile site key (public by design); empty = no send action (the local copy; the
 // publish writes it from wardrobe/community_config.json "turnstile_site_key"; locally ?submitkey=<key> tries the dialog, e.g.
@@ -2986,7 +2989,7 @@ const otherPiece = (slot, item) => { if (!HANDS.includes(slot)) return null; con
 function pmHead(slot, item) {
   const kind = kindOf(slot), worn = wornNow(slot, item), texs = texsOf(kind, item);
   const mine = texs.some(t => SKINS.has(skinKey(kind, item, t)));
-  const o = kind === "outfits" && C.outfits.find(x => x.name === item), rec = o || (C.propLists[kind] || []).find(x => x.name === item) || {};
+  const o = kind === "outfits" && C.outfits.find(x => x.name === item), rec = recOf(slot, item);
   const ed = o && worn ? C.state.edition || "" : "", icon = o ? outfitIcon(item, ed) : slot === "Pet" ? PET_ROW[item]?.icon : iconOf(SLOT_KEY[slot], item)?.icon;
   const sets = (C.sets || []).filter(s => [s.outfit, s.R, s.L, s.Head, s.Back].includes(item));
   const c = o && o.colors.length ? (o.colors.includes(C.state.color) ? C.state.color : o.colors[0]) : null, e = c && edOf(o, c, ed);
@@ -3098,12 +3101,14 @@ $("pkBody").addEventListener("scroll", () => { if (PM.cur?.from === "tile") clos
 let ctxKeyAt = 0;
 addEventListener("keydown", e => { if (e.key === "ContextMenu" || (e.key === "F10" && e.shiftKey)) ctxKeyAt = performance.now(); }, true);
 const menuAt = (e, el) => (performance.now() - ctxKeyAt < 600 ? { rect: el.getBoundingClientRect() } : { x: e.clientX, y: e.clientY });
-$("pkBody").addEventListener("contextmenu", e => {
+$("pkBody").addEventListener("contextmenu", async e => {
   const c = e.target.closest(".pk-cell");
   if (!c || !C) return;
   e.preventDefault();
-  const at = menuAt(e, c);
-  openMenu({ slot: c.dataset.slot, item: c.dataset.item }, at, { from: "tile", back: c.querySelector(".pk-item"), kb: !!at.rect });
+  const at = menuAt(e, c), t = { slot: c.dataset.slot, item: c.dataset.item };
+  // a pet's file comes on its first pick: its menu needs it first (its textures, its model; TTO's or not)
+  if (t.slot === "Pet") { await petEntry(t.item).catch(() => null); if (!c.isConnected) return; }
+  openMenu(t, at, { from: "tile", back: c.querySelector(".pk-item"), kb: !!at.rect });
 });
 $("topics").addEventListener("contextmenu", e => {
   const b = e.target.closest("[data-t]"), t = b?.dataset.t, it = t && C && MENU_SLOTS.has(t) && (t === "outfit" ? C.state.outfit : wornIn(t));
@@ -3757,7 +3762,9 @@ const moveFb = n => { if (chainOf(n)) return noIcon(chainOf(n).name); const l = 
 const GLYPH = { Head: "M3.5 17.5h17M6.5 17.5V12a5.5 5.5 0 0 1 11 0v5.5",
   outfit: "M8.5 4 4 6.8l1.8 3.7 2.2-1V20h8V9.5l2.2 1 1.8-3.7L15.5 4c-.7 1.3-2 2-3.5 2s-2.8-.7-3.5-2z",
   R: "M14 4h6v6L9.5 20.5l-6-6zM3.5 20.5 6 18M6.5 12l5.5 5.5", Back: "M12 8c-2.2-2.6-5.6-3.8-8.5-3.3.2 5 2.7 8.6 7 9.8M12 8c2.2-2.6 5.6-3.8 8.5-3.3-.2 5-2.7 8.6-7 9.8M12 8v11",
-  move: "M12 3.2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM5.5 10.5 12 9l6.5 1.5M12 9v6.2M12 15.2 8.8 21M12 15.2l3.2 5.8" };
+  move: "M12 3.2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM5.5 10.5 12 9l6.5 1.5M12 9v6.2M12 15.2 8.8 21M12 15.2l3.2 5.8",
+  Pet: "M5.4 10.2a1.6 1.9 0 1 0 3.2 0 1.6 1.9 0 1 0-3.2 0M8.6 6.2a1.7 2.1 0 1 0 3.4 0 1.7 2.1 0 1 0-3.4 0M12 6.2a1.7 2.1 0 1 0 3.4 0 1.7 2.1 0 1 0-3.4 0"
+    + "M15.4 10.2a1.6 1.9 0 1 0 3.2 0 1.6 1.9 0 1 0-3.2 0M12 12.2c-2.5 0-5 3.2-5 5.5 0 1.5 1.1 2.3 2.5 2.3 1 0 1.6-.6 2.5-.6s1.5.6 2.5.6c1.4 0 2.5-.8 2.5-2.3 0-2.3-2.5-5.5-5-5.5z" };
 GLYPH.L = GLYPH.R;
 const glyph = slot => `<svg class="slot-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="${GLYPH[slot] || GLYPH.move}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 // what a topic ring shows: the current choice's icon, else its stand-in (above); nothing at all before the class loads
@@ -3767,7 +3774,7 @@ function ringContent(t) {
   if (src) return pic(src, t === "face");
   if (t === "move") return C.cur && C.cur.toLowerCase() !== "root" ? moveFb(C.cur) : `<span class="noicon txt idle" aria-hidden="true">${label("root")}</span>`;
   if (t === "outfit") return noIcon(C.state.outfit);
-  if (SLOTS[t]) return wornIn(t) ? noIcon(wornIn(t)) : glyph(t);
+  if (SLOTS[t] || t === "Pet") return wornIn(t) ? noIcon(wornIn(t)) : glyph(t);
   return "";
 }
 function currentIcon(t) {
@@ -3777,6 +3784,7 @@ function currentIcon(t) {
   if (t === "outfit") return outfitIcon(C.state.outfit, C.state.edition);
   if (t === "face") return faceSrc(C.state.face);
   if (t === "move") return C.cur && isSkillMove(C.cur) ? moveSkillIcons(C.cur)[0] || null : moveIcon(C.cur);   // a skill: its first Bible icon
+  if (t === "Pet") return C.state.Pet ? PET_ROW[C.state.Pet]?.icon || null : null;     // the game's icon by its code (the index's row)
   return wornIn(t) ? iconOf(SLOT_KEY[t], wornIn(t))?.icon : null;
 }
 let openTopic = null;
@@ -3867,10 +3875,12 @@ new ResizeObserver(() => fitColors()).observe($("topics"));
 const isPhone = () => matchMedia("(max-width: 760px)").matches;
 let stageInset = 0, insetNow = 0;
 function setInset() {
+  const was = stageInset;
   stageInset = openTopic && !isPhone() ? $("picker").offsetWidth : 0;
   stage.style.setProperty("--inset", stageInset + "px");
   stage.classList.toggle("inset", stageInset > 0);   // the disclaimer goes under the toolbar beside an open picker
   Showcase.refit();                        // the free part of the stage changed under a floating piece
+  if (stageInset !== was && C?.props.Pet) autoFit();   // the pet's view fits the free part (heroFitPose)
 }
 function closePicker() {
   const t = openTopic, held = $("picker").contains(document.activeElement);   // Escape with the search box focused
@@ -4016,6 +4026,27 @@ async function openPicker(t, opts = {}) {
       return item(`data-m="${n}"`, esc(moveName(n)), n === C.cur, rings.length ? null : moveIcon(n),
         { dot: tto, fb: rings.length ? ringCover(rings) : moveFb(n), title, over: /^pose/i.test(n) ? `<i class="pic-n">${poseNo(n)}</i>` : "" }); }).join("");
     pick(b => play(b.dataset.m));
+  } else if (t === "Pet") {
+    // the pets (the pets plan's Task 7): ไม่ใส่, then one tile per pet the data has (data/pets/index.json, every class
+    // the same): the game's icon by its code, the game's name (TTO's own pets have none in BB's tables: the name as
+    // words), TTO's mark on TTO's own; nicknamed first and the search over the name, the game's name and the nickname,
+    // as the prop pickers. A tile = setPet (one undo step); a pet's file comes on its first pick
+    const rows = await petIndex().catch(e => { err(e); return null; });
+    if (!rows || openTopic !== t) return;
+    tools.innerHTML = `<input type="search" placeholder="ค้นหา" aria-label="ค้นหา${name}">`;
+    const inp = tools.querySelector("input");
+    inp.value = q0;
+    const tiles = nickSort(rows, r => nickOf("pets", r.name));
+    const draw = () => {
+      const shown = tiles.filter(r => matches(inp.value, findText(r.name, humanize(r.name), r.game, nickWords(nickOf("pets", r.name)))));
+      body.innerHTML = item(`data-p=""`, "ไม่ใส่", !wornIn(t), null, { fb: glyph(t) }) + shown.map(r => cell(t, r.name,
+        item(`data-p="${r.name}"`, r.game ? esc(r.game) : nameHTML(r.name), r.name === wornIn(t), r.icon,
+          { dot: badge(r), fb: noIcon(r.name), title: esc(humanize(r.name)), nick: nickOf("pets", r.name)?.nick }))).join("")
+        + (shown.length ? "" : NOT_FOUND);
+      pick(b => setPet(b.dataset.p || null));
+    };
+    inp.oninput = draw; draw();
+    if (typing || (!redraw && !matchMedia("(hover: none), (pointer: coarse)").matches)) inp.focus({ preventScroll: true });
   } else {                                                      // R (the weapon, both hands), Head, Back
     const list = await propList(SLOTS[t]);
     if (openTopic !== t) return;
@@ -4079,28 +4110,41 @@ const renderPropUI = () => renderTopics();
 // the camera on the character (V8, F1): the box of what is drawn (the outfit in its current pose, and the worn pieces,
 // clamped to a box that lets headgear and back pieces rise .65 of the outfit's height above it, a weapon or wings .4 to the
 // side), filling 78 % of the stage's height or 85 % of its width at most, and pulled back until none of the box's corners
-// runs under the toolbar (64 px from the top) or past the stage's foot (12 px)
+// runs under the toolbar (64 px from the top) or past the stage's foot (12 px).
+// With a pet out (the user's pick B, 2026-11-18; turn and rise picked from the mocks, plans/wardrobe_pets_design.md):
+// the view turns 40 deg to the same side as the front view's and rises .10 (y over the horizontal length), so the pet
+// standing behind her shows beside her; the box takes in the pet as it is posed now, unclamped (2 m back, a kite over
+// her head, a Lv 9 pet at 1.8x), its width is what the turned view sees across, and the corners stay in the part of
+// the stage the desktop picker leaves free (a pet is picked with it open). No pet: the front view, as before
 const FIT_DIR = new THREE.Vector3(.48, .1, 2.55).normalize();
+const FIT_DIR_PET = new THREE.Vector3(Math.sin(40 * Math.PI / 180), .1, Math.cos(40 * Math.PI / 180)).normalize();
 function heroFitPose() {
   C.mixer.update(0); C.root.updateMatrixWorld(true);            // the move playing now, at its current frame
   const body = new THREE.Box3();
   for (const m of C.meshes) body.union(visibleBox(m, false));
   if (body.isEmpty()) body.setFromCenterAndSize(new THREE.Vector3(0, .5, 0), new THREE.Vector3(.5, 1, .5));
   const h0 = Math.max(body.max.y - body.min.y, 0.5), box = body.clone();
-  for (const [k, o] of Object.entries(C.props)) if (k !== "Pet") box.union(visibleBox(o, false));   // (the pet: not in the hero's front view)
+  for (const [k, o] of Object.entries(C.props)) if (k !== "Pet") box.union(visibleBox(o, false));   // (the pet: after the clamp)
   box.intersect(new THREE.Box3(body.min.clone().add(new THREE.Vector3(-h0 * .4, -h0 * .05, -h0 * .4)), body.max.clone().add(new THREE.Vector3(h0 * .4, h0 * .65, h0 * .4))));
+  const pet = C.props.Pet, dir = pet ? FIT_DIR_PET : FIT_DIR;
+  if (pet) { pet.userData.mixer?.update(0); box.union(visibleBox(pet, false)); }   // (its idle's pose now, not the file's rest pose)
   const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5), target = new THREE.Vector3(c.x, c.y - h * .01, c.z);
   const t = Math.tan(camera.fov * Math.PI / 360);
-  let d = Math.max(h / (2 * t * .78), (box.max.x - box.min.x) / (2 * t * camera.aspect * .85));
+  const pts = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+  // the width: face on, the box's x extent; turned, its extent across the view, in the stage the desktop picker leaves free
+  const across = new THREE.Vector3(dir.z, 0, -dir.x).normalize(), ex = pts.map(p => p.dot(across)), free = pet ? stageInset : 0;
+  const wide = pet ? Math.max(...ex) - Math.min(...ex) : box.max.x - box.min.x, aspect = pet ? (vw - free) / vh : camera.aspect;
+  let d = Math.max(h / (2 * t * .78), wide / (2 * t * aspect * .85));
   // the corners on screen (a phone's view offset puts the character 22 px lower): pull back until they clear the toolbar and the foot
   const cam = camera.clone(); cam.clearViewOffset(); cam.updateProjectionMatrix();
   const bar = document.querySelector(".bar").getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
   const top = Math.max(64, bar + 8), foot = vh - 12, dy = isPhone() ? 22 : 0, v = new THREE.Vector3();
-  const pts = [];
-  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
-  pts.push(new THREE.Vector3(c.x, 0, c.z + h0 * .26));          // the near edge of the contact shadow
-  const fits = dd => { cam.position.copy(target).addScaledVector(FIT_DIR, dd); cam.lookAt(target); cam.updateMatrixWorld();
-    return pts.every(p => { v.copy(p).project(cam); const y = (1 - v.y) / 2 * vh + dy, x = (v.x + 1) / 2 * vw; return y >= top && y <= foot && x >= 6 && x <= vw - 6; }); };
+  const sc = pet ? body.getCenter(new THREE.Vector3()) : c;    // (the hero's shadow, not the pet's spot)
+  pts.push(new THREE.Vector3(sc.x, 0, sc.z + h0 * .26));        // the near edge of the contact shadow
+  // the view offset centres the free part: there it spans x = free / 2 to vw - free / 2 of the unshifted view
+  const fits = dd => { cam.position.copy(target).addScaledVector(dir, dd); cam.lookAt(target); cam.updateMatrixWorld();
+    return pts.every(p => { v.copy(p).project(cam); const y = (1 - v.y) / 2 * vh + dy, x = (v.x + 1) / 2 * vw; return y >= top && y <= foot && x >= free / 2 + 6 && x <= vw - free / 2 - 6; }); };
   if (!fits(d)) {
     let lo = d, hi = d * 1.25;
     for (let i = 0; i < 12 && !fits(hi); i++) { lo = hi; hi *= 1.25; }
@@ -4111,7 +4155,7 @@ function heroFitPose() {
   // "unlock ASWD 100% free movement"). The orbit itself is free, straight down to straight up and from under the floor too (user
   // 2026-11-08: "lift the limit on left drag rotation, user should be able to freely do with all objects"); the shadow
   // discs are front-sided, so from below they vanish instead of covering the feet.
-  return { pos: target.clone().addScaledVector(FIT_DIR, d), target, h, h0,
+  return { pos: target.clone().addScaledVector(dir, d), target, h, h0,
     // zoom out to 40 x the hero's height (user 2026-11-09: "please allow much further zoom out"; was 6 x): effects reach
     // 10 m and more ahead (casts with a target, Feral Assault's dash)
     lim: { minDistance: h * .55, maxDistance: h * 40, minPolarAngle: 0, maxPolarAngle: Math.PI } };
@@ -6159,7 +6203,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, openPicker, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, setPet, pickPet, petIndex, get SETS() { return SETS; } }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, openPicker, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, setPet, pickPet, petIndex, heroFitPose, get SETS() { return SETS; } }),   // scripted checks only
 };
 </script>
 </body>

@@ -29,11 +29,22 @@ hero how it would work in game"). On the real page through its scripting hook (w
     and every texture embedded byte-equal (smallAnubi on the Sheep; miniAncientBug, two textures, on the Wolf); the TTO
     pet (smallDragonZ) downloads locally too; with ?ttolock (the online rule, Review Focus 5) the TTO pet's menu has no
     download item and a BB pet's keeps both; a picture pasted or dropped on the pet puts no skin on anything; ถอด takes
-    it off in one undo step
-Exit 1 on any failure. Serves the folder itself on a free port (never 8771, the main folder's page). --downloads runs the
-downloads part alone.
-  uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check] [--downloads]"""
-import asyncio, base64, functools, http.server, json, re, struct, sys, threading
+    it off in one undo step; the ring's เปลี่ยนสัตว์เลี้ยง opens the สัตว์เลี้ยง picker; a picker tile's menu (right-click)
+    on a pet whose file is not loaded yet lists its downloads (a BB pet) or none (TTO's under ?ttolock)
+  - the สัตว์เลี้ยง topic, its picker and the camera (the pets plan's Task 7; the picks of 2026-11-18,
+    plans/wardrobe_pets_design.md), at 1600x1000 and 390x700 (and 1600x1200 for the layout): the blocks two by two
+    (หมวก + ชุด, อาวุธ + ประดับ, สัตว์เลี้ยง + ท่าทาง), the ring empty (the slot's outline) or the worn pet's icon; the
+    picker = ไม่ใส่ + one tile per index row (its icon, the game's name or the name as words, TTO's mark), nicknamed
+    first, the ค้นหา box (a game name "L. Carron", "Anubi", a nickname "ALL 9" / "all9", nonsense); a pick = one undo
+    step, the picker stays open; the camera: no pet = today's front view exactly (FIT_DIR, today's heroFitPose
+    recomputed here), a pet = turned 40 deg, rise .10 (FIT_DIR_PET), gliding there unless the visitor moved it, the
+    hero's and the pet's box corners on the free part of the stage (the toolbar band clear) for a walker 1 m and 2 m
+    back, a kite, TianlongA at 2x, and after the desktop picker closes and opens again; the สัตว์เลี้ยง label on a phone:
+    no mark clipped, its ink centred by eye in its block (gaps within 2 px at 2x); screenshots in checks/pet_ui/
+Exit 1 on any failure. Serves the folder itself on a free port (never 8771, the main folder's page). --downloads / --ui
+run that part alone.
+  uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check] [--downloads | --ui]"""
+import asyncio, base64, functools, http.server, json, math, re, struct, sys, threading
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -44,6 +55,7 @@ from wardrobe_pets import rest_point           # noqa: E402  (the pure rules; no
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 DOWNLOADS_ONLY = "--downloads" in sys.argv
+UI_ONLY = "--ui" in sys.argv
 ROOT = Path(ARGS[0]) if ARGS else HERE.parent
 OUT = Path(ARGS[1]) if len(ARGS) > 1 else ROOT / "checks" / "pet_check"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -212,9 +224,9 @@ async def downloads(b, check, errors):
         dl = await d.value
         return dl.suggested_filename, Path(await dl.path()).read_bytes()
 
-    def items_ok(m, name, cls, locked, topic, tag=""):     # locked: no download item (a TTO pet under ?ttolock)
+    def items_ok(m, name, cls, locked, tag=""):            # locked: no download item (a TTO pet under ?ttolock)
         texs = pet_parts(name)[0]
-        want = (["change"] if topic else []) + ["remove"]
+        want = ["change", "remove"]                        # (the สัตว์เลี้ยง topic exists: its change item always)
         if not locked:
             want += [f"png:{t}" for t in texs] + ["glb"]
         got = [i["a"] + (":" + i["tex"] if i["tex"] else "") for i in m["items"]]
@@ -229,18 +241,46 @@ async def downloads(b, check, errors):
         check(ok, f"{cls:6} {name:14} {tag}menu {got} (want {want}); "
                   f"labels {[labels.get(k) for k in got]}; head {m['name']!r} [{m['meta']}]; Ctrl+V hint {m['foot']!r}")
 
-    topic_js = "() => !!document.querySelector('#topics [data-t=\"Pet\"]')"
+    async def tile_menu(page, name, want, tag):   # right-click on a picker tile of a pet not loaded yet: its menu
+        loaded = await page.evaluate("n => wardrobe.debug().C.propLists.pets.some(p => p.name === n)", name)
+        if not await page.locator('#topics button.topic[data-t="Pet"]').count():
+            check(False, f"{tag}: no สัตว์เลี้ยง topic to open")
+            return
+        if await page.evaluate("() => document.getElementById('pkBody').dataset.topic !== 'Pet' || document.getElementById('picker').hidden"):
+            await page.click('#topics button.topic[data-t="Pet"]')
+        cell = page.locator(f'#pkBody .pk-cell[data-slot="Pet"][data-item="{name}"]')
+        try:
+            await cell.wait_for(timeout=15000)
+        except Exception:
+            check(False, f"{tag}: no tile for {name} in the สัตว์เลี้ยง picker")
+            return
+        await cell.scroll_into_view_if_needed()
+        await page.wait_for_timeout(400)              # (the list's scroll closes a tile's menu: done before the click)
+        await cell.click(button="right")
+        try:
+            await page.wait_for_function("n => wardrobe.debug().PM.cur?.item === n", arg=name, timeout=15000)
+        except Exception:
+            pass
+        m = await page.evaluate(PMENU)
+        got = [i["a"] + (":" + i["tex"] if i["tex"] else "") for i in m["items"]]
+        row = ROWS[name]
+        check(not loaded and m["open"] and m["slot"] == "Pet" and m["from"] == "tile" and got == want and not any(i["off"] for i in m["items"])
+              and (("ของจาก TTO" in (m["meta"] or "")) == bool(row["tto"])),
+              f"{tag}: the tile's menu, its file not loaded before ({not loaded}): {got} (want {want}), "
+              f"disabled {[i['a'] for i in m['items'] if i['off']]}, head {m['name']!r} [{m['meta']}]")
+        await page.keyboard.press("Escape")
+        await page.evaluate("() => { if (!document.getElementById('picker').hidden) document.getElementById('pkClose').click(); }")
 
     # ---- the local copy: every pet downloads
     page = await page_at("")
-    topic = await page.evaluate(topic_js)
-    print(f"     (the สัตว์เลี้ยง topic {'exists: เปลี่ยนสัตว์เลี้ยง expected' if topic else 'is not on the page yet: no เปลี่ยนสัตว์เลี้ยง item'})")
+    # a tile's menu before the pet's file is in (Task 8's review): its downloads all there
+    await tile_menu(page, "smallAnubi", ["wear", "png:Anubi.png", "glb"], "sheep  smallAnubi     tile")
     for cls, name in (("sheep", "smallAnubi"), ("wolf", "miniAncientBug"), ("sheep", "smallDragonZ")):
         pt = await wear(page, cls, name)
         m = await menu(page, name, f"{cls:6} {name:14}", pt)
         if not m:
             continue
-        items_ok(m, name, cls, False, topic)
+        items_ok(m, name, cls, False)
         texs, drawn, skins, meshes = pet_parts(name)
         await page.keyboard.press("Escape")
         stem = f"12tails_{CLASS_TH[cls]}_{STEM[name]}"
@@ -290,6 +330,27 @@ async def downloads(b, check, errors):
             r = await page.evaluate(PICTURE, [how, *pt])
             check(r["skins"] == 0 and not r["menu"] and r["toast"] == "สัตว์เลี้ยงใส่ลายเองไม่ได้",
                   f"sheep  smallAnubi     a picture {how}{'d' if how == 'paste' else 'ped'} on the pet: skins {r['skins']}, menu open {r['menu']}, toast {r['toast']!r}")
+    # the ring's menu (a right-click on the topic): เปลี่ยนสัตว์เลี้ยง opens the สัตว์เลี้ยง picker
+    ring = page.locator('#topics button.topic[data-t="Pet"]')
+    if await ring.count():
+        await ring.click(button="right")
+        await page.wait_for_timeout(250)
+        m = await page.evaluate(PMENU)
+        has = await page.locator('#pmenu .pm-item[data-a="change"]').count()
+        if has:
+            await page.click('#pmenu .pm-item[data-a="change"]')
+            try:
+                await page.wait_for_function("() => !document.getElementById('picker').hidden && document.getElementById('pkBody').dataset.topic === 'Pet'"
+                                             " && document.querySelector('#pkBody .pk-cell[data-slot=\"Pet\"]')", timeout=15000)
+            except Exception:
+                pass
+        pk = await page.evaluate("() => ({ open: !document.getElementById('picker').hidden, topic: document.getElementById('pkBody').dataset.topic, "
+                                 "title: document.getElementById('pkTitle').textContent })")
+        check(m["open"] and m["from"] == "ring" and has and pk["open"] and pk["topic"] == "Pet" and pk["title"] == "สัตว์เลี้ยง",
+              f"sheep  smallAnubi     the ring's menu {[i['a'] for i in m['items']]}: เปลี่ยนสัตว์เลี้ยง opens the picker {pk}")
+        await page.evaluate("() => { if (!document.getElementById('picker').hidden) document.getElementById('pkClose').click(); }")
+    else:
+        check(False, "sheep  smallAnubi     no สัตว์เลี้ยง topic (its ring's เปลี่ยนสัตว์เลี้ยง)")
     m = await menu(page, "smallAnubi", "sheep  smallAnubi     (for ถอด)", pt)
     if m and await page.locator('#pmenu .pm-item[data-a="remove"]').count():
         await page.click('#pmenu .pm-item[data-a="remove"]')
@@ -312,14 +373,383 @@ async def downloads(b, check, errors):
 
     # ---- ?ttolock (the online rule; Review Focus 5): the TTO pet preview only, a BB pet keeps both downloads
     page = await page_at("?ttolock")
+    # a tile's menu before the pet's file is in (Task 8's review): still TTO, so no download item
+    await tile_menu(page, "smallDragonZ", ["wear"], "sheep  smallDragonZ   tile ?ttolock")
     for cls, name, locked in (("sheep", "smallDragonZ", True), ("sheep", "smallAnubi", False)):
         pt = await wear(page, cls, name)
         m = await menu(page, name, f"{cls:6} {name:14} ?ttolock", pt)
         if m:
-            items_ok(m, name, cls, locked, topic, "?ttolock ")
+            items_ok(m, name, cls, locked, "?ttolock ")
             await page.keyboard.press("Escape")
     await page.close()
     await ctx.close()
+
+
+# ---- the สัตว์เลี้ยง topic, its picker and the camera (Task 7)
+NICK = json.loads((ROOT / "wardrobe" / "data" / "nicknames.json").read_text(encoding="utf-8"))
+UI_OUT = ROOT / "checks" / "pet_ui"
+
+
+def unit(*v):
+    n = math.sqrt(sum(x * x for x in v))
+    return [x / n for x in v]
+
+
+FIT_DIR = unit(.48, .1, 2.55)                                                  # today's front view
+FIT_DIR_PET = unit(math.sin(math.radians(40)), .10, math.cos(math.radians(40)))   # the pick: turn 40 deg, rise .10, x positive
+
+
+def humanize(n):                # the page's humanize (nameParts): hallowSaw_r -> "Hallow Saw", all57 -> "All แบบ 57"
+    s, num, ed = re.sub(r"_[LRlr]$", "", n), "", ""
+    m = re.match(r"^(.*[A-Za-z])(\d+)$", s)
+    if m:
+        s, num = m.group(1), m.group(2)
+    m = re.match(r"^(.*[a-z0-9])([RV])$", s)
+    if m:
+        s, ed = m.group(1), m.group(2)
+    w = re.sub(r"[_-]+", " ", s)
+    w = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", w)
+    w = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", w)
+    w = re.sub(r"([A-Za-z])(\d)", r"\1 \2", w)
+    words = [x[0].upper() + x[1:] for x in w.strip().split()]
+    return " ".join(words) + (f" แบบ {num}" if num else "") + (" " + ed if ed else "")
+
+
+def pet_nick(cls, name):        # the page's nickOf("pets", name): the class's table, else the shared one by lower-case name
+    t = NICK.get(cls, {}).get("pets", {})
+    return t.get(name) or t.get(re.sub(r"_[LRlr]$", "", name)) or NICK.get("all", {}).get("pets", {}).get(name.lower()) or {}
+
+
+def squash(s):
+    return re.sub(r"\s+", "", s or "").lower()
+
+
+def pet_text(cls, name):        # what the ค้นหา box searches: the name, as words, the game's name, the nickname and its game names
+    r, nk = ROWS[name], pet_nick(cls, name)
+    return squash(" ".join(p for p in [name, humanize(name), r["game"], nk.get("nick"), *(nk.get("game") or [])] if p))
+
+
+def pet_order(cls):             # nicknamed first (the class guide's order: no level, rank-gated, level), else the index's order
+    key = lambda r: (1, 0, 0) if not r.get("nick") else (0, 0, 0) if "lv" not in r else (0, 1, r["lv"]) if r["lv"] < 0 else (0, 2, -r["lv"])
+    return [n for _, n in sorted(enumerate(ROWS), key=lambda e: (key(pet_nick(cls, e[1])), e[0]))]
+
+
+TOPIC_BOXES = """() => Object.fromEntries([...document.querySelectorAll('#topics button.topic')].map(b => { const r = b.getBoundingClientRect(),
+  g = b.querySelector('.ring')?.getBoundingClientRect(); return [b.dataset.t, { x: r.left, y: r.top, w: r.width, h: r.height, ring: g ? g.width : 0,
+  name: b.querySelector('.tname')?.textContent ?? null }]; }))"""
+RING = """() => { const r = document.querySelector('#topics [data-t="Pet"] .ring');
+  return r && { img: r.querySelector('img')?.getAttribute('src') ?? null, glyph: !!r.querySelector('.slot-glyph') }; }"""
+PK_TILES = """() => [...document.querySelectorAll('#pkBody .pk-item')].map(b => ({ p: b.dataset.p ?? null, slot: b.closest('.pk-cell')?.dataset.slot ?? null,
+  item: b.closest('.pk-cell')?.dataset.item ?? null, lbl: b.querySelector('.lbl')?.textContent ?? null, main: b.querySelector('.nk-main')?.textContent ?? null,
+  sub: b.querySelector('.nk-sub')?.textContent ?? null, img: b.querySelector('.pic img')?.getAttribute('src') ?? null,
+  glyph: !!b.querySelector('.pic .slot-glyph'), tto: !!b.querySelector('.tto-mark'), pressed: b.getAttribute('aria-pressed') === 'true' }))"""
+# the page's visibleBox (what is drawn, skinned vertices where their bones put them)
+VBOX = """const vbox = root => { const box = new THREE.Box3(), v = new THREE.Vector3(); root.updateMatrixWorld(true);
+  root.traverseVisible(m => { if (!m.isMesh) return; const n = m.geometry.attributes.position.count;
+    for (let i = 0; i < n; i++) box.expandByPoint(m.getVertexPosition(i, v).applyMatrix4(m.matrixWorld)); }); return box; };"""
+# the camera, read in one task (the idle moves the hero between two evaluates): the page's fit (heroFitPose); today's fit
+# (before the pet camera, 9d8244c) recomputed here apart from the page, so the no-pet framing must not move; the live
+# camera; the hero's and the pet's box corners through the live camera (its view offset too) against the part of the
+# stage the visitor sees: right of the desktop picker, under the toolbar's band, over the stage's foot (the fit's margins)
+CAM = """() => { const { C, THREE, camera, controls, renderer, heroFitPose } = wardrobe.debug(), stage = document.getElementById('stage'), vw = stage.clientWidth, vh = stage.clientHeight;
+  """ + VBOX + """
+  const todayFit = () => {
+    C.mixer.update(0); C.root.updateMatrixWorld(true);
+    const body = new THREE.Box3();
+    for (const m of C.meshes) body.union(vbox(m));
+    if (body.isEmpty()) body.setFromCenterAndSize(new THREE.Vector3(0, .5, 0), new THREE.Vector3(.5, 1, .5));
+    const h0 = Math.max(body.max.y - body.min.y, 0.5), box = body.clone();
+    for (const [k, o] of Object.entries(C.props)) if (k !== 'Pet') box.union(vbox(o));
+    box.intersect(new THREE.Box3(body.min.clone().add(new THREE.Vector3(-h0 * .4, -h0 * .05, -h0 * .4)), body.max.clone().add(new THREE.Vector3(h0 * .4, h0 * .65, h0 * .4))));
+    const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5), target = new THREE.Vector3(c.x, c.y - h * .01, c.z);
+    const t = Math.tan(camera.fov * Math.PI / 360), dir = new THREE.Vector3(.48, .1, 2.55).normalize();
+    let d = Math.max(h / (2 * t * .78), (box.max.x - box.min.x) / (2 * t * camera.aspect * .85));
+    const cam = camera.clone(); cam.clearViewOffset(); cam.updateProjectionMatrix();
+    const bar = document.querySelector('.bar').getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
+    const top = Math.max(64, bar + 8), foot = vh - 12, dy = matchMedia('(max-width: 760px)').matches ? 22 : 0, v = new THREE.Vector3();
+    const pts = [];
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+    pts.push(new THREE.Vector3(c.x, 0, c.z + h0 * .26));
+    const fits = dd => { cam.position.copy(target).addScaledVector(dir, dd); cam.lookAt(target); cam.updateMatrixWorld();
+      return pts.every(p => { v.copy(p).project(cam); const y = (1 - v.y) / 2 * vh + dy, x = (v.x + 1) / 2 * vw; return y >= top && y <= foot && x >= 6 && x <= vw - 6; }); };
+    if (!fits(d)) { let lo = d, hi = d * 1.25; for (let i = 0; i < 12 && !fits(hi); i++) { lo = hi; hi *= 1.25; }
+      for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2; if (fits(m)) hi = m; else lo = m; } d = hi; }
+    return { pos: target.clone().addScaledVector(dir, d).toArray(), target: target.toArray(), h };
+  };
+  const corners = () => {
+    C.mixer.update(0); C.props.Pet?.userData.mixer?.update(0);
+    const body = new THREE.Box3(), o = C.props.Pet; for (const m of C.meshes) body.union(vbox(m));
+    const r = renderer.domElement.getBoundingClientRect(), bar = document.querySelector('.bar').getBoundingClientRect().bottom;
+    const pk = document.getElementById('picker'), phone = matchMedia('(max-width: 760px)').matches;
+    const left = !pk.hidden && !phone ? pk.getBoundingClientRect().right : r.left;
+    const lim = { x0: left + 6, x1: r.right - 6, y0: r.top + Math.max(64, bar - r.top + 8), y1: r.bottom - 12 };
+    camera.updateMatrixWorld();
+    const proj = b => { const out = [], v = new THREE.Vector3(); for (let i = 0; i < 8; i++) {
+      v.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(camera);
+      out.push([r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height]); } return out; };
+    return { lim, pet: o ? proj(vbox(o)) : null, hero: proj(body) };
+  };
+  const f = heroFitPose?.();
+  return { fit: f ? { pos: f.pos.toArray(), target: f.target.toArray(), h: f.h } : null, today: todayFit(),
+    live: { pos: camera.position.toArray(), target: controls.target.toArray() }, cs: corners() }; }"""
+# the camera's positions frame by frame from now until it has stood still for 30 frames (or 4 s): a glide, a jump or no move
+GLIDE = """() => { window.__glide = new Promise(res => { const { camera } = wardrobe.debug(), seen = [camera.position.toArray()], t0 = performance.now(); let still = 0;
+  const f = () => { const p = camera.position.toArray(), l = seen[seen.length - 1];
+    if (Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]) > 1e-7) { seen.push(p); still = 0; } else still++;
+    if ((seen.length > 1 && still > 30) || performance.now() - t0 > 4000) res(seen); else requestAnimationFrame(f); };
+  requestAnimationFrame(f); }); }"""
+# a block's label ink in a 2x screenshot (decoded in the page): the first and last rows with a pixel clearly lighter (or
+# darker) than the block's own background (its first rows, the weave's light and dark), in the label's columns, against the
+# block's inner edges (inside its border), in device px
+INK = """async ([b64, lab, box]) => { const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
+  const c = new OffscreenCanvas(im.width, im.height), g = c.getContext('2d'); g.drawImage(im, 0, 0);
+  const d = g.getImageData(0, 0, im.width, im.height).data, px = (x, y) => { const i = (y * im.width + x) * 4; return d[i] + d[i + 1] + d[i + 2]; };
+  const x0 = Math.max(0, Math.floor(lab.x0)), x1 = Math.min(im.width, Math.ceil(lab.x1)), y0 = Math.ceil(box.y0), y1 = Math.floor(box.y1);
+  let lo = Infinity, hi = -Infinity; for (let y = y0; y < y0 + 4; y++) for (let x = x0; x < x1; x++) { lo = Math.min(lo, px(x, y)); hi = Math.max(hi, px(x, y)); }
+  let top = -1, bot = -1;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (px(x, y) > hi + 100 || px(x, y) < lo - 100) { if (top < 0) top = y; bot = y; break; }
+  return { top, bot, above: top - y0, below: y1 - 1 - bot }; }"""
+# a topic block's label: its columns, and the box its ink is measured in (the block inside its border; on a desktop the
+# label is a title over the ring: down to the ring's top)
+LABEL_GEOM = """t => { const b = document.querySelector(`#topics button.topic[data-t="${t}"]`), n = b.querySelector('.tname'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
+  const g = document.createRange(); g.selectNodeContents(n); const q = g.getBoundingClientRect(), k = b.querySelector('.ring').getBoundingClientRect();
+  const under = k.left < q.right && k.right > q.left, y1 = under ? k.top - r.top : r.height - parseFloat(cs.borderBottomWidth);
+  return { box: { y0: parseFloat(cs.borderTopWidth), y1 }, lab: { x0: q.left - r.left, x1: q.right - r.left }, y: q.top, x: q.left }; }"""
+
+
+async def ui(b, check, errors):
+    """the สัตว์เลี้ยง topic, its picker and the camera: desktop 1600x1000 and phone 390x700, the layout at 1600x1200 too"""
+    UI_OUT.mkdir(parents=True, exist_ok=True)
+    near_v = lambda a, c, tol: a is not None and c is not None and all(abs(x - y) <= tol for x, y in zip(a, c))
+    dir_of = lambda f: unit(*[p - q for p, q in zip(f["pos"], f["target"])]) if f else None
+    fmt = lambda v: [round(x, 4) for x in v] if v else v
+
+    for vw, vh, tag in ((1600, 1000, "desktop"), (390, 700, "phone"), (1600, 1200, "tall")):
+        ctx = await b.new_context(viewport={"width": vw, "height": vh}, device_scale_factor=2)
+        page = await ctx.new_page()
+        page.on("pageerror", lambda e, tag=tag: errors.append(f"ui {tag}: {e}"))
+        page.on("console", lambda m, tag=tag: m.type == "error" and errors.append(f"ui {tag}: {m.text} {(m.location or {}).get('url', '')}"))
+        page.on("requestfailed", lambda r, tag=tag: errors.append(f"ui {tag}: request failed {r.url} {r.failure}"))
+        await page.goto(URL)
+        await page.wait_for_function("window.wardrobe && wardrobe.debug().C && wardrobe.debug().C.cls === 'sheep'", timeout=120000)
+        await page.evaluate("() => document.fonts.ready")
+        await page.wait_for_timeout(800)
+        T = f"{tag:7}"
+
+        # ---- the block: two by two (หมวก + ชุด, อาวุธ + ประดับ, สัตว์เลี้ยง + ท่าทาง), the name, the ring
+        tb = await page.evaluate(TOPIC_BOXES)
+        pet = tb.get("Pet")
+        same = lambda a, c, k, tol=.6: abs(tb[a][k] - tb[c][k]) <= tol
+        grid = bool(pet) and all(same(a, c, "y") for a, c in (("Head", "outfit"), ("R", "Back"), ("Pet", "move"))) \
+            and all(same(a, c, "x") for a, c in (("Head", "R"), ("R", "Pet"), ("outfit", "Back"), ("Back", "move"))) \
+            and tb["Head"]["y"] < tb["R"]["y"] < tb["Pet"]["y"] and tb["Pet"]["x"] < tb["move"]["x"] \
+            and all(same("Head", k, "w") and same("Head", k, "h") and same("Head", k, "ring") for k in ("outfit", "R", "Back", "Pet", "move"))
+        check(grid and pet["name"] == "สัตว์เลี้ยง",
+              f"{T} blocks two by two, สัตว์เลี้ยง beside ท่าทาง: " + ", ".join(f"{k} {fmt([v['x'], v['y'], v['w'], v['h']])} ring {round(v['ring'], 1)}"
+                                                                         for k, v in tb.items() if k in ("Head", "outfit", "R", "Back", "Pet", "move")))
+        if tag == "tall":
+            await page.screenshot(path=str(UI_OUT / f"panel_{tag}.png"))
+            await ctx.close()
+            continue
+        if not pet:
+            await ctx.close()
+            continue
+        rg = await page.evaluate(RING)
+        check(rg and rg["glyph"] and not rg["img"], f"{T} no pet: the ring shows the slot's outline {rg}")
+        await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_none.png"))
+
+        # ---- the label: no mark clipped, and on a phone its ink centred by eye in its block (NOTES.md "Thai text: centring
+        # by eye"); every label's ink printed (the other topics' labels must not move)
+        labels = {}
+        for t in ("Head", "outfit", "R", "Back", "Pet", "move"):
+            geo = await page.evaluate(LABEL_GEOM, t)
+            blk = page.locator(f'#topics button.topic[data-t="{t}"]')
+            s2 = lambda v: {k: x * 2 for k, x in v.items()}
+            ink = await page.evaluate(INK, [base64.b64encode(await blk.screenshot()).decode(), s2(geo["lab"]), s2(geo["box"])])
+            await page.add_style_tag(content=f'#topics button.topic[data-t="{t}"] .tname {{ overflow: visible !important; }}')
+            free = await page.evaluate(INK, [base64.b64encode(await blk.screenshot()).decode(), s2(geo["lab"]), s2(geo["box"])])
+            await page.evaluate("() => document.head.lastElementChild.remove()")
+            labels[t] = (ink, free, geo)
+            check(ink["top"] == free["top"] and ink["bot"] == free["bot"],
+                  f"{T} {t:6} label ink rows {ink['top']}-{ink['bot']} (unclipped {free['top']}-{free['bot']}), above {ink['above']} / below {ink['below']} "
+                  f"device px; label at x {round(geo['x'], 2)} y {round(geo['y'], 2)}")
+        if tag == "phone":
+            ink = labels["Pet"][0]
+            check(abs(ink["above"] - ink["below"]) <= 2, f"{T} สัตว์เลี้ยง centred by eye: {ink['above']} px above the ink, {ink['below']} below (2x)")
+            await page.locator('#topics button.topic[data-t="Pet"]').screenshot(path=str(UI_OUT / "label_phone_pet.png"))
+
+        # ---- the camera with no pet: today's front view, exactly. The idle held from here (Space, as a visitor holds it):
+        # the page's fit read now is then the one the camera glided to (a pet's idle can swing its box by a lot)
+        async def hold():
+            if await page.evaluate("() => document.getElementById('khPause').textContent !== 'เล่นต่อ'"):
+                await page.evaluate("() => document.activeElement?.blur()")
+                await page.keyboard.press("Space")
+            return await page.evaluate("() => document.getElementById('khPause').textContent === 'เล่นต่อ'")
+        check(await hold(), f"{T} the idle held (Space)")
+        cam = await page.evaluate(CAM)
+        fit, today, live = cam["fit"], cam["today"], cam["live"]
+        check(fit is not None and near_v(fit["pos"], today["pos"], 1e-9) and near_v(fit["target"], today["target"], 1e-9)
+              and near_v(dir_of(fit), FIT_DIR, 1e-9) and near_v(live["pos"], today["pos"], today["h"] * .01),
+              f"{T} no pet: heroFitPose {fmt(fit and fit['pos'])} -> {fmt(fit and fit['target'])} = today's {fmt(today['pos'])} -> {fmt(today['target'])}, "
+              f"direction {fmt(dir_of(fit))} (FIT_DIR {fmt(FIT_DIR)}), the camera there {fmt(live['pos'])}")
+
+        # ---- the picker: ไม่ใส่ + one tile per row, nicknamed first, the search
+        await page.click('#topics button.topic[data-t="Pet"]')
+        try:
+            await page.wait_for_selector('#pkBody .pk-cell[data-slot="Pet"]', timeout=15000)
+        except Exception:
+            check(False, f"{T} the สัตว์เลี้ยง picker shows no pet tile")
+            await ctx.close()
+            continue
+        await page.wait_for_timeout(900)                         # the icons in
+        head = await page.evaluate("() => ({ title: document.getElementById('pkTitle').textContent, box: document.querySelector('#pkTools input[type=search]')?.placeholder ?? null, topic: document.getElementById('pkBody').dataset.topic })")
+        tiles = await page.evaluate(PK_TILES)
+        order = pet_order("sheep")
+        none = tiles[0] if tiles else {}
+        check(head == {"title": "สัตว์เลี้ยง", "box": "ค้นหา", "topic": "Pet"} and none.get("p") == "" and none.get("lbl") == "ไม่ใส่" and none.get("pressed")
+              and none.get("glyph") and none.get("slot") is None,
+              f"{T} the picker {head}: first tile {none}")
+        got = [x["p"] for x in tiles[1:]]
+        check(got == order and all(x["slot"] == "Pet" and x["item"] == x["p"] for x in tiles[1:]),
+              f"{T} one tile per row ({len(got)} of {len(order)}), nicknamed first: {got[:12]} ... (want {order[:12]} ...)")
+        bad = []
+        for x in tiles[1:]:
+            r, nk = ROWS[x["p"]], pet_nick("sheep", x["p"])
+            name = r["game"] or humanize(x["p"])
+            shown = x["sub"] if x["main"] is not None else x["lbl"]
+            if not (x["img"] or "").endswith(r["icon"]) or shown != name or (x["main"] or None) != nk.get("nick") or x["tto"] != bool(r["tto"]) or x["pressed"]:
+                bad.append(f"{x['p']}: icon {x['img']} name {shown!r} nick {x['main']!r} tto {x['tto']} pressed {x['pressed']}")
+        check(not bad, f"{T} each tile: the row's icon, the game's name (else the name as words), its nickname over it, TTO's mark on TTO's own: "
+                       f"{len(tiles) - 1 - len(bad)} right" + (f", wrong: {bad[:4]}" if bad else ""))
+        await page.locator("#picker").screenshot(path=str(UI_OUT / f"picker_{tag}.png"))
+        for q in ("Anubi", "L. Carron", "ALL 9", "all9", "zzqq"):
+            await page.fill("#pkTools input[type=search]", q)
+            await page.wait_for_timeout(120)
+            ts = await page.evaluate(PK_TILES)
+            note = await page.evaluate("() => [...document.querySelectorAll('#pkBody .pk-note')].map(n => n.textContent).join(' ')")
+            want = [n for n in order if squash(q) in pet_text("sheep", n)]
+            sane = {"Anubi": ["smallAnubi"], "ALL 9": ["littleBDMellon"], "all9": ["littleBDMellon"], "zzqq": []}.get(q, want)
+            check([x["p"] for x in ts[1:]] == want == sane and ts[0]["p"] == "" and (("ไม่พบที่ค้นหา" in note) == (not want)),
+                  f"{T} ค้นหา {q!r}: {[x['p'] for x in ts[1:]]} (want {want}){' ' + note if note else ''}")
+            if q == "L. Carron":
+                check(want and all(squash(q) not in squash(n + " " + humanize(n)) for n in want), f"{T}   (found by the game's name alone: {want})")
+        await page.fill("#pkTools input[type=search]", "")
+        await page.wait_for_timeout(120)
+
+        # ---- a pick: one undo step, the picker open, the ring's icon; the camera glides to the pet's view
+        async def pick(name, glide=True):
+            if glide:
+                await page.evaluate(GLIDE)
+            sel = f'#pkBody .pk-item[data-p="{name}"]' if name else '#pkBody .pk-item[data-p=""]'
+            await page.click(sel)
+            await page.wait_for_function("n => { const { C } = wardrobe.debug(); return (C.state.Pet ?? null) === n && (C.props.Pet?.userData.pet ?? null) === n; }",
+                                         arg=name, timeout=30000)
+            return await page.evaluate("() => window.__glide") if glide else None
+
+        async def framed(what, want_dir):           # the camera at the page's fit, in the direction wanted, every corner seen
+            await page.wait_for_timeout(250)
+            cam = await page.evaluate(CAM)
+            fit, live, cs = cam["fit"], cam["live"], cam["cs"]
+            lim, pts = cs["lim"], (cs["pet"] or []) + cs["hero"]
+            out = [p for p in pts if not (lim["x0"] - 3 <= p[0] <= lim["x1"] + 3 and lim["y0"] - 3 <= p[1] <= lim["y1"] + 3)]
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            ok = (fit is not None and near_v(live["pos"], fit["pos"], 1e-5) and near_v(live["target"], fit["target"], 1e-5)
+                  and near_v(dir_of(live), want_dir, 1e-6) and cs["pet"] is not None and not out)
+            check(ok, f"{T} {what}: the camera {fmt(live['pos'])} -> {fmt(live['target'])} (the fit {fmt(fit and fit['pos'])}), "
+                      f"direction {fmt(dir_of(live))} (want {fmt(want_dir)}); hero + pet corners x {round(min(xs))}-{round(max(xs))}, "
+                      f"y {round(min(ys))}-{round(max(ys))} in x {round(lim['x0'])}-{round(lim['x1'])}, y {round(lim['y0'])}-{round(lim['y1'])}"
+                      + (f"; outside: {[fmt(p) for p in out]}" if out else ""))
+
+        u0 = await page.evaluate("() => !document.getElementById('undo').disabled")
+        seen = await pick("smallAnubi")
+        ts = await page.evaluate(PK_TILES)
+        pressed = [x["p"] for x in ts if x["pressed"]]
+        st = await page.evaluate("() => ({ open: !document.getElementById('picker').hidden, undo: !document.getElementById('undo').disabled })")
+        rg = await page.evaluate(RING)
+        check(not u0 and st["open"] and st["undo"] and pressed == ["smallAnubi"] and rg and (rg["img"] or "").endswith(ROWS["smallAnubi"]["icon"]),
+              f"{T} pick smallAnubi: the picker open {st['open']}, an undo step {st['undo']} (none before: {not u0}), pressed {pressed}, the ring {rg}")
+        check(len(seen) >= 4, f"{T} the camera glides there: {len(seen)} positions over the move")
+        await framed("smallAnubi (Lv 9, 1 m back)", FIT_DIR_PET)
+        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_smallAnubi.png"))
+        if tag == "desktop":                                     # (a phone's panel hides under the sheet: at the end)
+            await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_smallAnubi.png"))
+        await page.locator("#picker").screenshot(path=str(UI_OUT / f"picker_{tag}_smallAnubi.png"))
+        # undo / redo (the camera follows each)
+        await page.click("#undo")
+        await page.wait_for_function("() => !wardrobe.debug().C.props.Pet && wardrobe.debug().C.state.Pet == null", timeout=15000)
+        await page.wait_for_timeout(900)
+        cam = await page.evaluate(CAM)
+        live, today = cam["live"], cam["today"]
+        check(near_v(live["pos"], today["pos"], today["h"] * .01) and near_v(dir_of(live), FIT_DIR, 1e-6)
+              and await page.evaluate("() => document.getElementById('undo').disabled"),
+              f"{T} undo: no pet, nothing more to undo, the camera back at today's view {fmt(live['pos'])} (today {fmt(today['pos'])})")
+        await page.click("#redo")
+        await page.wait_for_function("() => wardrobe.debug().C.props.Pet?.userData.pet === 'smallAnubi'", timeout=15000)
+        await page.wait_for_timeout(900)
+        await framed("redo: smallAnubi again", FIT_DIR_PET)
+
+        # the visitor moves the camera: a pick leaves it there; the reset button fits the pet's view
+        cv = await page.evaluate("() => { const r = wardrobe.debug().renderer.domElement.getBoundingClientRect(), p = document.getElementById('picker');"
+                                 " const l = !p.hidden && innerWidth > 760 ? p.getBoundingClientRect().right : r.left; return [(l + r.right) / 2, r.top + r.height * .6]; }")
+        before = (await page.evaluate(CAM))["live"]
+        await page.mouse.move(*cv)
+        await page.mouse.wheel(0, -240)                          # the visitor zooms in (a drag would coast on: the damping)
+        await page.wait_for_timeout(600)
+        moved = (await page.evaluate(CAM))["live"]
+        check(not near_v(moved["pos"], before["pos"], 1e-3), f"{T} the wheel moved the camera: {fmt(before['pos'])} -> {fmt(moved['pos'])}")
+        await pick("miniMokBug", glide=False)
+        await page.wait_for_timeout(900)
+        after = (await page.evaluate(CAM))["live"]
+        check(near_v(after["pos"], moved["pos"], 1e-6) and near_v(after["target"], moved["target"], 1e-6),
+              f"{T} the visitor moved the camera: a pick leaves it at {fmt(after['pos'])} (was {fmt(moved['pos'])})")
+        await page.evaluate(GLIDE)
+        await page.click("#resetCam")
+        await page.evaluate("() => window.__glide")
+        await framed("miniMokBug (2 m back), after the reset button", FIT_DIR_PET)
+        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_miniMokBug.png"))
+        await pick("kiteChula")
+        await framed("kiteChula (a kite over her)", FIT_DIR_PET)
+        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_kiteChula.png"))
+        if tag == "desktop":                                     # the picker's width leaves the stage, then takes it again
+            await page.evaluate(GLIDE)
+            await page.click("#pkClose")
+            await page.evaluate("() => window.__glide")
+            await page.evaluate(GLIDE)
+            await page.click("#resetCam")                        # (the fit made with the whole stage free)
+            await page.evaluate("() => window.__glide")
+            await framed("kiteChula, the picker closed", FIT_DIR_PET)
+            await page.evaluate(GLIDE)
+            await page.click('#topics button.topic[data-t="Pet"]')
+            await page.evaluate("() => window.__glide")
+            await page.wait_for_selector('#pkBody .pk-cell[data-slot="Pet"]', timeout=15000)
+            await framed("kiteChula, the picker open again", FIT_DIR_PET)
+        # none: today's view again, exactly
+        await pick(None)
+        await page.wait_for_timeout(300)
+        cam = await page.evaluate(CAM)
+        fit, today, live = cam["fit"], cam["today"], cam["live"]
+        ts = await page.evaluate(PK_TILES)
+        rg = await page.evaluate(RING)
+        check(fit is not None and near_v(fit["pos"], today["pos"], 1e-9) and near_v(live["pos"], today["pos"], today["h"] * .01)
+              and near_v(dir_of(live), FIT_DIR, 1e-6) and ts[0]["pressed"]
+              and rg and rg["glyph"], f"{T} ไม่ใส่: no pet, the camera back at today's view {fmt(live['pos'])} (today {fmt(today['pos'])}), "
+                                      f"ไม่ใส่ pressed {ts[0]['pressed']}, the ring's outline {rg}")
+        # TianlongA at 2x beside the Whale
+        await page.evaluate("() => wardrobe.show('whale')")
+        if await page.evaluate("() => document.getElementById('picker').hidden"):
+            await page.click('#topics button.topic[data-t="Pet"]')
+        await page.wait_for_selector('#pkBody .pk-item[data-p="TianlongA"]', timeout=15000)
+        await hold()                                             # (show() played the idle again)
+        await pick("TianlongA", glide=False)
+        await page.evaluate(GLIDE)
+        await page.click("#resetCam")
+        await page.evaluate("() => window.__glide")
+        await framed("whale TianlongA (2x)", FIT_DIR_PET)
+        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_whale_TianlongA.png"))
+        await page.click("#pkClose")
+        await page.wait_for_timeout(600)
+        await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_whale_TianlongA.png"))
+        await ctx.close()
 
 
 async def main():
@@ -328,8 +758,11 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
         dl_errors = []                         # its own pages' (Focus 1 below wants none on its page so far)
-        await downloads(b, check, dl_errors)
-        if DOWNLOADS_ONLY:
+        if not UI_ONLY:
+            await downloads(b, check, dl_errors)
+        if not DOWNLOADS_ONLY:
+            await ui(b, check, dl_errors)      # the topic, the picker, the camera: on pages of their own too
+        if DOWNLOADS_ONLY or UI_ONLY:
             await b.close()
             print("errors:", dl_errors)
             print(f"{len(fails) + bool(dl_errors)} failed" if fails or dl_errors else "all ok")
