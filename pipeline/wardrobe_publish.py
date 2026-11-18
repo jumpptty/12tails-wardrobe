@@ -18,11 +18,14 @@ bundles, BB's own items included, so an item is published only when
   - each of its 3D files equals BB's client data in the BB rip (AssetRipper YAML, read here without PyYAML): an
     outfit's meshes = the vertex positions and triangle count of the BB armor prefab's skinned meshes; a clip = every
     key of BB's AnimationClip; a prop = every mesh against the BB prefab's mesh of the same node, and an animated
-    prop's clips against BB's. A file that differs, or cannot be compared (a skinned prop the extractor baked into a
-    pose), is dropped with whatever needs it.
+    prop's clips against BB's; a pet (pets/<name>.json, pipeline/wardrobe_pets.py, 2026-11-18) the same against BB's
+    pet prefab (gameassets/characters/pet/<name>.prefab: its meshes and its idle clip; no node transform is compared,
+    and a pet file's root is identity by design: the game replaces it). A file that differs, or cannot be compared (a
+    skinned prop the extractor baked into a pose), is dropped with whatever needs it.
 Every picture is taken again from the BB rip: outfit colour and edition textures (armors/materials), BB's faces 0-22
-(armors/overlay), item icons, class portraits, emote and skill icons (gamegui/icons), prop textures (Assets/Texture2D);
-a picture with no BB file is dropped with whatever needs it (a prop: the prop; an icon: the tile shows no picture).
+(armors/overlay), item and pet icons, class portraits, emote and skill icons (gamegui/icons), prop and pet textures
+(Assets/Texture2D); a picture with no BB file is dropped with whatever needs it (a prop or pet texture: the prop or pet;
+an icon: the tile shows no picture). pets/index.json keeps the published pets' rows only.
 The page's own pictures, ui/recolor1-5.webp (the colour topic), are 2x upscales of BB's Recolor Drug icons cropped to
 the potions' square (UI_CROP in BB's 64 px); each is proven against that box of BB's field/rsc<n>.png.
 The data's icons are 2x upscales since 2026-11-13 (pipeline/wardrobe_icons_upscale.py: the Bible's own, or the same
@@ -32,7 +35,7 @@ TTO online (user 2026-11-09: "Also add TTO stuff to the public deployement, I've
 pink dot to TTO small logo instead. 2. TTO shouldn't be downloadable nor uploadable, it's preview only 3. only include
 released assets, I will mark them from html picker."): <src>/tto_released.json, written by wardrobe/tto_picker.html,
 names per class the TTO-sourced items to publish ({cls: {kind: [names]}}; kinds outfits, weapons, accessories, trinkets,
-clips, faces; "all": accessories, trinkets). TTO-sourced = what the BB rule above would drop for being TTO's: its tto flag,
+clips, faces; "all": accessories, trinkets, pets). TTO-sourced = what the BB rule above would drop for being TTO's: its tto flag,
 no BB prefab or file to compare with, or a 3D file that differs from BB's (TTO's copy of a BB item). A released one is
 published from the local data (there is no BB file to re-take it from), with its own textures and icons, and marked
 "tto": true (the page shows the TTO mark and keeps it preview-only: TTO_LOCK). Every candidate, released or not, is
@@ -93,7 +96,9 @@ ICON_MAX_DIFF = 12
 # (the self-hosted fonts, the unhashed ui folder): listed so a new publish removes them
 OUTPUT_NAMES = ("index.html", "fonts", "_headers", UI_DIR) + PAGE_FILES + PAGE_DIRS
 HASHED_PREFIXES = ("data-", "ui-")
-ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket"}    # icons/<folder> = gamegui/icons/items/<folder>
+ITEM_ICON_FOLDERS = {"weapon", "armor", "accessory", "acessory", "trinket", "pet"}    # icons/<folder> = gamegui/icons/items/<folder>
+PET_PREFABS = "gameassets/characters/pet"        # BB's pet prefabs, under the rip's Resources (pipeline/wardrobe_pets.py)
+PET_INDEX = "pets/index.json"                    # the page's pet list (index.html petIndex); each row's file = pets/<name>.json
 GOATCOUNTER = ('<script data-goatcounter="https://jumpptty.goatcounter.com/count"\n'
                '        data-goatcounter-settings=\'{"path": "/wardrobe/"}\'\n'
                '        async src="https://gc.zgo.at/count.js"></script>\n')
@@ -101,7 +106,8 @@ PROVENANCE = ("wardrobe_data.py and extract_tto_props.py extracted every outfit 
               "TTO's client bundles (tto_assets/2026-11-04), BB's own items included. wardrobe_publish.py kept a BB item "
               "(tto flag false) only where each of its 3D files was verified equal to BB's client data in the BB rip: "
               "outfit meshes by vertex positions and triangle count, clips by every key, props by every mesh's vertex "
-              "positions and triangle count and an animated prop's clip keys. Every picture was taken again from the BB "
+              "positions and triangle count and an animated prop's clip keys, pets the same against BB's pet prefabs "
+              "(every mesh and the idle clip's keys). Every picture was taken again from the BB "
               "rip, except ui-<hash>/recolor1-5.webp: 2x upscales of BB's field/rsc1-5.png cropped to the potions' square, "
               "proven by a downscale comparison against the same box of the BB rip, and the icons (icons/): 2x upscales "
               "of BB's icons, each published only once the same downscale comparison proved it against the BB rip's "
@@ -497,6 +503,8 @@ class BBRip:
         return f"keys differ from BB's {', '.join(p.name for p, _ in found)}"
 
     def prop_prefab(self, cls, kind, name):
+        if kind == "pets":                                              # every class's: gameassets/characters/pet
+            return self.find(self.res / PET_PREFABS, name + ".prefab")
         if cls != "all":
             return self.find(self.heroes / cls / kind, name + ".prefab")
         for root, _, files in os.walk(self.heroes / "all"):            # shared items: anywhere under heroes/all
@@ -506,7 +514,10 @@ class BBRip:
         return None
 
     def compare_prop(self, cls, kind, prop):
-        """None when every mesh (and an animated prop's every clip track) equals the BB prefab's, else the reason."""
+        """None when every mesh (and an animated prop's every clip track) equals the BB prefab's, else the reason. Node
+        transforms are not compared. A pet (kind "pets", pipeline/wardrobe_pets.py) is compared with its BB pet prefab
+        the same way; its file's root (node 0) is identity by design (the game replaces the root's transform), and its
+        idle clip's rows are wardrobe_convert.clip_dict's (the hero clips' form: hero_rows), not the props' (prop_rows)."""
         prefab = self.prop_prefab(cls, kind, prop["name"])
         lost = "missing" if prefab is None else "zero-filled" if zero_filled(prefab) else None
         if lost and self.fallback is not None:
@@ -516,7 +527,8 @@ class BBRip:
                 return None
             return f"{why} (compared with Reborn's copy: BB's prefab is {lost} in this rip)"
         if prefab is None:
-            return f"no BB prefab heroes/{cls}/{kind}/{prop['name']}.prefab, so it cannot be compared"
+            where = PET_PREFABS if kind == "pets" else f"heroes/{cls}/{kind}"
+            return f"no BB prefab {where}/{prop['name']}.prefab, so it cannot be compared"
         pf = read_prefab(prefab)
         nodes = prop["nodes"]
         for n in nodes:
@@ -557,23 +569,25 @@ class BBRip:
                 if path is not None:
                     clip_name, curves = read_clip(path)
                     bb_clips.setdefault(clip_name, []).append(curves)
+            rows = hero_rows if kind == "pets" else prop_rows
             for cname, c in anim["clips"].items():
-                if not any(self._prop_clip_equal(nodes, c["tracks"], curves, pf["anim_node"]) for curves in bb_clips.get(cname, [])):
+                if not any(self._prop_clip_equal(nodes, c["tracks"], curves, pf["anim_node"], rows) for curves in bb_clips.get(cname, [])):
                     return (f"clip {cname}: " + ("keys differ from BB's" if cname in bb_clips
                                                  else "not among the BB prefab's clips, so it cannot be compared"))
         return None
 
     @staticmethod
-    def _prop_clip_equal(nodes, tracks, curves, anim_node):
-        """Every wardrobe track (keyed by node index) equals a BB curve on a node of the same name and slot."""
+    def _prop_clip_equal(nodes, tracks, curves, anim_node, rows=prop_rows):
+        """Every wardrobe track (keyed by node index) equals a BB curve on a node of the same name and slot, BB's keys
+        put in the wardrobe file's form by rows."""
         bb = {}
         for field, path, keys in curves:
             if keys:
                 slot = CURVE_SLOTS[field][0]
                 target = path.rsplit("/", 1)[-1] if path else anim_node
-                bb.setdefault((target, slot), []).append(prop_rows(keys, slot))
-        return all(rows in bb.get((nodes[int(idx)]["name"], slot), [])
-                   for idx, tr in tracks.items() for slot, rows in tr.items())
+                bb.setdefault((target, slot), []).append(rows(keys, slot))
+        return all(mine in bb.get((nodes[int(idx)]["name"], slot), [])
+                   for idx, tr in tracks.items() for slot, mine in tr.items())
 
 
 def zero_filled(path):
@@ -844,7 +858,7 @@ def publish_outfits(run, cls):
 # when there is no tto_released.json (then it is also the picker's starting choice for faces)
 TTO_FACES_ALL_RELEASED = {"bison", "chameleon", "mole", "monkey", "penguin", "whale"}
 RELEASED_NAME = "tto_released.json"      # <src>/tto_released.json, the picker's file
-TTO_KINDS = ("outfits", "weapons", "accessories", "trinkets", "clips", "faces")
+TTO_KINDS = ("outfits", "weapons", "accessories", "trinkets", "clips", "faces", "pets")    # pets: under "all"
 
 
 def load_released(src):
@@ -951,6 +965,40 @@ def publish_props(run, cls, kind):
     return kept
 
 
+def publish_pets(run):
+    """pets/index.json and each kept pets/<name>.json (2026-11-18, pipeline/wardrobe_pets.py): BB's pets whose meshes
+    and idle clip equal BB's pet prefab (BBRip.compare_prop, kind "pets"), with their textures and icons (icons/pet/
+    <code>.webp = gamegui/icons/items/pet/<code>.png) taken again from the BB rip; a TTO-sourced pet (its tto flag, or a
+    file that differs from BB's) only when the released list names it ({"all": {"pets": [names]}}): from the local data,
+    marked tto, its textures scrambled. The index keeps the published pets' rows only and is always written (the page
+    asks for it). Returns the kept rows."""
+    kept = []
+    for row in run.load(PET_INDEX, default=[]):
+        name, p = row["name"], run.load(row["file"])
+        textures = sorted({m["tex"] for n in p["nodes"] for m in n.get("mats", []) if m.get("tex")})
+        tto = bool(row.get("tto") or p.get("tto"))
+        why = "TTO's own item (tto flag)" if tto else run.bb.compare_prop("pet", "pets", p)
+        if why:
+            if not run.candidate("all", "pets", name, why, icon=row.get("icon")):
+                run.drop("pets", name, why + ("; not in the released list" if tto else ""))
+                continue
+            miss = next((w for w in (run.prop_texture(t, local_ok=True) for t in textures) if w), None)
+            if miss:
+                run.drop("pets", name, "released TTO pet, but " + miss)
+                continue
+            run.write_json(row["file"], dict(p, tto=True))
+            kept.append(dict(row, tto=True, icon=run.icon(row.get("icon"), local_ok=True)))
+            continue
+        why = next((w for w in map(run.prop_texture, textures) if w), None)
+        if why:
+            run.drop("pets", name, why)
+            continue
+        run.write_json(row["file"], p)
+        kept.append(dict(row, icon=run.icon(row.get("icon"))))
+    run.write_json(PET_INDEX, kept)
+    return kept
+
+
 def publish_community(run, outfits, props):
     """community.json and team_sets.json with their pictures (community skins, 2026-11-11; pipeline/wardrobe_community.py
     for the players', pipeline/wardrobe_team_sets.py for the team's own looks, 2026-11-12): a set goes online with the
@@ -1018,12 +1066,13 @@ def publish_icons(run, outfits, props):
     return out
 
 
-def publish_nicknames(run, outfits, props):
+def publish_nicknames(run, outfits, props, pets=()):
     """nicknames.json (the Bible's nicknames, pipeline/wardrobe_nicknames.py, 2026-11-14) with the rows of published
     items only, by the item's own name as the page looks it up (icons.json can spell it in another case): a row's key is
-    a model name (an outfit edition's is "<name>|<R|V>"), so an unreleased TTO piece's row would name it online."""
+    a model name (an outfit edition's is "<name>|<R|V>"), so an unreleased TTO piece's row would name it online. The
+    pets' rows sit under "all"/"pets" by the lower-case pet name (pets: publish_pets' kept rows)."""
     names = {cls: {"outfits": {o["name"] for o in os_}} for cls, os_ in outfits.items()}
-    shared = {}
+    shared = {"pets": {r["name"].lower() for r in pets}}
     for (cls, kind), ps in props.items():
         names.setdefault(cls, {}).setdefault(kind, set()).update(n for p in ps for n in (p["name"], strip_hand(p["name"])))
         shared.setdefault(kind, set()).update(p["name"].lower() for p in ps)
@@ -1178,10 +1227,11 @@ def stage_data(data, stage, bb, released=None, candidates=None, emo=None):
                                         clips={k: v for k, v in c["clips"].items() if k in clips}))
     for kind in SHARED_KINDS:
         props[("all", kind)] = publish_props(run, "all", kind)
+    pets = publish_pets(run)
     publish_community(run, outfits, props)
     icons = publish_icons(run, outfits, props)
     publish_item_map(run, outfits, props)
-    publish_nicknames(run, outfits, props)
+    publish_nicknames(run, outfits, props, pets)
     publish_placements(run, icons)
     publish_ui(run, classes, tto_clips, emo)
     publish_hd_icons(run, pub_clips)
@@ -1398,6 +1448,11 @@ def data_references(folder, problems):
     for kind in SHARED_KINDS:
         refs.append(f"all/props_{kind}.json")
         refs += _prop_textures(_json(folder, f"all/props_{kind}.json", problems))
+    refs.append(PET_INDEX)
+    for r in _json(folder, PET_INDEX, problems) or []:
+        refs += [r["file"]] + ([r["icon"]] if r.get("icon") else [])
+        pet = _json(folder, r["file"], problems)
+        refs += _prop_textures([pet] if pet else [])
     for slots in (_json(folder, "icons.json", problems) or {}).values():
         for entries in slots.values():
             for e in entries.values():

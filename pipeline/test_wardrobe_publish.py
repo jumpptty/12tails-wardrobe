@@ -79,6 +79,12 @@ CLIP = [("m_RotationCurves", "Cat_tri/Root", [(0.0, (0.1, 0.2, 0.3, 0.9), (0, 0,
                                               (0.5, (0.0, 0.1, 0.0, 1.0), (0.5, -0.25, 0, 0), (0.5, -0.25, 0, 0))]),
         ("m_PositionCurves", "Cat_tri/Root/Spine1", [(0.0, (0.5, 0.25, 0.0), (0, 0, 0), (0, 0, 0)),
                                                      (1.0, (0.4, 0.25, 0.1), (0, 0, 0), (0, 0, 0))])]
+# a pet's idle clip (wardrobe_pets.py: wardrobe_convert.clip_dict's rows, 5 places like the hero clips): values with more
+# than 5 places, so a comparison by the props' 6-place rows would not match
+PET_CLIP = [("m_RotationCurves", "body", [(0.0, (0.1234567, 0.2, 0.3, 0.9), (0, 0, 0, 0), (0, 0, 0, 0)),
+                                          (0.5, (0.0, 0.1, 0.0, 1.0), (0.5, -0.25, 0, 0), (0.5, -0.25, 0, 0))]),
+            ("m_PositionCurves", "body", [(0.0, (0.5, 0.25, 0.0), (0, 0, 0), (0, 0, 0)),
+                                          (1.0, (0.4, 0.2512345, 0.1), (0, 0, 0), (0, 0, 0))])]
 PLACE = {"bone": "Head", "p": [0, 0, 0], "q": [0, 0, 0, 1], "s": 1.0, "kwr": False, "kps": False}
 f32 = lambda x: struct.unpack("<f", struct.pack("<f", x))[0]
 
@@ -221,6 +227,7 @@ class World:
         self.item_map = {"cat": {"armor": {}, "weapon": {}, "accessory": {}, "trinket": {}}, "all": {"trinket": {}}}
         self.placements = {t: {"cat": {"fallback": PLACE, "entries": {}}} for t in ("weapons", "accessories", "trinkets")}
         self.ui = {"heroes": {}, "emotion": [], "skills": {"cat": []}, "faceBox": {"cat": [0, 0, 256, 256]}}
+        self.pets = []                                  # pets/index.json's rows (written only when a pet is added)
 
     def guid(self):
         self.n_guid += 1
@@ -314,6 +321,35 @@ class World:
         p.write_text(prefab_yaml([{"name": name, "clips": [cg]}, {"name": "blade", "parent": 0, "skin": mg}]), encoding="utf-8")
         png(self.assets / "Texture2D" / tex)
 
+    def add_pet(self, name, code, tex, tto=False, curves=PET_CLIP):
+        """A pet (wardrobe_pets.py): pets/<name>.json, a props entry whose root (node 0) is identity, a child "body" with a
+        live skin and the idle clip driving it; its index row; the data's own texture and icon (TTO's pink). BB's (tto
+        False): gameassets/characters/pet/<name>.prefab with its mesh and clip, the texture in Texture2D, the icon at
+        gamegui/icons/items/pet/<code>.png."""
+        tracks = {}
+        for field, path, keys in curves:
+            slot = {"m_RotationCurves": "q", "m_PositionCurves": "p", "m_ScaleCurves": "s"}[field]
+            tracks.setdefault("1", {})[slot] = hero_rows(keys, slot)          # every test curve drives node 1, "body"
+        nodes = [{"name": name, "parent": -1, "p": [0, 0, 0], "q": [0, 0, 0, 1], "s": [1, 1, 1], "on": True},
+                 {"name": "body", "parent": 0, "p": [0, 0.5, 0], "q": [0, 0, 0, 1], "s": [1, 1, 1], "on": True,
+                  "skin": dict(prop_mesh(TRI, TRIS), w=[], j=[], ibm=[], bones=[1]),
+                  "mats": [{"tex": tex, "color": [1, 1, 1, 1], "shader": "opaque"}]}]
+        dump(self.data / "pets" / f"{name}.json", {"name": name, "tto": tto, "nodes": nodes, "anim": {
+            "default": "idle", "clips": {"idle": {"len": 1.0, "rate": 30.0, "loop": True, "tracks": tracks}}}})
+        self.pets.append({"name": name, "file": f"pets/{name}.json", "code": f"p_{code}", "level": 1, "game": None if tto else name,
+                          "icon": f"icons/pet/{code}.webp", "tto": tto, "follow": {"type": 0, "dist": 1.5, "offset": {"cat": [0, 0, 0]}},
+                          "rest": {"cat": [0, 0, -1.5]}, "scale": {"cat": 1.0}, "size": [1, 1, 1], "particles": 0})
+        webp(self.data / "icons" / "pet" / f"{code}.webp")
+        png(self.data / "props" / "tex" / tex, TTO_RGBA)
+        if not tto:
+            mg = self.bb_asset(self.assets / "Mesh" / f"{name}_tri.asset", mesh_yaml(f"{name}_tri", TRI, TRIS))
+            cg = self.bb_asset(self.assets / "AnimationClip" / f"idle_{name}.anim", anim_yaml("idle", curves))
+            p = self.rip / "gameassets" / "characters" / "pet" / f"{name}.prefab"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(prefab_yaml([{"name": name, "clips": [cg]}, {"name": "body", "parent": 0, "skin": mg}]), encoding="utf-8")
+            png(self.assets / "Texture2D" / tex)
+            png(self.icon_dir / "items" / "pet" / f"{code}.png")
+
     def add_icon(self, cls, slot, name, rel, codes, bb=True):
         """An icons.json entry; the data's copy is TTO's (pink), the BB rip's at gamegui/icons/items/<folder>/<file>.png."""
         self.icons[cls][slot][name] = {"icon": rel, "codes": codes}
@@ -336,6 +372,8 @@ class World:
         dump(d / "item_map.json", self.item_map)
         dump(d / "placements.json", self.placements)
         dump(d / "ui.json", self.ui)
+        if self.pets:
+            dump(d / "pets" / "index.json", self.pets)
         dump(d / "item_map_tto.json", {"cat": {"armor": {"a_cat99": ["Cat_ttoGown"]}}})   # not used by the page
         (d / "placement_sweep.md").write_text("ttoGown notes", encoding="utf-8")
         self.src.mkdir(parents=True, exist_ok=True)
@@ -1107,6 +1145,97 @@ class PublishTest(unittest.TestCase):
         (w.assets / "AnimationClip" / "flap.anim").write_text(anim_yaml("flap", changed), encoding="utf-8")
         result = w.publish()
         self.assertIn("cat/wing", dropped_names(result, "back_trinkets"))
+
+    def test_bb_pet_kept_with_its_texture_and_icon_from_bb(self):
+        """A BB pet (2026-11-18) whose mesh and idle clip equal BB's characters/pet/<name>.prefab goes online: its file
+        and index row, its texture and icon (icons/pet/<code>.webp) taken again from the BB rip, its nickname row; the
+        root's transform is not compared (the pet file's node 0 is identity by design: the game replaces it)."""
+        w = make_world(self.tmp)
+        w.add_pet("smallFox", "sfx", "smallFox.png")
+        w.finish()
+        dump(w.data / "nicknames.json", {"all": {"pets": {"smallfox": {"nick": "จิ้งจอกน้อย"}}}})
+        result = w.publish()
+        d = data_dir(w)
+        self.assertEqual(result["dropped"].get("pets", []), [])
+        index = json.loads((d / "pets" / "index.json").read_text("utf-8"))
+        self.assertEqual([r["name"] for r in index], ["smallFox"])
+        self.assertEqual(index[0]["icon"], "icons/pet/sfx.webp")
+        self.assertFalse(index[0]["tto"])
+        self.assertEqual(json.loads((d / "pets" / "smallFox.json").read_text("utf-8")),
+                         json.loads((w.data / "pets" / "smallFox.json").read_text("utf-8")))
+        self.assertEqual((d / "props" / "tex" / "smallFox.png").read_bytes(), (w.assets / "Texture2D" / "smallFox.png").read_bytes())
+        self.assertEqual(pixels(d / "icons" / "pet" / "sfx.webp"), BB_RGBA)          # BB's icon, not the data's pink
+        self.assertEqual(json.loads((d / "nicknames.json").read_text("utf-8")), {"all": {"pets": {"smallfox": {"nick": "จิ้งจอกน้อย"}}}})
+        self.assertEqual(wp.check(w.out), [])
+        (d / "pets" / "smallFox.json").unlink()                       # the check walks the pets' paths too
+        self.assertIn(f"missing: {d.name}/pets/smallFox.json", wp.check(w.out))
+
+    def test_tto_pet_not_released_is_dropped(self):
+        """TTO's own pet (tto: true) stays local unless the released list names it: no file, row, texture, icon or
+        nickname online, and it is listed for the picker."""
+        w = make_world(self.tmp)
+        w.add_pet("smallFox", "sfx", "smallFox.png")
+        w.add_pet("ttoDragon", "tdr", "ttoDragon.png", tto=True)
+        w.finish()
+        dump(w.data / "nicknames.json", {"all": {"pets": {"smallfox": {"nick": "จิ้งจอกน้อย"}, "ttodragon": {"nick": "มังกรลับ"}}}})
+        result = w.publish()
+        d = data_dir(w)
+        reason = next(x["reason"] for x in result["dropped"]["pets"] if x["name"] == "ttoDragon")
+        self.assertIn("TTO's own item", reason)
+        self.assertEqual([r["name"] for r in json.loads((d / "pets" / "index.json").read_text("utf-8"))], ["smallFox"])
+        for p in w.out.rglob("*"):
+            self.assertFalse(any(n in p.name.lower() for n in ("ttodragon", "tdr")), p)
+            if p.suffix in (".json", ".html"):
+                text = p.read_text(encoding="utf-8")
+                for n in ("ttoDragon", "ttodragon", "p_tdr", "icons/pet/tdr"):
+                    self.assertNotIn(n, text, f"{p.name} still names {n}")
+        cands = {(c["cls"], c["kind"], c["name"]): c["released"] for c in result["tto_candidates"]}
+        self.assertEqual(cands[("all", "pets", "ttoDragon")], False)
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_released_tto_pet_kept_marked_tto(self):
+        """A TTO pet the released list names ({"all": {"pets": [...]}}) goes online from the local data, marked tto
+        (preview only): its texture scrambled like TTO's other pictures, its icon plain."""
+        w = make_world(self.tmp)
+        w.add_pet("ttoDragon", "tdr", "ttoDragon.png", tto=True)
+        w.finish()
+        (w.src / wp.RELEASED_NAME).write_text(json.dumps({"all": {"pets": ["ttoDragon"]}}), encoding="utf-8")
+        result = w.publish()
+        d = data_dir(w)
+        self.assertEqual(result["dropped"].get("pets", []), [])
+        index = json.loads((d / "pets" / "index.json").read_text("utf-8"))
+        self.assertEqual([(r["name"], r["tto"], r["icon"]) for r in index], [("ttoDragon", True, "icons/pet/tdr.webp")])
+        self.assertTrue(json.loads((d / "pets" / "ttoDragon.json").read_text("utf-8"))["tto"])
+        got = (d / "props" / "tex" / "ttoDragon.png").read_bytes()
+        self.assertEqual(got[:4], wp.SCRAMBLE_MARK)
+        self.assertEqual(unscramble(got), (w.data / "props" / "tex" / "ttoDragon.png").read_bytes())
+        self.assertEqual((d / "icons" / "pet" / "tdr.webp").read_bytes(), (w.data / "icons" / "pet" / "tdr.webp").read_bytes())
+        cands = {(c["cls"], c["kind"], c["name"]): c["released"] for c in result["tto_candidates"]}
+        self.assertEqual(cands[("all", "pets", "ttoDragon")], True)
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_bb_pet_whose_mesh_differs_is_dropped(self):
+        """A BB pet whose mesh differs from BB's prefab's is dropped with the reason; so is one whose idle clip's keys
+        differ from BB's clip of the same name."""
+        w = make_world(self.tmp)
+        w.add_pet("smallFox", "sfx", "smallFox.png")
+        w.finish()
+        mesh = w.assets / "Mesh" / "smallFox_tri.asset"
+        good = mesh.read_text(encoding="utf-8")
+        mesh.write_text(mesh_yaml("smallFox_tri", [(x + 0.5, y, z) for x, y, z in TRI], TRIS), encoding="utf-8")
+        result = w.publish()
+        reason = next(x["reason"] for x in result["dropped"]["pets"] if x["name"] == "smallFox")
+        self.assertIn("node body: mesh differs from BB's", reason)
+        d = data_dir(w)
+        self.assertEqual(json.loads((d / "pets" / "index.json").read_text("utf-8")), [])
+        self.assertFalse((d / "pets" / "smallFox.json").exists())
+        self.assertFalse((d / "icons" / "pet").exists())
+        mesh.write_text(good, encoding="utf-8")
+        changed = [(f, p, [(t, (v[0] + 0.5,) + v[1:], i, o) for t, v, i, o in keys]) for f, p, keys in PET_CLIP]
+        (w.assets / "AnimationClip" / "idle_smallFox.anim").write_text(anim_yaml("idle", changed), encoding="utf-8")
+        result = w.publish()
+        reason = next(x["reason"] for x in result["dropped"]["pets"] if x["name"] == "smallFox")
+        self.assertIn("clip idle: keys differ from BB's", reason)
 
     def test_lost_bb_prop_prefab_compared_with_reborn(self):
         """A prop whose BB prefab the rip has lost (zero-filled, like the office's 24 Monkey trinkets, 2026-11-09) is
