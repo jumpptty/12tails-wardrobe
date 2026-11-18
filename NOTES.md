@@ -3574,3 +3574,43 @@ will be in the wardrobe, but sort them first at the top for the wardrobe".
   as CRLF, back to LF), version `169e1a57-f6ed-4623-b256-59dffd9b041e`. Live (isolated headless context): nicknames.json
   200, the weapon / outfit / set pickers each have the ค้นหา box, nicknamed tiles first with their labels, the set search
   "70ดล" leaves ถอดทั้งหมด + legend R + legend, no page errors (`checks/nick_check/live_set_search.png`).
+
+## 2026-11-18 (home), pets: the design (started)
+
+User: "Add Pet section, standing behing the hero how it would work in game. Bring their models together with their
+texture and animations", then "When I say pet animations, I meant pet idle animation only". Camera: the user picked B
+(the game's spot; the fitted view turns to the side and a little higher while a pet is out). Design:
+`plans/wardrobe_pets_design.md`.
+- **Where the game puts a pet** (BB `PetControl.cs`; spawn in every `<Class>Equipment`, e.g. `SheepEquipment.cs:~4990`):
+  Instantiate at hero.position - hero.forward with the hero's rotation, then `Init` moves it to hero.position -
+  followDistance x hero.forward and fills the follow trail with that point, so with the hero still it stays there,
+  facing the hero's way. FloatBehind adds `offset_<class>`; ParentPosition / ParentAll sit at hero.position + the class
+  offset (the kites' offsets are heights per class). The idle: `Init` sets "has run" only when the Animation has a `run`
+  clip, then LateUpdate CrossFades `root`; without `run` only the Animation's default clip plays (chibi dogs, the
+  Halloween Ghost, Tianlong).
+- **The values are in TTO's bundles, not BB's rip:** the ExportedProject YAML has PetControl with no fields (the
+  obfuscated script); TTO's bundles keep type trees, so `read_typetree()` gives followType / followDistance /
+  offset_<class>. Census of `tto_assets/2026-11-04`: 102 pet prefabs (BB's `characters/pet/` + TTO's `characters/pets/`),
+  all legacy Animation clips (all66 also has an Animator); kiteButterfly / Chula / Pukpao and soccerBall have no clip.
+- BB pet icons: `gamegui/icons/items/pet/<code>` (132 png in the rip); names `PetData.cs` getData (p_lcr = "L. Carron
+  <level>"), `PetData_th.cs` has Thai descriptions only (getDes), no Thai names.
+- **Bloom Pulse** (user mid-session: "add t_all_tto_bloompulse to the wardrobe too if it has a model for it"): new in
+  today's TTO 1.7.0 (not in 11-04): `heroes/all/trinkets/aura_bloompulse` + `_lv1`..`_lv9` (bundle
+  bb81e29a60faa85dabae8dbe20ca5179, the shared trinkets bundle). Base and lv1-3 are particles only (Bloom, Pulse, Wave,
+  BloomInner, Pollen, Bubbles, Motes); meshes from lv4 (Moat, Ribbon), lv5 the three flowers (Flower1 / 3 / 4 with Inner,
+  Heart, Pulse), lv6 two leaves (Twin0 / 1); the parts are moved by its own scripts (Lv2_MossGlow_B, Lv3_PollenDrift_D,
+  Lv4_BloomPulse_C, Lv5_LeafSwirl_D, Lv6_ForestWisp_A ...), no clips. The wardrobe shows no back trinket's particles today
+  (aura_bloodmoon / undeadqueen = their GroundRing mesh only).
+- The live TTO install here was updated today (1.7.0): its `aa/catalog.bin` sits one folder up from
+  `StandaloneWindows64` (the bundles' folder).
+- **A pet's size = its level** (BB, every `<Class>Equipment`, e.g. `SheepEquipment.cs:5021`, right after the spawn):
+  `localScale = (level digit x 0.1 + 0.9)`: Lv 1 1.0x, Lv 9 1.8x. **TTO's multiplier on top:** `PetScales.Multiplier
+  (hero, code)` from the client's Resources TextAsset `Config/PetScale` (`resources.assets`, beside the placement
+  tables; read 2026-11-18 from 1.7.0): p_all75 / 76 / 81 / 87 / 88 / 89 x0.5, p_allhlw x1.5, per class only p_all85 / 86
+  (Bison 1.5, Whale 2.0); no BB pet in it. TTO1118's PetControl adds idlePrefix / FindClip / emotes (not yet read).
+- Bloom Pulse lv9 meshes and where they sit: Moat, Ribbon, Flower1 / 3 / 4 (+ Inner, Heart, Pulse; about 0.7 from the
+  centre under a 0.55-scaled parent), Twin0 / 1 (x -+0.8 under 0.5), Ring (under 0.65); materials M_<Part> on TTO shaders
+  in a dependency bundle.
+- Design decisions so far (user): camera B; idle only; Bloom Pulse = lv9's meshes; pets downloadable (model + texture)
+  by the usual rule, TTO-only not online. My calls in the design (for the user to check): highest level size, TTO's
+  rules where they differ, the script in this repo, today's 1.7.0 decrypt.
