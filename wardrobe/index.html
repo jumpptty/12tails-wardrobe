@@ -1202,8 +1202,10 @@ function dropPet(K) {
   o.userData.mixer?.stopAllAction(); o.parent?.remove(o); o.traverse(x => { x.geometry?.dispose(); }); delete K.props.Pet;
 }
 // the one way a pet goes on or off (null = off). The newest call wins: an older pick whose file arrives later is dropped
-// (petReq). A name the data does not have (the online copy keeps BB's pets only) = no pet, quietly. Each call resolves
-// only after the calls before it have, so quick picks' undo steps stack in the order they were picked
+// (petReq), and one whose file fails after a newer pick ends quietly (no error toast for a pick already replaced). A
+// name the data does not have (the online copy keeps BB's pets only) = no pet, quietly. Each call resolves only after
+// the calls before it have, so quick picks' undo steps stack in the order they were picked; that chain moves on even
+// when the last steps (persist, the ring) throw
 async function setPet(name) {
   const K = C, req = ++petReq, prev = petLast;
   let done; petLast = new Promise(r => { done = r; });
@@ -1225,21 +1227,21 @@ async function setPet(name) {
       K.petStage.add(o);
       finishProp(o);
       // the game loops the idle (PlayIdle; the pet file's clip "loop"): finishProp holds a prop clip that ends away from its
-      // start (kiteSnake, smallDragonZ and smallKarazo's do, a little)
+      // start (kiteSnake's and smallKarazo's do, a little, and one of TTO's own)
       const pa = o.userData.propAnim;
       if (pa?.ends && pa.a.clips[pa.pick]?.loop) { pa.ends = false; pa.act.setLoop(THREE.LoopRepeat, Infinity); pa.act.clampWhenFinished = false; }
       o.userData.idleBox = idleBox(o);
       K.props.Pet = o;
-    } catch (e) { if (mine()) K.state.Pet = null; throw e; }
+    } catch (e) { if (!mine()) return; K.state.Pet = null; throw e; }
   } finally {
-    if (mine()) { persist(); renderPropUI("Pet"); }
-    await prev; done();
+    try { if (mine()) { persist(); renderPropUI("Pet"); } }
+    finally { await prev; done(); }
   }
 }
 const pickPet = name => tracked(() => setPet(name)).catch(err);    // a pick: one undo step
 // the pet's box over its whole idle, in its own space (its root is never animated): the clip sampled at 24 steps and put
 // back where it was. The camera's fit takes this in (heroFitPose), so whatever frame the loop is at, the pet stays framed
-// (one instant's box let a swinging tail or TianlongA's coils leave the frame at another phase)
+// (one instant's box let a swinging tail or a long pet's coils leave the frame at another phase)
 function idleBox(o) {
   const pa = o.userData.propAnim, box = new THREE.Box3(), inv = new THREE.Matrix4();
   o.updateMatrixWorld(true); inv.copy(o.matrixWorld).invert();

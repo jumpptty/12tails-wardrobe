@@ -47,9 +47,20 @@ hero how it would work in game"). On the real page through its scripting hook (w
     times unchanged through each screenshot), then the frame shown and 16 more of the pet's idle clip rendered through
     the live camera: no drawn pixel (alpha >= 128) under the picker, on the stage's edge rows / columns or behind the
     toolbar, and the pet's box inside the fit's margins at every frame
+  - every pet on the stage (the final review's I1, 2026-11-19): the data first, every index row x all 12 classes of
+    meta.json: a rest point (three finite numbers, = rest_point of the row's follow values) and a scale (finite, > 0);
+    then on a page of its own, a first visit (the Sheep), EVERY index row in turn (BB's and TTO's): setPet(name) ends with
+    no error, the pet on stage alone at the row's rest point and scale for the Sheep (placed()'s arithmetic), a mixer
+    exactly when its file has a clip (its time advancing 0.1 s within 15 s, the idle looping), a non-empty, finite idle
+    fit box (idleBox),
+    no error toast, no page error, console error or failed request while it loads
+  - setPet's failure paths (the final review's M1, M3), each on a fresh page: a throw in its last steps (persist(), here
+    made to throw by a C.state key whose getter throws) still lets the next setPet end, the second pet on stage; a pick
+    whose file fails (held 1 s, then a 404) after a second pick replaced it ends quietly: no error toast at any moment,
+    the second pet on stage, the first never, no error but the 404's own console line
 Exit 1 on any failure. Serves the folder itself on a free port (never 8771, the main folder's page). --downloads / --ui
-run that part alone.
-  uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check] [--downloads | --ui]"""
+/ --every / --faults run that part alone.
+  uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check] [--downloads | --ui | --every | --faults]"""
 import asyncio, base64, functools, http.server, json, math, re, struct, sys, threading
 from pathlib import Path
 from playwright.async_api import async_playwright
@@ -62,6 +73,9 @@ from wardrobe_pets import rest_point           # noqa: E402  (the pure rules; no
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 DOWNLOADS_ONLY = "--downloads" in sys.argv
 UI_ONLY = "--ui" in sys.argv
+EVERY_ONLY = "--every" in sys.argv
+FAULTS_ONLY = "--faults" in sys.argv
+PART = DOWNLOADS_ONLY or UI_ONLY or EVERY_ONLY or FAULTS_ONLY
 ROOT = Path(ARGS[0]) if ARGS else HERE.parent
 OUT = Path(ARGS[1]) if len(ARGS) > 1 else ROOT / "checks" / "pet_check"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -107,6 +121,181 @@ def unity(follow):          # the row's follow is three.js space (x mirrored); r
 
 def near(a, b, tol):
     return a is not None and b is not None and len(a) == len(b) and all(abs(x - y) <= tol for x, y in zip(a, b))
+
+
+def at_rest(st, name, cls):     # PET's reading = the pet alone on stage at the row's rest point, rotation and scale for cls
+    row = ROWS[name]
+    want, game = row["rest"][cls], rest_point(unity(row["follow"]), cls)
+    ok = (st["on"] == name and st["state"] == name and st["pets"] == [name] and not st["onBone"]
+          and near(st["p"], want, 1e-3) and near(st["p"], game, 1e-3) and st["qdot"] > 1 - 1e-6
+          and near(st["s"], [row["scale"][cls]] * 3, 1e-6) and st["shown"])
+    return ok, want, game
+
+
+# ---- every pet on the stage (the final review's I1): each index row on a first visit's hero, the Sheep
+CLASSES_ALL = [c["cls"] for c in json.loads((ROOT / "wardrobe" / "data" / "meta.json").read_text(encoding="utf-8"))["classes"]]
+# setPet(name) as a pick ends (its error if it throws), then the pet's idle fit box and the error toast
+WEAR = """async n => { const { setPet, C } = wardrobe.debug(); let e = null;
+  try { await setPet(n); } catch (x) { e = String(x?.stack || x); }
+  const b = C.props.Pet?.userData.idleBox, el = document.getElementById('status');
+  return { err: e, box: b ? { empty: b.isEmpty(), min: b.min.toArray(), max: b.max.toArray() } : null,
+    toast: el.classList.contains('err') ? el.textContent : '' }; }"""
+MIX_T = "() => wardrobe.debug().C.props.Pet?.userData.mixer?.time ?? null"
+
+
+def finite(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+
+
+async def every(b, check, errors):
+    """every index row's rest point and scale for all 12 classes (data), then every pet on the Sheep's stage"""
+    bad = []
+    for name, r in ROWS.items():
+        for cls in CLASSES_ALL:
+            rest, s = (r.get("rest") or {}).get(cls), (r.get("scale") or {}).get(cls)
+            game = rest_point(unity(r["follow"]), cls)
+            if not (isinstance(rest, list) and len(rest) == 3 and all(finite(v) for v in rest) and near(rest, game, 1e-6)):
+                bad.append(f"{name} {cls} rest {rest} (rest_point {game})")
+            if not (finite(s) and s > 0):
+                bad.append(f"{name} {cls} scale {s!r}")
+    check(len(CLASSES_ALL) == 12 and not bad,
+          f"every pet, data: {len(ROWS)} rows x {len(CLASSES_ALL)} classes {CLASSES_ALL}: a finite rest point = rest_point of the "
+          f"follow values, a finite scale > 0" + (f"; wrong ({len(bad)}): {bad[:8]}" if bad else ""))
+
+    ctx = await b.new_context(viewport={"width": 1366, "height": 768})
+    page = await ctx.new_page()
+    errs = []
+    page.on("pageerror", lambda e: errs.append(f"every: {e}"))
+    page.on("console", lambda m: m.type == "error" and errs.append(f"every: {m.text} {(m.location or {}).get('url', '')}"))
+    page.on("requestfailed", lambda r: errs.append(f"every: request failed {r.url} {r.failure}"))
+    await page.goto(URL)
+    await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
+    cls = await page.evaluate("() => wardrobe.debug().C.cls")
+    check(cls == "sheep", f"every pet: a first visit opens on the Sheep ({cls})")
+    good, broke = 0, []
+    for name, row in ROWS.items():
+        n0 = len(errs)
+        w = await page.evaluate(WEAR, name)
+        st = await page.evaluate(PET)
+        ok, want, game = at_rest(st, name, cls)
+        has_clip = "anim" in json.loads((ROOT / "wardrobe" / "data" / row["file"]).read_text(encoding="utf-8"))
+        t0 = await page.evaluate(MIX_T)
+        if has_clip and t0 is not None:          # its time moves on (the first frames after a big pet's textures can be slow)
+            try:
+                await page.wait_for_function(f"t0 => ({MIX_T})() > t0 + 0.1", arg=t0, timeout=15000)
+            except Exception:
+                pass
+        t1 = await page.evaluate(MIX_T)
+        dt = t1 - t0 if t0 is not None and t1 is not None else None
+        mix_ok = (bool(st.get("mixer")) and st.get("loop") is True and dt is not None and dt > 0.1) if has_clip else not st.get("mixer")
+        bx = w["box"]
+        size = [hi - lo for lo, hi in zip(bx["min"], bx["max"])] if bx and not bx["empty"] else None
+        box_ok = bool(size) and all(finite(v) for v in bx["min"] + bx["max"]) and min(size) >= 0 and math.hypot(*size) > 1e-3
+        new = errs[n0:]
+        all_ok = w["err"] is None and not w["toast"] and ok and mix_ok and box_ok and not new
+        good += all_ok
+        if not all_ok:
+            broke.append(name)
+        check(all_ok, f"every pet  {cls} {name:18} {'TTO' if row['tto'] else 'BB '} at {[round(x, 4) for x in st.get('p') or []]} "
+                      f"(rest {want}) x{round((st.get('s') or [0])[0], 4)} (row {row['scale'][cls]}), alone {st['pets'] == [name]}, "
+                      f"shown {st.get('shown')}; clip {has_clip}: mixer {st.get('mixer')}, loop {st.get('loop')}, "
+                      f"+{dt if dt is None else round(dt, 2)} s; idle box {[round(v, 3) for v in size] if size else bx}"
+                      + (f"; setPet threw {w['err'][:300]}" if w["err"] else "") + (f"; toast {w['toast']!r}" if w["toast"] else "")
+                      + (f"; errors {new}" if new else ""))
+    check(good == len(ROWS), f"every pet: {good} of {len(ROWS)} on the Sheep's stage as their rows say" + (f"; broke: {broke}" if broke else ""))
+    await page.evaluate(SET, None)
+    errors += errs
+    await ctx.close()
+
+
+# ---- setPet's failure paths (the final review's M1, M3)
+# M1: persist() throws in setPet's last steps (a C.state key whose getter throws: persist spreads C.state); the next
+# setPet must still end (it waits for the one before it)
+PERSIST_THROWS = """async ([a, b]) => { const { setPet, C } = wardrobe.debug(); let first = null;
+  Object.defineProperty(C.state, '__petcheck', { get() { throw new Error('the check: persist throws'); }, enumerable: true, configurable: true });
+  try { await setPet(a); } catch (e) { first = String(e); } finally { delete C.state.__petcheck; }
+  const second = await ENDS(setPet(b));
+  return { first, second }; }"""
+# a setPet's promise: ended / threw / never ended (8 s)
+ENDS_JS = "const ENDS = p => Promise.race([p.then(() => 'ended', e => 'threw ' + e), new Promise(r => setTimeout(() => r('never ended (8 s)'), 8000))]);"
+PERSIST_THROWS = PERSIST_THROWS.replace("async ([a, b]) => {", "async ([a, b]) => { " + ENDS_JS, 1)
+THEN_NONE = "async () => { " + ENDS_JS + " return ENDS(wardrobe.debug().setPet(null)); }"
+# M3: two picks 50 ms apart, the first's file held 1 s then a 404: the toast watched the whole time, what stood on stage
+FAILED_PICK = """async ([a, b]) => { const { pickPet, C } = wardrobe.debug(), el = document.getElementById('status'), toasts = [], seen = [];
+  const ob = new MutationObserver(() => { if (el.classList.contains('err')) toasts.push(el.textContent); });
+  ob.observe(el, { attributes: true, childList: true, characterData: true, subtree: true });
+  const tick = setInterval(() => { const n = C.props.Pet?.userData.pet || null; if (seen[seen.length - 1] !== n) seen.push(n); }, 5);
+  const pa = pickPet(a); await new Promise(r => setTimeout(r, 50)); const pb = pickPet(b);
+  await pb; const bAt = performance.now(), onAtB = C.props.Pet?.userData.pet ?? null;
+  await pa; const aAt = performance.now();
+  await new Promise(r => setTimeout(r, 400)); clearInterval(tick); ob.disconnect();
+  const n = C.props.Pet?.userData.pet || null; if (seen[seen.length - 1] !== n) seen.push(n);
+  return { toasts, seen, onAtB, order: aAt >= bAt, on: n, state: C.state.Pet ?? null, now: el.classList.contains('err') ? el.textContent : '' }; }"""
+
+
+async def faults(b, check, errors):
+    """M1 and M3, each on a fresh page (a stuck setPet chain stays on its own page)"""
+    async def fresh():
+        ctx = await b.new_context(viewport={"width": 1366, "height": 768})
+        page = await ctx.new_page()
+        errs = []
+        page.on("pageerror", lambda e: errs.append(("pageerror", str(e), "")))
+        page.on("console", lambda m: m.type == "error" and errs.append(("console", m.text, (m.location or {}).get("url", ""))))
+        page.on("requestfailed", lambda r: errs.append(("requestfailed", f"{r.url} {r.failure}", r.url)))
+        await page.goto(URL)
+        await page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
+        return ctx, page, errs
+
+    # M1
+    ctx, page, errs = await fresh()
+    a, c = "smallAnubi", "miniMokBug"
+    r = await page.evaluate(PERSIST_THROWS, [a, c])
+    st = await page.evaluate(PET)
+    ok, _, _ = at_rest(st, c, st["cls"])
+    third = await page.evaluate(THEN_NONE)
+    check(r["first"] is not None and "persist throws" in r["first"] and r["second"] == "ended" and ok and third == "ended",
+          f"M1 persist() throws in setPet({a})'s last steps (it threw: {r['first']}): the next setPet({c}) {r['second']}, "
+          f"{c} on stage at its rest point {ok} ({st['pets']}); setPet(null) after it {third}")
+    check(not errs, f"M1   no page errors there {errs}")
+    errors += [f"M1: {k} {t}" for k, t, _ in errs]
+    await ctx.close()
+
+    # M3
+    ctx, page, errs = await fresh()
+    a, c = "littleCarron", "littlePeppon"
+    hit = []
+
+    async def fail(route):                    # held, so the second pick lands first; then not found
+        await asyncio.sleep(1.0)
+        hit.append(route.request.url)
+        await route.fulfill(status=404, content_type="text/plain", body="not found (the pet check)")
+    await page.route(f"**/data/pets/{a}.json", fail)
+    r = await page.evaluate(FAILED_PICK, [a, c])
+    await page.unroute(f"**/data/pets/{a}.json")
+    st = await page.evaluate(PET)
+    ok, _, _ = at_rest(st, c, st["cls"])
+    own = [e for e in errs if e[0] == "console" and "Failed to load resource" in e[1] and f"/data/pets/{a}.json" in e[2]]
+    other = [e for e in errs if e not in own]
+    check(len(hit) == 1 and r["order"] and r["onAtB"] == c and not r["toasts"] and not r["now"] and ok and a not in r["seen"],
+          f"M3 {a} picked, its file held 1 s then a 404 ({len(hit)} answered), {c} picked 50 ms later and on stage first "
+          f"({r['onAtB']}; the failed pick ended after it {r['order']}): seen {r['seen']}, error toasts {r['toasts']}, "
+          f"on stage {st['pets']} at its rest point {ok}")
+    check(not other, f"M3   no error but the 404's own console line ({len(own)}): {other}")
+    errors += [f"M3: {k} {t}" for k, t, _ in other]
+    # the newest pick failing still says so (the toast), and leaves no pet
+    d, n0 = "littleMellon", len(errs)
+    await page.route(f"**/data/pets/{d}.json", lambda route: route.fulfill(status=404, content_type="text/plain", body="not found (the pet check)"))
+    await page.evaluate("n => wardrobe.debug().pickPet(n)", d)
+    await page.unroute(f"**/data/pets/{d}.json")
+    toast = await page.evaluate("() => { const el = document.getElementById('status'); return el.classList.contains('err') ? el.textContent : ''; }")
+    st = await page.evaluate(PET)
+    new = errs[n0:]
+    said = [e for e in new if e[0] == "console" and f"data/pets/{d}.json" in e[1] + e[2]]
+    check(toast == "โหลดชิ้นนี้ไม่สำเร็จ ลองกดอีกครั้ง" and st["state"] is None and st["on"] is None and len(said) == len(new) >= 1,
+          f"M3   a pick whose file fails while it is the newest: the toast {toast!r}, no pet (state {st['state']!r}, on stage {st['pets']}); "
+          f"its console lines {[e[1][:60] for e in said]}, others {[e for e in new if e not in said]}")
+    errors += [f"M3: {k} {t}" for k, t, _ in new if (k, t, _) not in said]
+    await ctx.close()
 
 
 # ---- downloads (Task 8)
@@ -848,11 +1037,15 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
         dl_errors = []                         # its own pages' (Focus 1 below wants none on its page so far)
-        if not UI_ONLY:
+        if not PART or DOWNLOADS_ONLY:
             await downloads(b, check, dl_errors)
-        if not DOWNLOADS_ONLY:
+        if not PART or UI_ONLY:
             await ui(b, check, dl_errors)      # the topic, the picker, the camera: on pages of their own too
-        if DOWNLOADS_ONLY or UI_ONLY:
+        if not PART or EVERY_ONLY:
+            await every(b, check, dl_errors)   # every pet on the Sheep's stage (I1), a page of its own
+        if not PART or FAULTS_ONLY:
+            await faults(b, check, dl_errors)  # setPet's failure paths (M1, M3), fresh pages
+        if PART:
             await b.close()
             print("errors:", dl_errors)
             print(f"{len(fails) + bool(dl_errors)} failed" if fails or dl_errors else "all ok")
@@ -890,10 +1083,7 @@ async def main():
         async def placed(name, cls, what=""):
             st = await page.evaluate(PET)
             row = ROWS[name]
-            want, game = row["rest"][cls], rest_point(unity(row["follow"]), cls)
-            ok = (st["on"] == name and st["state"] == name and st["pets"] == [name] and not st["onBone"]
-                  and near(st["p"], want, 1e-3) and near(st["p"], game, 1e-3) and st["qdot"] > 1 - 1e-6
-                  and near(st["s"], [row["scale"][cls]] * 3, 1e-6) and st["shown"])
+            ok, want, game = at_rest(st, name, cls)
             check(ok, f"{cls:6} {name:13} {what}at {[round(x, 4) for x in st.get('p') or []]} (rest {want}, rest_point {game}) "
                       f"x{round((st.get('s') or [0])[0], 4)} (row {row['scale'][cls]}), the hero's rotation {st.get('qdot', 0) > 1 - 1e-6}, "
                       f"on a hero bone {st.get('onBone')}, alone in the scene {st['pets']}, shown {st.get('shown')}")
