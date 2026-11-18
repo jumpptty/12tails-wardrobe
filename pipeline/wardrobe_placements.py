@@ -15,27 +15,51 @@ hand (Placements.WeaponKey). CharacterEquipment.ApplyPlacement (0x1a748b0): pare
 Internal_FromEulerRad) unless keepWorldRot, then localScale. E.g. Sheep shade_wing t_all78: Spine2, pos (0, 0.25, 0),
 euler 0 (the wardrobe had BB's class-trinket rule, Spine1 + Euler(0, -90, 90): 90 deg off). Items with no entry keep
 BB's mount rule in the page.
+
+OVERRIDES (below) names the entries a rerun does NOT take from the client's table: each is written as the previous
+placements.json had it (apply_overrides; tested in pipeline/test_wardrobe_placements.py). The entries a rerun changes are
+read by the video repo's skits too (CLAUDE.md), so a moved live item waits for the user's pick there.
 """
+import copy
 import json
 import math
 import os
-import sys
-
-import UnityPy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 CFG = os.path.join(ROOT, "tto_config")
-GAME = os.path.join(os.environ["LOCALAPPDATA"], "TailsTopia", "game", "TailsTopia", "TailsTopiaOnline_Data")
-os.makedirs(CFG, exist_ok=True)
+DATA = os.path.join(ROOT, "wardrobe", "data", "placements.json")
 
-env = UnityPy.load(os.path.join(GAME, "resources.assets"))
-for obj in env.objects:
-    if obj.type.name == "TextAsset":
-        t = obj.read()
-        if t.m_Name in ("TrinketPlacement", "AccessoryPlacement", "WeaponPlacement"):
-            s = t.m_Script if isinstance(t.m_Script, str) else t.m_Script.decode("utf-8", "replace")
-            open(os.path.join(CFG, t.m_Name + ".json"), "w", encoding="utf-8").write(s)
+KEEP = "keep the previous entry"
+# (table, hero, code) -> KEEP: written as the previous placements.json has it, not as the client's table has it now
+OVERRIDES = {
+    # the Cat's ReaperTrinket (t_allhlw5, a live BB item, all.trinkets.reapertrinket in icons.json): TTO 1.7.0 moved it
+    # (Spine2 p (-0.193, 0.501, -0.034) -> Spine1 p (-0.363, 0.473, 0.180), a new q). Kept where the live site and the
+    # video repo's Cat skits have it until the user picks (final review I2, 2026-11-19; the two looks side by side in
+    # plans/pets/reaper_cat/, HANDOFF). To take 1.7.0's place: delete this line and rerun.
+    ("trinkets", "cat", "t_allhlw5"): KEEP,
+    # the Panda's c_allhlw4: 1.7.0's table writes the same place as float32 noise (0.262628 -> 0.2626279890537262);
+    # kept so a rerun's diff is what the game changed
+    ("accessories", "panda", "c_allhlw4"): KEEP,
+}
+
+
+def apply_overrides(new, previous, overrides=None):
+    """Put each overridden entry of `new` (this run's tables) back as `previous` (the last placements.json) has it, in
+    its place in the order; an entry with no previous one stays the table's. Returns one line per override."""
+    notes = []
+    for (table, hero, code), how in (OVERRIDES if overrides is None else overrides).items():
+        if how != KEEP:
+            raise ValueError(f"{table} {hero} {code}: unknown override {how!r}")
+        old = (((previous.get(table) or {}).get(hero) or {}).get("entries") or {}).get(code)
+        if old is None:
+            notes.append(f"{table} {hero} {code}: no previous entry, the table's kept")
+            continue
+        entries = new.setdefault(table, {}).setdefault(hero, {"fallback": None, "entries": {}})["entries"]
+        same = entries.get(code) == old
+        entries[code] = copy.deepcopy(old)
+        notes.append(f"{table} {hero} {code}: the previous entry kept" + (" (the table's is the same)" if same else " (the table's differs)"))
+    return notes
 
 
 def unity_euler(x, y, z):
@@ -61,12 +85,31 @@ def conv(e):
             "kwr": bool(e.get("keepWorldRot")), "kps": bool(e.get("keepPrefabScale"))}
 
 
-out = {}
-for slot, name in (("trinkets", "TrinketPlacement"), ("accessories", "AccessoryPlacement"), ("weapons", "WeaponPlacement")):
-    d = json.load(open(os.path.join(CFG, name + ".json"), encoding="utf-8"))
-    out[slot] = {h["hero"].lower(): {"fallback": conv(h["fallback"]) if h.get("fallback") else None,
-                                     "entries": {e["code"]: conv(e) for e in h.get("entries", []) if e.get("code")}}
-                 for h in d.get("heroes", [])}
-    print(slot, {k: len(v["entries"]) for k, v in out[slot].items()})
-json.dump(out, open(os.path.join(ROOT, "wardrobe", "data", "placements.json"), "w"), separators=(",", ":"))
-print("written wardrobe/data/placements.json")
+def main():
+    import UnityPy                          # (here: the tests import the pure rules above without it)
+    game = os.path.join(os.environ["LOCALAPPDATA"], "TailsTopia", "game", "TailsTopia", "TailsTopiaOnline_Data")
+    os.makedirs(CFG, exist_ok=True)
+    env = UnityPy.load(os.path.join(game, "resources.assets"))
+    for obj in env.objects:
+        if obj.type.name == "TextAsset":
+            t = obj.read()
+            if t.m_Name in ("TrinketPlacement", "AccessoryPlacement", "WeaponPlacement"):
+                s = t.m_Script if isinstance(t.m_Script, str) else t.m_Script.decode("utf-8", "replace")
+                open(os.path.join(CFG, t.m_Name + ".json"), "w", encoding="utf-8").write(s)
+
+    out = {}
+    for slot, name in (("trinkets", "TrinketPlacement"), ("accessories", "AccessoryPlacement"), ("weapons", "WeaponPlacement")):
+        d = json.load(open(os.path.join(CFG, name + ".json"), encoding="utf-8"))
+        out[slot] = {h["hero"].lower(): {"fallback": conv(h["fallback"]) if h.get("fallback") else None,
+                                         "entries": {e["code"]: conv(e) for e in h.get("entries", []) if e.get("code")}}
+                     for h in d.get("heroes", [])}
+        print(slot, {k: len(v["entries"]) for k, v in out[slot].items()})
+    previous = json.load(open(DATA, encoding="utf-8")) if os.path.exists(DATA) else {}
+    for line in apply_overrides(out, previous):
+        print("override:", line)
+    json.dump(out, open(DATA, "w"), separators=(",", ":"))
+    print("written wardrobe/data/placements.json")
+
+
+if __name__ == "__main__":
+    main()
