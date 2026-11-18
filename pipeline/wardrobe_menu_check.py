@@ -104,7 +104,8 @@ async def main():
         pts = await page.evaluate(POINTS)                  # the drag turned the camera
 
         async def menu_on(slot):
-            x, y = pts[slot]; await page.mouse.click(x, y); await page.wait_for_timeout(200)
+            # scanned again on every call: the idle bobs, a point scanned 20 s ago (the downloads) can miss the piece (flake, 2026-11-19)
+            x, y = (await page.evaluate(POINTS))[slot]; await page.mouse.click(x, y); await page.wait_for_timeout(200)
             return await page.evaluate(MENU)
 
         # downloads

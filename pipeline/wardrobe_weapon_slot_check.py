@@ -152,7 +152,7 @@ async def main():
             await page.wait_for_function("() => wardrobe.debug().C.state.L === 'royalArrow'", timeout=30000)
             check((await page.evaluate(STATE))["R"] == "royalBow", "chameleon: one undo brings both back")
 
-        # the panel at three sizes (the weapon topic beside ประดับ, ท่าทาง across the last row)
+        # the panel at three sizes (the weapon topic beside ประดับ; since the pets (2026-11-19) สัตว์เลี้ยง beside ท่าทาง on the row below)
         for w, h, tag in ((1920, 1200, "desktop"), (1366, 768, "short"), (390, 844, "phone")):
             await page.set_viewport_size({"width": w, "height": h})
             await page.wait_for_timeout(500)
@@ -160,9 +160,9 @@ async def main():
             await el.screenshot(path=str(OUT / f"panel_{tag}.png"))
             boxes = await page.evaluate("""() => Object.fromEntries([...document.querySelectorAll('#topics > .topic[data-t]')].map(b => {
               const r = b.getBoundingClientRect(); return [b.dataset.t, [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]]; }))""")
-            R, B, M = boxes.get("R"), boxes.get("Back"), boxes.get("move")
-            check(R and B and M and R[1] == B[1] and M[1] > R[1] and M[2] >= R[2] + B[2],
-                  f"{tag}: อาวุธ beside ประดับ, ท่าทาง below across the row ({R}, {B}, {M})")
+            R, B, M, P = boxes.get("R"), boxes.get("Back"), boxes.get("move"), boxes.get("Pet")
+            check(R and B and M and P and R[1] == B[1] and P[1] == M[1] and P[1] > R[1] and P[0] == R[0] and M[0] == B[0],
+                  f"{tag}: อาวุธ beside ประดับ, สัตว์เลี้ยง beside ท่าทาง on the row below ({R}, {B}, {P}, {M})")
             rings = await page.evaluate("() => ['R', 'Back', 'move'].map(t => Math.round(document.querySelector(`#topics [data-t=${t}] .ring`).getBoundingClientRect().width))")
             check(max(rings) - min(rings) <= 1, f"{tag}: the three rings one size ({rings})")
         await b.close()

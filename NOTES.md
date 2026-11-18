@@ -169,6 +169,10 @@ and `.superpowers\sdd\2026-11-07-wardrobe-online\progress.md` (untracked), both 
 copy of that folder).
 - **Content rule, updated 2026-11-09: BB plus released TTO** (session log "TTO online"): the TTO items in
   `wardrobe\tto_released.json` go online too, preview only. The rule below held until then.
+- **Pets (2026-11-19, NOTES "pets: built"):** the BB pets go online and are downloadable (model + texture) like props; every
+  TTO-only pet and Bloom Pulse stay local (user: "BB original only for now, and all TTO pet on local, I will handpick which one can go live later");
+  a TTO pet listed in `tto_released.json` (`{"all": {"pets": [...]}}`, the pets section of `tto_picker.html`) goes online
+  preview only, its JSON plain and its textures scrambled, as TTO props. `pets/index.json` is always published (kept rows only).
 - **Content rule (user):** "BB 3D models only". From TTO only face paints: all of them for Bison, Chameleon, Mole,
   Monkey, Penguin, Whale (released), the first half by number for the other six (`TTO_FACES_ALL_RELEASED`). ToT's local
   student outfits never go online. `pipeline/wardrobe_publish.py` enforces it: it keeps only items whose meshes / clips /
@@ -3607,7 +3611,7 @@ texture and animations", then "When I say pet animations, I meant pet idle anima
   `localScale = (level digit x 0.1 + 0.9)`: Lv 1 1.0x, Lv 9 1.8x. **TTO's multiplier on top:** `PetScales.Multiplier
   (hero, code)` from the client's Resources TextAsset `Config/PetScale` (`resources.assets`, beside the placement
   tables; read 2026-11-18 from 1.7.0): p_all75 / 76 / 81 / 87 / 88 / 89 x0.5, p_allhlw x1.5, per class only p_all85 / 86
-  (Bison 1.5, Whale 2.0); no BB pet in it. TTO1118's PetControl adds idlePrefix / FindClip / emotes (not yet read).
+  (Bison 1.5, Whale 2.0); no BB pet in it. TTO1118's PetControl adds idlePrefix / FindClip / emotes (read since, 2026-11-18 Task 1: the idle is FindClip(idlePrefix), the emotes unused; see "pets: built" at the end of the session log and `plans/wardrobe_pets_tto_rules.md`).
 - Bloom Pulse lv9 meshes and where they sit: Moat, Ribbon, Flower1 / 3 / 4 (+ Inner, Heart, Pulse; about 0.7 from the
   centre under a 0.55-scaled parent), Twin0 / 1 (x -+0.8 under 0.5), Ring (under 0.65); materials M_<Part> on TTO shaders
   in a dependency bundle.
@@ -3645,3 +3649,101 @@ texture and animations", then "When I say pet animations, I meant pet idle anima
   none; only "S.ValkorNoct" is a client literal. TTO's pet-shop upgrades are server data too
   (`PetShopData::getUpgradeItem@0x2291060`). BB's 47 upgradable families (`PetShopData.cs:123-670`) are listed in the
   rules file; which levels TTO's own family pets reach is not settled (MotherFlowerBug's heal table has 9 levels).
+
+## 2026-11-19 (home), pets: built (branch `pets`, worktree D:\12tails-wardrobe-pets; design `plans/wardrobe_pets_design.md`)
+
+The design section above ("2026-11-18 (home), pets: the design") says what and why; this is what was built, how to rerun
+it, who picked what, and what is left. Plan `plans/wardrobe_pets_plan.md`; the run's ledger and per-task reports
+(untracked) `.superpowers/sdd/wardrobe_pets_plan/`. The user was away from Task 6 on ("I can't wait 1 hour ... please do all
+steps until successful deployment then commit push shut down PC"; before that "Can I do 6 now? So you don't have to stop
+for my input"), so Claude made the picks marked (C) below; the user's own are marked (U).
+
+- **What exists.** 101 pets (64 BB + 37 TTO-only) in `wardrobe/data/pets/` (`index.json` loads with the page, one file per
+  pet loads on pick; 30 MB), textures in `data/props/tex/` (31 MB), icons `data/icons/pet/<code>.webp` (452 KB at game size;
+  all 101 upscaled 2x since: 64 from the Bible's own, 37 Real-ESRGAN), `wardrobe/data/tto_config/PetScale.json` is git-ignored.
+  8 have particles (left out), 4 have no clip (3 kites, soccerBall: the prefab pose, as the game), p_lck / p_lpd (Cake Carron,
+  Disco Peppon) have no prefab anywhere: no tile. A pet file is a props entry; node 0 is identity (the game replaces the
+  root's transform).
+- **Commands (home PC).**
+  - Decrypt TTO's pet bundles (and dependencies) from the live install, once per TTO patch:
+    `py -3 pipeline/wardrobe_tto_fetch.py --out tto_assets/2026-11-18 --grep "characters/pets?/" [--grep "<regex>"]`
+    (reads `%LOCALAPPDATA%\TailsTopia\...\aa\catalog.bin`, decrypts with the Bible's `bundle_decrypt.js`; needs Python 3.11+
+    for `-P`; the sixseven emote's bundles are in the same folder). The folder is git-ignored; the worktree's runs used the
+    MAIN folder's `D:/12tails-wardrobe/tto_assets/2026-11-18` through `--assets` (ruling: it outlives the worktree).
+  - Pets: `uv run --no-project --with UnityPy --with pillow python -I pipeline/wardrobe_pets.py [--assets <decrypted folder>] [--only name,..]`
+    (docstring has the rest). It does not call `keep()` for the 2x icons: **a rerun writes the pet icons at game size again,
+    so run `py -3.10 pipeline/wardrobe_icons_upscale.py` after it** (`--check` = 0).
+  - Nicknames: `py -3 pipeline/wardrobe_nicknames.py` (now also the pets: 10 of the Bible's pet nicknames resolve, p_sfb, p_sob,
+    p_sgb, p_slb, p_stb, p_spb, p_swb, p_ssq, p_snb, p_lbd; keyed by the base code with no level digit).
+  - Bloom Pulse: `uv run --no-project --with UnityPy --with pillow python -I pipeline/wardrobe_tto_trinkets.py [--assets ...]`
+    AFTER `wardrobe_data.py` (which rewrites `all/props_trinkets.json` and `icons.json`), then
+    `uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py`.
+  - The rules' tools: `pipeline/tto_disasm.py` (capstone over TTO's DLL, annotated), `pipeline/tto_pet_probe.py` (each pet
+    prefab's PetControl + clips over decrypted bundles). `pipeline/wardrobe_convert.py` holds the helpers `wardrobe_data.py`
+    and the pet / trinket scripts share (mesh / bone / clip conversion, `game_shader` / `prop_mats`); `wardrobe_data.py`
+    imports them, no data rebuild was needed.
+  - Checks (headless Playwright, **pinned `--with playwright==1.65.1`**; they serve the folder on a free port):
+    `wardrobe_pet_check.py [<root> <out>] [--downloads | --ui]` and `wardrobe_bloompulse_check.py [<root> <out>]`; the
+    publish's dry run in a worktree needs the git-ignored `bb_rip_fix` copied in (never a junction).
+- **Rules that came out of reading TTO 1.7.0** (full record `plans/wardrobe_pets_tto_rules.md`; summary in the design section
+  above): TTO = BB for spawn, rotation and rest point of all six follow types and for BB pets' level scale. Differences,
+  all followed: `PetScales` multiplier (TTO pets; today's table touches no BB pet; **read from the live install, so
+  `--assets` and the installed `resources.assets` are two sources with no version tie**, and the copy loop takes the last
+  match), `GetPetSize` exceptions (Cute Cats p_all31-35 flat 4.0; p_svk 0.1 + 0.01 x level), the idle from `FindClip(idlePrefix)`
+  (BlueShark / PinkShark `root_Cute`, koalia `battle`; BB would play `root` only with a `run` clip). TTO's pet names and
+  upgrade lists are server data: TTO tiles show the prefab name through `humanize()`, so the allNN pets read "All แบบ 57"
+  (U to say if wanted otherwise). Index row: `{name, file, code (no level digit), level, game, icon, tto, follow, rest:
+  {cls: [x,y,z]} (three.js space), scale, size}`; `game` = BB's name ("L. Carron 9") or null; `size` = bounds at the idle's
+  first frame.
+- **Sizes (C, from the user's "max rank everywhere", 2026-11-09).** BB's 47 upgradable families show at Lv 9 (1.8x), the 7
+  without a recipe (p_srp, p_sss, p_sbb, p_sdm, p_sdv, p_skz, p_skm) and every p_allNN at Lv 1. **TTO's own families (the
+  Rabbies p_mrd / mrg / mrw / srb / srg / srs / srw, DragonZ, FlowerDryad, MotherFlowerBug, ValkorNoct) are a GUESS at Lv 9**
+  (`level_guess: true` in the index): the client doesn't say how far TTO's shop levels them. For the user's eye.
+- **The page.** A สัตว์เลี้ยง topic beside ท่าทาง (layout B, rows หมวก + ชุด / อาวุธ + ประดับ / สัตว์เลี้ยง + ท่าทาง: (C) from the mocks in `checks/pet_mocks/`;
+  the user's "B" in the design was the camera), its picker (the props'
+  parts: ไม่ใส่, ค้นหา, nicknames first, TTO's mark), `setPet` (a newer pick wins, one undo step per pick), `C.petStage` beside
+  `C.root` so hero skill effects (skin shells, tint / grow, lift, clones) never reach the pet while the whole-hero hide does
+  (TTO `PetControl.OnParentHide`), the pet in the saved loadout / undo / copy line / screenshot, hidden in ชมชิ้นส่วน, kept
+  by ถอดทั้งหมด (pets are not gear, not in sets). The piece menu opens on a pet (change / wear, ดาวน์โหลดโมเดล 3D, ดาวน์โหลดลาย;
+  no paste: สัตว์เลี้ยงใส่ลายเองไม่ได้; no view-alone), gated by `MENU_SLOTS`. **The camera (C): while a pet is out the fit
+  turns 40 deg and rises 0.10 (`FIT_DIR_PET`; one constant)**, over the pet's whole idle (24 samples, once per pick:
+  TianlongA swings out), glides there unless the visitor moved it, and refits when a desktop picker opens or closes with a pet
+  out (without it the pet sits under the picker). The phone label's ้ over ี is no longer clipped
+  (`.topic[data-t="Pet"] .tname { padding-top: 5.3px }`, centred by eye).
+- **Bloom Pulse (U: "add t_all_tto_bloompulse ... if it has a model", "Do the meshes at max level").** The game's code is
+  `t_alllkt2lv9` (TTO `CharacterEquipment.LoadAura@0x1add4a0`: t_alllkt2 -> aura_bloompulse, t_alllkt2lv1..9 -> _lv1..9); the
+  user's `t_all_tto_bloompulse` is kept in `icons.json`'s codes too. One tile in the ประดับ picker = lv9's **17 meshes** (the
+  design said 18; its own list is 17: Moat, Ribbon, 12 flower parts, Twin0, Twin1, Ring), static, `tto: true`, placed on the
+  Root bone (Sheep s 0.9) from TTO's TrinketPlacement. Every material is a TTO VFX additive shader drawn with the default cut
+  0.5: **the Heart / Moat / Ring discs read dull grey-green**, for the user's eye (the particles that give the game its glow
+  are left out, as for the other auras).
+- **Placement tables refreshed from 1.7.0** (`wardrobe_placements.py`): +154 new entries; the Cat's t_allhlw5 moved Spine2 ->
+  Spine1 (the game's own change). New 1.7.0 items seen there and **not in the wardrobe yet**: t_alllkt1, t_alllkt3, c_alllkt1,
+  t_mallkt1, t_all182. aura_bloodmoon / undeadqueen sit on the Head bone via the class fallback (pre-existing).
+- **Online copy rule for pets (U 2026-11-18: "BB original only for now, and all TTO pet on local, I will handpick which one
+  can go live later").** Online = the 64 BB pets (proven against BB's client like props: mesh positions + triangles, the idle
+  clip's tracks, texture from BB's Texture2D, icon re-taken from BB's `gamegui/icons/items/pet`, downloads on), every TTO pet
+  and Bloom Pulse local only; `wardrobe/tto_released.json` is untouched. A pet the user lists there (`{"all": {"pets":
+  [names]}}`, through `wardrobe/tto_picker.html`, which gained a pets section: 37 candidates, the game's name or the prefab's)
+  goes online preview-only (no download / upload), its JSON **plain** and its textures **scrambled**, exactly as TTO props.
+  First dry publish: 64 / 64 BB pets kept, 37 TTO + Bloom Pulse dropped, +9.0 MB, +194 files, 60 idle clips and 65 meshes
+  compared; the dist check passes. The publish compares node transforms never (node 0 is identity by design).
+- **Carry-overs / known limits.** `setPet`'s `finally` runs `done()` after persist / render / await prev, so a throw there
+  hangs every later `setPet`; `loadClass` awaits `setPet`, which awaits the previous class's pending pet fetch (cross-class
+  stall): both weighed at the final review. A saved pet with `index.json` unavailable shows an error toast. `idleBox` samples
+  `propAnim` only (none today) and 24 samples could miss a spiky clip; TianlongA is small in frame (its box spans its 8.67 s
+  idle). The phone sheet opening doesn't refit (existing, all classes). Quiet fallbacks in `wardrobe_pets.py` (shader read,
+  MonoBehaviour typetree, default clip, MeshRenderer before MeshFilter) are deferred minors (notes still to add). `tto_pet_probe.py` has two bare
+  `except: continue`; `wardrobe_tto_fetch.py`: its decrypt output is not atomic (a truncated `dec/` file counts as done),
+  `TOOLS` is the home Bible path only, its docstring is not a raw string (SyntaxWarning on 3.12+), an empty `--grep` match
+  exits 0 with a message. The menu check was flaky (it scanned the Head point once and clicked ~20 s later, after the
+  downloads, while the idle bobs: failed 3 of 5 runs on this branch, passed twice on main's page): `menu_on` now scans the
+  point on every call.
+- **Final checks, Task 12 (2026-11-19, every one on the worktree with `--with playwright==1.65.1`, one after another):** unit
+  147 OK (the old seven modules + tto_fetch / convert / pets / tto_trinkets), node 9 / 9, test_adopt_from_video.ps1 fails 0;
+  pet check 218 ok, bloompulse 6 ok, moves / sets / nick (3626 ok) / fx (dark, spot, white) / outfit_alpha pass, menu 37 ok
+  (after the re-scan fix above), weapon_slot 97 ok after its panel assertion was updated: it said "ท่าทาง across the last row",
+  the pets put สัตว์เลี้ยง beside ท่าทาง (the assertion now says so, on desktop / short / phone).
+- **Not done (the user can ask):** pets in gear sets / looks / community skins, a pet skin upload, view-alone for pets, pet
+  movement or skills, particles, Thai pet names. Next: the 6-7 emote (`sixseven`), its bundles already decrypted in
+  `D:\12tails-wardrobe\tto_assets\2026-11-18`.

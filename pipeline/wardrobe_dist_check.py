@@ -2,7 +2,7 @@
 loads with no errors or failed requests; the Wolf's Halloween outfit (released TTO) is in the outfit list with the TTO
 mark, wears, and its menu has no download / upload (preview only); a BB outfit's menu still has them; a released TTO
 skill tile (Blade Surge) and Clap are in the move lists; the effects are on (the sound button shown).
-  uv run --no-project --with playwright python -I pipeline/wardrobe_dist_check.py D:/12tails-wardrobe/wardrobe_dist checks/<dir>"""
+  uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_dist_check.py D:/12tails-wardrobe/wardrobe_dist checks/<dir>"""
 import asyncio, functools, http.server, sys, threading
 from pathlib import Path
 from playwright.async_api import async_playwright

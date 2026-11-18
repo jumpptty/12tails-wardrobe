@@ -3,6 +3,32 @@
 Steps one PC left for the other. A session reads this at the start, does what is listed for its PC (where the user's
 go-ahead is needed, says so), and deletes each item once it is done. Empty = nothing pending.
 
+## Either PC: pets (built 2026-11-19; NOTES.md "pets: built")
+
+The pet feature is on branch `pets` until the controller's merge into main; once it is on main:
+- **Office PC: pull.** The data is tracked (`wardrobe/data/pets/`, the pet textures and icons, `all/props_trinkets.json`,
+  `placements.json`, `icons.json`), so the page works at once. Nothing to rebuild.
+- **A pet or Bloom Pulse rebuild needs a decrypted TTO 1.7.0 client** (`wardrobe_pets.py`, `wardrobe_tto_trinkets.py`):
+  home has it at `D:/12tails-wardrobe/tto_assets/2026-11-18` (made by `py -3 pipeline/wardrobe_tto_fetch.py --out
+  tto_assets/2026-11-18 --grep "characters/pets?/"`); the office decrypts its own the same way from its TTO install
+  (`%LOCALAPPDATA%\TailsTopia\...\aa\catalog.bin`; the Bible's tools at the office path: `TOOLS` in the script is the home
+  path only today) and passes `--assets`. The pet sizes also read `Config/PetScale` from the INSTALLED client's
+  `resources.assets`, so keep the install and `--assets` at the same version.
+- **Home PC, after any pet rebuild:** `wardrobe_pets.py` writes the pet icons at game size, so run
+  `py -3.10 pipeline/wardrobe_icons_upscale.py` (`--check` must say 0), then commit and push the data.
+- **For the user (the user was away; Claude picked these from `checks/pet_mocks/`, one constant or one line each):**
+  - Hand-pick which TTO pets go live: tick them in `wardrobe/tto_picker.html` (a pets section, 37 candidates; it writes
+    `wardrobe/tto_released.json`), then publish + deploy. Today the public copy has the 64 BB pets only.
+  - Check the camera while a pet is out (turn 40 deg, rise 0.10: `FIT_DIR_PET` in `wardrobe/index.html`) and the panel (the
+    สัตว์เลี้ยง block beside ท่าทาง; `TOPICS` and the block's grid rows).
+  - Check the Lv 9 sizes: TTO's own family pets (the Rabbies p_mrd / mrg / mrw / srb / srg / srs / srw, DragonZ, FlowerDryad,
+    MotherFlowerBug, ValkorNoct) are a guess at Lv 9 (`level_guess` in `wardrobe/data/pets/index.json`).
+  - Bloom Pulse's discs (Heart / Moat / Ring) read dull grey-green: TTO's VFX additive materials drawn with the page's default
+    cut. Say if it should look different (its particles are left out).
+  - TTO's allNN pets read "All แบบ 57" etc.: their names are server data, the client has none. Give a name table if wanted.
+- **Next up: the 6-7 emote (`sixseven`).** Its bundles are already decrypted in `D:/12tails-wardrobe/tto_assets/2026-11-18`.
+- The controller publishes + deploys the BB pets after the merge (R11 of the run's ledger); no TTO pet goes online before the user's picks.
+
 ## Either PC: community skins, the deploy
 
 Built and tested 2026-11-11 (NOTES.md "community skins"). The one-time setup was done 2026-11-12 at the office (NOTES.md
