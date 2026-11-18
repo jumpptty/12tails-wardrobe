@@ -1228,6 +1228,7 @@ async function setPet(name) {
       // start (kiteSnake, smallDragonZ and smallKarazo's do, a little)
       const pa = o.userData.propAnim;
       if (pa?.ends && pa.a.clips[pa.pick]?.loop) { pa.ends = false; pa.act.setLoop(THREE.LoopRepeat, Infinity); pa.act.clampWhenFinished = false; }
+      o.userData.idleBox = idleBox(o);
       K.props.Pet = o;
     } catch (e) { if (mine()) K.state.Pet = null; throw e; }
   } finally {
@@ -1236,6 +1237,21 @@ async function setPet(name) {
   }
 }
 const pickPet = name => tracked(() => setPet(name)).catch(err);    // a pick: one undo step
+// the pet's box over its whole idle, in its own space (its root is never animated): the clip sampled at 24 steps and put
+// back where it was. The camera's fit takes this in (heroFitPose), so whatever frame the loop is at, the pet stays framed
+// (one instant's box let a swinging tail or TianlongA's coils leave the frame at another phase)
+function idleBox(o) {
+  const pa = o.userData.propAnim, box = new THREE.Box3(), inv = new THREE.Matrix4();
+  o.updateMatrixWorld(true); inv.copy(o.matrixWorld).invert();
+  const add = () => { const b = visibleBox(o, false); if (!b.isEmpty()) box.union(b.applyMatrix4(inv)); };
+  if (!pa) { add(); return box; }
+  const t0 = pa.act.time, dur = pa.act.getClip().duration, n = 24;
+  for (let i = 0; i <= n; i++) { pa.act.time = dur * i / n; pa.mixer.update(0); add(); }
+  pa.act.time = t0; pa.mixer.update(0);
+  return box;
+}
+// that box where the pet stands now (world space)
+const petFitBox = o => { o.updateMatrixWorld(true); return (o.userData.idleBox || visibleBox(o, false)).clone().applyMatrix4(o.matrixWorld); };
 
 // ---------- animation ----------
 function hermite(keys, n, t) {
@@ -4113,7 +4129,7 @@ const renderPropUI = () => renderTopics();
 // runs under the toolbar (64 px from the top) or past the stage's foot (12 px).
 // With a pet out (the user's pick B, 2026-11-18; turn and rise picked from the mocks, plans/wardrobe_pets_design.md):
 // the view turns 40 deg to the same side as the front view's and rises .10 (y over the horizontal length), so the pet
-// standing behind her shows beside her; the box takes in the pet as it is posed now, unclamped (2 m back, a kite over
+// standing behind her shows beside her; the box takes in the pet over its whole idle, unclamped (2 m back, a kite over
 // her head, a Lv 9 pet at 1.8x), its width is what the turned view sees across, and the corners stay in the part of
 // the stage the desktop picker leaves free (a pet is picked with it open). No pet: the front view, as before
 const FIT_DIR = new THREE.Vector3(.48, .1, 2.55).normalize();
@@ -4127,7 +4143,7 @@ function heroFitPose() {
   for (const [k, o] of Object.entries(C.props)) if (k !== "Pet") box.union(visibleBox(o, false));   // (the pet: after the clamp)
   box.intersect(new THREE.Box3(body.min.clone().add(new THREE.Vector3(-h0 * .4, -h0 * .05, -h0 * .4)), body.max.clone().add(new THREE.Vector3(h0 * .4, h0 * .65, h0 * .4))));
   const pet = C.props.Pet, dir = pet ? FIT_DIR_PET : FIT_DIR;
-  if (pet) { pet.userData.mixer?.update(0); box.union(visibleBox(pet, false)); }   // (its idle's pose now, not the file's rest pose)
+  if (pet) box.union(petFitBox(pet));                           // (its whole idle, not one frame of it: idleBox)
   const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5), target = new THREE.Vector3(c.x, c.y - h * .01, c.z);
   const t = Math.tan(camera.fov * Math.PI / 360);
   const pts = [];

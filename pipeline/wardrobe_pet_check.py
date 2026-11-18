@@ -40,7 +40,13 @@ hero how it would work in game"). On the real page through its scripting hook (w
     recomputed here), a pet = turned 40 deg, rise .10 (FIT_DIR_PET), gliding there unless the visitor moved it, the
     hero's and the pet's box corners on the free part of the stage (the toolbar band clear) for a walker 1 m and 2 m
     back, a kite, TianlongA at 2x, and after the desktop picker closes and opens again; the สัตว์เลี้ยง label on a phone:
-    no mark clipped, its ink centred by eye in its block (gaps within 2 px at 2x); screenshots in checks/pet_ui/
+    no mark clipped, its ink centred by eye in its block (gaps within 2 px at 2x); screenshots in checks/pet_ui/ (a run
+    given an out folder: <out>/pet_ui)
+  - the pet's whole idle framed (Task 7's fix round 1): for TianlongA beside the Whale, smallAnubi and miniMokBug, the
+    desktop picker open, closed and open again (a phone: its sheet open), the idle held (hero and pet: their mixers'
+    times unchanged through each screenshot), then the frame shown and 16 more of the pet's idle clip rendered through
+    the live camera: no drawn pixel (alpha >= 128) under the picker, on the stage's edge rows / columns or behind the
+    toolbar, and the pet's box inside the fit's margins at every frame
 Exit 1 on any failure. Serves the folder itself on a free port (never 8771, the main folder's page). --downloads / --ui
 run that part alone.
   uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check] [--downloads | --ui]"""
@@ -387,7 +393,8 @@ async def downloads(b, check, errors):
 
 # ---- the สัตว์เลี้ยง topic, its picker and the camera (Task 7)
 NICK = json.loads((ROOT / "wardrobe" / "data" / "nicknames.json").read_text(encoding="utf-8"))
-UI_OUT = ROOT / "checks" / "pet_ui"
+# (a run given its own out folder, e.g. a mutation trial, shoots into <out>/pet_ui, never over checks/pet_ui/)
+UI_OUT = OUT / "pet_ui" if len(ARGS) > 1 else ROOT / "checks" / "pet_ui"
 
 
 def unit(*v):
@@ -498,6 +505,39 @@ GLIDE = """() => { window.__glide = new Promise(res => { const { camera } = ward
     if (Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]) > 1e-7) { seen.push(p); still = 0; } else still++;
     if ((seen.length > 1 && still > 30) || performance.now() - t0 > 4000) res(seen); else requestAnimationFrame(f); };
   requestAnimationFrame(f); }); }"""
+# what the stage shows, frame by frame over the pet's idle: the frame now (held), then 16 more of its clip (between the
+# page's own 24 samples), each rendered through the live camera; per frame the drawn pixels (the canvas is transparent
+# where nothing is drawn; alpha >= 128: the models, not the soft shadows), those under the desktop picker, on the edge
+# rows / columns or behind the toolbar, and the pet's box projected; the clip put back where it was
+IDLE = """() => { const { C, THREE, camera, renderer, scene } = wardrobe.debug(), o = C.props.Pet, pa = o?.userData.propAnim;
+  """ + VBOX + """
+  const cv = renderer.domElement, r = cv.getBoundingClientRect(), W = Math.round(r.width), H = Math.round(r.height);
+  const pk = document.getElementById('picker'), phone = matchMedia('(max-width: 760px)').matches;
+  const freeL = !pk.hidden && !phone ? Math.max(0, Math.round(pk.getBoundingClientRect().right - r.left)) : 0;
+  const q = document.querySelector('.bar').getBoundingClientRect(), bar = { x0: q.left - r.left, x1: q.right - r.left, y0: q.top - r.top, y1: q.bottom - r.top };
+  const lim = { x0: freeL + 6, x1: W - 6, y0: Math.max(64, bar.y1 + 8), y1: H - 12 };
+  const g = new OffscreenCanvas(W, H).getContext('2d', { willReadFrequently: true });
+  let clear = null;
+  const frame = () => {
+    renderer.render(scene, camera); g.clearRect(0, 0, W, H); g.drawImage(cv, 0, 0, W, H);
+    const d = g.getImageData(0, 0, W, H).data; let x0 = W, x1 = -1, y0 = H, y1 = -1, bad = 0;
+    if (clear === null) clear = d[3];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (d[(y * W + x) * 4 + 3] < 128) continue;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      if (x < freeL || x >= W - 1 || y <= 0 || y >= H - 1 || (x >= bar.x0 && x < bar.x1 && y >= bar.y0 && y < bar.y1)) bad++; }
+    camera.updateMatrixWorld();
+    const b = vbox(o), v = new THREE.Vector3(); let bx0 = 1e9, bx1 = -1e9, by0 = 1e9, by1 = -1e9;
+    for (let i = 0; i < 8; i++) { v.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(camera);
+      const x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H; bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); by0 = Math.min(by0, y); by1 = Math.max(by1, y); }
+    return { ink: [x0, x1, y0, y1], bad, box: [bx0, bx1, by0, by1] };
+  };
+  const now = frame(), t0 = pa ? pa.act.time : null, frames = [];
+  if (pa) { const dur = pa.act.getClip().duration, n = 16;
+    for (let i = 0; i < n; i++) { pa.act.time = dur * (i + .5) / n; pa.mixer.update(0); frames.push(frame()); }
+    pa.act.time = t0; pa.mixer.update(0); renderer.render(scene, camera); }
+  return { W, H, freeL, lim, clear, now, frames, t: [t0, pa ? pa.act.time : null], clip: pa ? pa.act.getClip().duration : 0 }; }"""
+# the hero's and the pet's mixers' times (held: unchanged through a screenshot)
+TIMES = "() => { const { C } = wardrobe.debug(); return [C.mixer.time, C.props.Pet?.userData.mixer?.time ?? null]; }"
 # a block's label ink in a 2x screenshot (decoded in the page): the first and last rows with a pixel clearly lighter (or
 # darker) than the block's own background (its first rows, the weave's light and dark), in the label's columns, against the
 # block's inner edges (inside its border), in device px
@@ -586,6 +626,27 @@ async def ui(b, check, errors):
                 await page.keyboard.press("Space")
             return await page.evaluate("() => document.getElementById('khPause').textContent === 'เล่นต่อ'")
         check(await hold(), f"{T} the idle held (Space)")
+
+        async def shot(fn):                      # a stage screenshot of the held moment (the mixers' times the same after)
+            t0 = await page.evaluate(TIMES)
+            await page.screenshot(path=str(UI_OUT / fn))
+            t1 = await page.evaluate(TIMES)
+            check(t0 == t1, f"{T} {fn}: the hero and the pet held through the shot (mixer times {t0} -> {t1})")
+
+        async def idle_framed(what):             # the frame shown and 16 more of the pet's idle: all of it on the free stage
+            r = await page.evaluate(IDLE)
+            fr, lim = [r["now"]] + r["frames"], r["lim"]
+            out = [i for i, f in enumerate(fr) if not (lim["x0"] - 3 <= f["box"][0] and f["box"][1] <= lim["x1"] + 3
+                                                         and lim["y0"] - 3 <= f["box"][2] and f["box"][3] <= lim["y1"] + 3)]
+            bad = [f["bad"] for f in fr]
+            ink = [min(f["ink"][0] for f in fr), max(f["ink"][1] for f in fr), min(f["ink"][2] for f in fr), max(f["ink"][3] for f in fr)]
+            bx = [min(f["box"][0] for f in fr), max(f["box"][1] for f in fr), min(f["box"][2] for f in fr), max(f["box"][3] for f in fr)]
+            check(r["clear"] == 0 and len(r["frames"]) == 16 and not any(bad) and not out and r["t"][0] == r["t"][1],
+                  f"{T} {what}: over the idle ({len(fr)} frames of a {r['clip']:.2f} s clip, put back {r['t'][0] == r['t'][1]}): "
+                  f"drawn x {ink[0]}-{ink[1]}, y {ink[2]}-{ink[3]} of the {r['W']}x{r['H']} stage (free from x {r['freeL']}), "
+                  f"pixels off the free stage {sum(bad)}; the pet's box x {round(bx[0])}-{round(bx[1])}, y {round(bx[2])}-{round(bx[3])} "
+                  f"in x {round(lim['x0'])}-{round(lim['x1'])}, y {round(lim['y0'])}-{round(lim['y1'])}"
+                  + (f"; frames outside {out}" if out else "") + ("" if r["clear"] == 0 else f"; the canvas is not clear ({r['clear']})"))
         cam = await page.evaluate(CAM)
         fit, today, live = cam["fit"], cam["today"], cam["live"]
         check(fit is not None and near_v(fit["pos"], today["pos"], 1e-9) and near_v(fit["target"], today["target"], 1e-9)
@@ -670,7 +731,7 @@ async def ui(b, check, errors):
               f"{T} pick smallAnubi: the picker open {st['open']}, an undo step {st['undo']} (none before: {not u0}), pressed {pressed}, the ring {rg}")
         check(len(seen) >= 4, f"{T} the camera glides there: {len(seen)} positions over the move")
         await framed("smallAnubi (Lv 9, 1 m back)", FIT_DIR_PET)
-        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_smallAnubi.png"))
+        await shot(f"stage_{tag}_smallAnubi.png")
         if tag == "desktop":                                     # (a phone's panel hides under the sheet: at the end)
             await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_smallAnubi.png"))
         await page.locator("#picker").screenshot(path=str(UI_OUT / f"picker_{tag}_smallAnubi.png"))
@@ -706,10 +767,10 @@ async def ui(b, check, errors):
         await page.click("#resetCam")
         await page.evaluate("() => window.__glide")
         await framed("miniMokBug (2 m back), after the reset button", FIT_DIR_PET)
-        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_miniMokBug.png"))
+        await shot(f"stage_{tag}_miniMokBug.png")
         await pick("kiteChula")
         await framed("kiteChula (a kite over her)", FIT_DIR_PET)
-        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_kiteChula.png"))
+        await shot(f"stage_{tag}_kiteChula.png")
         if tag == "desktop":                                     # the picker's width leaves the stage, then takes it again
             await page.evaluate(GLIDE)
             await page.click("#pkClose")
@@ -745,10 +806,39 @@ async def ui(b, check, errors):
         await page.click("#resetCam")
         await page.evaluate("() => window.__glide")
         await framed("whale TianlongA (2x)", FIT_DIR_PET)
-        await page.screenshot(path=str(UI_OUT / f"stage_{tag}_whale_TianlongA.png"))
+        await shot(f"stage_{tag}_whale_TianlongA.png")
+
+        # ---- the pet's whole idle on the free stage (fix round 1): the desktop picker open, closed (its refit), open again
+        for cls, name in (("whale", "TianlongA"), ("sheep", "smallAnubi"), ("sheep", "miniMokBug")):
+            if await page.evaluate("() => wardrobe.debug().C.cls") != cls:
+                await page.evaluate("c => wardrobe.show(c)", cls)
+            if await page.evaluate("() => document.getElementById('picker').hidden"):
+                await page.click('#topics button.topic[data-t="Pet"]')
+            await page.wait_for_selector(f'#pkBody .pk-item[data-p="{name}"]', timeout=15000)
+            await hold()                                         # (show() played the idle again)
+            if await page.evaluate("() => wardrobe.debug().C.state.Pet") != name:
+                await pick(name, glide=False)
+            await page.evaluate(GLIDE)
+            await page.click("#resetCam")
+            await page.evaluate("() => window.__glide")
+            await framed(f"{cls} {name}: the fit", FIT_DIR_PET)
+            await idle_framed(f"{cls:6} {name}, {'the picker open' if tag == 'desktop' else 'the sheet open'}")
+            await shot(f"stage_{tag}_{cls}_{name}_open.png")
+            if tag != "desktop":
+                continue
+            await page.evaluate(GLIDE)
+            await page.click("#pkClose")
+            await page.evaluate("() => window.__glide")
+            await idle_framed(f"{cls:6} {name}, the picker closed")
+            await shot(f"stage_{tag}_{cls}_{name}_closed.png")
+            await page.evaluate(GLIDE)
+            await page.click('#topics button.topic[data-t="Pet"]')
+            await page.evaluate("() => window.__glide")
+            await page.wait_for_selector('#pkBody .pk-cell[data-slot="Pet"]', timeout=15000)
+            await idle_framed(f"{cls:6} {name}, the picker open again")
         await page.click("#pkClose")
         await page.wait_for_timeout(600)
-        await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_whale_TianlongA.png"))
+        await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_miniMokBug.png"))
         await ctx.close()
 
 
