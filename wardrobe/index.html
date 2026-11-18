@@ -599,7 +599,7 @@ const numSort = (a, b) => a.localeCompare(b, undefined, { numeric: true });
 // the move list's order: BB's own first (a local copy's TTO moves after them), then by number
 const moveSort = (a, b) => (C.clipsData[a].tto - C.clipsData[b].tto) || numSort(a, b);
 const poseNo = n => (C ? Object.keys(C.clipsData).filter(k => /^pose/i.test(k)).sort(moveSort).indexOf(n) + 1 : 0) || n.replace(/^pose/i, "");
-const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };
+const SLOTS = { R: "weapons", L: "weapons", Head: "accessories", Back: "trinkets" };   // (the pet, C.state.Pet, is no props slot: setPet)
 // a class whose look includes a headpiece: the Cat's "default" hood (user 2026-11-05: "cat head: remove the none option
 // and use default as default"). Its Head slot is never empty: setProp turns "none" into it
 const BASE_HEAD = { cat: "default" };
@@ -739,6 +739,7 @@ async function loadClass(cls) {
   // so a first visit (R70: the standard outfit) never waits on a prop list
   const fresh = !saved[cls], L0 = saved[cls] || {};
   for (const s of ["R", "L", "Head", "Back"]) if (L0[s]) fetchProps(cls, SLOTS[s]);
+  if (L0.Pet) petIndex().then(rows => { const r = rows.find(x => x.name === L0.Pet); if (r) petFile(r).catch(() => {}); }).catch(() => {});   // and its pet's file
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
   if (C) { scene.remove(C.root); C.mixer.stopAllAction(); fxClear(); }     // the old class stays on stage until the new one has loaded
   // and the old move's cues still to come go with it (2026-11-13, the Bison's regression gate: the Bat's run, an
@@ -768,11 +769,13 @@ async function loadClass(cls) {
   // data no longer has (the online copy keeps half of TTO's faces) falls back to the class default
   const std = (outfits.find(o => o.name === "standard") || outfits[0]).name;
   C.state = { outfit: L.outfit && outfits.some(o => o.name === L.outfit) ? L.outfit : std, color: L.color || 1, edition: L.edition || "",
-              face: C.faces.some(f => f.n === L.face) ? L.face : (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null };
+              face: C.faces.some(f => f.n === L.face) ? L.face : (cls === "sheep" ? 14 : 0), R: L.R || null, L: L.L || null, Head: L.Head || BASE_HEAD[cls] || null, Back: L.Back || null, Pet: L.Pet || null };
   undoStack = []; redoStack = []; updateUndo();       // the history is per class
   renderClassUI();
   await setOutfit(C.state.outfit, C.state.color);
   if (!fresh) for (const s of ["R", "L", "Head", "Back"]) if (C.state[s]) await setProp(s, C.state[s]);
+  // its pet (a name the data no longer has: none, quietly); a pet that fails to load leaves the class shown
+  if (!fresh && C.state.Pet) await setPet(C.state.Pet).catch(e => err(e));
   syncCommunityBtn(); syncSendBtn();       // the ลายผู้เล่น count is per class
   play("root");
   fitCamera();
@@ -1161,6 +1164,60 @@ async function setProp(slot, name) {
   }
   persist(); renderPropUI(slot);
 }
+
+// ---------- the pet (2026-11-18, user: "Add Pet section, standing behind the hero how it would work in game";
+// plans/wardrobe_pets_design.md) ----------
+// data/pets/index.json (pipeline/wardrobe_pets.py): one row per pet, fetched once for every class; a pet's own file (a
+// props entry: its nodes, live skins, idle clip) on its first pick. The pet stands where the game's PetControl rests it
+// beside a still hero: row.rest[cls], already three.js space (the hero at the origin facing +z; never recomputed from
+// follow.offset, which would mirror x twice), on the hero's root with the hero's rotation and the class's size
+// (row.scale[cls]: GetPetSize x PetScales). Saved per class like a worn piece (C.state.Pet); a pick is one undo step
+// (tracked(() => setPet(name)): pickPet)
+let PET_ROWS = null;
+const PET_FILES = {};
+const petIndex = () => (PET_ROWS ||= getJSON(DATA + "pets/index.json").catch(e => { PET_ROWS = null; throw e; }));
+const petFile = row => (PET_FILES[row.name] ||= getJSON(DATA + row.file).catch(e => { delete PET_FILES[row.name]; throw e; }));
+let petReq = 0, petLast = Promise.resolve();
+function dropPet(K) {
+  const o = K.props.Pet;
+  if (!o) return;
+  o.userData.mixer?.stopAllAction(); o.parent?.remove(o); o.traverse(x => { x.geometry?.dispose(); }); delete K.props.Pet;
+}
+// the one way a pet goes on or off (null = off). The newest call wins: an older pick whose file arrives later is dropped
+// (petReq). A name the data does not have (the online copy keeps BB's pets only) = no pet, quietly. Each call resolves
+// only after the calls before it have, so quick picks' undo steps stack in the order they were picked
+async function setPet(name) {
+  const K = C, req = ++petReq, prev = petLast;
+  let done; petLast = new Promise(r => { done = r; });
+  const mine = () => req === petReq && K === C;
+  try {
+    dropPet(K);
+    K.state.Pet = name || null;
+    if (!name) return;
+    try {
+      const row = (await petIndex()).find(r => r.name === name);
+      if (!row) { if (mine()) K.state.Pet = null; return; }
+      const p = await petFile(row);
+      if (!mine()) return;
+      const o = buildProp(p);
+      Object.assign(o.userData, { pet: name, placement: "the game's rest point" });
+      o.position.fromArray(row.rest[K.cls] || [0, 0, 0]);
+      o.quaternion.identity();                         // the hero's rotation (identity on its root)
+      o.scale.setScalar(row.scale[K.cls] ?? 1);
+      K.root.add(o);
+      finishProp(o);
+      // the game loops the idle (PlayIdle; the pet file's clip "loop"): finishProp holds a prop clip that ends away from its
+      // start (kiteSnake, smallDragonZ and smallKarazo's do, a little)
+      const pa = o.userData.propAnim;
+      if (pa?.ends && pa.a.clips[pa.pick]?.loop) { pa.ends = false; pa.act.setLoop(THREE.LoopRepeat, Infinity); pa.act.clampWhenFinished = false; }
+      K.props.Pet = o;
+    } catch (e) { if (mine()) K.state.Pet = null; throw e; }
+  } finally {
+    if (mine()) { persist(); renderPropUI("Pet"); }
+    await prev; done();
+  }
+}
+const pickPet = name => tracked(() => setPet(name)).catch(err);    // a pick: one undo step
 
 // ---------- animation ----------
 function hermite(keys, n, t) {
@@ -1876,10 +1933,10 @@ async function equipSet(s) {
   toast("ใส่เซ็ต " + setName(s) + " แล้ว");
 }
 
-// ---------- undo / redo (the outfit, its colour, the face and the four slots; a set changes up to five at once) ----------
+// ---------- undo / redo (the outfit, its colour, the face, the four slots and the pet; a set changes up to five at once) ----------
 let undoStack = [], redoStack = [];
 const snap = () => JSON.stringify({ outfit: C.state.outfit, color: C.state.color, edition: C.state.edition || "", face: C.state.face,
-  R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null,
+  R: C.state.R || null, L: C.state.L || null, Head: C.state.Head || null, Back: C.state.Back || null, Pet: C.state.Pet || null,
   sk: [...SKINS].map(([k, v]) => [k, skinId(v)]).sort((a, b) => (a[0] < b[0] ? -1 : 1)) });
 function updateUndo() { $("undo").disabled = !undoStack.length; $("redo").disabled = !redoStack.length; syncSendBtn(); }   // every skin change passes here
 async function tracked(fn) {               // run a change; remember the loadout before it if anything changed
@@ -1894,6 +1951,7 @@ async function applyState(st) {
   else if (st.color !== C.state.color || st.face !== C.state.face || st.edition !== (C.state.edition || ""))
     await setColorOrFace(st.color, st.face, st.edition);
   for (const k of ["R", "L", "Head", "Back"]) if (st[k] !== (C.state[k] || null)) await setProp(k, st[k]);
+  if ((st.Pet || null) !== (C.state.Pet || null)) await setPet(st.Pet || null);
   if (skinsMoved) {                        // the worn pieces wear the restored skins (or their own textures back)
     for (const k of ["R", "L", "Head", "Back"]) if (C.state[k] && C.props[k]) skinProp(C.props[k], SLOTS[k], C.state[k]);
     await setColorOrFace(null, null);
@@ -4004,7 +4062,7 @@ function heroFitPose() {
   for (const m of C.meshes) body.union(visibleBox(m, false));
   if (body.isEmpty()) body.setFromCenterAndSize(new THREE.Vector3(0, .5, 0), new THREE.Vector3(.5, 1, .5));
   const h0 = Math.max(body.max.y - body.min.y, 0.5), box = body.clone();
-  for (const o of Object.values(C.props)) box.union(visibleBox(o, false));
+  for (const [k, o] of Object.entries(C.props)) if (k !== "Pet") box.union(visibleBox(o, false));   // (the pet: not in the hero's front view)
   box.intersect(new THREE.Box3(body.min.clone().add(new THREE.Vector3(-h0 * .4, -h0 * .05, -h0 * .4)), body.max.clone().add(new THREE.Vector3(h0 * .4, h0 * .65, h0 * .4))));
   const c = box.getCenter(new THREE.Vector3()), h = Math.max(box.max.y - box.min.y, 0.5), target = new THREE.Vector3(c.x, c.y - h * .01, c.z);
   const t = Math.tan(camera.fov * Math.PI / 360);
@@ -4149,7 +4207,7 @@ addEventListener("beforeunload", e => { if ([...SKINS.values()].some(s => !s.by)
 $("copy").onclick = async () => {
   const s = C.state;
   const text = `Wardrobe: ${C.cls} outfit ${s.outfit} colour ${s.color}${s.edition ? " edition " + s.edition : ""}, face ${s.face}` + (s.R ? `, right hand ${s.R}` : "") + (s.L ? `, left hand ${s.L}` : "") +
-    (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (C.cur ? `, move ${moveText(C.cur)}` : "");
+    (s.Head ? `, head ${s.Head}` : "") + (s.Back ? `, back ${s.Back}` : "") + (s.Pet ? `, สัตว์เลี้ยง ${s.Pet}` : "") + (C.cur ? `, move ${moveText(C.cur)}` : "");
   try { await navigator.clipboard.writeText(text); toast("คัดลอกแล้ว\nวางในแชทได้เลย"); } catch (e) { prompt("คัดลอกข้อความนี้", text); }
 };
 
@@ -6066,7 +6124,7 @@ window.wardrobe = {
   setWingAlign(q) { WING_ALIGN = q; },
   async show(cls, slots = {}, yaw = 0) {
     if (!C || C.cls !== cls) await loadClass(cls);
-    for (const [s, n] of Object.entries(slots)) await setProp(s, n);
+    for (const [s, n] of Object.entries(slots)) await (s === "Pet" ? setPet(n) : setProp(s, n));
     play("root"); C.mixer.setTime(0.5); fitCamera();
     const off = camera.position.clone().sub(controls.target), r = Math.hypot(off.x, off.z), a = yaw * Math.PI / 180;
     camera.position.set(controls.target.x + r * Math.sin(a), camera.position.y, controls.target.z + r * Math.cos(a));
@@ -6074,7 +6132,7 @@ window.wardrobe = {
     return { cls, props: Object.fromEntries(Object.entries(C.props).map(([k, o]) => [k, `${o.parent?.name} (${o.userData.placement})`])) };
   },
   setOutfit: (name, color = 1, edition = "") => setOutfit(name, color, edition),
-  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, openPicker, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, get SETS() { return SETS; } }),   // scripted checks only
+  debug: () => ({ C, THREE, camera, controls, renderer, scene, SKINS, pieceAt, Showcase, openPicker, FX, WFX, Sound, chains, PM, Hover, Send, Gallery, SetGallery, wearSet, dropMany, setCommunity, weaponOf, setPet, pickPet, petIndex, get SETS() { return SETS; } }),   // scripted checks only
 };
 </script>
 </body>
