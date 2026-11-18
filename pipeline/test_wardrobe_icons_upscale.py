@@ -44,10 +44,17 @@ class UpscaleTest(unittest.TestCase):
         self.assertEqual(up.bible_key("weapon/wlf40.webp"), "w_wlf40")
         self.assertEqual(up.bible_key("accessory/rab52.webp"), "c_rab52")
         self.assertEqual(up.bible_key("trinket/all20.webp"), "t_all20")
+        self.assertEqual(up.bible_key("pet/sfb.webp"), "p_sfb")           # the pets (2026-11-19): GEAR_ICONS p_<code>
         self.assertEqual(up.bible_key("skills/wolf/cattack1.webp"), "wolf_cattack1")
         self.assertEqual(up.bible_key("skills/support/seaaegis.webp"), "sup_seaaegis")
         for rel in ("acessory/all5.webp", "skills/emotion/wai.webp", "heroes/bat1.webp"):
             self.assertIsNone(up.bible_key(rel), rel)                # TTO's own folder, emotes, portraits: not in the Bible
+
+    def test_pet_icons_are_found_at_game_size(self):
+        (self.icons / "pet").mkdir()
+        gradient(64).save(self.icons / "pet" / "sfb.webp")
+        gradient(128).save(self.icons / "pet" / "lbd.webp")
+        self.assertEqual(up.game_size_icons(self.icons), ["pet/sfb.webp"])
 
     def test_game_size_icons_listed_without_hd(self):
         gradient().save(self.icons / "weapon" / "a.webp", "WEBP", lossless=True)

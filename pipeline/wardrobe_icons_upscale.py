@@ -6,7 +6,7 @@ The data builds (wardrobe_icons.py, wardrobe_ui_assets.py) write every icon at t
 picture (128 px; the portraits 150 px):
 
   1. the 12 Tails Bible's own 128 px upscale when it has one under the same name (12t_projects\bible\assets.js:
-     GEAR_ICONS a_ / w_ / c_ / t_<code> for icons/armor / weapon / accessory / trinket, SKILL_ICONS <class>_<skill><rank>
+     GEAR_ICONS a_ / w_ / c_ / t_ / p_<code> for icons/armor / weapon / accessory / trinket / pet, SKILL_ICONS <class>_<skill><rank>
      and sup_<skill> for icons/skills/<class> and /support, compared without case) and its picture, shrunk back, is the
      icon's (mean difference over black <= BIBLE_MAX_DIFF per channel): the Bible's WebP bytes as they are;
   2. else the project's icon recipe (D:\12tails-assets-archive\tto-c6-skill-icons-2026-11-03\tools: Real-ESRGAN x4 as
@@ -43,7 +43,7 @@ UPSCALED = 128
 BIBLE_MAX_DIFF = 10                  # the Bible's same-name upscales measure 0.3 - 8.6 against the game's icon (2026-11-13)
 MODELS = "D:/sd_backup/models/RealESRGAN/"
 BIBLE = next((p for p in (r"D:\12tails", r"C:\Users\Jump\Desktop\12tails") if os.path.isfile(p + r"\12t_projects\bible\assets.js")), r"D:\12tails")
-GEAR_PREFIX = {"armor": "a_", "weapon": "w_", "accessory": "c_", "trinket": "t_"}   # not "acessory": TTO's own folder, other items
+GEAR_PREFIX = {"armor": "a_", "weapon": "w_", "accessory": "c_", "trinket": "t_", "pet": "p_"}   # not "acessory": TTO's own folder, other items
 
 
 def pixel_hash(im):

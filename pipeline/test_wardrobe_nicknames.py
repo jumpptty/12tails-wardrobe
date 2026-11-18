@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from pipeline.wardrobe_nicknames import build, page_items, read_bible_tables
+from pipeline.wardrobe_nicknames import build, load_pets, page_items, read_bible_tables
 
 
 def page(**tables):
@@ -129,6 +129,30 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(got["bison"]["weapons"], {"shinGauntlet_L", "shinGauntlet"})     # the page also looks up without _L / _R
         self.assertIn("flowerband", got["all"]["trinkets"])                              # the shared table: lower case
         self.assertIn("poseidonhelmet", got["all"]["accessories"])                       # a class prop can use it too
+
+    def test_pet_nicknames_resolve_to_pet_tiles(self):
+        """A pet's tile is keyed by its lower-case name under "all" (the page: NICK.all.pets[name.toLowerCase()]); its
+        index code is the Bible's base code (p_sab, no level digit), so the nickname and the game name land on it and
+        the code is no longer listed as having no tile."""
+        pets = [{"name": "smallAnubi", "code": "p_sab", "level": 9, "game": "S. Anubi9"},
+                {"name": "bigBug", "code": "p_all1", "level": 1, "game": None}]
+        out, unmatched = build(icons(), {"p_sab": "หมาจิ้งจอก", "p_lbd": "ALL 9"}, {"p_sab": 9},
+                               {"p_sab": "S. Anubi", "p_all1": "Bigbug Balloon"}, pets=pets)
+        self.assertEqual(out["all"]["pets"]["smallanubi"], {"nick": "หมาจิ้งจอก", "lv": 9, "game": ["S. Anubi"]})
+        self.assertEqual(out["all"]["pets"]["bigbug"], {"game": ["Bigbug Balloon"]})        # a game name alone is searchable
+        self.assertEqual(unmatched, ["p_lbd"])
+
+    def test_a_pet_with_nothing_is_left_out(self):
+        out, _ = build(icons(), {}, {}, {}, pets=[{"name": "quietPet", "code": "p_qqq"}])
+        self.assertNotIn("pets", out.get("all", {}))
+
+    def test_pets_read_from_the_data(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "pets").mkdir()
+            (d / "pets" / "index.json").write_text(json.dumps([{"name": "smallAnubi", "code": "p_sab"}]), encoding="utf-8")
+            self.assertEqual(load_pets(d), [{"name": "smallAnubi", "code": "p_sab"}])
+            self.assertEqual(load_pets(d / "nowhere"), [])
 
     def test_conflicting_nicknames_take_the_first_code_s(self):
         ic = icons(weapons={"twin": {"icon": None, "codes": ["w_rab70", "w_rab71"]}})

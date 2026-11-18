@@ -11,7 +11,9 @@ Bible is read only: when its nicknames change, run this again.
   py -3 pipeline\wardrobe_nicknames.py
   -> wardrobe/data/nicknames.json = {cls | "all": {kind: {item | "item|R": {"nick", "lv", "game": [names]}}}} (shaped like
      icons.json, so the page looks a tile up the way it looks up its icon); prints the tiles per class and the nicknames
-     with no tile (boots, pets, the armlet rings, codes the wardrobe lacks)
+     with no tile (boots, the armlet rings, codes the wardrobe lacks)
+  Pets (2026-11-19) are shared items: pets/index.json's rows, each by its base code (p_sfb, no level digit: the Bible's
+  own form), go under "all"."pets" by lower-case name, like the shared props.
 """
 import json
 import os
@@ -67,10 +69,23 @@ def tile_row(name, codes, nick, lv, game):
     return row
 
 
-def build(icons, nick, lv, game, items=None):
+def load_pets(data):
+    """pets/index.json's rows ([] when the data has none)."""
+    p = Path(data) / "pets" / "index.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else []
+
+
+def build(icons, nick, lv, game, items=None, pets=None):
     """(nicknames.json, the nickname codes no tile carries, sorted). items (page_items): rows go under the page's
-    spelling of the item, and an icons.json entry with no page item gives no row (its nicknames count as unmatched)."""
+    spelling of the item, and an icons.json entry with no page item gives no row (its nicknames count as unmatched).
+    pets (load_pets): a row per pet under "all"."pets", keyed by its lower-case name as the page looks it up."""
     out, used = {}, set()
+    for p in pets or []:
+        row = tile_row(f"pet {p['name']}", [p["code"]], nick, lv, game)
+        if row:
+            out.setdefault("all", {}).setdefault("pets", {})[p["name"].lower()] = row
+        if p["code"] in nick:
+            used.add(p["code"])
     for cls, kinds in icons.items():
         for kind, entries in kinds.items():
             for name, e in entries.items():
@@ -115,7 +130,7 @@ def main():
         nick, lv, game = read_bible_tables(f.read())
     with open(os.path.join(DATA, "icons.json"), encoding="utf-8") as f:
         icons = json.load(f)
-    out, unmatched = build(icons, nick, lv, game, page_items(DATA))
+    out, unmatched = build(icons, nick, lv, game, page_items(DATA), load_pets(DATA))
     with open(os.path.join(DATA, "nicknames.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     print(f"{len(nick)} nicknames in the Bible ({PAGE})")
