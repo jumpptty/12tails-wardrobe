@@ -3,11 +3,10 @@ wardrobe too if it has a model for it", "Do the meshes at max level for Bloom Pu
 wardrobe.debug()): the Sheep in standard wears aura_bloompulse in the ประดับ (Back) slot.
   - the worn prop holds the 17 meshes (Moat, Ribbon, Flower1 / 3 / 4 x Inner / Heart / Pulse, Twin0, Twin1, Ring: the
     controller's ruling R6; not 18), every one with its material, and the data's entry says "tto": true
-  - the Back picker has an aura_bloompulse tile (no icon: the client has none, the page's no-icon tile)
+  - the Back picker has an aura_bloompulse tile with its icon (an <img>: gamegui/icons/items/trinket/alllkt2lv9)
   - screenshots from 3 angles (front, three-quarter from the right, from above) of the Sheep with it, plus the Sheep
     with aura_bloodmoon (the existing aura, same placement rule) for comparison, into <out>
-  - no page errors, console errors or failed requests (but the page's two startup 404s for props_undefined.json, which
-    the page has without Bloom Pulse: counted and printed)
+  - no page errors, console errors or failed requests (zero: any 404 is real)
 Exit 1 on any failure. Serves the folder itself on a free port (never 8771).
   uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_bloompulse_check.py [D:/12tails-wardrobe-pets checks/bloompulse]"""
 import functools, http.server, json, math, sys, threading
@@ -22,7 +21,6 @@ OUT = Path(ARGS[1]) if len(ARGS) > 1 else ROOT / "checks" / "bloompulse"
 OUT.mkdir(parents=True, exist_ok=True)
 MESHES = ["Moat", "Ribbon", "Flower1", "Flower1Inner", "Flower1Heart", "Flower1Pulse", "Flower3", "Flower3Inner",
           "Flower3Heart", "Flower3Pulse", "Flower4", "Flower4Inner", "Flower4Heart", "Flower4Pulse", "Twin0", "Twin1", "Ring"]
-SAVED = {"outfit": "standard", "color": 1, "edition": "", "face": 14}
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -61,11 +59,10 @@ def main():
         page.wait_for_function("window.wardrobe && wardrobe.debug().C", timeout=120000)
 
         for aura, tag in (("aura_bloompulse", "bloompulse"), ("aura_bloodmoon", "bloodmoon")):
-            page.evaluate("c => wardrobe.show('sheep', c)", {**SAVED, "Back": aura})
+            page.evaluate("c => wardrobe.show('sheep', c)", {"Back": aura})      # wardrobe.show's 2nd argument: prop slots only
             page.wait_for_function(f"() => wardrobe.debug().C.props.Back && wardrobe.debug().C.state.Back === '{aura}'", timeout=60000)
             page.wait_for_timeout(1500)                      # the textures
             w = page.evaluate(WORN)
-            print(f"errors so far: {errors}")
             print(f"{aura}: {w['placement']}, parent {w['parent']}, position {w['pos']}, scale {w['scale']}")
             if aura == "aura_bloompulse":
                 # the page names a node's object p<index>: the data's 17 mesh nodes, by their indices
@@ -82,17 +79,12 @@ def main():
                 print("  shot", OUT / f"{tag}_{name}.png")
 
         # the picker's tile
-        page.evaluate("c => wardrobe.show('sheep', c)", SAVED)
+        page.evaluate("c => wardrobe.show('sheep', c)", {"Back": None})
         page.click('#topics [data-t="Back"]')
         page.wait_for_selector('#pkBody[data-topic="Back"] .pk-cell')
         tile = page.evaluate("() => { const c = document.querySelector('#pkBody .pk-cell[data-item=\"aura_bloompulse\"]'); return c ? { img: !!c.querySelector('img') } : null; }")
-        check(tile is not None, f"the Back picker has an aura_bloompulse tile ({tile})")
+        check(tile is not None and tile["img"], f"the Back picker has an aura_bloompulse tile with its icon ({tile})")
         b.close()
-    # the page's own startup asks for data/<cls>/props_undefined.json and data/all/props_undefined.json (404): there on the
-    # main folder's page too, before any worn piece, not Bloom Pulse's; named here so it cannot hide another error
-    known = [e for e in errors if "props_undefined.json" in e]
-    errors = [e for e in errors if e not in known]
-    print(f"known startup 404s (props_undefined.json, in the page before this task): {len(known)}")
     check(not errors, f"no page errors, console errors or failed requests ({errors[:3]})")
     print("FAILED: " + "; ".join(fails) if fails else "all ok")
     sys.exit(1 if fails else 0)
