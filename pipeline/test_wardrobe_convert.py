@@ -3,9 +3,13 @@ pet extractor (x mirrored, quaternions (x, -y, -z, w), triangle winding chosen t
 
   cd /d D:\12tails-wardrobe && py -3 -m unittest pipeline.test_wardrobe_convert -v
 """
+import os
+import tempfile
 import unittest
+from unittest import mock
 
-from pipeline.wardrobe_convert import clip_dict, mirror_rows, prop_mesh
+from pipeline import wardrobe_convert
+from pipeline.wardrobe_convert import ADDITIVE_ALPHA, clip_dict, game_shader, mirror_rows, prop_mats, prop_mesh
 
 
 class PropMesh(unittest.TestCase):
@@ -49,6 +53,35 @@ class ClipDict(unittest.TestCase):
         self.assertTrue(out["loop"])
         tt["m_WrapMode"] = 1
         self.assertFalse(clip_dict(tt)["loop"])
+
+
+class GameShader(unittest.TestCase):
+    """BB's material of the texture's name in the Bible's rip (Assets/Material/<tex>.mat) -> the page's shader hint."""
+
+    def mats(self, files):
+        d = tempfile.TemporaryDirectory()
+        self.addCleanup(d.cleanup)
+        for name, text in files.items():
+            with open(os.path.join(d.name, name), "w", encoding="utf-8") as f:
+                f.write(text)
+        return mock.patch.object(wardrobe_convert, "BIBLE_MATS", d.name)
+
+    def test_builtin_diffuse_is_opaque(self):
+        with self.mats({"littleCarron.mat": "  m_Shader: {fileID: 7, guid: 0000000000000000e000000000000000, type: 0}\n"}):
+            self.assertEqual(game_shader("littleCarron.png"), {"shader": "opaque"})
+
+    def test_additive_alpha_takes_its_range_as_the_cut(self):
+        mat = (f"  m_Shader: {{fileID: 4800000, guid: {ADDITIVE_ALPHA}, type: 3}}\n"
+               "    - first:\n        name: _AdditiveRange\n      second: 0.8\n")
+        with self.mats({"champ.mat": mat}):
+            self.assertEqual(game_shader("champ.png"), {"shader": "addAlpha", "cut": 0.8})
+
+    def test_no_material_and_tto_items_get_no_hint(self):
+        with self.mats({}):
+            self.assertEqual(game_shader("nothing.png"), {})
+            self.assertEqual(game_shader(None), {})
+            self.assertEqual(prop_mats([{"tex": "nothing.png", "color": [1, 0.5, 0.25, 1]}], True),
+                             [{"tex": "nothing.png", "color": [1, 0.5, 0.25, 1]}])
 
 
 if __name__ == "__main__":

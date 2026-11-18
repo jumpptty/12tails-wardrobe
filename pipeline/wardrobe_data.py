@@ -31,6 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)                    # run as a script, pipeline/ is not a package: the sibling module by its bare name
 from wardrobe_convert import r5, mp, mq, clip_dict, prop_mesh, mirror_rows   # noqa: E402  (the conversion, shared with the pet extractor)
+from wardrobe_convert import BIBLE_MATS, prop_mats   # noqa: E402  (the props' materials, shared with the pet extractor)
 VIDEO = os.path.join(os.path.dirname(ROOT), "12tails-video")  # extracted inputs, read only (the 2026-11-09 repo split)
 HEROES = r"D:\12tails\RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\heroes"
 TOOLS = r"D:\12tails\DecompiledSource_TTO_2026-11-02\tools"
@@ -211,46 +212,6 @@ for cls in CLASSES:
           f"({sum(1 for c in clips.values() if c['group'] == 'emote')} emotes)", flush=True)
 
 # ---- props (from props/json, Unity space -> three.js) ----
-BIBLE_MATS = next((p for p in (r"D:\12tails", r"C:\Users\Jump\Desktop\12tails")
-                   if os.path.isdir(os.path.join(p, "RippedAssets"))), r"D:\12tails") + r"\RippedAssets\ExportedProject\Assets\Material"
-ADDITIVE_ALPHA = "184331bfe0c8b0c428d3876fa69d4cd1"       # Transparent/AdditiveAlpha (the champion weapons; its properties
-# _AdditiveColor / _AdditiveRange are this shader's only), not a file in the rip: known by its materials
-
-
-def game_shader(tex):
-    """What the game's material of the same name does with the texture's alpha, as the page needs it. BB's prop
-    materials sit in the Bible's rip (props/json leaves the shader empty). The page cuts every texel under alpha 0.5
-    (alphaTest), right for most props, wrong for two kinds (user 2026-11-12: "Wolf Time Sword and Champion Sword why
-    their textures are missing, champion sword shoe have aqua glass like blades along the edges"):
-      opaque: the built-in Diffuse (fileID 7) ignores alpha, the texture's alpha is a mask for something else (the
-              Time Sword's is 96 % under 0.5: it was cut almost away)
-      addAlpha, cut: Transparent/AdditiveAlpha draws texels with alpha >= cut (_AdditiveRange, default 0.9) solid, the
-              rest added as light (tex x alpha, Blend SrcAlpha One, both sides, no depth write): the glass edges
-    """
-    if not tex:
-        return {}
-    f = os.path.join(BIBLE_MATS, os.path.splitext(tex)[0] + ".mat")
-    if not os.path.exists(f):
-        return {}
-    s = open(f, encoding="utf-8", errors="ignore").read()
-    m = re.search(r"m_Shader: \{fileID: (\d+), guid: (\w+)", s)
-    if not m:
-        return {}
-    if m.group(1) == "7" and m.group(2) == "0000000000000000e000000000000000":
-        return {"shader": "opaque"}
-    if m.group(2) == ADDITIVE_ALPHA:
-        r = re.search(r"name: _AdditiveRange\s+second: ([\d.]+)", s)
-        return {"shader": "addAlpha", "cut": round(float(r.group(1)) if r else 0.9, 4)}
-    return {}
-
-
-def prop_mats(mats, tto):
-    """A node's materials for the page: texture, colour, and the game's shader where it matters (BB items only: TTO's
-    new ones have no material in the rip)."""
-    return [{"tex": m.get("tex"), "color": [round(x, 3) for x in m.get("color", [1, 1, 1, 1])],
-             **({} if tto else game_shader(m.get("tex")))} for m in mats]
-
-
 if "--no-props" not in argv:
     if not os.path.isdir(BIBLE_MATS):
         print(f"no {BIBLE_MATS}: the props' shaders are left out (every texture cut at alpha 0.5)", flush=True)

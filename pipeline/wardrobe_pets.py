@@ -30,16 +30,22 @@ except where noted:
 - Idle clip (idle_clip): TTO1118:PetControl::FindClip@0x1a92600 with the prefab's idlePrefix, played by PlayIdle at rest
   for followType 1 / 2 / 3; else the Animation's default clip when it plays automatically; else the prefab pose.
 - Names (game): BB's PetData.cs getData (itemClass.name; a family's level appended as the game does); TTO's names are
-  server data, so only "S.ValkorNoct" (a string literal of the client) is known; the rest null (the page humanizes).
+  server data, so only "S.ValkorNoct" (a string literal of the client) is known, written "S.ValkorNoct 9" like BB's
+  names; the rest null (the page humanizes).
 
 Index row: {name, file, code (no level digit), level, game, icon, tto, follow: {type, dist, offset: {cls: [x, y, z]}},
-rest: {cls: [x, y, z]}, scale: {cls: s}, size: [w, h, d], particles: N [, level_guess: true]}, all in three.js space
-(x mirrored: offsets and rest points are mp() of the game's): rest = rest_point of the game's values, the pet's root
-position beside a hero at the origin facing +z; size = the drawn meshes' bounds at scale 1 as the pet rests (rest_size:
-the idle clip's first frame, else the prefab pose). Particle systems are not extracted (counted). A pet file's nodes are the prefab tree (the props' p / q / s), kept where a mesh, a skin's
-bone or the idle clip needs them; the root at identity (the game replaces its transform: Instantiate + localScale);
-skinned meshes as the props' live skins (on the pet's own nodes, bones = node indices, ibm); materials as
-wardrobe_data.py's prop_mats; the idle clip's tracks by node index, in the game's Hermite keys, mirrored.
+rest: {cls: [x, y, z]}, scale: {cls: s}, size: [w, h, d], particles: N [, level_guess: true]}. Positions are in
+three.js space, both follow.offset and rest: x mirrored, mp() of the game's Unity values. rest = rest_point of the
+game's (Unity-space) values: where the page puts the pet's root beside a hero at the origin facing +z. Do not feed the
+row's follow back to rest_point, which takes Unity values and would mirror x twice. In three.js space rest is
+[0, 0, -dist] for types 1 / 2 / 3, [0, 0, -dist] + offset for 0, and offset for 4 / 5. size = the drawn meshes'
+bounds at scale 1 as the pet rests (rest_size: the idle clip's first frame, else the prefab pose). Particle systems
+are not extracted, only counted.
+A pet file's nodes are the prefab tree (the props' p / q / s), kept where a mesh, a skin's bone or the idle clip needs
+them. The root is at identity (the game replaces its transform: Instantiate + localScale). Skinned meshes are the props'
+live skins (on the pet's own nodes, bones = node indices, ibm). Materials come from wardrobe_convert's prop_mats: BB's
+material of the texture's name for BB pets; for TTO's own, the bundle shader's opacity (tto_shader). The idle clip's
+tracks are keyed by node index, in the game's Hermite keys, mirrored.
 Tests: pipeline/test_wardrobe_pets.py (the pure functions; no UnityPy at import).
 """
 import io
@@ -52,14 +58,13 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)                    # run as a script (-I), pipeline/ is not a package: the sibling module by its bare name
-from wardrobe_convert import clip_dict, mp, mq, prop_mesh, r5   # noqa: E402  (the props' conversion, shared)
+from wardrobe_convert import clip_dict, mp, mq, prop_mats, prop_mesh, r5   # noqa: E402  (the props' conversion, shared)
 
 CLASSES = ["bat", "bison", "cat", "chameleon", "mole", "monkey", "panda", "penguin", "rabbit", "sheep", "whale", "wolf"]
 BIBLE = next((p for p in (r"D:\12tails", r"C:\Users\Jump\Desktop\12tails") if os.path.isdir(os.path.join(p, "DecompiledSource"))),
              r"D:\12tails")
 BB_SRC = os.path.join(BIBLE, "DecompiledSource")
 BB_PET_DIR = os.path.join(BIBLE, r"RippedAssets\ExportedProject\Assets\Resources\gameassets\characters\pet")
-BIBLE_MATS = os.path.join(BIBLE, r"RippedAssets\ExportedProject\Assets\Material")
 TOOLS = os.path.join(BIBLE, "DecompiledSource_TTO_2026-11-14", "tools")      # aa_catalog.py (as wardrobe_tto_fetch.py)
 GAME = os.path.join(os.environ.get("LOCALAPPDATA", ""), "TailsTopia", "game", "TailsTopia", "TailsTopiaOnline_Data")
 OUT = os.path.join(ROOT, "wardrobe", "data")
@@ -96,7 +101,6 @@ TTO_FAMILIES = {c for c in TTO_PETS if not c.startswith("p_all")}
 # TTO's own pets' materials (no BB material to read): the bundle's shader. Opaque = ignores the texture's alpha
 # (the page then draws it without the 0.5 alpha cut); anything else keeps the cut
 TTO_OPAQUE_SHADERS = {"FlexibleCelShader/Cel No Outline", "Legacy Shaders/Diffuse", "Toon"}
-ADDITIVE_ALPHA = "184331bfe0c8b0c428d3876fa69d4cd1"       # BB's Transparent/AdditiveAlpha (wardrobe_data.py)
 
 
 # ---- pure rules (tested) ----
@@ -145,7 +149,7 @@ def pet_level(code):
 def game_name(code, level, names):
     """The game's name: BB's PetData literal (+ the level digit where BB appends it); for TTO's own only S.ValkorNoct."""
     if code == "p_svk":
-        return "S.ValkorNoct" + str(level)
+        return "S.ValkorNoct " + str(level)
     if code in names:
         text, with_level = names[code]
         return text + str(level) if with_level else text
@@ -241,28 +245,9 @@ def idle_loops(by_find, clip_wrap, anim_wrap):
 
 # ---- the build (UnityPy, Pillow) ----
 
-def game_shader(tex):
-    """BB's material behaviour for a BB pet's texture, as wardrobe_data.py's game_shader (the same rule: BB's material of
-    the texture's name in the Bible's rip; that module runs its build on import, so it cannot be imported here)."""
-    if not tex:
-        return {}
-    f = os.path.join(BIBLE_MATS, os.path.splitext(tex)[0] + ".mat")
-    if not os.path.exists(f):
-        return {}
-    s = open(f, encoding="utf-8", errors="ignore").read()
-    m = re.search(r"m_Shader: \{fileID: (\d+), guid: (\w+)", s)
-    if not m:
-        return {}
-    if m.group(1) == "7" and m.group(2) == "0000000000000000e000000000000000":
-        return {"shader": "opaque"}
-    if m.group(2) == ADDITIVE_ALPHA:
-        r = re.search(r"name: _AdditiveRange\s+second: ([\d.]+)", s)
-        return {"shader": "addAlpha", "cut": round(float(r.group(1)) if r else 0.9, 4)}
-    return {}
-
-
 def tto_shader(shader, mode):
-    """A TTO pet's material behaviour from its bundle shader (Standard: _Mode 0 = opaque)."""
+    """A TTO pet's material behaviour from its bundle shader (Standard: _Mode 0 = opaque); prop_mats gives TTO's own
+    items none (BB's rip has no material for them)."""
     if shader in TTO_OPAQUE_SHADERS or (shader == "Standard" and not mode):
         return {"shader": "opaque"}
     return {}
@@ -468,10 +453,11 @@ def main():
             shader = sh.m_ParsedForm.m_Name if getattr(sh, "m_ParsedForm", None) is not None else sh.m_Name
         except Exception:
             shader = None
-        kind = tto_shader(shader, mode) if tto else game_shader(tex)
+        out = prop_mats([{"tex": tex, "color": color}], tto)[0]     # BB pets: BB's material of the texture's name
         if tto:
-            shader_log.setdefault((shader, kind.get("shader", "cut 0.5")), set()).add(pet)
-        return {"tex": tex, "color": [round(x, 3) for x in color], **kind}
+            out.update(tto_shader(shader, mode))
+            shader_log.setdefault((shader, out.get("shader", "cut 0.5")), set()).add(pet)
+        return out
 
     def mesh_dict(mesh, skin, pet):
         h = MeshHandler(mesh)

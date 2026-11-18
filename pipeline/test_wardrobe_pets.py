@@ -175,7 +175,7 @@ class LevelAndName(unittest.TestCase):
         names = {"p_all1": ("Bigbug Balloon", False), "p_lcr": ("L. Carron ", True)}
         self.assertEqual(game_name("p_lcr", 9, names), "L. Carron 9")
         self.assertEqual(game_name("p_all1", 1, names), "Bigbug Balloon")
-        self.assertEqual(game_name("p_svk", 9, names), "S.ValkorNoct9")
+        self.assertEqual(game_name("p_svk", 9, names), "S.ValkorNoct 9")     # spaced like BB's "L. Carron 9"
         self.assertIsNone(game_name("p_all85", 1, names))
 
 
