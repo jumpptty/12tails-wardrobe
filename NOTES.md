@@ -3614,3 +3614,34 @@ texture and animations", then "When I say pet animations, I meant pet idle anima
 - Design decisions so far (user): camera B; idle only; Bloom Pulse = lv9's meshes; pets downloadable (model + texture)
   by the usual rule, TTO-only not online. My calls in the design (for the user to check): highest level size, TTO's
   rules where they differ, the script in this repo, today's 1.7.0 decrypt.
+- **TTO's pet rules, read from 1.7.0** (Task 1; full record `plans/wardrobe_pets_tto_rules.md`; read with
+  `pipeline/tto_disasm.py`, capstone over the 11-18 DLL with the 11-14 folder's tools, since the home 11-18 folder
+  has no `tools/`: the script derives 1.7.0's build constants with `find_constants.py` into the temp folder; and
+  `pipeline/tto_pet_probe.py` over decrypted bundles). In short: TTO = BB except the size of two groups, the
+  multiplier, and the idle clip of three TTO pets.
+- Spawn = BB: `TTO1118:CharacterEquipment::EquipPet@0x1adac10` (one method for all classes, EquipAll calls it at
+  vtable +0x248): gate `Game.mGameType >= 2`, `Instantiate(prefab, pos - forward, rotation)` (`0x1adcce5`),
+  `localScale = GetPetSize(code, lv)` (`0x1adcd3b`), `PetControl.Init(gameObject, lv)` (vtable +0x178, `0x1adcdcf`).
+- Rest point and rotation = BB for all six follow types: `PetControl::Init@0x1a928a0` (owner - followDistance x
+  forward for types 0-3, offset by `cc.Type` for 0 / 4 / 5) and `LateUpdate@0x1a930e0` (jump table 0x1a94064; at rest
+  FloatBehind adds the offset in world axes, ParentPosition / ParentAll = owner + TransformDirection(offset)).
+- Size: `GetPetSize@0x1adcff0`: **p_all31-35 (Cute Cats) = 4.0 flat** (`IsStaticLargePet@0x1add410`, inlined,
+  `StaticLargePetScale`), **p_svk (S.ValkorNoct) = 0.1 + 0.01 x lv**, else BB's 0.9 + 0.1 x lv; times
+  `PetScales::Multiplier@0x1af5440(get_CharacterType(), code)`: a per-class entry is returned alone, else
+  PetScale(code or its 5-char family) x the hero's scale (only for `p_all` codes). Today's `Config/PetScale` touches no
+  BB pet (Bison / Whale p_all85-86 1.5 / 2.0; p_all75 / 76 / 81 / 87 / 88 / 89 0.5; p_allhlw 1.5). `p_all` codes are
+  level 1; family codes take `getLastDigit@0x166d5e0`.
+- Idle: `PetControl::ResolveClips@0x1a94d30` / `FindClip@0x1a92600` / `PlayIdle@0x1a94bf0`: at rest (types 1-3 only)
+  CrossFade `FindClip(idlePrefix)` (exact name, prefix + "_", then prefix), default prefix "root" (`.ctor@0x1a95010`);
+  BB needed a `run` clip. Probe of all 101 prefabs (11-04 bundles; today's PetControl fields identical): what plays
+  at rest differs from BB's rule only for **BlueShark / PinkShark (`root_Cute`) and koalia (`battle`)**.
+  `m_PlayAutomatically` is false on the Rabbies, smallFlowerDryad, smallSelene (still idle on `root`).
+- TTO codes -> prefabs (EquipPet's compare chain, `tto_disasm.py --switch`; other families through
+  `EquipmentUtility::MapPetCodeName@0x165d810`, table in `.cctor@0x165d8b0`): 37 TTO prefabs = the 37
+  `characters/pets/` GameObjects of today's catalog (p_mrd / mrg / mrw Mini Rabby B / G / W, p_srb / srg / srs / srw
+  Small Rabby, p_drz, p_sfd, p_mtf, p_svk, p_allhlw smallSelene, p_all31-35, 57-59, 63-68, 70, 75, 76, 81, 83, 85-90).
+  p_lck / p_lpd (Cake Carron, Disco Peppon) have no prefab in TTO or BB: no tile.
+- TTO pet names are server data (`PetData::getData@0x2290100` -> the item table sent through Photon); the locale has
+  none; only "S.ValkorNoct" is a client literal. TTO's pet-shop upgrades are server data too
+  (`PetShopData::getUpgradeItem@0x2291060`). BB's 47 upgradable families (`PetShopData.cs:123-670`) are listed in the
+  rules file; which levels TTO's own family pets reach is not settled (MotherFlowerBug's heal table has 9 levels).
