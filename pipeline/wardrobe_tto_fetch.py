@@ -45,7 +45,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--out", required=True, help="output folder (gets catalog.bin and dec/)")
     ap.add_argument("--grep", action="append", required=True, help="address regex; repeat for more")
-    ap.add_argument("--client", default=CLIENT_AA, help="the client's StreamingAssets\aa folder")
+    ap.add_argument("--client", default=CLIENT_AA, help="the client's StreamingAssets/aa folder")
     a = ap.parse_args()
     dec = os.path.join(a.out, "dec")
     os.makedirs(dec, exist_ok=True)

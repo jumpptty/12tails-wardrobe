@@ -31,7 +31,9 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 
 - Read the video folder's extracted files (`outfits\`, `tex\faces_tto\`, `props\json\`, `props\tex\`, `tto_assets\`,
   `tot_assets\`) and the Bible's rips; never write or commit in either. If a wardrobe change needs a fresh extraction
-  (a new prop, a new outfit), say so: the extraction scripts belong to the video repo.
+  (a new prop, a new outfit), say so: the extraction scripts belong to the video repo (except the TTO pets, Bloom Pulse
+  and the bundle fetch, which extract in this repo: `wardrobe_tto_fetch.py`, `wardrobe_pets.py`, `wardrobe_tto_trinkets.py`,
+  into the git-ignored `tto_assets/`).
 - The video repo reads this one as its sibling (its trailer, published, was retired 2026-11-10): its skits read `wardrobe\data`
   (`placements.json`, `icons.json`, the office's prop and face fallbacks), its `extract_tto_props.py` reads
   `item_map.json`. Renaming or moving those breaks it: note any such change in NOTES.md and tell the user.
@@ -48,7 +50,7 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
   Icons are 2x upscales (user 2026-11-13): after a build that adds icons, `py -3.10 pipeline\wardrobe_icons_upscale.py`
   (home PC: Real-ESRGAN; it takes the Bible's own upscale where one exists); `--check` lists any left at game size.
   Plain Python runs as `uv run --no-project --with <pkgs> python ...` or `py -3`, never a global `pip install`.
-- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules pipeline.test_wardrobe_community pipeline.test_wardrobe_icons_upscale pipeline.test_wardrobe_fx_textures pipeline.test_wardrobe_nicknames pipeline.test_wardrobe_tto_fetch pipeline.test_wardrobe_convert pipeline.test_wardrobe_pets pipeline.test_wardrobe_tto_trinkets`;
+- Tests: `py -3 -m unittest pipeline.test_wardrobe_publish pipeline.test_wardrobe_props_tex pipeline.test_repo_rules pipeline.test_wardrobe_community pipeline.test_wardrobe_icons_upscale pipeline.test_wardrobe_fx_textures pipeline.test_wardrobe_nicknames pipeline.test_wardrobe_tto_fetch pipeline.test_wardrobe_convert pipeline.test_wardrobe_pets pipeline.test_wardrobe_tto_trinkets pipeline.test_wardrobe_placements`;
   `node --test pipeline/test_site_worker.mjs`;
   `powershell -ExecutionPolicy Bypass -File pipeline\test_adopt_from_video.ps1`.
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`

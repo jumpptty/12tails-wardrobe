@@ -3,8 +3,10 @@ for it", then "Do the meshes at max level for Bloom Pulse").
 
   uv run --no-project --with UnityPy --with pillow python -I pipeline/wardrobe_tto_trinkets.py [--assets tto_assets/2026-11-18]
 
-Run it again after wardrobe_data.py (which rewrites all/props_trinkets.json and icons.json), then
-`uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py` for TTO's placement tables.
+Run it again after any of wardrobe_data.py (it rewrites all/props_trinkets.json), wardrobe_icons.py or bb_item_codes.py
+(each rewrites icons.json): a rerun of any of them silently drops Bloom Pulse's entry or its icons.json row (its icon, and
+the codes its TTO placement is found by). Then `uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py`
+for TTO's placement tables (its OVERRIDES keep the entries the user has not picked yet).
 
 A shared back trinket new in TTO 1.7.0: prefabs gameassets/characters/heroes/all/trinkets/aura_bloompulse + _lv1.._lv9
 (the user's name for it: t_all_tto_bloompulse; the game's own codes, found in CharacterEquipment.LoadAura@0x1add4a0

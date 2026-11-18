@@ -3660,7 +3660,8 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
 
 - **What exists.** 101 pets (64 BB + 37 TTO-only) in `wardrobe/data/pets/` (`index.json` loads with the page, one file per
   pet loads on pick; 30 MB), textures in `data/props/tex/` (31 MB), icons `data/icons/pet/<code>.webp` (452 KB at game size;
-  all 101 upscaled 2x since: 64 from the Bible's own, 37 Real-ESRGAN), `wardrobe/data/tto_config/PetScale.json` is git-ignored.
+  all 101 upscaled 2x since: 64 from the Bible's own, 37 Real-ESRGAN); the repo root's `tto_config/PetScale.json` (copied from
+  the installed client by `wardrobe_pets.py`) is git-ignored.
   8 have particles (left out), 4 have no clip (3 kites, soccerBall: the prefab pose, as the game), p_lck / p_lpd (Cake Carron,
   Disco Peppon) have no prefab anywhere: no tile. A pet file is a props entry; node 0 is identity (the game replaces the
   root's transform).
@@ -3676,8 +3677,10 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   - Nicknames: `py -3 pipeline/wardrobe_nicknames.py` (now also the pets: 10 of the Bible's pet nicknames resolve, p_sfb, p_sob,
     p_sgb, p_slb, p_stb, p_spb, p_swb, p_ssq, p_snb, p_lbd; keyed by the base code with no level digit).
   - Bloom Pulse: `uv run --no-project --with UnityPy --with pillow python -I pipeline/wardrobe_tto_trinkets.py [--assets ...]`
-    AFTER `wardrobe_data.py` (which rewrites `all/props_trinkets.json` and `icons.json`), then
-    `uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py`.
+    AFTER any of `wardrobe_data.py` (it rewrites `all/props_trinkets.json`), `wardrobe_icons.py` or `bb_item_codes.py` (each
+    rewrites `icons.json`). **The trap: a rerun of any of the three silently drops Bloom Pulse** (its props entry, or its
+    `icons.json` row: its icon and the codes its TTO placement is found by), so rerun `wardrobe_tto_trinkets.py` after them.
+    Then `uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py`.
   - The rules' tools: `pipeline/tto_disasm.py` (capstone over TTO's DLL, annotated), `pipeline/tto_pet_probe.py` (each pet
     prefab's PetControl + clips over decrypted bundles). `pipeline/wardrobe_convert.py` holds the helpers `wardrobe_data.py`
     and the pet / trinket scripts share (mesh / bone / clip conversion, `game_shader` / `prop_mats`); `wardrobe_data.py`
@@ -3717,9 +3720,16 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   Root bone (Sheep s 0.9) from TTO's TrinketPlacement. Every material is a TTO VFX additive shader drawn with the default cut
   0.5: **the Heart / Moat / Ring discs read dull grey-green**, for the user's eye (the particles that give the game its glow
   are left out, as for the other auras).
-- **Placement tables refreshed from 1.7.0** (`wardrobe_placements.py`): +154 new entries; the Cat's t_allhlw5 moved Spine2 ->
-  Spine1 (the game's own change). New 1.7.0 items seen there and **not in the wardrobe yet**: t_alllkt1, t_alllkt3, c_alllkt1,
-  t_mallkt1, t_all182. aura_bloodmoon / undeadqueen sit on the Head bone via the class fallback (pre-existing).
+- **Placement tables refreshed from 1.7.0** (`wardrobe_placements.py`): +154 new entries, **and nothing else**. This changes
+  `wardrobe/data/placements.json`, which the video repo's skits read too (CLAUDE.md): they get the +154 entries only. The
+  game moved the Cat's t_allhlw5 (ReaperTrinket, a live BB item: Spine2 p (-0.193, 0.501, -0.034) -> Spine1 p (-0.363, 0.473,
+  0.180), a new q); **the old entry is kept** (final review I2, the controller's ruling: the live item and the Cat skits must
+  not move unasked) by the script's named override, `OVERRIDES` in `wardrobe_placements.py` (`(table, hero, code) -> KEEP`:
+  written as the previous placements.json has it, so a rerun keeps it; `pipeline/test_wardrobe_placements.py`). The Panda's
+  c_allhlw4 is kept the same way (1.7.0 writes the same place as float32 noise). The user picks the Cat's from
+  `plans/pets/reaper_cat/` (old_* / tto170_*, front / side / back, `pipeline/wardrobe_reaper_cat_shots.py`; HANDOFF). New
+  1.7.0 items seen there and **not in the wardrobe yet**: t_alllkt1, t_alllkt3, c_alllkt1, t_mallkt1, t_all182.
+  aura_bloodmoon / undeadqueen sit on the Head bone via the class fallback (pre-existing).
 - **Online copy rule for pets (U 2026-11-18: "BB original only for now, and all TTO pet on local, I will handpick which one
   can go live later").** Online = the 64 BB pets (proven against BB's client like props: mesh positions + triangles, the idle
   clip's tracks, texture from BB's Texture2D, icon re-taken from BB's `gamegui/icons/items/pet`, downloads on), every TTO pet
@@ -3728,9 +3738,9 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   goes online preview-only (no download / upload), its JSON **plain** and its textures **scrambled**, exactly as TTO props.
   First dry publish: 64 / 64 BB pets kept, 37 TTO + Bloom Pulse dropped, +9.0 MB, +194 files, 60 idle clips and 65 meshes
   compared; the dist check passes. The publish compares node transforms never (node 0 is identity by design).
-- **Carry-overs / known limits.** `setPet`'s `finally` runs `done()` after persist / render / await prev, so a throw there
-  hangs every later `setPet`; `loadClass` awaits `setPet`, which awaits the previous class's pending pet fetch (cross-class
-  stall): both weighed at the final review. A saved pet with `index.json` unavailable shows an error toast. `idleBox` samples
+- **Carry-overs / known limits.** (`setPet`'s `finally` could hang every later `setPet` on a throw in persist / render: fixed
+  at the final review, M1, below.) `loadClass` awaits `setPet`, which awaits the previous class's pending pet fetch
+  (cross-class stall, bounded by one pet file; the final review let it stay, M2). A saved pet with `index.json` unavailable shows an error toast. `idleBox` samples
   `propAnim` only (none today) and 24 samples could miss a spiky clip; TianlongA is small in frame (its box spans its 8.67 s
   idle). The phone sheet opening doesn't refit (existing, all classes). Quiet fallbacks in `wardrobe_pets.py` (shader read,
   MonoBehaviour typetree, default clip, MeshRenderer before MeshFilter) are deferred minors (notes still to add). `tto_pet_probe.py` has two bare
@@ -3747,3 +3757,30 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
 - **Not done (the user can ask):** pets in gear sets / looks / community skins, a pet skin upload, view-alone for pets, pet
   movement or skills, particles, Thai pet names. Next: the 6-7 emote (`sixseven`), its bundles already decrypted in
   `D:\12tails-wardrobe\tto_assets\2026-11-18`.
+- **Final review fixes (2026-11-19, before the merge and the deploy; the review and the fix report in the untracked
+  `.superpowers/sdd/wardrobe_pets_plan/`):**
+  - **Every pet on the stage (I1).** `wardrobe_pet_check.py` now puts EVERY index row (all 101 locally, BB's and TTO's) on
+    the Sheep (a first visit) on a page of its own: setPet ends without an error, the pet alone at the row's rest point and
+    scale (the per-pet asserts' arithmetic, now `at_rest()`), a mixer exactly when its file has a clip (its time moving on),
+    a non-empty finite idle fit box, no toast / page error / console error / failed request; and, data only, every row x all
+    12 classes of `meta.json` has a finite rest point equal to `rest_point` of its follow values and a finite scale > 0.
+    All 101 pass; no pet breaks on the page. (The first run read three TTO pets' mixers, all58 / all63 / apo, as still over
+    300 ms: their first frame after the textures is a long one under swiftshader; the loop now waits up to 15 s for 0.1 s of
+    clip time, and they move 0.64 s in that one frame.) `--every` / `--faults` run the new parts alone.
+  - **The Cat's ReaperTrinket kept (I2)**: the bullet "Placement tables refreshed from 1.7.0" above; `wardrobe_placements.py`
+    now has its rules above a `main()` (UnityPy imported there), so its test imports it without running it. (Before, importing
+    the module ran the whole script: an import rewrote `tto_config/` and `placements.json`.)
+  - **`setPet` (M1, M3)**: its `finally` is `try { persist; ring } finally { await prev; done() }`, so a throw there no longer
+    strands every later `setPet`; a pick whose file fails after a newer pick replaced it ends quietly (no toast), while the
+    newest pick failing still shows โหลดชิ้นนี้ไม่สำเร็จ. Each has an assert in the pet check (a C.state key whose getter
+    throws makes persist throw; a route holds the first pet's file 1 s, then a 404).
+  - The page's comments name no TTO-only pet (M8; the whole branch diff of `index.html` checked for every TTO row's name,
+    code, file and icon). Doc fixes (M5-M7): the PetScale path, who rewrites `icons.json` and the Bloom Pulse trap above,
+    the rebuild command's Bloom Pulse `--grep`, CLAUDE.md's exception for the TTO pet / Bloom Pulse / fetch scripts,
+    `wardrobe_tto_fetch.py --client`'s help without a BEL.
+  - Checks after the fixes (worktree, one after another): unit 157 OK (with `test_wardrobe_placements`), node 9 / 9,
+    test_adopt_from_video.ps1 fails 0; pet check 327 ok (218 before + the 101-pet loop and its data / summary lines + M1 /
+    M3), weapon_slot 97 ok, sets pass, bloompulse 6 ok, menu 37 ok (the first of three runs timed out at `menu_on("R")`
+    waiting for the view item, the check's own point-on-a-bobbing-piece flake; the next two passed). Dry publish: 64 BB
+    pets kept (index 64 rows, none TTO), 37 TTO pets and Bloom Pulse dropped, no smallDragonZ / TianlongA / bloompulse /
+    alllkt2 anywhere in the dist, the Cat's t_allhlw5 published on Spine2, `check: no problems`.
