@@ -741,7 +741,7 @@ async function loadClass(cls) {
   for (const s of ["R", "L", "Head", "Back"]) if (L0[s]) fetchProps(cls, SLOTS[s]);
   if (L0.Pet) petIndex().then(rows => { const r = rows.find(x => x.name === L0.Pet); if (r) petFile(r).catch(() => {}); }).catch(() => {});   // and its pet's file
   const [rig, outfits, clipsData] = await Promise.all([getJSON(`${DATA}${cls}/rig.json`), getJSON(`${DATA}${cls}/outfits.json`), getJSON(`${DATA}${cls}/clips.json`)]);
-  if (C) { scene.remove(C.root); C.mixer.stopAllAction(); fxClear(); }     // the old class stays on stage until the new one has loaded
+  if (C) { scene.remove(C.root, C.petStage); C.mixer.stopAllAction(); fxClear(); }     // the old class stays on stage until the new one has loaded
   // and the old move's cues still to come go with it (2026-11-13, the Bison's regression gate: the Bat's run, an
   // "everyCycle" entry, re-armed its step_fly1 and fired it once the Wolf was in, asking for data/wolf/sfx/step_fly1.mp3)
   if (C) { FX.cues = []; FX.cycle = null; }
@@ -757,8 +757,10 @@ async function loadClass(cls) {
   const byName = Object.fromEntries(bones.map(b => [b.name, b]));
   scene.add(root);
   root.updateMatrixWorld(true);
+  const petStage = new THREE.Group();          // the pet's own place beside the hero (setPet)
+  petStage.name = "pet"; scene.add(petStage);
   const mixer = new THREE.AnimationMixer(root);
-  C = { cls, rig, root, tri, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null, seq: null, chains: null };
+  C = { cls, rig, root, tri, petStage, byName, outfits, clipsData, clips: {}, mixer, meshes: [], props: {}, propLists: {}, action: null, cur: null, seq: null, chains: null };
   const meta1 = meta.classes.find(c => c.cls === cls);
   C.faces = meta1.faces;
   // TTO's faces are scrambled online: decoded before their tiles draw (pic takes the object URL)
@@ -1170,9 +1172,14 @@ async function setProp(slot, name) {
 // data/pets/index.json (pipeline/wardrobe_pets.py): one row per pet, fetched once for every class; a pet's own file (a
 // props entry: its nodes, live skins, idle clip) on its first pick. The pet stands where the game's PetControl rests it
 // beside a still hero: row.rest[cls], already three.js space (the hero at the origin facing +z; never recomputed from
-// follow.offset, which would mirror x twice), on the hero's root with the hero's rotation and the class's size
-// (row.scale[cls]: GetPetSize x PetScales). Saved per class like a worn piece (C.state.Pet); a pick is one undo step
-// (tracked(() => setPet(name)): pickPet)
+// follow.offset, which would mirror x twice), with the hero's rotation and the class's size (row.scale[cls]: GetPetSize
+// x PetScales). In the game the pet is a GameObject of its own, so it stands in a group of its own beside the hero's root
+// (C.petStage, at the hero's spot: only a lift or a body look's grow ever changes the root, neither of them the pet's),
+// out of reach of what a skill does to the hero: a body look's grow and tint, a skin cue's shells, a lift, HeroClone's
+// copy (the Bat's illusion copies the hero, not its pet). It follows the root's visibility (the render loop: ชมชิ้นส่วน
+// hides the character) and a whole-hero hide hides it too (lookSync; TTO1118:PetControl.OnParentHide@0x1a94140 hides a
+// pet with its owner). Saved per class like a worn piece (C.state.Pet); a pick is one undo step (tracked(() =>
+// setPet(name)): pickPet)
 let PET_ROWS = null;
 const PET_FILES = {};
 const petIndex = () => (PET_ROWS ||= getJSON(DATA + "pets/index.json").catch(e => { PET_ROWS = null; throw e; }));
@@ -1202,9 +1209,9 @@ async function setPet(name) {
       const o = buildProp(p);
       Object.assign(o.userData, { pet: name, placement: "the game's rest point" });
       o.position.fromArray(row.rest[K.cls] || [0, 0, 0]);
-      o.quaternion.identity();                         // the hero's rotation (identity on its root)
+      o.quaternion.identity();                         // the hero's rotation (identity, as the hero's root)
       o.scale.setScalar(row.scale[K.cls] ?? 1);
-      K.root.add(o);
+      K.petStage.add(o);
       finishProp(o);
       // the game loops the idle (PlayIdle; the pet file's clip "loop"): finishProp holds a prop clip that ends away from its
       // start (kiteSnake, smallDragonZ and smallKarazo's do, a little)
@@ -3348,7 +3355,7 @@ const Showcase = {
       controls.enablePan = false;
       $("shot").title = SHOT_TITLE.piece;
       // the character and its floor shadows fade into the white stage with the camera still on them (0.2 s)
-      this.hero = whiteFader([K.root, floor, floorWide]);
+      this.hero = whiteFader([K.root, K.petStage, floor, floorWide]);
       this.heroTw = tween(.2, k => this.hero.set(k), () => this.heroGone());
     }
     this.list = list?.length ? list : await viewList(slot);
@@ -3490,7 +3497,7 @@ const Showcase = {
     document.querySelector(".app").classList.remove("viewing"); renderCard(); resize();
     const S = this.saved;
     C.root.visible = S.root; floor.visible = S.floor; floorWide.visible = S.floorWide;
-    if (!this.hero) { this.hero = whiteFader([C.root, floor, floorWide]); this.hero.set(1); }
+    if (!this.hero) { this.hero = whiteFader([C.root, C.petStage, floor, floorWide]); this.hero.set(1); }
     const a0 = this.hero.a;
     this.heroTw = tween(.25, k => this.hero?.set(a0 * (1 - k)), () => { this.hero?.restore(); this.hero = null; });
     const l0 = this.lift; stopTween(this.liftTw);
@@ -5344,6 +5351,7 @@ function lookSync() {
     if (hide) off.set(o, 0);
     else if (shell) { off.set(o, LOOK_LAYER_MASK); add.push(o); }          // under a skin: its copy drawn, itself still clicked
   });
+  if (C && hide) C.petStage.traverse(o => { if (o.isMesh) off.set(o, 0); });   // the pet hides with its owner (OnParentHide); no other look reaches it
   if (add.length) shell.sync(add);
   if (live?.body) live.bodySync(!!sk);         // grown and tinted while VFX is on (pieces put on meanwhile too), else as it was
   for (const [o] of LOOK.off) if (!off.has(o)) o.layers.mask = o.userData.lookMask ?? 1;
@@ -6102,6 +6110,7 @@ renderer.setAnimationLoop(() => {
   // a camera glide drives the camera itself; otherwise the controls, with no bounds on where the look-at point goes
   // (user 2026-11-10: "unlock ASWD 100% free movement"; until then clampTarget / scClamp held it near the hero / piece)
   if (!camStep(dt)) controls.update();
+  if (C) C.petStage.visible = C.root.visible;      // the pet shown and hidden with the character (ชมชิ้นส่วน), this frame
   renderer.render(scene, camera);
 });
 resize();

@@ -1,7 +1,7 @@
 r"""Headless check of the pet on stage (2026-11-18, the pets plan's Task 5; user: "Add Pet section, standing behind the
 hero how it would work in game"). On the real page through its scripting hook (wardrobe.show / wardrobe.debug()):
   - placement: for 4 classes x {smallAnubi, miniMokBug, kiteChula, smallKumo, smallDragonZ (TTO's own), soccerBall (x
-    offsets: the mirror)}, setPet(name): the pet's root is a child of the hero's root, its world position = the index
+    offsets: the mirror)}, setPet(name): the pet stands beside the hero (on none of its bones), its world position = the index
     row's rest[cls] = pipeline/wardrobe_pets.py's rest_point of the game's Unity-space values (the row's offsets x -> -x)
     within 1e-3, its rotation the hero's, its scale the row's scale[cls]; its idle clip loops and its mixer advances (a
     node's quaternion changes over 0.5 s; smallKumo's clip turns nothing, its one node bobs: its position / scale); no
@@ -15,6 +15,11 @@ hero how it would work in game"). On the real page through its scripting hook (w
     each class's own pet back at its rest point and scale after a switch and after a reload; a kite at each class's height
   - Review Focus 4: ชมชิ้นส่วน (Showcase) on the outfit hides the pet with the character; its exit shows it again
   - the คัดลอกให้ Claude line names the pet (สัตว์เลี้ยง <name>); no page errors, console errors or failed requests
+  - skill effects (the controller's ruling 2026-11-19: in the game the pet is a GameObject of its own): with smallAnubi
+    out, the Bison's Enrage (grow + tint), its Titan Drop (a lift), the Chameleon's Back Step (FX/Blend shells) and the
+    Bat's Shadow Illusion (two HeroClones) each take hold on the hero and leave the pet as it was (world position and
+    scale, material colours, layers, no shell on it, no copy of it in a clone); the Chameleon's Thunder Dragon (a
+    whole-hero hide) hides it with the hero (TTO's PetControl.OnParentHide@0x1a94140) and shows it again after
 Exit 1 on any failure. Serves the folder itself on a free port (never 8771, the main folder's page).
   uv run --no-project --with playwright==1.65.1 python -I pipeline/wardrobe_pet_check.py [D:/12tails-wardrobe checks/pet_check]"""
 import asyncio, functools, http.server, json, sys, threading
@@ -46,15 +51,15 @@ URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"
 
 # the pet on stage: what the state says, what stands under the hero's root, where and how big
 PET = """() => { const { C, THREE, scene } = wardrobe.debug(), o = C.props.Pet;
-  const pets = C.root.children.filter(x => x.userData.pet).map(x => x.userData.pet);
+  const pets = []; scene.traverse(x => { if (x.userData.pet) pets.push(x.userData.pet); });
   const base = { cls: C.cls, state: 'Pet' in C.state ? C.state.Pet : '(no key)', pets };
   if (!o) return { ...base, on: null };
   o.updateWorldMatrix(true, false);
   const p = o.getWorldPosition(new THREE.Vector3()), s = o.getWorldScale(new THREE.Vector3());
   const q = o.getWorldQuaternion(new THREE.Quaternion()), h = C.root.getWorldQuaternion(new THREE.Quaternion());
-  let shown = true, top = o; for (let x = o; x; x = x.parent) { if (!x.visible) shown = false; top = x; }
+  let shown = true, top = o, onBone = false; for (let x = o; x; x = x.parent) { if (!x.visible) shown = false; if (x === C.tri) onBone = true; top = x; }
   const pa = o.userData.propAnim;
-  return { ...base, on: o.userData.pet, parentIsRoot: o.parent === C.root, p: p.toArray(), s: s.toArray(), qdot: Math.abs(q.dot(h)),
+  return { ...base, on: o.userData.pet, onBone, p: p.toArray(), s: s.toArray(), qdot: Math.abs(q.dot(h)),
     mixer: !!o.userData.mixer, loop: pa ? pa.act.loop === THREE.LoopRepeat : null, shown: shown && top === scene }; }"""
 # the idle clip's nodes now: the mixer's time, each animated node's quaternion, position and scale
 MOTION = """() => { const o = wardrobe.debug().C.props.Pet, pa = o?.userData.propAnim; if (!pa) return null;
@@ -112,12 +117,12 @@ async def main():
             st = await page.evaluate(PET)
             row = ROWS[name]
             want, game = row["rest"][cls], rest_point(unity(row["follow"]), cls)
-            ok = (st["on"] == name and st["state"] == name and st["pets"] == [name] and st["parentIsRoot"]
+            ok = (st["on"] == name and st["state"] == name and st["pets"] == [name] and not st["onBone"]
                   and near(st["p"], want, 1e-3) and near(st["p"], game, 1e-3) and st["qdot"] > 1 - 1e-6
                   and near(st["s"], [row["scale"][cls]] * 3, 1e-6) and st["shown"])
             check(ok, f"{cls:6} {name:13} {what}at {[round(x, 4) for x in st.get('p') or []]} (rest {want}, rest_point {game}) "
                       f"x{round((st.get('s') or [0])[0], 4)} (row {row['scale'][cls]}), the hero's rotation {st.get('qdot', 0) > 1 - 1e-6}, "
-                      f"under the hero's root {st.get('parentIsRoot')}, alone {st['pets']}, shown {st.get('shown')}")
+                      f"on a hero bone {st.get('onBone')}, alone in the scene {st['pets']}, shown {st.get('shown')}")
             return st
 
         for cls in CLASSES:
@@ -226,6 +231,61 @@ async def main():
         await page.wait_for_function("() => wardrobe.debug().Showcase.phase === 'off'", timeout=30000)
         st = await placed("TianlongA", "whale", "after Showcase's exit ")
         await page.screenshot(path=str(OUT / "whale_tianlong.png"))
+
+        # ---- skill effects: a move that changes the hero's look or place leaves the pet as it was; a whole-hero hide hides it
+        LOOKS = """() => { const { C, FX, THREE } = wardrobe.debug(), o = C.props.Pet;
+          const mats = [], masks = [], geos = new Set(); let copies = 0;
+          o.traverse(x => { if (!x.isMesh) return; if (x.userData.lookCopy) { copies++; return; } masks.push(x.layers.mask); geos.add(x.geometry);
+            for (const m of [].concat(x.material)) if (m?.color) mats.push(m.color.getHexString()); });
+          o.updateWorldMatrix(true, false);
+          let clones = 0, petCopies = 0;
+          for (const f of FX.live) if (f.name.startsWith('clone:') && f.group) { clones++; f.group.traverse(x => { if (x.isMesh && geos.has(x.geometry)) petCopies++; }); }
+          return { p: o.getWorldPosition(new THREE.Vector3()).toArray(), s: o.getWorldScale(new THREE.Vector3()).toArray(), mats, masks, copies, clones, petCopies,
+            heroScale: C.root.scale.x, heroY: C.root.position.y, heroMask: C.meshes[0]?.layers.mask ?? null }; }"""
+
+        async def play(tile):                    # a skill tile of the move picker, as a visitor plays it
+            if not await page.evaluate("() => !document.getElementById('picker').hidden && document.getElementById('pkBody').dataset.topic === 'move'"):
+                await page.click('button.topic[data-t="move"]')
+            await page.click('.pk-tab[data-g="skill"]')
+            await page.click(f'#pkBody .pk-item[data-m="{tile}"]')
+
+        def kept(a, ref):                        # the pet as it stood before the move
+            return (near(a["p"], ref["p"], 1e-4) and near(a["s"], ref["s"], 1e-6) and a["mats"] == ref["mats"] and a["masks"] == ref["masks"]
+                    and a["copies"] == 0 and a["petCopies"] == 0)
+
+        def tell(a):
+            return (f"pet at {[round(x, 3) for x in a['p']]} x{round(a['s'][0], 3)}, colours {a['mats'][:3]}, layers {sorted(set(a['masks']))}, "
+                    f"shells on it {a['copies']}, {a['clones']} clones holding {a['petCopies']} copies of it; hero x{round(a['heroScale'], 2)} y {round(a['heroY'], 2)}")
+        HOLDS = {"body": "C.root.scale.x > 1.2", "lift": "C.root.position.y > 1",
+                 "shell": "C.meshes.some(m => m.children.some(k => k.userData.lookCopy))",
+                 "clone": "FX.live.filter(f => f.name.startsWith('clone:')).length >= 2", "hide": "C.meshes[0]?.layers.mask === 0"}
+        ref = None
+        for cls, tile, kind, what in (("bison", "enrage", "body", "grow 1.25 + tint"), ("bison", "titanDrop", "lift", "up to 3 m"),
+                                      ("chameleon", "backStep", "shell", "FX/Blend"), ("bat", "@ShadowIllusion", "clone", "two HeroClones"),
+                                      ("chameleon", "@ThunderDragon", "hide", "the whole hero hidden")):
+            if ref is None or await page.evaluate("() => wardrobe.debug().C.cls") != cls:
+                await page.evaluate(SHOW, cls)
+                await page.evaluate(SET, "smallAnubi")
+                await page.wait_for_timeout(300)
+                ref = await page.evaluate(LOOKS)
+            await play(tile)
+            try:
+                await page.wait_for_function(f"() => {{ const {{ C, FX }} = wardrobe.debug(); return {HOLDS[kind]}; }}", timeout=30000)
+                took = True
+            except Exception:
+                took = False
+            st = await page.evaluate(LOOKS)
+            if kind != "hide":
+                check(took and kept(st, ref), f"{cls:9} {tile} ({what}) took hold {took}: {tell(st)}")
+                continue
+            hidden = took and bool(st["masks"]) and all(m == 0 for m in st["masks"])
+            try:
+                await page.wait_for_function("() => wardrobe.debug().C.meshes[0]?.layers.mask !== 0", timeout=30000)
+            except Exception:
+                pass
+            after = await page.evaluate(LOOKS)
+            check(hidden and kept(after, ref), f"{cls:9} {tile} ({what}) took hold {took}: the pet hidden with the hero "
+                                               f"(layers {sorted(set(st['masks']))}), shown again after (layers {sorted(set(after['masks']))}), {tell(after)}")
         await b.close()
     print("errors:", errors)
     if errors:
