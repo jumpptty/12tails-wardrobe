@@ -3784,3 +3784,167 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
     waiting for the view item, the check's own point-on-a-bobbing-piece flake; the next two passed). Dry publish: 64 BB
     pets kept (index 64 rows, none TTO), 37 TTO pets and Bloom Pulse dropped, no smallDragonZ / TianlongA / bloompulse /
     alllkt2 anywhere in the dist, the Cat's t_allhlw5 published on Spine2, `check: no problems`.
+
+- **Merged and deployed (2026-11-19)** (user: "please do all steps until successful deployment then commit push"): the
+  final whole-branch review (opus) found 2 Important (I1: most published pets never on stage in any check; I2: the 1.7.0
+  refresh moved the Cat's live ReaperTrinket) and 10 Minor; one fix wave (a1117a1, 402465b, e318a1d) and a scoped
+  re-review: clean. `pets` fast-forwarded main (9d8244c -> e318a1d; the skin sessions' uncommitted NOTES / HANDOFF /
+  index.html hunks stashed and popped back unchanged); unit 157 OK, node 9/9 on main. Published with `--src` = a `git -c
+  core.autocrlf=false archive` of e318a1d's wardrobe/ (no data) and `--data` = the main folder's: 9,938 files (+194),
+  +9.05 MB, data folder `data-707284f874`, dropped pets 0 -> 37, back_trinkets 20 -> 21 (Bloom Pulse), check no
+  problems; `wardrobe_dist_check.py` errors []; the new `pipeline/wardrobe_pets_live_check.py` (the review's M9: the
+  dist check has no pet step) 21 ok on the dist. Deployed from an empty folder with the Worker script: 194 files
+  uploaded, version `7f8e0a09-918f-44b2-b793-6babaf7d8ce8` (rollback: 169e1a57). Live, isolated headless context
+  (`wardrobe_pets_live_check.py https://12tails-wardrobe.jumpthai.workers.dev/ checks/pets_live`): 21 ok: index 64 rows,
+  none TTO; every row's file there; the 37 TTO-only pets' files 404; no Bloom Pulse in icons.json or
+  props_trinkets.json; smallAnubi / miniMokBug / kiteChula / momBalloon on stage with their idles playing and not
+  ttoLocked; the Pet picker 64 tiles; no page errors, no failed requests. The branch `pets` stays on origin as the
+  backup it was pushed as (R27).
+- **The controller's rulings during the build** (the run's ledger, deleted after the merge; each: what — why — the cost
+  if wrong):
+  - R1: Ruling: decrypt into the MAIN folder's git-ignored `D:/12tails-wardrobe/tto_assets/2026-11-18` (it outlives the
+    worktree; the next session, e.g. the 6-7 emote, needs it there); worktree runs pass `--assets
+    D:/12tails-wardrobe/tto_assets/2026-11-18` — the spec says "this repo's git-ignored tto_assets", the main folder is
+    this repo — if wrong: a re-decrypt (minutes).
+  - R2: Ruling: the plan's line numbers are hints; the helper names are binding — the names are what the interface
+    promises — if wrong: none.
+  - R3: Ruling: index `code` = the base pet code with no level digit (`p_lcr`), `level` separate; `icon` =
+    `icons/pet/<code without p_>.webp` (the game's icon file name, BB `gamegui/icons/items/pet/lcr.png`) — matches T4's
+    `pet_scale("p_lcr", 9, ...)` test and the publish's `run.icon` path rule — if wrong: a rename in T4 / T11.
+  - R4: Ruling: order 1, 2, 3, 4, 5, 6 (mocks sent, user asked), then 8, 9, 10, 11 while the user picks, then 7 (with
+    the nickname search check, the nickname data existing by then), then 12 — T6 is a planned user gate (CLAUDE.md: a
+    look is picked from mocks); nothing in 8-11 needs the pick — if wrong: T8's menu check opens the menu without the
+    topic (from the model / programmatically), no rework.
+  - R5: Ruling: T5's class-switch scale case uses any index pet whose `scale` differs by class (p_all85 / 86 if
+    present); if none, the check prints "no per-class pet in the data" and checks a kite's per-class height instead — if
+    wrong: one case less.
+  - R6: Ruling: 17 meshes — the spec's own list — if wrong: none.
+  - R7: Ruling: T10 also merges `icons.json["all"]["trinkets"]["aura_bloompulse"] = {icon, codes:
+    ["t_all_tto_bloompulse"]}` (the user's code) so placementOf finds TTO's placement — the spec says "placement from
+    TTO's TrinketPlacement for its code" — if wrong: the class fallback placement.
+  - R8: Ruling: Task 6 runs NOW beside Task 1 (user: "Can I do 6 now? So you don't have to stop for my input"): static
+    real pet meshes from tto_assets/2026-11-04 placed on the unchanged page by Playwright, no ?petcam hook in
+    index.html; the agent touches only pipeline/wardrobe_pet_mocks.py + checks/pet_mocks/ and does not commit (the
+    controller commits the script after Task 1) — the user's pick is about angle and place, not animation — if wrong:
+    the mocks are redone after Task 5 (30 min). Parallel with Task 1 on disjoint files.
+  - R9: Ruling: the user is away ("I can't wait 1 hour ... please do all steps until successful deployment then commit
+    push shut down PC"): the camera turn / rise and the block's place are picked by the controller from the Task 6 mocks
+    (the user's own default of the design: B, about 40 deg), recorded in the design doc and NOTES.md for the user to
+    change later — if wrong: one constant and one TOPICS line to change.
+  - R10: Ruling: online = BB pets only, every TTO pet (and Bloom Pulse) local only, tto_released.json untouched (user:
+    "BB original only for now, and all TTO pet on local, I will handpick which one can go live later") — the design's
+    rule as it stands — if wrong: none.
+  - R11: Ruling: after Task 12 + the final review: merge `pets` into main in D:/12tails-wardrobe (stash the skin
+    sessions' uncommitted changes, ff-merge, pop, keep both sides on any NOTES / HANDOFF conflict), publish from a `git
+    archive` of main's commit (the skin sessions' uncommitted page hunks stay off the site, as the last deploys did),
+    deploy from an empty folder with the Worker script, live-check, commit + push, then shut the PC down — the user
+    asked for every step through deploy, commit, push and shutdown — if wrong: the deploy is rolled back with the
+    previous version id (169e1a57)
+  - R12: Ruling: Task 4's `idle_clip` takes what TTO's FindClip reads: `idle_clip(clip_names, default, idle_prefix,
+    follow_type, play_automatically) -> str | None`, its tests from plans/wardrobe_pets_tto_rules.md (BlueShark ->
+    root_Cute, koalia -> battle, the plan's three cases kept where TTO agrees) — the spec says follow TTO where it
+    differs — if wrong: three pets idle on another clip.
+  - R13: Ruling: Task 4's `pet_scale` adds GetPetSize's exceptions: p_all31-35 = 4.0 flat, p_svk = 0.1 + 0.01 x level,
+    then the PetScales multiplier; tests for both — TTO's own code — if wrong: those pets' sizes.
+  - R14: Ruling: TTO-only pets whose level range the client can't tell (the Rabbies, DragonZ, FlowerDryad,
+    MotherFlowerBug, ValkorNoct) are shown at Lv 9 like BB's families (the user's "max everywhere"), each flagged
+    `level_guess: true` in the index and listed in NOTES.md for the user — they are local only, the user picks TTO pets
+    later — if wrong: their size at the user's check.
+  - R15: Ruling: index `game` = BB's name from PetData.cs getData (`itemClass.name`, e.g. "L. Carron " + level -> "L.
+    Carron 9"; the whole-code BB pets their own name) and "S.ValkorNoct" + level for p_svk; null for the other 36 TTO
+    pets (the page falls back to humanize(name)) — TTO's names are server data (rules §6) — if wrong: TTO tiles show the
+    prefab name.
+  - R16: Ruling: level per pet: BB's 47 upgradable families -> 9; BB families with no recipe (p_srp, p_sss, p_sbb,
+    p_sdm, p_sdv, p_skz, p_skm) -> 1; every p_all... code -> 1 (no level); TTO families (p_mrd/mrg/mrw,
+    p_srb/srg/srs/srw, p_drz, p_sfd, p_mtf, p_svk) -> 9 with `level_guess: true` (R14) — rules §7-8 — if wrong: those
+    sizes.
+  - R17: Ruling: index rows carry `rest: {cls: [x,y,z]}` in three.js space (rest_point takes Unity values; offsets
+    stored mirrored would be mirrored twice): Task 5 places pets at row.rest[cls] — the implementer's finding — if
+    wrong: none (tested in T5's check).
+  - R18: Ruling: `size` = bounds at the idle clip's first frame (the Dino sharks' prefab pose lies under the floor) — if
+    wrong: the camera fit box.
+  - R19: Ruling: a pet file's node 0 is identity (the game replaces the root's transform): Task 11's BB comparison must
+    skip node 0 — carry to Task 11.
+  - R20: Ruling: the copied BB shader rule (game_shader / prop_mats) is moved into wardrobe_convert.py instead (DRY),
+    sent back to the implementer before review, with "S.ValkorNoct 9" (space) — pre-review correction of a duplication
+    the rubric calls Important — if wrong: none.
+  - R21: Ruling: browser checks run with `uv run --no-project --with playwright==1.65.1 ...` (installed chromium) —
+    carry to Tasks 6-8, 10-12 — if wrong: none.
+  - R22: Ruling: hero skill effects (skin shells, tint / grow, HeroLift, HeroClone) must not reach the pet; the
+    whole-hero hide does (TTO PetControl.OnParentHide) — sent back before review — if wrong: pets tinted / lifted /
+    cloned during skill moves.
+  - R23: Ruling: ถอดทั้งหมด keeps the pet — pets are not gear / not in sets (spec non-goal) — if wrong: one line.
+  - R24: Ruling: R7's code amended to the game's own t_alllkt2lv9 (kept the user's t_all_tto_bloompulse too) — TTO's
+    LoadAura is the source — if wrong: none.
+  - R25: Ruling: tto_picker.html gains the pets kind now (sent back before review) — the user: "I will handpick which
+    one can go live later" needs it — if wrong: one line.
+  - R26: Ruling: the setInset refit with a pet out (any desktop picker opening / closing glides the camera) is kept —
+    without it the pet sits under the picker — if wrong: one line.
+  - R27: Ruling: Task 12 pushes the BRANCH (`git push -u origin pets`) as a backup; main is merged and pushed after the
+    final review (R11) — a push of a private feature branch is low-risk and protects the work if the PC goes down — if
+    wrong: a stray remote branch to delete.
+  - R28: Ruling: the final review package leaves out the bulk generated data (pets/*.json, icons, textures; key
+    summaries of icons/nicknames/upscaled/placements.json instead) and the research / mock / check scripts and plans
+    (listed, read from the worktree) — a 1 MB package does not fit one read — if wrong: a data or check-script defect
+    reaches main unreviewed (the dry publish and the 218-assert check cover the data).
+  - R29: Ruling: I2 keeps the OLD t_allhlw5 entry (a named override in the placements script) and gives the user both
+    looks as screenshots + a HANDOFF line — a visible change to a live BB item (and the video repo's skits) is the
+    user's call, and the user is away — if wrong: one line in the override to take the 1.7.0 entry.
+  - R30: Ruling: the fix wave takes I1, I2 and the cheap must-before-deploy minors (M1 + M3 setPet hardening, M5 doc
+    errors incl. the icons.json rerun trap, M6 CLAUDE.md extraction clause, M7 BEL, M8 TTO pet names in published
+    comments, Task 12 M1-M3 / M7 docs, R23 on the user's list); M2, M4, M9 (done by the controller's live check
+    instead), M10 stay deferred — the minors folded in are a line or two each and the page goes public after this — if
+    wrong: a few minutes of extra fix time.
+  - R31: Ruling: the Panda's c_allhlw4 also stays at its old entry in OVERRIDES (1.7.0 writes the same placement with
+    float32 noise) — keeps placements.json byte-stable for the video repo, no visible change — if wrong: one line to
+    delete.
+- **Deferred minors** (from the task reviews and the final review; for a later session):
+  - Task 2: "(no bundle: ...)" rows misparsed into bogus names (fails loud but misleading)
+  - Task 2: docstring / help not raw strings: "\a" BEL, invalid escapes (SyntaxWarning on 3.12+)
+  - Task 2: TOOLS hard-coded to D:\12tails (no office path fallback); -P needs Python 3.11+
+  - Task 2: decrypt output not atomic (a truncated dec/ file counts as done)
+  - Task 2: new test module not in CLAUDE.md's test list -> Task 12 adds it
+  - Task 3: wardrobe_data.py `import math` and the imported `r5` now unused
+  - Task 3: test_wardrobe_publish.py:184-198 docstrings cite wardrobe_data.py for helpers now in wardrobe_convert.py
+  - Task 4: quiet fallbacks at wardrobe_pets.py:454 (shader read), :520 (MonoBehaviour typetree), :575 (default clip),
+    :506 (MeshRenderer before MeshFilter) - add notes
+  - Task 4: idle_clip's extra `default in clip_names` guard (:233) untested / beyond R12's wording
+  - Task 4: multiplier's Family() path, <=0 -> 1, p_allhlw untested
+  - Task 4: bind-pose S B S and node TRS mirroring duplicated with wardrobe_data.py (could join wardrobe_convert)
+  - Task 4: PetScale copy loop takes the last match; no version tie between the live install and --assets
+  - Task 4: unclosed files (json.dump(open())); wardrobe_convert loaded twice (sys.path + package)
+  - Task 5: wardrobe_menu_check.py flaky (scans the Head point once, clicks ~20 s later while the idle bobs) -
+    pre-existing, not this task
+  - Task 5: setPet's finally: done() after persist/renderPropUI/await prev -> a throw there hangs every later setPet
+    (index.html ~:1223) - FINAL REVIEW: weigh
+  - Task 5: loadClass awaits setPet, which awaits the previous class's pending pet fetch (cross-class stall) - FINAL
+    REVIEW: weigh
+  - Task 5: pieceAt (:2813) / hover dim (:3185) iterate the pet -> carried into Task 8 (the pet becomes a piece the menu
+    opens on)
+  - Task 5: focus 2(b) unheld race may degrade to sequential locally; no assertion that TianlongA's scales differ by
+    class
+  - Task 5: index.json unavailable + a saved pet -> error toast (online copy will ship index.json)
+  - Task 8: GLB check doesn't assert pose / scale 1; PET_LIST shared array across classes' propLists (comment)
+  - Task 9: pet nickname rows keyed by lower-case name could overwrite on a case-only clash (none today);
+    test_pet_icons_are_found_at_game_size passed before the change
+  - Task 10: literal tab chars at wardrobe_tto_trinkets.py:411; UnityPy prefab walk / material() / texture() /
+    aa_catalog call duplicated across wardrobe_pets / wardrobe_data / wardrobe_fx_tto; icon:null path unverified against
+    the page
+  - Task 11: a released TTO pet's JSON is plain (only textures scrambled; same as TTO props) -> NOTES; non-flagged pet
+    failing BB compare lacks the "not in the released list" suffix; BB pet with no BB icon kept with icon null
+    (untested)
+  - Task 7: heroFitPose updates the pet mixer by 0 (commented); 0.2 px clip of ุ under ชุด / อาวุธ on phone (invisible,
+    labels not to move); menu check flake unchanged
+  - Task 7: idleBox samples only propAnim (mixer without propAnim -> one frame; none today); 24 samples could miss a
+    spiky clip; TianlongA smaller in frame (its box spans its whole 8.67 s idle)
+  - Task 12: M1 HANDOFF:30 'the controller publishes + deploys' + cites untracked R11; M2 HANDOFF/NOTES point at
+    git-ignored checks/pet_mocks/; M3 HANDOFF pets item lacks a delete-when point; M4 menu-flake counts differ NOTES vs
+    report, one green run; M5 weapon-slot ring-size check skips Pet; M6 only dist_check docstring pins playwright; M7
+    NOTES lacks that the Cat's t_allhlw5 Spine2->Spine1 placement change reaches the video repo (it reads
+    placements.json)
+  - Final: M2 class switch can wait for the previous class's pet file (bounded: one file, <=272 KB); M4 Pet ring shows a
+    missing saved pet's initials briefly while a class loads; M9 dist check has no pet step (the live check covers it);
+    M10 weapon-slot ring-size check skips the Pet ring; Task 12 M4 menu-flake counts differ, M6 only dist_check pins
+    playwright
+  - Final: the Panda c_allhlw4 override is permanent (a real future game change to it would be swallowed); drop it once
+    the Cat pick is settled

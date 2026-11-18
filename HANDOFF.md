@@ -8,7 +8,7 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 Delete this item when the office has pulled main with the pets, and the user has answered the picks below (move any
 answer still open to its own item).
 
-The pet feature is on branch `pets` until the controller's merge into main; once it is on main:
+The pet feature is on main since 2026-11-19 (merged and deployed, version 7f8e0a09):
 - **Office PC: pull.** The data is tracked (`wardrobe/data/pets/`, the pet textures and icons, `all/props_trinkets.json`,
   `placements.json`, `icons.json`), so the page works at once. Nothing to rebuild.
 - **A pet or Bloom Pulse rebuild needs a decrypted TTO 1.7.0 client** (`wardrobe_pets.py`, `wardrobe_tto_trinkets.py`):
@@ -31,7 +31,7 @@ The pet feature is on branch `pets` until the controller's merge into main; once
     in `OVERRIDES` (`pipeline/wardrobe_placements.py`), rerun `uv run --no-project --with UnityPy python pipeline/wardrobe_placements.py`
     (home PC, the installed TTO client), then commit, push, publish + deploy; the video repo's Cat skits pick it up too.
   - Hand-pick which TTO pets go live: tick them in `wardrobe/tto_picker.html` (a pets section, 37 candidates; it writes
-    `wardrobe/tto_released.json`), then publish + deploy. After the deploy of this branch the public copy has the 64 BB
+    `wardrobe/tto_released.json`), then publish + deploy. Since the 2026-11-19 deploy (7f8e0a09) the public copy has the 64 BB
     pets only.
   - ถอดทั้งหมด (take everything off) keeps the pet on: pets are not gear and not in sets, so Claude left it out of that
     button. Say if it should take the pet off too.
