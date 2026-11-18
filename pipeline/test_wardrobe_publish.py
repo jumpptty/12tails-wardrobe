@@ -1214,6 +1214,36 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(cands[("all", "pets", "ttoDragon")], True)
         self.assertEqual(wp.check(w.out), [])
 
+    def test_a_tto_pet_ticked_in_the_picker_goes_online(self):
+        """The picker's round trip for a pet: the publish lists the TTO pet for wardrobe/tto_picker.html with its icon and
+        its game name (None: the picker shows the prefab name); the file the picker saves for it ({"_about", "all":
+        {"pets": [name]}}, its output()) is read by the next publish, which keeps the pet marked tto."""
+        w = make_world(self.tmp)
+        w.add_pet("ttoDragon", "tdr", "ttoDragon.png", tto=True)
+        w.add_pet("ttoKoi", "tko", "ttoKoi.png", tto=True)
+        w.pets[-1]["game"] = "S.Koi 9"
+        w.finish()
+        cands = {c["name"]: c for c in w.publish()["tto_candidates"] if c["kind"] == "pets"}
+        self.assertEqual({n: (c["cls"], c["icon"], c["game"], c["released"]) for n, c in cands.items()},
+                         {"ttoDragon": ("all", "icons/pet/tdr.webp", None, False), "ttoKoi": ("all", "icons/pet/tko.webp", "S.Koi 9", False)})
+        picked = {"_about": "TTO items released for the public wardrobe (wardrobe/tto_picker.html, read by pipeline/wardrobe_publish.py)"}
+        c = cands["ttoKoi"]
+        picked.setdefault(c["cls"], {}).setdefault(c["kind"], []).append(c["name"])      # the picker's output()
+        (w.src / wp.RELEASED_NAME).write_text(json.dumps(picked, indent=1) + "\n", encoding="utf-8")
+        result = w.publish()
+        index = json.loads((data_dir(w) / "pets" / "index.json").read_text("utf-8"))
+        self.assertEqual([(r["name"], r["tto"], r["game"]) for r in index], [("ttoKoi", True, "S.Koi 9")])
+        self.assertIn("ttoDragon", dropped_names(result, "pets"))
+        self.assertEqual(wp.check(w.out), [])
+
+    def test_the_picker_offers_every_released_kind(self):
+        """tto_picker.html draws a section only for the kinds in its KIND_TH: each kind the released list may name
+        (TTO_KINDS, pets since 2026-11-18) needs one, or its candidates can't be picked."""
+        page = (Path(__file__).resolve().parents[1] / "wardrobe" / "tto_picker.html").read_text(encoding="utf-8")
+        m = re.search(r"const KIND_TH = \{(.*?)\};", page, re.S)
+        self.assertIsNotNone(m)
+        self.assertEqual(set(re.findall(r"(\w+): \"", m.group(1))), set(wp.TTO_KINDS))
+
     def test_bb_pet_whose_mesh_differs_is_dropped(self):
         """A BB pet whose mesh differs from BB's prefab's is dropped with the reason; so is one whose idle clip's keys
         differ from BB's clip of the same name."""

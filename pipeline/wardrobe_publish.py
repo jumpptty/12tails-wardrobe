@@ -979,7 +979,8 @@ def publish_pets(run):
         tto = bool(row.get("tto") or p.get("tto"))
         why = "TTO's own item (tto flag)" if tto else run.bb.compare_prop("pet", "pets", p)
         if why:
-            if not run.candidate("all", "pets", name, why, icon=row.get("icon")):
+            # the picker's tile: the icon and the game's name (None for most of TTO's: the picker shows the prefab name)
+            if not run.candidate("all", "pets", name, why, icon=row.get("icon"), game=row.get("game")):
                 run.drop("pets", name, why + ("; not in the released list" if tto else ""))
                 continue
             miss = next((w for w in (run.prop_texture(t, local_ok=True) for t in textures) if w), None)

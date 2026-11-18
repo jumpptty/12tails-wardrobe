@@ -8,7 +8,8 @@
      only (wardrobe_publish.py never copies it). Lists every TTO-sourced item the last publish found
      (../wardrobe_dist_tto.json, written by wardrobe_publish.py), starts from wardrobe/tto_released.json when there is one
      (else from what the last publish released: the old face rule), and saves the choice as tto_released.json, which the
-     next publish reads (wardrobe/tto_released.json). The draft is kept in this browser until saved. -->
+     next publish reads (wardrobe/tto_released.json). The draft is kept in this browser until saved. TTO's own pets
+     (2026-11-18) sit under ทุกอาชีพ ("all"), named by the game's name when the publish has one (else the prefab's). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -85,7 +86,7 @@ if (location.port === "8771") new EventSource("/__alive");   // keeps wardrobe.c
 const $ = id => document.getElementById(id), DATA = "data/", DRAFT = "tto_picker.draft";
 const CLASS_TH = { bat: "ค้างคาว", bison: "กระทิง", cat: "แมว", chameleon: "กิ้งก่า", mole: "ตุ่น", monkey: "ลิง", panda: "แพนด้า",
   penguin: "เพนกวิน", rabbit: "กระต่าย", sheep: "แกะ", whale: "วาฬ", wolf: "หมาป่า", all: "ทุกอาชีพ" };
-const KIND_TH = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ประดับ", clips: "ท่าทาง", faces: "หน้า" };
+const KIND_TH = { outfits: "ชุด", weapons: "อาวุธ", accessories: "หมวก", trinkets: "ประดับ", clips: "ท่าทาง", faces: "หน้า", pets: "สัตว์เลี้ยง" };
 const KINDS = Object.keys(KIND_TH), GROUP_TH = { emote: "อีโมต", base: "ท่าพื้นฐาน", skill: "ท่าสกิล" };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const humanize = n => String(n).replace(/_/g, " ").replace(/([a-z])([A-Z0-9])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
@@ -120,7 +121,7 @@ function clipIcon(cls, name) {
 }
 function tile(c) {
   const k = key(c), on = sel.has(k), src = c.kind === "clips" ? clipIcon(c.cls, String(c.name)) : c.icon;
-  const name = c.kind === "faces" ? `หน้า ${c.name}` : humanize(c.name);
+  const name = c.kind === "faces" ? `หน้า ${c.name}` : c.game || humanize(c.name);     // a pet: the game's name if any
   const pic = src ? `<img loading="lazy" alt="" src="${DATA}${src}">` : `<span class="txt">${esc(name)}</span>`;
   return `<button type="button" class="it${on !== fromFile.has(k) ? " changed" : ""}" data-k="${esc(k)}" aria-pressed="${on}" title="${esc(c.name)}: ${esc(c.reason)}">`
     + `<span class="chk" aria-hidden="true"></span><span class="pic${c.kind === "faces" ? " face" : ""}">${pic}</span>`
