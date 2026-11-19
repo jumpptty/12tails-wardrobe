@@ -4097,3 +4097,12 @@ this page; open through wardrobe.cmd: http://127.0.0.1:8771/wardrobe/tto_pets.ht
   yet"): `all.trinkets` loses Shade_Wing (online since 2026-11-09; this deploy takes it off the site), the file's _about
   names it among the exceptions. (index.html's comment example `wardrobe.show("sheep", {Back: "Shade_Wing"}, 160)` is a
   local scripted call, unchanged.)
+- **Deployed** (user: "commit push deploy"; version `c515200d-8a1d-46e7-932d-85e31a2159a6`, rollback: 20b8eda5): committed
+  24b8f34 (the picker, the 20 pets, the scrambling) and bdf028c (Shade Wing out, asked mid-deploy: the first publish was
+  redone before anything went up). Published with `--src` = a `git -c core.autocrlf=false archive` of bdf028c's wardrobe/
+  (its tto_released.json: 20 pets, no Shade_Wing) and `--data` = this folder's: 10,055 files (live had 9,986), data folder
+  `data-c3a790c0b3`, dropped pets 37 -> 17, back_trinkets 21 -> 22 (Shade_Wing), check: no problems; wardrobe_dist_check
+  errors [], pets check on the dist 32 ok. From an empty folder with the Worker script: 102 files uploaded. Live
+  (isolated headless): the pets live check 32 ok (84 pets = 64 BB + the 20, the 17 404, the 20 files scrambled, three on
+  stage preview only); a probe: 34 back pieces and no Shade_Wing, the TTO hats (halloweenHat, CactonHeadband,
+  ChopperTrinket, CoconHeadband) parsed from the scrambled lists, violeta on stage with its idle; no errors.
