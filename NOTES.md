@@ -4039,3 +4039,12 @@ too". The CSS block "left panel (2026-11-19 ...)" and `renderTopics` in `wardrob
   face are `.hero-b[data-t]` (were `.duo-b`). Checks changed: `wardrobe_weapon_slot_check.py` (the five at one distance and
   their angles at three sizes, one size), `wardrobe_pet_check.py --ui` (the doll; each name centred under its picture, in
   the panel, over no other picture; ชุด's `.sr`; the old ink-in-its-block measures INK / LABEL_GEOM gone).
+- **Deployed** (user: "commit push deploy"; version `20b8eda5-3d50-42e9-9e31-8ec4b733052c`, rollback: af230bfa): committed
+  ec8cbc2; unit 157 OK (test_wardrobe_publish 58 with the portrait asserts); browser checks weapon_slot / pet --ui / menu /
+  sets / moves pass (232 ok, 0 failed; weapon_slot again after the radius went 39 -> 38 cqw). Published with `--src` = a
+  `git -c core.autocrlf=false archive` of ec8cbc2's wardrobe/ (= the working page) and `--data` = this folder's: 9,986
+  files (+48: the 12 classes' portraits 2-5, none dropped), **data folder `data-497a59a780`** (was data-707284f874: visitors
+  fetch the data once more), check: no problems; `wardrobe_dist_check.py` errors [], pets check on the dist 21 ok. From an
+  empty folder with the Worker script: 49 files uploaded (index.html + 48 portraits). Live (isolated headless, 1366 x 704
+  at 1.25): the pets live check 21 ok; the panel's five at 128.8 px from ชุด; the Sheep's potion 2 -> heroes/sheep2.webp
+  (150 px, loaded) in the ring and the wash; no failed request, no page error.
