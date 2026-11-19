@@ -11,7 +11,7 @@ off; one undo step brings both back. On the Chameleon: a click on the arrow on t
 อาวุธนี้ (opening the bow's menu) and ถอดอาวุธออก (both hands off). Shots of the panel in <out>: desktop, a short screen,
 a phone. No page / console errors. Exit 1 on any failure.
   uv run --no-project --with playwright python -I pipeline/wardrobe_weapon_slot_check.py D:/12tails-wardrobe checks/<dir>"""
-import asyncio, functools, http.server, json, re, sys, threading
+import asyncio, functools, http.server, json, math, re, sys, threading
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -152,19 +152,23 @@ async def main():
             await page.wait_for_function("() => wardrobe.debug().C.state.L === 'royalArrow'", timeout=30000)
             check((await page.evaluate(STATE))["R"] == "royalBow", "chameleon: one undo brings both back")
 
-        # the panel at three sizes (the weapon topic beside ประดับ; since the pets (2026-11-19) สัตว์เลี้ยง beside ท่าทาง on the row below)
+        # the panel at three sizes (B1, 2026-11-19): the doll, the weapon topic at -72 deg from หมวก around ชุด, ประดับ at 72,
+        # ท่าทาง at -144, สัตว์เลี้ยง at 144, all five at one distance and one size
+        WANT = {"Head": 0, "R": -72, "Back": 72, "move": -144, "Pet": 144}
         for w, h, tag in ((1920, 1200, "desktop"), (1366, 768, "short"), (390, 844, "phone")):
             await page.set_viewport_size({"width": w, "height": h})
             await page.wait_for_timeout(500)
             el = page.locator("#topics")
             await el.screenshot(path=str(OUT / f"panel_{tag}.png"))
-            boxes = await page.evaluate("""() => Object.fromEntries([...document.querySelectorAll('#topics > .topic[data-t]')].map(b => {
-              const r = b.getBoundingClientRect(); return [b.dataset.t, [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]]; }))""")
-            R, B, M, P = boxes.get("R"), boxes.get("Back"), boxes.get("move"), boxes.get("Pet")
-            check(R and B and M and P and R[1] == B[1] and P[1] == M[1] and P[1] > R[1] and P[0] == R[0] and M[0] == B[0],
-                  f"{tag}: อาวุธ beside ประดับ, สัตว์เลี้ยง beside ท่าทาง on the row below ({R}, {B}, {P}, {M})")
-            rings = await page.evaluate("() => ['R', 'Back', 'move'].map(t => Math.round(document.querySelector(`#topics [data-t=${t}] .ring`).getBoundingClientRect().width))")
-            check(max(rings) - min(rings) <= 1, f"{tag}: the three rings one size ({rings})")
+            g = await page.evaluate("""() => Object.fromEntries([...document.querySelectorAll('#topics .doll > .topic[data-t]')].map(b => {
+              const r = b.querySelector('.ring').getBoundingClientRect(); return [b.dataset.t, [r.left + r.width / 2, r.top + r.height / 2, r.width]]; }))""")
+            O = g.get("outfit")
+            d = {k: math.hypot(g[k][0] - O[0], g[k][1] - O[1]) for k in WANT if k in g} if O else {}
+            ang = {k: round(math.degrees(math.atan2(g[k][0] - O[0], O[1] - g[k][1])), 1) for k in d}
+            check(len(d) == 5 and max(d.values()) - min(d.values()) <= 1.5 and all(abs(ang[k] - WANT[k]) <= 1 for k in WANT),
+                  f"{tag}: the five around ชุด at one distance ({ {k: round(v, 1) for k, v in d.items()} }), angles {ang}")
+            sizes = [round(g[k][2], 1) for k in WANT if k in g]
+            check(len(sizes) == 5 and max(sizes) - min(sizes) <= 1, f"{tag}: the five pictures one size ({sizes})")
         await b.close()
     check(not errors, f"no page errors ({errors[:3]})")
     print(f"shots in {OUT}")

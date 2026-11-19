@@ -428,6 +428,8 @@ def make_world(tmp, tto_faces=(30, 31, 32, 33), nl="\n"):
     w.ui["heroes"]["cat"] = "icons/heroes/cat1.webp"
     webp(w.data / "icons" / "heroes" / "cat1.webp")
     png(w.icon_dir / "heroes" / "Cat1.png")                          # BB's portraits are capitalised
+    webp(w.data / "icons" / "heroes" / "cat2.webp")                  # colour 2's portrait (the panel shows the worn colour's)
+    png(w.icon_dir / "heroes" / "Cat2.png")
     w.ui["emotion"] = ["clap", "wave"]
     w.ui["skills"]["cat"] = ["slash"]
     for rel in ("skills/emotion/clap", "skills/emotion/wave", "skills/cat/slash"):
@@ -986,6 +988,8 @@ class PublishTest(unittest.TestCase):
         with Image.open(knife) as a, Image.open(w.icon_dir / "items" / "weapon" / "cat1.png") as b:
             self.assertEqual(a.convert("RGBA").tobytes(), b.convert("RGBA").tobytes())
         self.assertEqual(pixels(d / "icons" / "heroes" / "cat1.webp"), BB_RGBA)
+        self.assertEqual(pixels(d / "icons" / "heroes" / "cat2.webp"), BB_RGBA)             # the other colours' portraits too
+        self.assertIn("icons/heroes/cat3.webp", dropped_names(result, "portraits"))       # one BB lacks: listed
         self.assertFalse((d / "icons" / "accessory" / "cat2.webp").exists())          # hat's icon has no BB file
         icons = json.loads((d / "icons.json").read_text())
         self.assertIsNone(icons["cat"]["accessories"]["hat"]["icon"])                    # its tile shows no picture

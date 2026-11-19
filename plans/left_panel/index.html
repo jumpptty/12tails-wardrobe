@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Left panel mocks</title>
+<!-- 2026-11-19, user: "break free, and propose a cleaner and modern looking left tab for the wardrobe, minimize the use of
+     container boxes". Four directions side by side at the office panel size (340 x 704, the short-screen layout), the
+     same worn state as the user's screenshot (the Bat, face 11, colour 1, no set, Butterfly Hood, Royal, no weapon, no back
+     piece, S. RockBug 9, ยืนพัก), ชุด as the open topic. Static: icons from ../../wardrobe/ (opens from file:/// or the
+     served folder) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #150f0c; --raise: #221a14; --line: #5b4426; --text: #f3e7d3; --muted: #bfae8e; --faint: #85755c;
+  --gold: #d0913e; --gild: #e8c35a; --gold-soft: rgba(208, 145, 62, .14); --well: #120d0a; --skin: #f3e4d9;
+  --mono: "JetBrains Mono", "Prompt", monospace;
+  --I: ../../wardrobe/;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0c0907; color: var(--text); font: 400 14px/1.5 "Prompt", sans-serif; }
+.num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.wall { display: flex; gap: 28px; padding: 22px 24px 28px; align-items: flex-start; width: max-content; }
+.mock { display: flex; flex-direction: column; gap: 10px; }
+.cap { width: 340px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.cap b { color: var(--text); font-size: 16px; font-weight: 700; margin-right: 6px; }
+.frame { display: flex; height: 704px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px #2a2018; }
+.panel { width: 340px; height: 100%; background: var(--bg); border-right: 1px solid var(--line); padding: 10px 14px 14px;
+  display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.stage { width: 46px; background: #fff; }
+
+/* the Bible's lockup, as the page has it */
+.lockup { display: flex; align-items: center; gap: 11px; margin: 0 0 4px; position: relative; z-index: 1; }
+.lockup-rule { width: 1px; align-self: stretch; margin: 3px 0; background: var(--line); }
+.brand { display: inline-flex; align-items: center; gap: .22em; font-size: 15px; font-weight: 700; line-height: 1; }
+.brand-mark { display: block; height: 1.7em; width: auto; }
+.brand-spine { align-self: stretch; width: .06em; margin: .1em .06em; background: linear-gradient(transparent, #d4af37 18%, #d4af37 82%, transparent); }
+.brand-word { display: flex; flex-direction: column; gap: .24em; font-size: .66em; }
+.brand-word span { display: block; text-box: trim-both cap alphabetic; }
+.brand-word span:first-child { color: #f4ecdc; letter-spacing: .015em; }
+.brand-word span:last-child { background: linear-gradient(180deg, #f6df98 10%, #d4af37 55%, #a07c26 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; }
+
+/* shared pieces */
+img { display: block; }
+.ico { object-fit: contain; }
+.face { --d: 44px; width: var(--d); height: var(--d); border-radius: 50%; background-color: var(--skin);
+  background-repeat: no-repeat; background-size: calc(var(--d) * .92 * 256 / 121) auto;
+  background-position: calc(var(--d) * .04 - var(--d) * .92 * 3 / 121) calc(var(--d) * .04); }
+.glyph { color: var(--muted); opacity: .45; }
+.pot { position: relative; opacity: .55; }
+.pot.on { opacity: 1; }
+.pot.on::after { content: ""; position: absolute; left: 24%; right: 24%; bottom: -5px; height: 3px; border-radius: 2px; background: var(--gold); }
+.teaser img { opacity: .45; }
+
+/* ---------- A: the list. What is worn, by name; the open one marked by a gold edge, no boxes ---------- */
+.va .hero { display: flex; align-items: center; gap: 14px; margin: 14px 0 0; }
+.va .avatar { position: relative; flex: none; width: 76px; height: 76px; }
+.va .avatar .por { width: 76px; height: 76px; border-radius: 50%; }
+.va .avatar .face { --d: 38px; position: absolute; right: -8px; bottom: -6px; box-shadow: 0 0 0 3px var(--bg); }
+.va .who { min-width: 0; }
+.va .who .cls { font-size: 22px; font-weight: 700; line-height: 1.25; }
+.va .who .sub { color: var(--muted); font-size: 12.5px; }
+.va .who .sub .sp { display: inline-block; width: 14px; }
+.va .pots { display: flex; gap: 12px; margin: 16px 0 0 2px; }
+.va .pot img { width: 34px; height: 34px; }
+.va .set { display: flex; align-items: center; gap: 10px; margin: 18px 0 6px; padding: 8px 0; }
+.va .set .k { color: var(--muted); font-size: 12.5px; }
+.va .set .v { color: var(--gild); font-size: 15px; font-weight: 600; flex: 1; }
+.va .set .n { color: var(--muted); font-size: 12.5px; }
+.va .set .teaser { display: flex; gap: 4px; }
+.va .set .teaser img { width: 30px; height: 30px; }
+.va .slots { flex: 1; display: flex; flex-direction: column; gap: 2px; margin: 0 -14px; }
+.va .gap { height: 10px; }
+.va .row { position: relative; flex: 1 1 0; max-height: 74px; display: flex; align-items: center; gap: 14px; padding: 5px 14px; min-height: 56px; }
+.va .row .pic { flex: none; width: 50px; height: 50px; display: grid; place-items: center;
+  background: radial-gradient(circle closest-side, rgba(208, 145, 62, .10), transparent 100%); }
+.va .row .pic img { width: 48px; height: 48px; }
+.va .row .pic svg { width: 26px; height: 26px; }
+.va .row .t { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+.va .row .k { color: var(--muted); font-size: 12px; }
+.va .row .v { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.va .row .v.none { color: var(--faint); font-weight: 400; }
+.va .row .txt { font-size: 13px; font-weight: 600; color: var(--muted); }
+.va .row.open { background: linear-gradient(90deg, var(--gold-soft), transparent 85%); }
+.va .row.open::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 2px 2px 0; background: var(--gold); }
+.va .row.open .v { color: var(--gold); }
+
+/* ---------- B: the paper doll. The outfit is the body and the biggest ring; the rest stand around it ---------- */
+.vb .hero { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 12px 0 0; }
+.vb .hero .por { width: 84px; height: 84px; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+.vb .hero .face { --d: 56px; box-shadow: 0 0 0 1px var(--line); }
+.vb .cls { text-align: center; font-size: 17px; font-weight: 700; margin-top: 6px; }
+.vb .pots { display: flex; justify-content: center; gap: 12px; margin: 10px 0 0; }
+.vb .pot img { width: 30px; height: 30px; }
+.vb .set { display: flex; align-items: center; gap: 10px; margin: 18px 0 2px; color: var(--gild); font-weight: 600; font-size: 14px; }
+.vb .set::before, .vb .set::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
+.vb .set::after { background: linear-gradient(90deg, var(--line), transparent); }
+.vb .set .n { color: var(--muted); font-weight: 400; font-size: 12.5px; }
+.vb .doll { flex: 1; display: grid; grid-template-columns: 1fr 1.5fr 1fr; grid-template-rows: auto 1fr auto; align-items: center; justify-items: center;
+  position: relative; margin-top: 4px; }
+.vb .doll::before { content: ""; position: absolute; left: 50%; top: 12%; bottom: 12%; width: 1px; background: linear-gradient(transparent, rgba(208, 145, 62, .25), transparent); }
+.vb .slot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.vb .ring { --d: 70px; width: var(--d); height: var(--d); border-radius: 50%; display: grid; place-items: center;
+  background: var(--well); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 35%, var(--line)); }
+.vb .ring img { width: 78%; height: 78%; }
+.vb .ring svg { width: 40%; height: 40%; }
+.vb .ring .txt { font-size: 13px; font-weight: 600; color: var(--muted); }
+.vb .slot .k { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.vb .s-head { grid-column: 2; grid-row: 1; }
+.vb .s-body { grid-column: 2; grid-row: 2; }
+.vb .s-body .ring { --d: 116px; }
+.vb .s-r { grid-column: 1; grid-row: 2; align-self: start; margin-top: 4px; }
+.vb .s-back { grid-column: 3; grid-row: 2; align-self: start; margin-top: 4px; }
+.vb .s-pet { grid-column: 1; grid-row: 3; align-self: end; margin-top: -40px; }
+.vb .s-move { grid-column: 3; grid-row: 3; align-self: end; margin-top: -40px; }
+.vb .slot.open .ring { box-shadow: 0 0 0 2px var(--gold), 0 0 0 6px var(--gold-soft); }
+.vb .slot.open .k { color: var(--gold); }
+
+/* ---------- C: the shelf. The two-by-three grid with every box gone: each piece on a soft spotlight ---------- */
+.vc .hero { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 14px 0 0; }
+.vc .hero .por { width: 84px; height: 84px; border-radius: 50%; flex: none; }
+.vc .hero .face { --d: 84px; flex: none; }
+.vc .pots { display: flex; justify-content: center; gap: 16px; margin: 14px 0 0; }
+.vc .pot img { width: 30px; height: 30px; }
+.vc .set { margin: 16px -14px 0; padding: 9px 14px 10px; position: relative; }
+.vc .set::before, .vc .set::after { content: ""; position: absolute; left: 14px; right: 14px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gild) 18%, var(--gild) 82%, transparent); opacity: .55; }
+.vc .set::before { top: 0; } .vc .set::after { bottom: 0; }
+.vc .set .head { display: flex; align-items: baseline; gap: 8px; }
+.vc .set .k { color: var(--muted); font-size: 12.5px; }
+.vc .set .v { flex: 1; font-size: 15px; font-weight: 700; }
+.vc .set .n { color: var(--muted); font-size: 12.5px; }
+.vc .set .teaser { display: flex; gap: 6px; margin-top: 6px; }
+.vc .set .teaser img { width: 38px; height: 38px; }
+.vc .shelf { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); margin-top: 8px; }
+.vc .slot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; position: relative; }
+.vc .slot .k { font-size: 14px; font-weight: 700; }
+.vc .slot .pic { width: 96px; height: 84px; display: grid; place-items: center; position: relative; }
+.vc .slot .pic::before { content: ""; position: absolute; left: 6px; right: 6px; bottom: 2px; height: 22px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(208, 145, 62, .26), transparent); }
+.vc .slot .pic img { width: 76px; height: 76px; position: relative; }
+.vc .slot .pic svg { width: 34px; height: 34px; position: relative; margin-bottom: 10px; }
+.vc .slot .pic .txt { position: relative; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.vc .slot.open .k { color: var(--gold); }
+.vc .slot.open .pic::before { background: radial-gradient(closest-side, rgba(232, 195, 90, .55), transparent); }
+.vc .slot.open .k::after { content: ""; display: block; height: 3px; width: 60%; margin: 2px auto 0; border-radius: 2px; background: var(--gold); }
+
+/* ---------- D: the hero wash. The class art, blurred, lights the top of the panel; the pieces sit below, three abreast ---------- */
+.vd .wash { position: absolute; left: 0; right: 0; top: 0; height: 300px; z-index: 0; overflow: hidden; }
+.vd .wash img { position: absolute; left: -15%; top: -30%; width: 130%; height: 130%; object-fit: cover; filter: blur(28px) saturate(1.3); opacity: .55; }
+.vd .wash::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(21, 15, 12, .15), var(--bg) 92%); }
+.vd .hero { position: relative; z-index: 1; display: flex; align-items: flex-end; gap: 14px; margin: 18px 0 0; }
+.vd .hero .por { width: 104px; height: 104px; border-radius: 50%; flex: none; box-shadow: 0 8px 24px rgba(0, 0, 0, .45); }
+.vd .hero .who { padding-bottom: 6px; min-width: 0; }
+.vd .hero .cls { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.vd .hero .facechip { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12.5px; }
+.vd .hero .face { --d: 34px; }
+.vd .pots { position: relative; z-index: 1; display: flex; gap: 14px; margin: 18px 0 0 4px; }
+.vd .pot img { width: 32px; height: 32px; }
+.vd .set { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; margin: 18px 0 0; padding: 10px 0;
+  border-top: 1px solid rgba(91, 68, 38, .7); border-bottom: 1px solid rgba(91, 68, 38, .7); }
+.vd .set .k { color: var(--muted); font-size: 12.5px; }
+.vd .set .v { flex: 1; font-size: 15px; font-weight: 700; color: var(--gild); }
+.vd .set .teaser { display: flex; gap: 4px; }
+.vd .set .teaser img { width: 30px; height: 30px; }
+.vd .set .n { color: var(--muted); font-size: 12.5px; }
+.vd .grid { position: relative; z-index: 1; flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); align-content: space-evenly; gap: 10px 0; }
+.vd .slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.vd .slot .pic { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 240, 215, .045); }
+.vd .slot .pic img { width: 74px; height: 74px; }
+.vd .slot .pic svg { width: 30px; height: 30px; }
+.vd .slot .pic .txt { color: var(--muted); font-weight: 600; font-size: 13px; }
+.vd .slot .k { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.vd .slot.open .pic { background: var(--gold-soft); box-shadow: inset 0 0 0 2px var(--gold); }
+.vd .slot.open .k { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wall" id="wall"></div>
+<script>
+const I = "../../wardrobe/";
+const SRC = { por: I + "data/icons/heroes/bat1.webp", face: I + "data/bat/faces/11.webp", head: I + "data/icons/accessory/bat47.webp",
+  body: I + "data/icons/armor/bat50.webp", pet: I + "data/icons/pet/sgb.webp", pot: n => `${I}ui/recolor${n}.webp`,
+  teaser: ["all58", "all43", "all15"].map(n => `${I}data/icons/armor/${n}.webp`) };
+const G = { move: "M12 3.2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM5.5 10.5 12 9l6.5 1.5M12 9v6.2M12 15.2 8.8 21M12 15.2l3.2 5.8", R: "M14 4h6v6L9.5 20.5l-6-6zM3.5 20.5 6 18M6.5 12l5.5 5.5",
+  Back: "M12 8c-2.2-2.6-5.6-3.8-8.5-3.3.2 5 2.7 8.6 7 9.8M12 8c2.2-2.6 5.6-3.8 8.5-3.3-.2 5-2.7 8.6-7 9.8M12 8v11" };
+const glyph = k => `<svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="${G[k]}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const img = (s, cls = "ico") => `<img class="${cls}" src="${s}" alt="">`;
+const face = () => `<span class="face" style="background-image:url('${SRC.face}')"></span>`;
+const pots = () => [1, 2, 3, 4, 5].map(n => `<span class="pot${n === 1 ? " on" : ""}">${img(SRC.pot(n))}</span>`).join("");
+const teaser = () => `<span class="teaser">${SRC.teaser.map(s => img(s)).join("")}</span>`;
+const LOCKUP = `<header class="lockup"><span class="brand"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6df98"/><stop offset=".55" stop-color="#d4af37"/><stop offset="1" stop-color="#9a7622"/></linearGradient></defs><g fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24 L30 12 L30 78"/><path d="M48 30 C48 12 78 10 80 28 C82 44 60 54 48 78 L82 78 C98 78 106 66 102 52"/></g><path d="M102 52 C96 40 102 26 116 22 C110 34 114 44 102 52Z" fill="url(#g)"/></svg><span class="brand-spine"></span><span class="brand-word"><span>TAILS</span><span>BIBLE</span></span></span><span class="lockup-rule"></span><h1>ห้องแต่งตัว</h1></header>`;
+// the six slots: [key, Thai name, worn name or null, picture]
+const SLOTS = [["Head", "หมวก", "Butterfly Hood", img(SRC.head)], ["outfit", "ชุด", "Royal", img(SRC.body)],
+  ["R", "อาวุธ", null, glyph("R")], ["Back", "ประดับ", null, glyph("Back")],
+  ["Pet", "สัตว์เลี้ยง", "S. RockBug 9", img(SRC.pet)], ["move", "ท่าทาง", "ยืนพัก", `<span class="txt">ยืนพัก</span>`]];
+const OPEN = "outfit";
+
+const A = () => `${LOCKUP}
+  <div class="hero"><div class="avatar">${img(SRC.por, "por")}${face()}</div>
+    <div class="who"><div class="cls">ค้างคาว</div><div class="sub">หน้า <span class="num">11</span><span class="sp"></span>สี <span class="num">1</span></div></div></div>
+  <div class="pots">${pots()}</div>
+  <div class="set"><span class="k">เซ็ต</span><span class="v">เลือกเซ็ต</span>${teaser()}<span class="n"><span class="num">37</span></span></div>
+  <div class="slots">${SLOTS.map(([k, th, v, pic], i) => (i === 4 ? `<div class="gap"></div>` : "") + `<div class="row${k === OPEN ? " open" : ""}"><span class="pic">${k === "move" ? glyph("move") : pic}</span>
+    <span class="t"><span class="k">${th}</span><span class="v${v ? "" : " none"}">${v || "ไม่ใส่"}</span></span></div>`).join("")}</div>`;
+
+const B = () => { const s = Object.fromEntries(SLOTS.map(x => [x[0], x]));
+  const slot = (k, cls) => { const [, th, , pic] = s[k]; return `<div class="slot ${cls}${k === OPEN ? " open" : ""}"><span class="ring">${pic}</span><span class="k">${th}</span></div>`; };
+  return `${LOCKUP}
+  <div class="hero">${img(SRC.por, "por")}${face()}</div>
+  <div class="cls">ค้างคาว</div>
+  <div class="pots">${pots()}</div>
+  <div class="set">เลือกเซ็ต <span class="n"><span class="num">37</span> เซ็ต</span></div>
+  <div class="doll">${slot("Head", "s-head")}${slot("outfit", "s-body")}${slot("R", "s-r")}${slot("Back", "s-back")}${slot("Pet", "s-pet")}${slot("move", "s-move")}</div>`; };
+
+const C_ = () => `${LOCKUP}
+  <div class="hero">${img(SRC.por, "por")}${face()}</div><div class="pots">${pots()}</div>
+  <div class="set"><div class="head"><span class="k">ชุดเซ็ต</span><span class="v">เลือกเซ็ต</span><span class="n"><span class="num">37</span> เซ็ต</span></div>${teaser()}</div>
+  <div class="shelf">${SLOTS.map(([k, th, , pic]) => `<div class="slot${k === OPEN ? " open" : ""}"><span class="pic">${pic}</span><span class="k">${th}</span></div>`).join("")}</div>`;
+
+const D = () => `<div class="wash">${img(SRC.por)}</div>${LOCKUP}
+  <div class="hero">${img(SRC.por, "por")}<div class="who"><div class="cls">ค้างคาว</div><div class="facechip">${face()}หน้า <span class="num">11</span></div></div></div>
+  <div class="pots">${pots()}</div>
+  <div class="set"><span class="k">เซ็ต</span><span class="v">เลือกเซ็ต</span>${teaser()}<span class="n"><span class="num">37</span></span></div>
+  <div class="grid">${SLOTS.map(([k, th, , pic]) => `<div class="slot${k === OPEN ? " open" : ""}"><span class="pic">${pic}</span><span class="k">${th}</span></div>`).join("")}</div>`;
+
+const MOCKS = [
+  ["va", "A", "รายการ", "A list that names what she wears. One row per slot: icon, slot, the piece's name. The open topic gets a gold edge, not a box."],
+  ["vb", "B", "ตุ๊กตา", "A paper doll. The outfit is the body and the biggest ring; hat above, weapon and back piece at the sides, pet and move below."],
+  ["vc", "C", "ชั้นโชว์", "Today's two-by-three grid with every box gone. Each piece stands on a soft spotlight; the set sits between two gilded lines."],
+  ["vd", "D", "ฉากหลัง", "The class art, blurred, lights the top of the panel. Big portrait and name; the pieces sit three abreast below."]];
+const build = { va: A, vb: B, vc: C_, vd: D };
+document.getElementById("wall").innerHTML = MOCKS.map(([c, L, th, cap]) =>
+  `<div class="mock"><div class="cap"><b>${L} ${th}</b>${cap}</div><div class="frame"><aside class="panel ${c}">${build[c]()}</aside><div class="stage"></div></div></div>`).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper doll panel</title>
+<!-- 2026-11-19, round 2 of the left panel (round 1: index.html). The user picked B with six tweaks: "1. 5 circles around
+     the main ชุด similar distance from the ชุด 2. swap Pet and Emote positions 3. remove circle frame for the 5 items
+     except ชุด 4. use C soft spotlight on every pieces 5. use D The class art, blurred, lights the top of the panel
+     6. Class circular portrait should change dynamically to the color 1-5 selected." (The portraits icons/heroes/<cls>1-5
+     are the five colours in potion order: checked on the 3D Bat and Whale, 2026-11-19.) All three mocks keep the six; what
+     differs: B1 even spacing (72 deg), B2 a 60 / 120 deg spread, B3 = B1's ring under D's header. Interactive: a potion
+     changes the portrait and the glow in all three; a piece click marks it open. Static icons from ../../wardrobe/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #150f0c; --line: #5b4426; --text: #f3e7d3; --muted: #bfae8e; --faint: #85755c;
+  --gold: #d0913e; --gild: #e8c35a; --gold-soft: rgba(208, 145, 62, .14); --well: #120d0a; --skin: #f3e4d9;
+  --mono: "JetBrains Mono", "Prompt", monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0c0907; color: var(--text); font: 400 14px/1.5 "Prompt", sans-serif; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+img { display: block; }
+.wall { display: flex; gap: 28px; padding: 22px 24px 28px; align-items: flex-start; width: max-content; }
+.mock { display: flex; flex-direction: column; gap: 10px; }
+.cap { width: 340px; min-height: 62px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.cap b { color: var(--text); font-size: 16px; font-weight: 700; margin-right: 6px; }
+.frame { display: flex; height: 704px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px #2a2018; }
+.panel { width: 340px; height: 100%; background: var(--bg); border-right: 1px solid var(--line); padding: 10px 14px 12px;
+  display: flex; flex-direction: column; position: relative; overflow: hidden; isolation: isolate; }
+.stage { width: 46px; background: #fff; }
+
+/* the Bible's lockup, as the page has it */
+.lockup { display: flex; align-items: center; gap: 11px; margin: 0 0 4px; }
+.lockup-rule { width: 1px; align-self: stretch; margin: 3px 0; background: var(--line); }
+.brand { display: inline-flex; align-items: center; gap: .22em; font-size: 15px; font-weight: 700; line-height: 1; }
+.brand-mark { display: block; height: 1.7em; width: auto; }
+.brand-spine { align-self: stretch; width: .06em; margin: .1em .06em; background: linear-gradient(transparent, #d4af37 18%, #d4af37 82%, transparent); }
+.brand-word { display: flex; flex-direction: column; gap: .24em; font-size: .66em; }
+.brand-word span { display: block; text-box: trim-both cap alphabetic; }
+.brand-word span:first-child { color: #f4ecdc; letter-spacing: .015em; }
+.brand-word span:last-child { background: linear-gradient(180deg, #f6df98 10%, #d4af37 55%, #a07c26 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; }
+
+/* 5: the class art, blurred, lights the top of the panel (the worn colour's portrait, so the glow follows the potion) */
+.wash { position: absolute; left: 0; right: 0; top: 0; height: 320px; z-index: -1; overflow: hidden; pointer-events: none; }
+.wash img { position: absolute; left: -15%; top: -30%; width: 130%; height: 130%; object-fit: cover; filter: blur(28px) saturate(1.3); opacity: .55;
+  transition: opacity .25s; }
+.wash::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(21, 15, 12, .15), var(--bg) 92%); }
+
+/* the class and the face: B's centred pair (B1, B2) or D's portrait with the name beside it (B3) */
+.por { border-radius: 50%; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); transition: transform .12s, filter .12s; }
+.face { --d: 44px; display: block; flex: none; width: var(--d); height: var(--d); border-radius: 50%; background-color: var(--skin);
+  background-repeat: no-repeat; background-size: calc(var(--d) * .92 * 256 / 121) auto;
+  background-position: calc(var(--d) * .04 - var(--d) * .92 * 3 / 121) calc(var(--d) * .04); box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+@media (hover: hover) { .hit:hover { transform: translateY(-1px); filter: brightness(1.1); } }
+.hit { transition: transform .12s, filter .12s; }
+.hdr-b { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 14px 0 0; }
+.hdr-b .por { width: 86px; height: 86px; }
+.hdr-b .face { --d: 56px; }
+.cls-b { text-align: center; font-size: 17px; font-weight: 700; margin-top: 6px; }
+.hdr-d { display: flex; align-items: flex-end; gap: 14px; margin: 16px 0 0; }
+.hdr-d .por { width: 100px; height: 100px; flex: none; }
+.hdr-d .who { padding-bottom: 4px; }
+.hdr-d .cls { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.hdr-d .facechip { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12.5px; }
+.hdr-d .face { --d: 34px; }
+.pots { display: flex; justify-content: center; gap: 13px; margin: 12px 0 0; }
+.hdr-d + .pots { justify-content: flex-start; margin-left: 4px; margin-top: 16px; }
+.pot { position: relative; opacity: .55; transition: opacity .12s, transform .12s; }
+.pot img { width: 30px; height: 30px; }
+.pot[aria-pressed=true], .pot:hover { opacity: 1; }
+.pot[aria-pressed=true]::after { content: ""; position: absolute; left: 24%; right: 24%; bottom: -5px; height: 3px; border-radius: 2px; background: var(--gold); }
+
+/* the set: B's centred line between two fading hairlines */
+.set { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; color: var(--gild); font-weight: 600; font-size: 14px; }
+.set::before, .set::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
+.set::after { background: linear-gradient(90deg, var(--line), transparent); }
+.set .n { color: var(--muted); font-weight: 400; font-size: 12.5px; }
+
+/* 1-4: the doll. ชุด in the middle, its ring the only frame; five pieces around it at one distance (--R), each icon's
+   centre on the circle, its name under it; every piece on C's soft spotlight */
+.doll { flex: 1; position: relative; container-type: size; margin: 0 -14px; }
+.doll { --R: min(39cqw, 42cqh); }
+.slot { position: absolute; display: grid; place-items: center; transform: translate(-50%, -50%);
+  left: calc(50% + var(--R) * sin(var(--a))); top: calc(var(--cy) - var(--R) * cos(var(--a))); }
+.slot.body { left: 50%; top: var(--cy); }
+.slot .pic { position: relative; width: 92px; height: 78px; display: grid; place-items: center; }
+.slot .pic::before { content: ""; position: absolute; left: 4px; right: 4px; bottom: -4px; height: 22px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(208, 145, 62, .26), transparent); transition: background .15s; }
+.slot .pic img { position: relative; width: 76px; height: 76px; object-fit: contain; }
+.slot .pic svg { position: relative; width: 34px; height: 34px; color: var(--muted); opacity: .45; align-self: end; margin-bottom: 14px; }
+.slot .pic .txt { position: relative; color: var(--muted); font-weight: 600; font-size: 14px; align-self: end; margin-bottom: 14px; }
+.slot .k { position: absolute; top: calc(100% + 3px); left: 50%; translate: -50% 0; white-space: nowrap; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--muted); }
+.slot.body .pic { width: 132px; height: 132px; }
+.slot.body .pic::before { left: -6px; right: -6px; bottom: -12px; height: 30px; }
+.slot.body .ring { position: relative; width: 122px; height: 122px; border-radius: 50%; display: grid; place-items: center; background: var(--well);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 35%, var(--line)); }
+.slot.body .ring img { width: 82%; height: 82%; }
+.slot.body .k { font-size: 14px; top: calc(100% + 8px); }
+/* the open topic: its name gold with a short bar under it, its spotlight brighter (ชุด: its ring gold) */
+.slot[aria-expanded=true] .k { color: var(--gold); }
+.slot[aria-expanded=true] .k::after { content: ""; display: block; height: 3px; width: 70%; margin: 2px auto 0; border-radius: 2px; background: var(--gold); }
+.slot[aria-expanded=true] .pic::before { background: radial-gradient(closest-side, rgba(232, 195, 90, .55), transparent); }
+.slot.body[aria-expanded=true] .ring { box-shadow: 0 0 0 2px var(--gold), 0 0 0 6px var(--gold-soft); }
+@media (hover: hover) { .slot:hover .pic { transform: translateY(-1px); filter: brightness(1.1); } }
+.slot .pic { transition: transform .12s, filter .12s; }
+
+/* the angles (2: the pet and the move swapped: the move bottom left, the pet bottom right). B1 / B3: every 72 deg; B2: hat
+   on top, weapon and back at 60 deg, move and pet at 120 deg. --cy centres the group (top icon to bottom label) */
+.even { --cy: calc(50% + var(--R) * .095 - 12px); }
+.even .s-head { --a: 0deg; } .even .s-r { --a: -72deg; } .even .s-back { --a: 72deg; } .even .s-move { --a: -144deg; } .even .s-pet { --a: 144deg; }
+.wide { --cy: calc(50% + var(--R) * .25 - 10px); }
+.wide .s-head { --a: 0deg; } .wide .s-r { --a: -60deg; } .wide .s-back { --a: 60deg; } .wide .s-move { --a: -120deg; } .wide .s-pet { --a: 120deg; }
+</style>
+</head>
+<body>
+<div class="wall" id="wall"></div>
+<script>
+const I = "../../wardrobe/";
+const SRC = { por: c => `${I}data/icons/heroes/bat${c}.webp`, face: I + "data/bat/faces/11.webp", head: I + "data/icons/accessory/bat47.webp",
+  body: I + "data/icons/armor/bat50.webp", pet: I + "data/icons/pet/sgb.webp", pot: n => `${I}ui/recolor${n}.webp` };
+const G = { R: "M14 4h6v6L9.5 20.5l-6-6zM3.5 20.5 6 18M6.5 12l5.5 5.5",
+  Back: "M12 8c-2.2-2.6-5.6-3.8-8.5-3.3.2 5 2.7 8.6 7 9.8M12 8c2.2-2.6 5.6-3.8 8.5-3.3-.2 5-2.7 8.6-7 9.8M12 8v11" };
+const glyph = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${G[k]}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const img = (s, cls = "") => `<img${cls ? ` class="${cls}"` : ""} src="${s}" alt="">`;
+const face = () => `<span class="face" style="background-image:url('${SRC.face}')"></span>`;
+const LOCKUP = `<header class="lockup"><span class="brand"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6df98"/><stop offset=".55" stop-color="#d4af37"/><stop offset="1" stop-color="#9a7622"/></linearGradient></defs><g fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24 L30 12 L30 78"/><path d="M48 30 C48 12 78 10 80 28 C82 44 60 54 48 78 L82 78 C98 78 106 66 102 52"/></g><path d="M102 52 C96 40 102 26 116 22 C110 34 114 44 102 52Z" fill="url(#g)"/></svg><span class="brand-spine"></span><span class="brand-word"><span>TAILS</span><span>BIBLE</span></span></span><span class="lockup-rule"></span><h1>ห้องแต่งตัว</h1></header>`;
+// [key, Thai name, picture]
+const SLOTS = [["Head", "หมวก", img(SRC.head)], ["R", "อาวุธ", glyph("R")], ["Back", "ประดับ", glyph("Back")],
+  ["move", "ท่าทาง", `<span class="txt">ยืนพัก</span>`], ["Pet", "สัตว์เลี้ยง", img(SRC.pet)]];
+let colour = 1;
+
+const pots = () => `<div class="pots">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="pot" data-c="${n}" aria-label="สี ${n}" aria-pressed="${n === colour}">${img(SRC.pot(n))}</button>`).join("")}</div>`;
+const header = kind => kind === "d"
+  ? `<div class="hdr-d"><button type="button" class="hit" aria-label="อาชีพ">${img(SRC.por(colour), "por")}</button>
+      <div class="who"><div class="cls">ค้างคาว</div><button type="button" class="facechip hit">${face()}หน้า <span class="num">11</span></button></div></div>`
+  : `<div class="hdr-b"><button type="button" class="hit" aria-label="อาชีพ">${img(SRC.por(colour), "por")}</button><button type="button" class="hit" aria-label="หน้า">${face()}</button></div>
+     <div class="cls-b">ค้างคาว</div>`;
+const doll = layout => `<div class="doll ${layout}">
+    <button type="button" class="slot body" aria-expanded="true"><span class="pic"><span class="ring">${img(SRC.body)}</span></span><span class="k">ชุด</span></button>
+    ${SLOTS.map(([k, th, pic]) => `<button type="button" class="slot s-${k.toLowerCase()}" aria-expanded="false"><span class="pic">${pic}</span><span class="k">${th}</span></button>`).join("")}
+  </div>`;
+const panel = (hdr, layout) => `<div class="wash">${img(SRC.por(colour))}</div>${LOCKUP}${header(hdr)}${pots()}
+  <div class="set">เลือกเซ็ต <span class="n"><span class="num">37</span> เซ็ต</span></div>${doll(layout)}`;
+
+const MOCKS = [
+  ["B1", "b", "even", "The five pieces evenly around ชุด, every 72°: หมวก on top, อาวุธ and ประดับ above the sides, ท่าทาง and สัตว์เลี้ยง below."],
+  ["B2", "b", "wide", "The same distance, spread at 60° and 120°: อาวุธ / ท่าทาง and ประดับ / สัตว์เลี้ยง stand in two straight columns."],
+  ["B3", "d", "even", "B1's ring under D's header: a bigger portrait on the left, the class name and the face beside it."]];
+const wall = document.getElementById("wall");
+wall.innerHTML = MOCKS.map(([n, h, l, cap]) =>
+  `<div class="mock"><div class="cap"><b>${n}</b>${cap}</div><div class="frame"><aside class="panel">${panel(h, l)}</aside><div class="stage"></div></div></div>`).join("");
+// 6: a potion changes the class portrait (and with it the glow) to that colour, in every mock
+wall.addEventListener("click", e => {
+  const p = e.target.closest(".pot");
+  if (p) {
+    colour = +p.dataset.c;
+    wall.querySelectorAll(".pot").forEach(b => b.setAttribute("aria-pressed", b.dataset.c == colour));
+    wall.querySelectorAll(".por, .wash img").forEach(i => { i.src = SRC.por(colour); });
+    return;
+  }
+  const s = e.target.closest(".slot");
+  if (s) s.closest(".doll").querySelectorAll(".slot").forEach(x => x.setAttribute("aria-expanded", x === s));
+});
+</script>
+</body>
+</html>

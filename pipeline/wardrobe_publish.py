@@ -1136,6 +1136,10 @@ def publish_ui(run, classes, tto_clips=None, emo=None):
     for cls, rel in ui.get("heroes", {}).items():
         if cls in classes and run.icon(rel, "portraits"):
             out["heroes"][cls] = rel
+            # the other four colours' portraits: the panel's class ring shows the worn colour's (2026-11-19); ui.json names
+            # colour 1 only, the page derives <cls><n> (a missing one falls back to colour 1 there, and is listed here)
+            for n in "2345":
+                run.icon(re.sub(r"1\.webp$", n + ".webp", rel), "portraits")
     emo_used = {emo.get(n.lower()) or ("pose" if n.lower().startswith("pose") else None) for ns in tto_clips.values() for n in ns}
     out["emotion"] = [n for n in ui.get("emotion", []) if run.icon(f"icons/skills/emotion/{n}.webp", local_ok=n in emo_used)]
     bare = lambda x: re.sub(r"\d+$", "", x.lower())

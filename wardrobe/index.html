@@ -21,6 +21,7 @@
   --bg: #150f0c; --panel: #1f1914; --panel-2: #2a2118; --line: #5b4426;
   --text: #f3e7d3; --muted: #bfae8e; --gold: #d0913e; --gold-soft: rgba(208, 145, 62, .14);
   --gold-ink: #1b1300;                       /* text on a gold fill: 6.8:1 */
+  --gild: #e8c35a;                           /* the gilded frame's bright gold (--cg-gild): the set line's name, 10:1 */
   --well: #120d0a;                           /* the inside of a ring or an icon well */
   --ring-edge: color-mix(in srgb, var(--gold) 45%, var(--line));   /* a ring's edge reads at about 3:1 on the panel */
   --weave: repeating-linear-gradient(45deg, transparent 0 14px, rgba(208, 145, 62, .035) 14px 28px),
@@ -46,7 +47,7 @@ button { transition: transform .12s, filter .12s, border-color .12s, opacity .12
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
-.app { --side: 300px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
+.app { --side: 340px; display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
 aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column;
   scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 /* the panel's lockup (user 2026-11-08: "use the brand icon and the tool name in a single row"): the Bible's own logo (the
@@ -190,74 +191,80 @@ main.inset .cm-card { top: 96px; }
 .kh-t { transform: translateY(.5px); display: inline-block; }   /* `top: .5px` snapped to a whole pixel (measured +1 px) */
 .kh-sep { width: 1px; align-self: stretch; margin: 2px 4px; background: #e3d8c6; }
 @media (hover: hover) and (pointer: fine) { .keyhint { display: flex; } }
-/* left panel: one block per topic = its name on top + the current choice's icon in a big ring (user 2026-11-04);
-   the blocks share the panel's full height, the ring takes all the room its block has (container units) */
-.topics { flex: 1 0 auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px;
-  grid-template-rows: minmax(96px, 1.1fr) minmax(96px, .8fr) repeat(3, minmax(104px, 1fr)); }   /* V3: the class and face rings first */
-/* rows (user 2026-11-07): 1 = class, colour, face; 2 = the gear set across the full row; 3 = hat + outfit; 4 = weapon + back;
-   5 = pet + moves (สัตว์เลี้ยง beside ท่าทาง since 2026-11-19, the pets plan's layout B: an even two by two on a desktop
-   and a phone; 2026-11-14 to 11-19 ท่าทาง had row 5 alone; until 11-14 4 = the two weapons, 5 = back + moves).
-   Row 1 has no titles (user: "self explanatory") and gives part of its height to the set row; class and face share one
-   narrow box, top and bottom (user: "to give spaces to the color selection"), colour takes the rest of the row */
-/* the Ledger material (V4): a 6 px corner, a hairline gold-brown edge and the faint weave, no shadow */
-.topic { grid-column: span 6; min-width: 0; container-type: size; display: flex; flex-direction: column; align-items: center;
-  gap: 4px; width: 100%; border: 1px solid var(--line); background: var(--weave), var(--panel); border-radius: 6px; padding: 7px 10px 10px; }
-/* row 1 = one flex row (user 2026-11-07: "bigger icons there please, the column width can be changed as you seem fit"):
-   the class + face column is exactly as wide as its two stacked rings, (row height - padding - gap) / 2 each; colour
-   takes the rest and fitColors() sizes its icons */
-.row1 { grid-column: 1 / -1; display: flex; gap: 8px; min-width: 0; min-height: 0; container-type: size; }
-.topic.duo { flex: none; width: min(40%, calc((100cqh - 12px) / 2 + 8px)); }
-.topic.r1.duo { padding: 4px; gap: 4px; }
-.topic.color { flex: 1 1 0; gap: 6px; }
-.duo-b { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: grid; place-items: center; padding: 0;
-  border: 1px solid transparent; border-radius: 6px; background: none; }
-.duo-b[aria-expanded=true] { border-color: var(--gold); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
-.duo-b[aria-expanded=true] .ring { border-color: var(--gold); }
-.topic.r1 { padding: 5px 6px; justify-content: center; }
-.topic.r1 .ring { --d: min(100cqw, 100cqh); }
-/* สี (user 2026-11-07: "the color tab no longer show pop-up, all available colors can be picked directly"): one Recolor
-   Drug icon per colour of the outfit, each a one-tap button (the ปกติ / R / V editions are picked in the set tab, user
-   2026-11-07). Sizes, columns and gaps come from fitColors() (--s, --cols, --gx, --band) */
-.cswatches { display: grid; grid-template-columns: repeat(var(--cols, 5), var(--s, 32px)); grid-auto-rows: var(--band, var(--s, 32px));
-  column-gap: var(--gx, 6px); row-gap: var(--rg, 14px); justify-content: center; align-items: center; justify-items: center; }
-/* the Recolor Drug icons drawn bare (user 2026-11-07: "please remove the circular icon on the recolor drug"): the colour
-   worn has a short gold bar under it (the Bible's chosen-filter mark), the others are dimmed, no glow */
-.csw { position: relative; width: var(--s, 32px); height: var(--s, 32px); padding: 0; border: 0; border-radius: 6px; background: none;
-  display: grid; place-items: center; opacity: .6; transition: opacity .12s; }
+/* left panel (2026-11-19: the user's pick B1 of plans/left_panel/b_refined.html, "minimize the use of container boxes",
+   with "Shift the face icon up a bit, and a small 'หน้า xx' text below it", "remove the spotlight for the middle item, and
+   the ชุด text too, less clutter", "remove the text ค้างคาว too"): no boxes, one surface. The worn colour's class portrait,
+   blurred, lights the panel's top (#wash); the portrait and the face (a little higher, หน้า n under it); the outfit's
+   colours; the set as one line between two hairlines; then the doll: ชุด in the middle, the only ring, and the five other
+   topics on one circle around it (--R), each icon's centre on the circle, its name under it, on a soft spotlight: หมวก on
+   top, then every 72 deg อาวุธ upper left, ประดับ upper right, ท่าทาง lower left, สัตว์เลี้ยง lower right (the user: "5
+   circles around the main ชุด similar distance", "swap Pet and Emote positions"). The open topic: its name gold with a
+   short bar, its spotlight brighter; ชุด, the class and the face: their ring gold. (Until 2026-11-19: one Ledger box per
+   topic in a 12-column grid, the class and face in one narrow box, the colours in another, the set in the gilded frame.) */
+aside { position: relative; isolation: isolate; }
+.wash { position: absolute; left: 0; right: 0; top: 0; height: 320px; z-index: -1; overflow: hidden; pointer-events: none; }
+.wash img { position: absolute; left: -15%; top: -30%; width: 130%; height: 130%; object-fit: cover; filter: blur(28px) saturate(1.3); opacity: .55; }
+.wash::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(21, 15, 12, .15), var(--bg) 92%); }
+.topics { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.ring { flex: none; border-radius: 50%; border: 1px solid var(--ring-edge); background: var(--well); display: grid; place-items: center; overflow: hidden; }
+.ring img { width: 80%; height: 80%; object-fit: contain; }   /* the icons are 128 px (2x upscales, wardrobe_icons_upscale.py) */
+.ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
+/* the class portrait (round already, the worn colour's: icons/heroes/<cls><n>) and the face, raised a little, หน้า n under it */
+.hero { display: flex; justify-content: center; align-items: flex-start; gap: 16px; margin-top: 10px; }
+.hero-b { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; border: 0; background: none; }
+.hero-b .ring { --d: 86px; width: var(--d); height: var(--d); border: 0; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); }
+.hero-b .ring.t-class img { width: 100%; height: 100%; }
+.hero-b[data-t="face"] { margin-top: 8px; }
+.hero-b .ring.face { --d: 52px; background: var(--skin-bg); }
+.ring.face img { width: 92%; height: 92%; }
+.hero-k { font-size: 12px; font-weight: 500; line-height: 1.35; color: var(--muted); white-space: nowrap; }
+.hero-b[aria-expanded=true] .ring { box-shadow: 0 0 0 2px var(--gold), 0 8px 22px rgba(0, 0, 0, .45); }
+.hero-b[aria-expanded=true] .hero-k { color: var(--gold); }
+/* สี (user 2026-11-07: "all available colors can be picked directly"): one Recolor Drug per colour of the outfit, bare;
+   the worn one has the short gold bar under it (the Bible's chosen-filter mark), the others dimmed, no glow */
+.pots { display: flex; justify-content: center; gap: 13px; margin-top: 12px; min-height: 30px; }
+.csw { position: relative; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 6px; background: none;
+  display: grid; place-items: center; opacity: .55; transition: opacity .12s; }
 .csw img { width: 100%; height: 100%; object-fit: contain; }   /* ui/recolor*.webp are cropped to the potions (V3) */
 .csw[aria-pressed=true], .csw:focus-visible { opacity: 1; }
 @media (hover: hover) { .csw:hover { opacity: 1; } }
-.csw[aria-pressed=true]::before { content: ""; position: absolute; left: 22%; right: 22%; bottom: -3px; height: 3px; border-radius: 2px; background: var(--gold); }
-.topic.set { grid-column: 1 / -1; justify-content: center; }
-/* the special tile: the Bible's gilded frame (border set with longhands: the shorthand resets border-image), no glow */
-.topic.set { border-style: solid; border-width: 1px; border-color: transparent; border-image: var(--cg-gild) 14 / 14px / 3px stretch;
-  border-radius: 3px; background: var(--weave), var(--panel); box-shadow: none; }
-.topic.set:focus-visible { outline-offset: 5px; }   /* clear of the gilded frame, not a second gold line on it (V10) */
-@media (hover: hover) { .topic.set:hover { border-image-source: var(--cg-gild-hi); border-color: transparent; } }
-.topic.set[aria-expanded=true] { border-image-source: var(--cg-gild-hi); border-color: transparent; background: var(--weave), var(--panel-2); box-shadow: none; }
-/* the set row (V10): the worn set's name and piece count on top, its pieces below (40 px or so); no set = "เลือกเซ็ต" and
-   the first sets' outfits as a faint teaser; the whole row opens the picker */
-.topic.set { align-items: stretch; justify-content: center; gap: 6px; padding: 7px 12px 8px; }
-.set-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; line-height: 1.4; }
-.topic.set .set-head .tname { color: var(--muted); font-size: 12.5px; font-weight: 500; }
-.set-name { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 700; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.csw[aria-pressed=true]::before { content: ""; position: absolute; left: 24%; right: 24%; bottom: -5px; height: 3px; border-radius: 2px; background: var(--gold); }
+.pots.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
+/* the set: the worn set's name and its piece count, or เลือกเซ็ต and how many there are, between two fading hairlines */
+.topic.set { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 16px; padding: 3px 0; border: 0; background: none; line-height: 1.4; }
+.topic.set::before, .topic.set::after { content: ""; flex: 1 1 12px; min-width: 12px; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
+.topic.set::after { background: linear-gradient(90deg, var(--line), transparent); }
+.set-name { flex: 0 1 auto; min-width: 0; font-size: 14px; font-weight: 600; color: var(--gild); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .set-name.dim { color: var(--muted); font-weight: 500; }
 .set-meta { flex: none; color: var(--muted); font-size: 12.5px; }
-.topic.set .setparts { --d: min(calc(100cqh - 27px), calc((100cqw - (var(--k, 5) - 1) * 6px) / var(--k, 5)), 56px); display: flex; align-items: center;
-  justify-content: flex-start; gap: 6px; flex: 1 1 auto; min-height: 0; }
-.topic.set .setparts img { width: var(--d); height: var(--d); object-fit: contain; background: var(--well); border-radius: 6px; border: 1px solid var(--line); }
-.topic.set .setparts .noicon { width: var(--d); height: var(--d); font-size: calc(var(--d) * .3); }
-.topic.set .setparts.teaser > * { opacity: .4; }
-.topic[aria-expanded=true] { border-color: var(--gold); background: var(--weave), var(--panel-2); box-shadow: inset 0 0 0 1px var(--gold-soft); }
-.topic .tname { flex: none; font-size: 14px; font-weight: 700; line-height: 1.45; text-align: center; }
-.topic .ring { --d: min(100cqw, calc(100cqh - 26px)); width: var(--d); height: var(--d); margin: auto 0; }   /* cq* = the block's content box, minus the title line */
-.ring { flex: none; border-radius: 50%; border: 1px solid var(--ring-edge); background: var(--well); display: grid; place-items: center; overflow: hidden; }
-.ring img { width: 80%; height: 80%; max-width: 96px; max-height: 96px; object-fit: contain; }   /* the icons are 128 px (2x upscales, wardrobe_icons_upscale.py) */
-.ring.t-class img { width: 100%; height: 100%; max-width: 120px; max-height: 120px; }   /* the class portrait (150 px) is round already */
-.ring.face { background: var(--skin-bg); }
-.ring.face img { width: 92%; height: 92%; }
-.ring .none { color: var(--muted); font-size: calc(var(--d) * .28); }
-.topic[aria-expanded=true] .ring { border-color: var(--gold); }
+.topic.set[aria-expanded=true] .set-name { text-decoration: underline 2px var(--gold); text-underline-offset: 6px; }
+/* the doll: --R from the room it has (the side pieces clear the panel's edges; the group, top icon to bottom name, fits its
+   height: 2.39 R + the name, the pieces' own height counted), --cy centres that group; every size follows --R, so a tall
+   desktop, the office's short one and a phone share it. At most 440 px: on a tall screen the room left over goes below */
+.doll { position: relative; flex: 1 1 auto; min-height: 230px; max-height: 440px; margin: 6px -14px 0; container-type: size;
+  --R: min(38cqw, 41cqh - 10px); --cy: calc(50% + var(--R) * .095 - 11px); }
+.doll .topic { position: absolute; display: grid; place-items: center; padding: 0; border: 0; background: none; translate: -50% -50%;
+  left: calc(50% + var(--R) * sin(var(--a, 0deg))); top: calc(var(--cy) - var(--R) * cos(var(--a, 0deg))); }
+.doll .topic[data-t="R"] { --a: -72deg; } .doll .topic[data-t="Back"] { --a: 72deg; }
+.doll .topic[data-t="move"] { --a: -144deg; } .doll .topic[data-t="Pet"] { --a: 144deg; }
+.doll .ring { --d: calc(var(--R) * .58); position: relative; width: calc(var(--d) * 1.2); height: var(--d); border: 0; border-radius: 0; background: none; overflow: visible; }
+.doll .ring::before { content: ""; position: absolute; left: 4%; right: 4%; bottom: -6%; height: 28%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(208, 145, 62, .26), transparent); transition: background .15s; }
+.doll .ring > * { position: relative; }
+.doll .ring img { width: var(--d); height: var(--d); }
+.doll .ring .slot-glyph { width: 44%; height: 44%; align-self: end; margin-bottom: 16%; }
+.doll .ring .noicon.txt { align-self: end; margin-bottom: 16%; }
+.doll .tname { position: absolute; top: calc(100% + 3px); left: 50%; translate: -50% 0; white-space: nowrap; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--muted); }
+.doll .topic[aria-expanded=true] .tname { color: var(--gold); }
+.doll .topic[aria-expanded=true] .tname::after { content: ""; display: block; width: 70%; height: 3px; margin: 2px auto 0; border-radius: 2px; background: var(--gold); }
+.doll .topic[aria-expanded=true] .ring::before { background: radial-gradient(closest-side, rgba(232, 195, 90, .55), transparent); }
+/* ชุด: the one ring, no spotlight and no name on screen (its name stays for screen readers) */
+.doll .topic[data-t="outfit"] { left: 50%; top: var(--cy); }
+.doll .topic[data-t="outfit"] .ring { --d: calc(var(--R) * .92); width: var(--d); height: var(--d); border: 1px solid var(--ring-edge); border-radius: 50%; background: var(--well); overflow: hidden; }
+.doll .topic[data-t="outfit"] .ring::before { content: none; }
+.doll .topic[data-t="outfit"] .ring img { width: 82%; height: 82%; }
+.doll .topic[data-t="outfit"][aria-expanded=true] .ring { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 0 6px var(--gold-soft); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* the picker: a full-height side panel beside the 3D view; 42 % of the stage (440 px at least, twice the left panel at
    most), and the camera's view offset (F1, setInset) centres the hero in the part of the stage it leaves free */
 .picker { position: absolute; inset: 0 auto 0 0; width: clamp(440px, calc((100vw - var(--side)) * .42), calc(var(--side) * 2)); max-width: 100%; z-index: 6; background: var(--bg);
@@ -434,16 +441,13 @@ main.inset .cm-card { top: 96px; }
 @media (max-width: 760px) { .send input[type=text], .send input[type=url] { font-size: 16px; } }   /* no zoom on focus */
 .pm-foot { margin: 4px 6px 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
 @media (pointer: coarse) { .pm-item { min-height: 44px; } .pm-foot { display: none; } }
-.topic.color.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
 /* short screens (user 2026-11-05: "not scaled to my smaller work PC": the office's 2560 x 1080 leaves the page ~900 px
    of height; the eight topic blocks at their 112 px minimum overflowed into a scrollbar, the last one cut off): the
    blocks go two abreast so all eight share the height. Taller screens keep the one-column layout */
 @media (max-height: 1000px) and (min-width: 900px) {
-  .app { --side: 340px; }
   aside { overflow: hidden; padding: 10px 12px 12px; }
   .lockup { margin-bottom: 8px; }
-  .topics { flex: 1 1 0; min-height: 0; gap: 8px; grid-template-rows: minmax(0, 1.1fr) minmax(0, .8fr) repeat(3, minmax(0, 1fr)); }
-  .topic { padding: 6px 8px 8px; }
+  .doll { margin: 6px -12px 0; }
 }
 @media (max-width: 760px) {
   /* phone (task 7): one screen, no page scroll: the stage on top, the eight topic blocks (4 x 2) compact below; an open
@@ -457,31 +461,25 @@ main.inset .cm-card { top: 96px; }
   .lockup h1, .lockup-rule { display: none; }
   .brand { height: 44px; padding: 0 10px 0 8px; font-size: 14px; background: var(--bar-bg); border: 1px solid var(--line); border-radius: 6px; }
   .tb-sep:has(+ #copy), #copy { display: none; }   /* the local copy's Claude button: no room on a phone */
-  /* P1 / P7: taller rows; a topic = its ring (44 px at most) with the name beside it, left-aligned */
-  .topics { flex: none; gap: 5px; grid-template-rows: 96px 40px repeat(3, 46px); }
-  .topic { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 3px 8px 3px 10px; }
-  .topic .tname { order: 1; font-size: 12px; line-height: 1.3; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
-  /* สัตว์เลี้ยง's ้ over ี rises 1.5 px over its 15.6 px line (Prompt 700 12 px: ink 13.3 px over the baseline, the line's
-     baseline 11.8 px down), which the ellipsis' overflow cut off; padding on top makes the room, and as it has no mark
-     below, its ink (13.3 px) sits 2.65 px low of the line's middle: 5.3 px on top alone puts it mid-block by eye
-     (NOTES.md "Thai text: centring by eye"; pipeline/wardrobe_pet_check.py measures it). The other names stay put */
-  .topic[data-t="Pet"] .tname { padding-top: 5.3px; }
-  .topic .ring { --d: min(calc(100cqh - 4px), 44px); margin: 0; }
-  .topic.set { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; padding: 2px 8px 2px 10px; border-image-width: 12px; border-image-outset: 2px; }
-  .set-head { flex: 1 1 auto; gap: 6px; }
-  .topic.set .set-head .tname { order: 0; font-size: 11px; }
+  /* the panel on a phone (2026-11-19, B1): the portrait, the face and the colours in one row, the set line under them, then
+     the same doll, smaller (its --R from a 214 px band); about the height the eight blocks had (P1 / P7) */
+  .topics { flex: none; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "hero pots" "set set" "doll doll"; align-items: center; column-gap: 12px; }
+  .hero { grid-area: hero; gap: 10px; margin-top: 2px; }
+  .hero-b .ring { --d: 56px; }
+  .hero-b[data-t="face"] { margin-top: 3px; }
+  .hero-b .ring.face { --d: 38px; }
+  .hero-k { font-size: 11px; }
+  .pots { grid-area: pots; gap: 10px; margin-top: 0; }
+  .csw { width: 28px; height: 28px; }
+  .topic.set { grid-area: set; margin-top: 8px; padding: 0; }
   .set-name { font-size: 13px; }
   .set-meta { font-size: 11.5px; }
-  .topic.set .setparts { --d: min(calc(100cqh - 6px), 30px); flex: none; gap: 4px; }
-  .topic.r1 { padding: 2px 4px; justify-content: center; }
-  .row1 { gap: 5px; }
-  .topic.color { flex-direction: column; }
-  .topic.duo { flex-direction: column; width: min(40%, calc((100cqh - 9px) / 2 + 6px)); padding: 3px; gap: 3px; }
-  /* a finger needs 36 px or more: each colour icon has a centred 36 px ::after, on 36 px bands (fitColors); the class
-     and face buttons a 44 px one (P1) */
+  .doll { grid-area: doll; flex: none; height: 214px; min-height: 0; max-height: none; margin: 8px -8px 0; }
+  .doll .tname { font-size: 11.5px; }
+  /* a finger needs 36 px or more: each colour icon a centred 36 px ::after; the class, the face and the doll's pieces a
+     44 px one (P1) */
   .csw::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 36px); height: max(100%, 36px); transform: translate(-50%, -50%); }
-  .duo-b { position: relative; }
-  .duo-b::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+  .hero-b::after, .doll .topic::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
   .app.picking { grid-template-rows: minmax(0, 1fr) var(--sheet); }
   .app.picking aside { visibility: hidden; }
   .picker { position: fixed; inset: auto 0 0 0; width: 100%; max-width: none; height: var(--sheet); border-right: 0; border-top: 1px solid var(--line);
@@ -547,6 +545,7 @@ main.inset .cm-card { top: 96px; }
 <body>
 <div class="app">
   <aside>
+    <div class="wash" id="wash" aria-hidden="true"></div>
     <header class="lockup"><a class="brand" id="bible" aria-label="12 Tails Bible"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><defs><linearGradient id="wdBrandGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6df98"/><stop offset=".55" stop-color="#d4af37"/><stop offset="1" stop-color="#9a7622"/></linearGradient></defs><g fill="none" stroke="url(#wdBrandGold)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24 L30 12 L30 78"/><path d="M48 30 C48 12 78 10 80 28 C82 44 60 54 48 78 L82 78 C98 78 106 66 102 52"/></g><path d="M102 52 C96 40 102 26 116 22 C110 34 114 44 102 52Z" fill="url(#wdBrandGold)"/></svg><span class="brand-spine" aria-hidden="true"></span><span class="brand-word" aria-hidden="true"><span>TAILS</span><span>BIBLE</span></span></a><span class="lockup-rule" aria-hidden="true"></span><h1>ห้องแต่งตัว</h1></header>
     <nav class="topics" id="topics" aria-label="หัวข้อ"></nav>
   </aside>
@@ -3824,42 +3823,52 @@ function currentIcon(t) {
   return wornIn(t) ? iconOf(SLOT_KEY[t], wornIn(t))?.icon : null;
 }
 let openTopic = null;
-// row 1 (the class + face box, the colour box) has no titles (user 2026-11-07); the names stay as aria-label / title
-// the สี tile: the outfit's colours as one-tap Recolor Drug icons (one undo step each); the ปกติ / R / V editions are
-// picked in the set tab (user 2026-11-07)
+// the colours: the outfit's colours as one-tap Recolor Drug icons (one undo step each); the ปกติ / R / V editions are
+// picked in the set tab (user 2026-11-07). No title on screen (user: "self explanatory"): the name stays as aria-label
 function colorTile(name) {
   const o = C?.outfits.find(x => x.name === C?.state.outfit), cs = o?.colors || [];
-  const sw = cs.length ? `<span class="cswatches" style="--n: ${cs.length}">` + cs.map(c =>
-      `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</span>`
-    : "";
   const mine = o && SKINS.has(skinKey("outfits", o.name));
-  return `<div class="topic r1 color${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " (ชุดนี้ใส่ลายของคุณอยู่)" : ""}">${sw}</div>`;
+  return `<div class="pots${mine ? " custom" : ""}" data-t="color" role="group" aria-label="${name}" title="${name}${mine ? " (ชุดนี้ใส่ลายของคุณอยู่)" : ""}">` + cs.map(c =>
+    `<button type="button" class="csw" data-c="${c}" aria-pressed="${c === C.state.color}" aria-label="${name} ${c}" title="${name} ${c}"><img alt="" src="${colorIcon(c)}"></button>`).join("") + `</div>`;
+}
+// the colour the hero shows: the worn colour when the outfit has it, else the outfit's first (as composeTexture paints it)
+const wornColor = () => { const cs = C.outfits.find(x => x.name === C.state.outfit)?.colors || []; return cs.includes(C.state.color) ? C.state.color : cs[0] || 1; };
+// the class portrait in that colour (user 2026-11-19: "Class circular portrait should change dynamically to the color 1-5
+// selected"): BB's icons/heroes/<cls>1-5 are the five colours in potion order (checked on the 3D Bat and Whale); ui.json
+// names colour 1 and the publish takes all five from BB's rip; a missing one falls back to colour 1
+function heroImg() {
+  const one = UI.heroes?.[C.cls];
+  return one ? `<img alt="" src="${picURL(one.replace(/1\.webp$/, `${wornColor()}.webp`))}" onerror="this.onerror=null;this.src='${picURL(one)}'">` : "";
 }
 // the open picker shows what is worn: the set list is drawn again, an outfit / item list only moves its pressed tile
 async function afterLook() { renderTopics(); if (openTopic === "set") await openPicker("set"); else syncTiles(); }
+// the panel (B1, the CSS above): the portrait and the face, the colours, the set line, the doll; the wash behind the top
+// is the portrait again. A topic button keeps its .ring (the picture) and .tname (its name; ชุด's for screen readers only)
+const DOLL = new Set(["Head", "outfit", "R", "Back", "Pet", "move"]);
 function renderTopics() {
   const worn = C && (C.sets || []).find(setWorn), box = $("topics"), a = document.activeElement;
-  // a click re-draws the rows: keep the keyboard focus on the same control
+  // a click re-draws the panel: keep the keyboard focus on the same control
   const keep = a && box.contains(a) ? (a.dataset.c ? `[data-c="${a.dataset.c}"]` : a.dataset.t ? `[data-t="${a.dataset.t}"]` : null) : null;
-  // the set row (V10): the worn set's name, count and pieces; no set = an invitation with the first sets' outfits as a
-  // teaser; a neutral line until the sets are known (F13: no false "no set" flash while they load)
-  const sets = C?.sets, teaser = sets && !worn ? sets.filter(x => x.outfit).slice(0, 3) : [];
-  const parts = worn ? setParts(worn) : teaser.map(x => partImg("outfits", x.outfit, setEd(x))).join("");
-  const setHead = !sets ? `<span class="set-name dim">${C ? "กำลังโหลดเซ็ต…" : ""}</span>`
+  const nm = t => TOPICS.find(x => x[0] === t)[1], open = t => `aria-expanded="${openTopic === t}"`;
+  // the set line: the worn set's name and piece count, or an invitation and how many sets there are; a neutral line until
+  // the sets are known (F13: no false "no set" flash while they load)
+  const sets = C?.sets;
+  const setLine = !sets ? `<span class="set-name dim">${C ? "กำลังโหลดเซ็ต…" : ""}</span>`
     : worn ? `<span class="set-name">${setNameHTML(worn)}</span><span class="set-meta"><span class="num">${worn.pieces}</span> ชิ้น</span>`
     : `<span class="set-name">เลือกเซ็ต</span><span class="set-meta"><span class="num">${sets.length}</span> เซ็ต</span>`;
-  box.innerHTML = TOPICS.map(([t, name]) => t === "set"
-    ? `<button type="button" class="topic set" data-t="set" aria-expanded="${openTopic === "set"}" aria-label="${name}${worn ? " " + esc(setName(worn)) : ""}">
-    <span class="set-head"><span class="tname">${name}</span>${setHead}</span><span class="setparts${worn ? "" : " teaser"}" style="--k: ${Math.max(3, (parts.match(/<img|class="noicon/g) || []).length)}">${parts}</span></button>`
-    : t === "color" || t === "face" ? ""
-    : t === "class" ? `<div class="row1"><div class="topic r1 duo" role="group">${["class", "face"].map(k => { const nm = TOPICS.find(x => x[0] === k)[1];
-        return `<button type="button" class="duo-b" data-t="${k}" aria-expanded="${openTopic === k}" aria-label="${nm}" title="${nm}">`
-          + `<span class="ring t-${k}${k === "face" ? " face" : ""}">${ringContent(k)}</span></button>`; }).join("")}</div>${
-        colorTile(TOPICS.find(x => x[0] === "color")[1])}</div>`
-    : `<button type="button" class="topic" data-t="${t}" aria-expanded="${openTopic === t}">
-    <span class="tname">${name}</span><span class="ring t-${t}">${ringContent(t)}</span></button>`).join("");
+  const piece = t => `<button type="button" class="topic" data-t="${t}" ${open(t)}><span class="ring t-${t}">${ringContent(t)}</span>`
+    + `<span class="tname${t === "outfit" ? " sr" : ""}">${nm(t)}</span></button>`;
+  box.innerHTML = `<div class="hero">`
+      + `<button type="button" class="hero-b" data-t="class" ${open("class")} aria-label="${nm("class")} ${CLASS_TH[C?.cls] || ""}" title="${nm("class")}"><span class="ring t-class">${C ? heroImg() : ""}</span></button>`
+      + `<button type="button" class="hero-b" data-t="face" ${open("face")} aria-label="${nm("face")}" title="${nm("face")}"><span class="ring t-face face">${ringContent("face")}</span>`
+      + (C ? `<span class="hero-k">หน้า <span class="num">${C.state.face}</span></span>` : "") + `</button></div>`
+    + colorTile(nm("color"))
+    + `<button type="button" class="topic set" data-t="set" ${open("set")} aria-label="${nm("set")}${worn ? " " + esc(setName(worn)) : ""}">${setLine}</button>`
+    + `<div class="doll">${TOPICS.filter(([t]) => DOLL.has(t)).map(([t]) => piece(t)).join("")}</div>`;
+  const w = $("wash"), wi = C ? heroImg() : "";
+  if (w.dataset.k !== wi) { w.dataset.k = wi; w.innerHTML = wi; }      // only a new colour or class draws it again
   // e.detail 0 = a key press (Enter / Space): the picker then takes the focus (F11)
-  box.querySelectorAll("button.topic, .duo-b").forEach(b => b.onclick = e => (!C ? null : openTopic === b.dataset.t ? closePicker()
+  box.querySelectorAll("button.topic, .hero-b").forEach(b => b.onclick = e => (!C ? null : openTopic === b.dataset.t ? closePicker()
     : openPicker(b.dataset.t, { fresh: true, kb: e.detail === 0 })));
   // a colour the outfit's edition lacks drops that edition (edOf): the worn R / V pieces go back to ปกติ in the same
   // undo step, so the outfit, the pieces and the chips agree
@@ -3868,7 +3877,6 @@ function renderTopics() {
     await tracked(async () => { const ed = C.state.edition; await setColorOrFace(+b.dataset.c, null); if (ed && !C.state.edition) await setEdition(""); }).catch(err);
     await afterLook();
     if (SKINS.has(skinKey("outfits", C.state.outfit))) toast((skinBy("outfits", C.state.outfit) ? "ชุดนี้ใส่ลายจากผู้เล่นอยู่" : "ชุดนี้ใส่ลายของคุณอยู่") + "\nคลิกที่ชุดบนตัวละคร แล้วเลือกคืนลายเดิมเพื่อดูสีนี้", 3000); });
-  fitColors();
   if (keep) box.querySelector(keep)?.focus();
   renderPlate();
 }
@@ -3881,31 +3889,6 @@ function renderPlate() {
   const by = !C ? [] : ["outfit", "R", "L", "Head", "Back"].map(sl => C.state[sl] && skinBy(kindOf(sl), C.state[sl])).filter(Boolean);
   if (by.length) $("plateSub").insertAdjacentHTML("beforeend", `<span class="plate-by">ลายโดย ${[...new Set(by.map(b => esc(b.name)))].join(", ")}</span>`);
 }
-// the สี box's icons as big as the box allows (user 2026-11-07: "bigger icons there please"): one row of all the colours
-// or a 3 + 2 grid, whichever gives the bigger icon in this box; On a touch
-// screen every icon keeps a 36 px band for its ::after hit area, and neighbouring bands do not overlap
-function fitColors() {
-  const t = document.querySelector(".topic.color"), sw = t?.querySelector(".cswatches");
-  if (!sw) return;
-  const n = sw.children.length, hit = matchMedia("(pointer: coarse)").matches ? 36 : 0;
-  const cs = getComputedStyle(t), W = t.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
-    H = t.clientHeight - (hit ? 0 : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));   // touch: the hit bands may use the padding
-  // rg = icon row to icon row: room for the gold bar (3 px under its icon, 3 px tall) so it reads as
-  // the icon's own; on touch screens the 36 px bands already leave that room
-  const rg = hit ? 6 : 14, gx = s => Math.max(hit ? 4 : 6, hit - s);
-  let best = null;
-  for (const cols of new Set([n, Math.min(n, 3)])) {
-    const rows = Math.ceil(n / cols);
-    const fits = s => cols * s + (cols - 1) * gx(s) <= W && rows * Math.max(s, hit) + (rows - 1) * rg + 7 <= H;
-    let lo = 0, hi = 120;
-    for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (fits(m)) lo = m; else hi = m; }
-    if (!best || lo > best.s + .5) best = { s: lo, cols };
-  }
-  const s = Math.floor(best.s);
-  sw.style.cssText = `--n: ${n}; --cols: ${best.cols}; --s: ${s}px; --gx: ${gx(s)}px; --band: ${Math.max(s, hit)}px`;
-  t.style.cssText = `--rg: ${rg}px`;
-}
-new ResizeObserver(() => fitColors()).observe($("topics"));
 // the desktop picker covers the left of the stage: the camera's view offset centres the hero in the rest (F1), and the
 // status line moves with it. A phone's picker is a bottom sheet under a smaller stage: no offset there
 const isPhone = () => matchMedia("(max-width: 760px)").matches;

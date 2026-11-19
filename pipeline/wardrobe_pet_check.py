@@ -36,15 +36,16 @@ hero how it would work in game"). On the real page through its scripting hook (w
     it off in one undo step; the ring's เปลี่ยนสัตว์เลี้ยง opens the สัตว์เลี้ยง picker; a picker tile's menu (right-click)
     on a pet whose file is not loaded yet lists its downloads (a BB pet) or none (TTO's under ?ttolock)
   - the สัตว์เลี้ยง topic, its picker and the camera (the pets plan's Task 7; the picks of 2026-11-18,
-    plans/wardrobe_pets_design.md), at 1600x1000 and 390x700 (and 1600x1200 for the layout): the blocks two by two
-    (หมวก + ชุด, อาวุธ + ประดับ, สัตว์เลี้ยง + ท่าทาง), the ring empty (the slot's outline) or the worn pet's icon; the
+    plans/wardrobe_pets_design.md), at 1600x1000 and 390x700 (and 1600x1200 for the layout): the panel's doll (B1,
+    2026-11-19): the five topics around ชุด at one distance, หมวก on top, อาวุธ / ประดับ at -72 / 72 deg, ท่าทาง / สัตว์เลี้ยง at
+    -144 / 144 deg, the five pictures one size; the pet's picture empty (the slot's outline) or the worn pet's icon; the
     picker = ไม่ใส่ + one tile per index row (its icon, the game's name or the name as words, TTO's mark), nicknamed
     first, the ค้นหา box (a game name "L. Carron", "Anubi", a nickname "ALL 9" / "all9", nonsense); a pick = one undo
     step, the picker stays open; the camera: no pet = today's front view exactly (FIT_DIR, today's heroFitPose
     recomputed here), a pet = turned 40 deg, rise .10 (FIT_DIR_PET), gliding there unless the visitor moved it, the
     hero's and the pet's box corners on the free part of the stage (the toolbar band clear) for a walker 1 m and 2 m
-    back, a kite, TianlongA at 2x, and after the desktop picker closes and opens again; the สัตว์เลี้ยง label on a phone:
-    no mark clipped, its ink centred by eye in its block (gaps within 2 px at 2x); screenshots in checks/pet_ui/ (a run
+    back, a kite, TianlongA at 2x, and after the desktop picker closes and opens again; the names: each centred under
+    its own picture, inside the panel, over no other picture (ชุด's for screen readers only); screenshots in checks/pet_ui/ (a run
     given an out folder: <out>/pet_ui)
   - the pet's whole idle framed (Task 7's fix round 1): for TianlongA beside the Whale, smallAnubi and miniMokBug, the
     desktop picker open, closed and open again (a phone: its sheet open), the idle held (hero and pet: their mixers'
@@ -634,9 +635,10 @@ def pet_order(cls):             # nicknamed first (the class guide's order: no l
     return [n for _, n in sorted(enumerate(ROWS), key=lambda e: (key(pet_nick(cls, e[1])), e[0]))]
 
 
-TOPIC_BOXES = """() => Object.fromEntries([...document.querySelectorAll('#topics button.topic')].map(b => { const r = b.getBoundingClientRect(),
-  g = b.querySelector('.ring')?.getBoundingClientRect(); return [b.dataset.t, { x: r.left, y: r.top, w: r.width, h: r.height, ring: g ? g.width : 0,
-  name: b.querySelector('.tname')?.textContent ?? null }]; }))"""
+DOLL = """() => { const a = document.querySelector('aside').getBoundingClientRect(), box = r => ({ l: r.left, t: r.top, r: r.right, b: r.bottom });
+  return { aside: box(a), t: Object.fromEntries([...document.querySelectorAll('#topics .doll > button.topic')].map(b => {
+    const k = b.querySelector('.ring').getBoundingClientRect(), n = b.querySelector('.tname'), g = document.createRange(); g.selectNodeContents(n);
+    return [b.dataset.t, { x: k.left + k.width / 2, y: k.top + k.height / 2, w: k.width, ring: box(k), name: n.textContent, sr: n.classList.contains('sr'), nb: box(g.getBoundingClientRect()) }]; })) }; }"""
 RING = """() => { const r = document.querySelector('#topics [data-t="Pet"] .ring');
   return r && { img: r.querySelector('img')?.getAttribute('src') ?? null, glyph: !!r.querySelector('.slot-glyph') }; }"""
 PK_TILES = """() => [...document.querySelectorAll('#pkBody .pk-item')].map(b => ({ p: b.dataset.p ?? null, slot: b.closest('.pk-cell')?.dataset.slot ?? null,
@@ -731,23 +733,6 @@ IDLE = """() => { const { C, THREE, camera, renderer, scene } = wardrobe.debug()
   return { W, H, freeL, lim, clear, now, frames, t: [t0, pa ? pa.act.time : null], clip: pa ? pa.act.getClip().duration : 0 }; }"""
 # the hero's and the pet's mixers' times (held: unchanged through a screenshot)
 TIMES = "() => { const { C } = wardrobe.debug(); return [C.mixer.time, C.props.Pet?.userData.mixer?.time ?? null]; }"
-# a block's label ink in a 2x screenshot (decoded in the page): the first and last rows with a pixel clearly lighter (or
-# darker) than the block's own background (its first rows, the weave's light and dark), in the label's columns, against the
-# block's inner edges (inside its border), in device px
-INK = """async ([b64, lab, box]) => { const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
-  const c = new OffscreenCanvas(im.width, im.height), g = c.getContext('2d'); g.drawImage(im, 0, 0);
-  const d = g.getImageData(0, 0, im.width, im.height).data, px = (x, y) => { const i = (y * im.width + x) * 4; return d[i] + d[i + 1] + d[i + 2]; };
-  const x0 = Math.max(0, Math.floor(lab.x0)), x1 = Math.min(im.width, Math.ceil(lab.x1)), y0 = Math.ceil(box.y0), y1 = Math.floor(box.y1);
-  let lo = Infinity, hi = -Infinity; for (let y = y0; y < y0 + 4; y++) for (let x = x0; x < x1; x++) { lo = Math.min(lo, px(x, y)); hi = Math.max(hi, px(x, y)); }
-  let top = -1, bot = -1;
-  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (px(x, y) > hi + 100 || px(x, y) < lo - 100) { if (top < 0) top = y; bot = y; break; }
-  return { top, bot, above: top - y0, below: y1 - 1 - bot }; }"""
-# a topic block's label: its columns, and the box its ink is measured in (the block inside its border; on a desktop the
-# label is a title over the ring: down to the ring's top)
-LABEL_GEOM = """t => { const b = document.querySelector(`#topics button.topic[data-t="${t}"]`), n = b.querySelector('.tname'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
-  const g = document.createRange(); g.selectNodeContents(n); const q = g.getBoundingClientRect(), k = b.querySelector('.ring').getBoundingClientRect();
-  const under = k.left < q.right && k.right > q.left, y1 = under ? k.top - r.top : r.height - parseFloat(cs.borderBottomWidth);
-  return { box: { y0: parseFloat(cs.borderTopWidth), y1 }, lab: { x0: q.left - r.left, x1: q.right - r.left }, y: q.top, x: q.left }; }"""
 
 
 async def ui(b, check, errors):
@@ -769,17 +754,17 @@ async def ui(b, check, errors):
         await page.wait_for_timeout(800)
         T = f"{tag:7}"
 
-        # ---- the block: two by two (หมวก + ชุด, อาวุธ + ประดับ, สัตว์เลี้ยง + ท่าทาง), the name, the ring
-        tb = await page.evaluate(TOPIC_BOXES)
+        # ---- the doll (B1): the five around ชุด at one distance and at their angles (0 = up, clockwise), one size
+        dl = await page.evaluate(DOLL)
+        tb, O = dl["t"], dl["t"].get("outfit")
+        WANT = {"Head": 0, "R": -72, "Back": 72, "move": -144, "Pet": 144}
         pet = tb.get("Pet")
-        same = lambda a, c, k, tol=.6: abs(tb[a][k] - tb[c][k]) <= tol
-        grid = bool(pet) and all(same(a, c, "y") for a, c in (("Head", "outfit"), ("R", "Back"), ("Pet", "move"))) \
-            and all(same(a, c, "x") for a, c in (("Head", "R"), ("R", "Pet"), ("outfit", "Back"), ("Back", "move"))) \
-            and tb["Head"]["y"] < tb["R"]["y"] < tb["Pet"]["y"] and tb["Pet"]["x"] < tb["move"]["x"] \
-            and all(same("Head", k, "w") and same("Head", k, "h") and same("Head", k, "ring") for k in ("outfit", "R", "Back", "Pet", "move"))
-        check(grid and pet["name"] == "สัตว์เลี้ยง",
-              f"{T} blocks two by two, สัตว์เลี้ยง beside ท่าทาง: " + ", ".join(f"{k} {fmt([v['x'], v['y'], v['w'], v['h']])} ring {round(v['ring'], 1)}"
-                                                                         for k, v in tb.items() if k in ("Head", "outfit", "R", "Back", "Pet", "move")))
+        dist = {k: math.hypot(tb[k]["x"] - O["x"], tb[k]["y"] - O["y"]) for k in WANT if k in tb} if O else {}
+        ang = {k: math.degrees(math.atan2(tb[k]["x"] - O["x"], O["y"] - tb[k]["y"])) for k in dist}
+        doll = len(dist) == 5 and max(dist.values()) - min(dist.values()) <= 1.5 and all(abs(ang[k] - WANT[k]) <= 1 for k in WANT) \
+            and max(tb[k]["w"] for k in WANT) - min(tb[k]["w"] for k in WANT) <= .6
+        check(doll and pet["name"] == "สัตว์เลี้ยง",
+              f"{T} the doll: " + ", ".join(f"{k} r {round(dist.get(k, -1), 1)} at {round(ang.get(k, 0), 1)} deg w {round(tb[k]['w'], 1)}" for k in WANT if k in tb))
         if tag == "tall":
             await page.screenshot(path=str(UI_OUT / f"panel_{tag}.png"))
             await ctx.close()
@@ -791,25 +776,19 @@ async def ui(b, check, errors):
         check(rg and rg["glyph"] and not rg["img"], f"{T} no pet: the ring shows the slot's outline {rg}")
         await page.locator("aside").screenshot(path=str(UI_OUT / f"panel_{tag}_none.png"))
 
-        # ---- the label: no mark clipped, and on a phone its ink centred by eye in its block (NOTES.md "Thai text: centring
-        # by eye"); every label's ink printed (the other topics' labels must not move)
-        labels = {}
-        for t in ("Head", "outfit", "R", "Back", "Pet", "move"):
-            geo = await page.evaluate(LABEL_GEOM, t)
-            blk = page.locator(f'#topics button.topic[data-t="{t}"]')
-            s2 = lambda v: {k: x * 2 for k, x in v.items()}
-            ink = await page.evaluate(INK, [base64.b64encode(await blk.screenshot()).decode(), s2(geo["lab"]), s2(geo["box"])])
-            await page.add_style_tag(content=f'#topics button.topic[data-t="{t}"] .tname {{ overflow: visible !important; }}')
-            free = await page.evaluate(INK, [base64.b64encode(await blk.screenshot()).decode(), s2(geo["lab"]), s2(geo["box"])])
-            await page.evaluate("() => document.head.lastElementChild.remove()")
-            labels[t] = (ink, free, geo)
-            check(ink["top"] == free["top"] and ink["bot"] == free["bot"],
-                  f"{T} {t:6} label ink rows {ink['top']}-{ink['bot']} (unclipped {free['top']}-{free['bot']}), above {ink['above']} / below {ink['below']} "
-                  f"device px; label at x {round(geo['x'], 2)} y {round(geo['y'], 2)}")
-        if tag == "phone":
-            ink = labels["Pet"][0]
-            check(abs(ink["above"] - ink["below"]) <= 2, f"{T} สัตว์เลี้ยง centred by eye: {ink['above']} px above the ink, {ink['below']} below (2x)")
-            await page.locator('#topics button.topic[data-t="Pet"]').screenshot(path=str(UI_OUT / "label_phone_pet.png"))
+        # ---- the names: each centred under its own picture, inside the panel, over no other piece's picture; ชุด's for
+        # screen readers only
+        A = dl["aside"]
+        over = lambda n, g: n["l"] < g["r"] and n["r"] > g["l"] and n["t"] < g["b"] and n["b"] > g["t"]
+        for k, v in tb.items():
+            n = v["nb"]
+            if k == "outfit":
+                check(v["sr"] and v["name"] == "ชุด", f"{T} ชุด: its name for screen readers only ({v['name']!r}, sr {v['sr']})")
+                continue
+            ok = (not v["sr"] and abs((n["l"] + n["r"]) / 2 - v["x"]) <= 1 and n["t"] >= v["ring"]["b"] - .5
+                  and n["l"] >= A["l"] and n["r"] <= A["r"] and n["b"] <= A["b"] and not any(over(n, w["ring"]) for j, w in tb.items() if j != k))
+            check(ok, f"{T} {k:6} name {v['name']!r} at {fmt([n['l'], n['t'], n['r'], n['b']])} under its picture {fmt([v['ring']['l'], v['ring']['b']])}, in the panel")
+        await page.locator('#topics .doll').screenshot(path=str(UI_OUT / f"doll_{tag}.png"))
 
         # ---- the camera with no pet: today's front view, exactly. The idle held from here (Space, as a visitor holds it):
         # the page's fit read now is then the one the camera glided to (a pet's idle can swing its box by a lot)

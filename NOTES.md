@@ -3987,3 +3987,55 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   errors. The publish copies only the fx textures fx.json names, so the office's two untracked leftovers
   `wardrobe/data/fx/tex/nAttack_hit1__whale.webp` / `nAttack_hit2__whale.webp` (from the stashed Whale WIP, named by no
   fx.json) stayed off the site; they are still in the folder.
+- Cleaned up after (user: "drop the stash and delete the two leftovers"): the Whale WIP stash dropped (8188f5eb) and the two
+  untracked `nAttack_hit1__whale.webp` / `nAttack_hit2__whale.webp` deleted; no stash left on the office PC.
+
+## 2026-11-19 (office), the left panel: four mocks without boxes (waiting for the user's pick)
+
+User: "break free, and propose a cleaner and modern looking left tab for the wardrobe, minimize the use of container
+boxes". `plans/left_panel/index.html` (static, the real icons from ../../wardrobe/, opens from file:///) and its 2x shot
+`plans/left_panel/mocks.png`: four directions at the office panel size (340 x 704), the user's screenshot's state (the
+Bat, face 11, colour 1, no set, Butterfly Hood, Royal, S. RockBug 9, ยืนพัก), ชุด open. Kept: Prompt, the Bible's
+browns and gold, the lockup. One surface, no boxes; the open topic marked by gold (an edge tick, a ring, a bar).
+A รายการ: one row per slot with the worn piece's name (the open one a gold edge and a fading gold wash). B ตุ๊กตา: a
+paper doll, the outfit the biggest ring in the middle. C ชั้นโชว์: today's 2 x 3 grid unboxed, each piece on a soft
+spotlight, the set between two gilded lines. D ฉากหลัง: the class portrait blurred as a wash over the panel's top (the
+portrait is only 150 px, so never shown large and sharp), the pieces three abreast in round wells. Desktop only so far;
+the phone layout follows the pick.
+- **Round 2: the user picked B** ("I love B style, but some tweaks 1. 5 circles around the main ชุด similar distance from
+  the ชุด 2. swap Pet and Emote positions 3. remove circle frame for the 5 items except ชุด 4. use C soft spotlight on
+  every pieces 5. use D The class art, blurred, lights the top of the panel 6. Class circular portrait should change
+  dynamically to the color 1-5 selected"). `plans/left_panel/b_refined.html` (+ `b_refined.png`, `b_refined_colour2.png`):
+  the six in all three mocks; open between them: B1 the five at one radius every 72 deg (CSS sin() / cos() off --R =
+  min(39cqw, 42cqh), each icon's centre on the circle, its name under it), B2 the same radius at 60 / 120 deg (two
+  straight side columns), B3 = B1 under D's header. The move bottom left, the pet bottom right. Interactive: a potion
+  swaps the portrait and the wash to `icons/heroes/<cls><n>.webp`, a piece click marks it open.
+  **The portraits are the five colours in potion order** (all 12 classes have 1-5): checked on the 3D model, the Bat in
+  colours 1-5 = red / blue / yellow / black / white hair = bat1-5, the Whale blue / pink / yellow / black / white = whale1-5.
+  Today the class ring always shows `<cls>1` (`UI.heroes`, ui.json); the build would pick `<cls><C.state.color>`.
+
+## 2026-11-19 (office), the left panel: B1 built
+
+User: "B1, build it into the page. Shift the face icon up a bit, and a small "หน้า xx"" text below it too", then while
+it was built: "remove the spotlight for the middle item, and the ชุด text too, less clutter", "remove the text ค้างคาว
+too". The CSS block "left panel (2026-11-19 ...)" and `renderTopics` in `wardrobe/index.html`:
+- **No boxes.** `#wash` (first child of `aside`, behind it): the worn colour's portrait blurred over the panel's top. The
+  portrait (86 px) and the face (52 px, 8 px lower at its top so its centre sits higher than the portrait's, หน้า n under
+  it, as the face picker's tiles say it); no class name. The potions (30 px, fixed: `fitColors` is gone). The set line:
+  the worn set's name + ชิ้น or เลือกเซ็ต + the count, between two fading hairlines (no teaser pieces; `setParts` stays
+  for the set picker). The doll: ชุด's ring in the middle (no spotlight, its name `.sr` for screen readers), the five on
+  one circle (`--a`: Head 0, R -72, Back 72, move -144, Pet 144 deg), each on the soft spotlight with its name under it.
+- **Sizes from one radius.** `.doll` is a size container; `--R: min(38cqw, 41cqh - 10px)` (the side pieces clear the
+  edges; the group, 2.39 R + a name, fits the height), `--cy` centres it; ring .92 R, pieces .58 R. At most 440 px tall:
+  on a tall screen the spare room goes below. **The desktop panel is 340 px on every screen now** (it was 300 above
+  1000 px of height, 340 below): the doll at 300 was small in a big empty column. The picker's width follows `--side`
+  (at most 680 px there, was 600).
+- **The portrait follows the colour** (`heroImg()`: `UI.heroes[cls]` with 1 -> `wornColor()`, the outfit's colour as
+  composeTexture paints it; `onerror` falls back to colour 1). **The publish now also takes `<cls>2-5` from BB's rip**
+  (`publish_ui`; listed under `portraits` if BB lacks one; test_wardrobe_publish asserts cat2 published, cat3 listed).
+- Phone: portrait 56 + face 38 + the potions in one row, the set line, the doll in a 214 px band (R about 78), 44 px hit
+  areas on the class, the face and the pieces (36 on the potions); about the height the eight blocks had.
+- Markup kept for the checks: `#topics button.topic[data-t=...]` with `.ring` (the picture) and `.tname`; the class and
+  face are `.hero-b[data-t]` (were `.duo-b`). Checks changed: `wardrobe_weapon_slot_check.py` (the five at one distance and
+  their angles at three sizes, one size), `wardrobe_pet_check.py --ui` (the doll; each name centred under its picture, in
+  the panel, over no other picture; ชุด's `.sr`; the old ink-in-its-block measures INK / LABEL_GEOM gone).
