@@ -4125,3 +4125,8 @@ draft: plain dark drop shadows now). Claude's pick in the reply: B.
   `pipeline/wardrobe_set_ribbon_check.py` (in CLAUDE.md's list) asserts it (gaps within 2 device px at 2x, both states,
   desktop and phone): 4 ok. Panel checks after it: weapon_slot, pet --ui, sets, menu pass (232 ok). Picture:
   `plans/left_panel/set_ribbon_built.png`. Not committed or deployed yet.
+- **Deployed** (user: "commit push deploy"; version `07e02140-8feb-4515-a2f1-fa68634581ad`, rollback: c515200d): committed
+  f628348; published from its `git -c core.autocrlf=false archive` with this folder's data: data folder `data-c3a790c0b3`
+  unchanged, the page +1.5 KB, check: no problems; wardrobe_dist_check errors [], pets check on the dist 32 ok. 1 file
+  uploaded (index.html). Live: the ribbon 40 px with the hanger, "เลือกเซ็ต 37 เซ็ต", a click opens the set picker (the name
+  underlined), no errors.
