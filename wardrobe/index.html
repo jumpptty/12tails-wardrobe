@@ -1181,8 +1181,9 @@ async function setProp(slot, name) {
 // setPet(name)): pickPet, the สัตว์เลี้ยง picker's tiles (openPicker "Pet"); with a pet out the camera's fit turns to show
 // it beside her (heroFitPose, FIT_DIR_PET). Its piece menu (a click on it: pieceAt's slot "Pet", kind "pets") has wear / change / take off
 // and the two downloads, through the props' own paths (makePiece, pieceFile, texPNG, dlName; user 2026-11-18: "the model
-// and texture should be downloadable like other assets, Same logic, TTO exclusive remains undownloadable"); not in v1: the
-// view-alone, a skin of the visitor's, the community's (plans/wardrobe_pets_design.md, non-goals)
+// and texture should be downloadable like other assets, Same logic, TTO exclusive remains undownloadable"), and the
+// view-alone (ชมชิ้นส่วน, since 2026-11-19: its idle playing, no bob); not in v1: a skin of the visitor's, the
+// community's (plans/wardrobe_pets_design.md, non-goals)
 let PET_ROWS = null;
 const PET_FILES = {};
 // read at once by the menu: the index's rows by name, and every pet file loaded so far, which is each class's
@@ -1225,11 +1226,7 @@ async function setPet(name) {
       o.quaternion.identity();                         // the hero's rotation (identity, as the hero's root)
       o.scale.setScalar(row.scale[K.cls] ?? 1);
       K.petStage.add(o);
-      finishProp(o);
-      // the game loops the idle (PlayIdle; the pet file's clip "loop"): finishProp holds a prop clip that ends away from its
-      // start (kiteSnake's and smallKarazo's do, a little, and one of TTO's own)
-      const pa = o.userData.propAnim;
-      if (pa?.ends && pa.a.clips[pa.pick]?.loop) { pa.ends = false; pa.act.setLoop(THREE.LoopRepeat, Infinity); pa.act.clampWhenFinished = false; }
+      finishProp(o); petLoop(o);
       o.userData.idleBox = idleBox(o);
       K.props.Pet = o;
     } catch (e) { if (!mine()) return; K.state.Pet = null; throw e; }
@@ -1239,17 +1236,28 @@ async function setPet(name) {
   }
 }
 const pickPet = name => tracked(() => setPet(name)).catch(err);    // a pick: one undo step
-// the pet's box over its whole idle, in its own space (its root is never animated): the clip sampled at 24 steps and put
-// back where it was. The camera's fit takes this in (heroFitPose), so whatever frame the loop is at, the pet stays framed
-// (one instant's box let a swinging tail or a long pet's coils leave the frame at another phase)
-function idleBox(o) {
-  const pa = o.userData.propAnim, box = new THREE.Box3(), inv = new THREE.Matrix4();
-  o.updateMatrixWorld(true); inv.copy(o.matrixWorld).invert();
-  const add = () => { const b = visibleBox(o, false); if (!b.isEmpty()) box.union(b.applyMatrix4(inv)); };
-  if (!pa) { add(); return box; }
+// the game loops the idle (PlayIdle; the pet file's clip "loop"): finishProp holds a prop clip that ends away from its
+// start (kiteSnake's and smallKarazo's do, a little, and one of TTO's own). On stage (setPet) and in ชมชิ้นส่วน (makePiece)
+function petLoop(o) {
+  const pa = o.userData.propAnim;
+  if (pa?.ends && pa.a.clips[pa.pick]?.loop) { pa.ends = false; pa.act.setLoop(THREE.LoopRepeat, Infinity); pa.act.clampWhenFinished = false; }
+}
+// fn() at each of 25 frames over a prop's idle clip (its pose and world matrices updated), then the clip's time put back
+// where it was; once as it stands when it has no clip
+function overIdle(o, fn) {
+  const pa = o.userData.propAnim;
+  if (!pa) { o.updateMatrixWorld(true); fn(); return; }
   const t0 = pa.act.time, dur = pa.act.getClip().duration, n = 24;
-  for (let i = 0; i <= n; i++) { pa.act.time = dur * i / n; pa.mixer.update(0); add(); }
-  pa.act.time = t0; pa.mixer.update(0);
+  for (let i = 0; i <= n; i++) { pa.act.time = dur * i / n; pa.mixer.update(0); o.updateMatrixWorld(true); fn(); }
+  pa.act.time = t0; pa.mixer.update(0); o.updateMatrixWorld(true);
+}
+// the pet's box over its whole idle, in its own space (its root is never animated). The camera's fit takes this in
+// (heroFitPose), so whatever frame the loop is at, the pet stays framed (one instant's box let a swinging tail or a long
+// pet's coils leave the frame at another phase)
+function idleBox(o) {
+  const box = new THREE.Box3(), inv = new THREE.Matrix4();
+  o.updateMatrixWorld(true); inv.copy(o.matrixWorld).invert();
+  overIdle(o, () => { const b = visibleBox(o, false); if (!b.isEmpty()) box.union(b.applyMatrix4(inv)); });
   return box;
 }
 // that box where the pet stands now (world space)
@@ -2634,6 +2642,7 @@ async function makePiece(slot, item, { pose = "idle", face = null } = {}) {   //
       object = buildProp(p);
       object.position.set(0, 0, 0); object.quaternion.copy(kind === "pets" ? new THREE.Quaternion() : wornTurn(K, slot, p)); object.scale.set(1, 1, 1);
       finishProp(object);                  // binds its live skins; an animated prop loops its own clip (pose "idle" only)
+      if (kind === "pets") petLoop(object);
       propMixer = object.userData.mixer || null; mixer = pose === "idle" ? propMixer : null;
       object.traverse(x => { if (x.isSkinnedMesh) skinned.push(x); });
     }
@@ -3019,8 +3028,8 @@ function pmHead(slot, item) {
     + `<b class="pm-name">${slot === "Pet" ? esc(petName(item)) : nameHTML(item + ed)}</b><span class="pm-meta">${meta.join('<span class="sep" aria-hidden="true">·</span>')}</span></span></div>`;
 }
 // the actions: look (ดูชิ้นนี้อย่างเดียว = the viewer), wear / change / take off, then the files, then the skin. A piece with
-// two textures lists each one; paste = the choice for a picture pasted on such a piece. A pet: wear / change / take off
-// and the files only (no viewer, no skin of the visitor's or the community's: not in v1); change once its topic exists
+// two textures lists each one; paste = the choice for a picture pasted on such a piece. A pet: the viewer, wear / change /
+// take off and the files only (no skin of the visitor's or the community's: not in v1); change once its topic exists
 function pmList(slot, item, from, paste) {
   const kind = kindOf(slot), worn = wornNow(slot, item), texs = texsOf(kind, item), model = hasModel(kind, item), pet = slot === "Pet";
   const mine = texs.some(t => SKINS.has(skinKey(kind, item, t))), two = texs.length > 1;
@@ -3283,12 +3292,14 @@ renderer.domElement.addEventListener("pointerleave", () => { Hover.at = null; })
 // the outfit, and closes again); a double-click on a piece of the character. Esc / กลับ / the toolbar button: back to the
 // character as it was (camera, limits, visibility). Motion (F6): the character fades into the white stage first, then the
 // piece fades in with a small scale-up; a step fades the old piece out before the next one comes in; leaving fades the
-// piece out, eases the camera back and fades the character in. Viewing never adds an undo step
-const VIEW_SLOTS = new Set(["outfit", "R", "L", "Head", "Back"]);
-const MENU_SLOTS = new Set([...VIEW_SLOTS, "Pet"]);     // the pieces with a piece menu: the pet's has no viewer (not in v1)
+// piece out, eases the camera back and fades the character in. Viewing never adds an undo step. A pet (user 2026-11-19:
+// "allow it to be view separately like other items, but with its animation intact, and no up and down"): its idle loops
+// as on the stage, no bob; it stands on its shadow as on the game's ground (its root at the floor, lifted only if its
+// idle dips below it), fitted and turned over its whole idle (overIdle)
+const VIEW_SLOTS = new Set(["outfit", "R", "L", "Head", "Back", "Pet"]);
+const MENU_SLOTS = VIEW_SLOTS;              // the pieces with a piece menu: each has the viewer too
 const SLOT_TH = Object.fromEntries(TOPICS.filter(([t]) => VIEW_SLOTS.has(t)));
 SLOT_TH.L = SLOT_TH.R;                      // the left hand's piece belongs to the one weapon topic (อาวุธ)
-SLOT_TH.Pet = "สัตว์เลี้ยง";                  // its menu: เปลี่ยนสัตว์เลี้ยง, ถอดสัตว์เลี้ยงออก
 const SHOT_TITLE = { hero: "บันทึกภาพตัวละคร (PNG พื้นโปร่งใส)", piece: "บันทึกภาพชิ้นนี้ (PNG พื้นโปร่งใส)" };   // F11
 const vShadow = shadowDisc([[0, .34], [.4, .14], [1, 0]], 0.001);
 vShadow.removeFromParent();
@@ -3364,6 +3375,7 @@ function pickerProps(t, list) {
 async function viewList(slot) {
   if (openTopic === slot) return [...$("pkBody").querySelectorAll(".pk-cell:not([data-ed])")].map(c => c.dataset.item);
   if (slot === "outfit") return [...new Set(outfitTiles().map(x => x.o.name))];
+  if (slot === "Pet") return nickSort(await petIndex(), r => nickOf("pets", r.name)).map(r => r.name);    // the picker's order
   const all = await propList(SLOTS[slot]);
   const list = (slot === "L" ? all.filter(p => weaponOf(p.name).L === p.name) : pickerProps(slot, all)).map(p => p.name);
   return [...new Set(list)];
@@ -3380,7 +3392,7 @@ function syncViewing() {
 const Showcase = {
   on: false, phase: "off", token: 0, cur: null, list: [], piece: null, next: null, loading: false, fitted: false,
   group: new THREE.Group(), pivot: new THREE.Group(), holder: new THREE.Group(),
-  t: 0, r: 1, h0: 1, size: new THREE.Vector3(1, 1, 1), rxz: .5, hull: [], look: new THREE.Vector3(), fitD: 1, foot: 1, lift: 0, shown: 0, dragging: false, resumeAt: 0,
+  t: 0, r: 1, h0: 1, bob: .06, size: new THREE.Vector3(1, 1, 1), rxz: .5, hull: [], look: new THREE.Vector3(), fitD: 1, foot: 1, lift: 0, shown: 0, dragging: false, resumeAt: 0,
   hero: null, fx: null, heroTw: null, pieceTw: null, pieceTo: 1, liftTw: null, saved: null, fitKey: "", refitHero: false,
   async enter(slot, item, list = null) {
     if (!C || !VIEW_SLOTS.has(slot) || !item) return;
@@ -3433,13 +3445,17 @@ const Showcase = {
     const piece = this.next; this.next = null; this.piece = piece;
     this.holder.add(piece.view); this.holder.position.set(0, 0, 0); this.pivot.position.set(0, 0, 0); this.pivot.rotation.set(0, 0, 0); this.pivot.scale.setScalar(1);
     this.group.updateMatrixWorld(true);
-    const box = visibleBox(piece.view), s = box.getBoundingSphere(new THREE.Sphere()), size = box.getSize(new THREE.Vector3());
-    this.r = Math.max(s.radius, 0.02); this.size.copy(size);
     // the turning axis (F5): through the centre of the smallest circle around its footprint, so an uneven piece swings as
-    // little as it can; its outline for the fit: per height band (24) and direction around the axis (12) the farthest vertex
-    const P = [], v = new THREE.Vector3();
-    piece.view.traverseVisible(o => { if (!o.isMesh) return; const n = o.geometry.attributes.position.count;
+    // little as it can; its outline for the fit: per height band (24) and direction around the axis (12) the farthest vertex.
+    // A pet's points over its whole idle (its box too), so no frame of the loop leaves the fit
+    const P = [], v = new THREE.Vector3(), pet = piece.kind === "pets";
+    const grab = () => piece.view.traverseVisible(o => { if (!o.isMesh) return; const n = o.geometry.attributes.position.count;
       for (let i = 0; i < n; i++) { o.getVertexPosition(i, v).applyMatrix4(o.matrixWorld); P.push([v.x, v.y, v.z]); } });
+    if (pet) overIdle(piece.view, grab); else grab();
+    const box = visibleBox(piece.view);
+    if (pet) for (const q of P) box.expandByPoint(v.fromArray(q));
+    const s = box.getBoundingSphere(new THREE.Sphere()), size = box.getSize(new THREE.Vector3());
+    this.r = Math.max(s.radius, 0.02); this.size.copy(size);
     const mec = enclosingCircle(P.map(q => [q[0], q[2]])), centre = new THREE.Vector3(mec[0], s.center.y, mec[1]);
     const hull = new Map(), y0 = box.min.y - centre.y, yr = Math.max(size.y, 1e-4);
     const dirs = Array.from({ length: 12 }, (_, k) => [Math.cos(k * Math.PI / 6), Math.sin(k * Math.PI / 6)]);
@@ -3452,7 +3468,9 @@ const Showcase = {
     }
     this.hull = [...hull.values()];
     this.rxz = Math.max(mec[2], 0.01);                                          // the real turning radius
-    this.h0 = size.y / 2 + this.r * .16;                                        // its lowest point floats a little over the shadow
+    this.bob = pet ? 0 : .06;
+    this.h0 = pet ? centre.y + Math.max(0, -box.min.y)                          // a pet: its root on the floor (none below it)
+      : size.y / 2 + this.r * .16;                                              // its lowest point floats a little over the shadow
     this.foot = Math.max(this.rxz, this.r * .3);                                // the shadow's radius (it turns: x and z both)
     this.holder.position.copy(centre).negate();                                 // the centre on the turning axis
     this.fx = whiteFader([piece.view]); this.shown = 0; this.fx.set(1); this.pivot.scale.setScalar(.94);
@@ -3478,7 +3496,7 @@ const Showcase = {
     const cy = phone ? vh / 2 + 22 : (top + bottom) / 2;             // a phone's view offset puts the picture 22 px lower
     const half = Math.max(40, Math.min(cy - top, bottom - cy)) * .94, halfW = Math.max(60, (vw - stageInset) / 2 - 12) * .94;
     const dir = fresh ? new THREE.Vector3(0.3, 0.2, 1).normalize() : camera.position.clone().sub(controls.target).normalize();
-    const cam = camera.clone(), v = new THREE.Vector3(), amp = this.r * .06, target = new THREE.Vector3();
+    const cam = camera.clone(), v = new THREE.Vector3(), amp = this.r * this.bob, target = new THREE.Vector3();
     cam.clearViewOffset(); cam.updateProjectionMatrix();
     const turn = Array.from({ length: 16 }, (_, a) => [Math.cos(a * Math.PI / 8), Math.sin(a * Math.PI / 8)]);
     const fits = d => {
@@ -3573,8 +3591,8 @@ const Showcase = {
     if (!this.piece) return;
     this.t += dt;
     if (!this.dragging && performance.now() > this.resumeAt) this.pivot.rotation.y += dt * Math.PI / 9;     // 20 deg/s
-    const up = (Math.sin(this.t * Math.PI * 2 / 3) + 1) / 2;                 // 0 at the bottom of the bob, 1 at the top
-    this.pivot.position.y = this.h0 + (up - .5) * 2 * this.r * .06;           // amplitude 3 % of the piece's size (2r)
+    const up = this.bob ? (Math.sin(this.t * Math.PI * 2 / 3) + 1) / 2 : 0;  // 0 at the bottom of the bob, 1 at the top (a pet: none)
+    this.pivot.position.y = this.h0 + (up - .5) * 2 * this.r * this.bob;     // amplitude 3 % of the piece's size (2r)
     vShadow.scale.setScalar(this.foot * (1 - .14 * up)); vShadow.material.opacity = (1 - .3 * up) * this.shown;
     this.piece.mixer?.update(dt);                                              // wings flap, as on the character
   },
@@ -3636,7 +3654,7 @@ function renderCard() {
     + alt("l-full", !worn, "ใส่ชิ้นนี้", "ใส่อยู่") + alt("l-short", !worn, "ใส่", "ใส่อยู่") + `</button>`;
   // the piece's files and skin are in its menu (2026-11-09), the same one a click on the character opens
   const more = b("menu", "ตัวเลือก", "ตัวเลือก", PM_ICON.more, ' aria-haspopup="menu"', "ดาวน์โหลดลาย โมเดล 3D และอัปโหลดลาย");
-  el.innerHTML = `<div class="sc-head"><b class="sc-name">${nameHTML(item)}</b><span class="sc-nav">${nav("prev", "ชิ้นก่อนหน้า", "←")}`
+  el.innerHTML = `<div class="sc-head"><b class="sc-name">${slot === "Pet" ? esc(petName(item)) : nameHTML(item)}</b><span class="sc-nav">${nav("prev", "ชิ้นก่อนหน้า", "←")}`
     + `<span class="sc-count num" style="min-width: ${String(n).length * 2 + 3}ch">${i + 1} / ${n}</span>${nav("next", "ชิ้นถัดไป", "→")}</span></div>`
     + `<div class="sc-meta">${meta.join(`<span class="sc-dot" aria-hidden="true">·</span>`)}</div>`
     + `<div class="sc-acts">${wear}${more}${b("close", "กลับ", "กลับ", SC_ICON.close, ' data-close="1"', "กลับไปที่ตัวละคร (Esc)")}</div>`
@@ -3655,7 +3673,7 @@ $("showcase").addEventListener("click", async e => {
   }
   if (a === "wear") {                    // one undo step, like a pick in the picker
     await tracked(() => wearPiece(slot, item)).catch(err);      // a weapon piece: its whole weapon (setWeapon)
-    renderTopics(); syncPressed(); renderCard(); autoFit(); toast(`ใส่ ${humanize(item)} แล้ว`);
+    renderTopics(); syncPressed(); renderCard(); autoFit(); toast(`ใส่ ${pieceName(slot, item)} แล้ว`);
   }
 });
 // the piece the viewer shows wears a new skin, colour or face at once

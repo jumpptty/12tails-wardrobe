@@ -3754,8 +3754,8 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   pet check 218 ok, bloompulse 6 ok, moves / sets / nick (3626 ok) / fx (dark, spot, white) / outfit_alpha pass, menu 37 ok
   (after the re-scan fix above), weapon_slot 97 ok after its panel assertion was updated: it said "ท่าทาง across the last row",
   the pets put สัตว์เลี้ยง beside ท่าทาง (the assertion now says so, on desktop / short / phone).
-- **Not done (the user can ask):** pets in gear sets / looks / community skins, a pet skin upload, view-alone for pets, pet
-  movement or skills, particles, Thai pet names. Next: the 6-7 emote (`sixseven`), its bundles already decrypted in
+- **Not done (the user can ask):** pets in gear sets / looks / community skins, a pet skin upload, view-alone for pets (done
+  since: "2026-11-19 (office), pets in ชมชิ้นส่วน" below), pet movement or skills, particles, Thai pet names. Next: the 6-7 emote (`sixseven`), its bundles already decrypted in
   `D:\12tails-wardrobe\tto_assets\2026-11-18`.
 - **Final review fixes (2026-11-19, before the merge and the deploy; the review and the fix report in the untracked
   `.superpowers/sdd/wardrobe_pets_plan/`):**
@@ -3948,3 +3948,32 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
     playwright
   - Final: the Panda c_allhlw4 override is permanent (a real future game change to it would be swallowed); drop it once
     the Cat pick is settled
+
+## 2026-11-19 (office), the pull; pets in ชมชิ้นส่วน
+
+- **The pull (user: "git pull").** It stopped on 181 local files that the incoming commits also carry: the office's own
+  unfinished Whale-effects run of 2026-11-13 16:xx (10 modified tracked files, the Whale's textures, icons, sounds,
+  fx.json, decisions.md), superseded by the home PC's finished `b4e05b3` (2026-11-14 01:54). 160 were byte-equal to the
+  incoming ones, 21 older drafts. All 181 are kept in a stash, not deleted: `git stash list` shows "office WIP Whale fx
+  run 2026-11-13, superseded by b4e05b3 (stashed before pull 2026-11-19)"; `git stash drop` it once nobody needs it.
+  Main is at d5a673e (the pets) and the uncommitted skin-session files (plans/reskins/...) are untouched.
+- **Pets in ชมชิ้นส่วน** (user: "see the pet items in the wardrobe, you should allow it to be view seperately like other
+  items, but with its animation intact, and no up and down"). `VIEW_SLOTS` takes "Pet" (`MENU_SLOTS` is the same set
+  now), so a pet gets ดูชิ้นนี้อย่างเดียว in its menu (on stage, a picker tile, the ring), the double-click on it, and
+  the open viewer's สัตว์เลี้ยง picker shows a tile's pet instead of wearing it, as the other pieces do. In the viewer a
+  pet: its idle loops (`petLoop`, now shared by `setPet` and `makePiece`: the same loop rule as on stage); **no bob**
+  (`Showcase.bob` = 0, the other pieces keep .06 = 3 % of their size); it stands on its shadow as on the game's ground
+  (its root at the floor, lifted only if its idle dips below it), where the other pieces float a little over theirs;
+  the turntable turns as for every piece; its fit, footprint circle and box are taken over the whole idle
+  (`overIdle`, 25 frames, now also the body of `idleBox`), so no frame of the loop leaves the frame. The card names it
+  by the game's name (petName), and its ใส่ชิ้นนี้ toast too. ArrowLeft / Right step through the pets in the
+  picker's order (nicknamed first). `wardrobe_pet_check.py`: the pet's menu lists start with "view", and a new step
+  views TianlongA (idle time moves, the turn moves, the height stays, the root on or over the floor, the stage pet hidden,
+  back at its rest point after).
+- Checks (office, `--with playwright==1.65.1`): the pet check 326 ok, 2 failed, both "smallDragonZ ?ttolock: hover ...
+  lights None" (the point PET_POINT found misses the TTO dragon under ?ttolock): **not from this change**: main's own page
+  and check (the change stashed) fail the same step 3 runs of 3 at the office, the changed one 1 of 2 with `--downloads`.
+  Left for a later session (the check's point scan, or the dragon's textures not in yet under ?ttolock). The menu check
+  passes. Isolated shots of smallAnubi / miniMokBug / kiteChula in the viewer: on their shadows (root y 0.01-0.03), the
+  height the same 1.2 s apart, no page errors; TianlongA floats high over its shadow: its 8.67 s idle swings 1.11 m
+  below its root, so its root is lifted that much.

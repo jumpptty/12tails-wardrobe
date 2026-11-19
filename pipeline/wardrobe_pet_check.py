@@ -14,6 +14,10 @@ hero how it would work in game"). On the real page through its scripting hook (w
   - Review Focus 3: class switches with a pet out: TianlongA (p_all85) at 1.5x beside the Bison, 2.0x beside the Whale,
     each class's own pet back at its rest point and scale after a switch and after a reload; a kite at each class's height
   - Review Focus 4: ชมชิ้นส่วน (Showcase) on the outfit hides the pet with the character; its exit shows it again
+  - ชมชิ้นส่วน on the pet itself (user 2026-11-19: "allow it to be view separately like other items, but with its animation
+    intact, and no up and down"): TianlongA floats alone, the one on stage hidden; over 1.5 s its idle clip's time moves on,
+    the turntable turns, its height never changes (no bob), its root stands on or over the floor; the card names it; its
+    exit puts the pet back at its rest point
   - the คัดลอกให้ Claude line names the pet (สัตว์เลี้ยง <name>); no page errors, console errors or failed requests
   - skill effects (the controller's ruling 2026-11-19: in the game the pet is a GameObject of its own): with smallAnubi
     out, the Bison's Enrage (grow + tint), its Titan Drop (a lift), the Chameleon's Back Step (FX/Blend shells) and the
@@ -22,9 +26,9 @@ hero how it would work in game"). On the real page through its scripting hook (w
     whole-hero hide) hides it with the hero (TTO's PetControl.OnParentHide@0x1a94140) and shows it again after
   - downloads (the pets plan's Task 8; user 2026-11-18: "the model and texture should be downloadable like other assets,
     Same logic, TTO exclusive remains undownloadable"), each on its own page, the menu opened by a click on the pet on
-    stage (the ray pieceAt casts; the hover lights the pet): a BB pet's menu lists exactly change (once the สัตว์เลี้ยง
-    topic exists) / ถอดสัตว์เลี้ยงออก / ดาวน์โหลดลาย (PNG) per texture (numbered when two) / ดาวน์โหลดโมเดล 3D (GLB): no
-    view-alone, upload, reset or community item, no Ctrl+V hint; each download is 12tails_<class in Thai>_<pet>[_ลาย<n>]
+    stage (the ray pieceAt casts; the hover lights the pet): a BB pet's menu lists exactly ดูชิ้นนี้อย่างเดียว (the viewer,
+    since 2026-11-19) / change (once the สัตว์เลี้ยง topic exists) / ถอดสัตว์เลี้ยงออก / ดาวน์โหลดลาย (PNG) per texture
+    (numbered when two) / ดาวน์โหลดโมเดล 3D (GLB): no upload, reset or community item, no Ctrl+V hint; each download is 12tails_<class in Thai>_<pet>[_ลาย<n>]
     .png / .glb, the PNG byte-equal to the data's, the GLB loading back in GLTFLoader with the pet's skins on their bones
     and every texture embedded byte-equal (smallAnubi on the Sheep; miniAncientBug, two textures, on the Wolf); the TTO
     pet (smallDragonZ) downloads locally too; with ?ttolock (the online rule, Review Focus 5) the TTO pet's menu has no
@@ -421,12 +425,12 @@ async def downloads(b, check, errors):
 
     def items_ok(m, name, cls, locked, tag=""):            # locked: no download item (a TTO pet under ?ttolock)
         texs = pet_parts(name)[0]
-        want = ["change", "remove"]                        # (the สัตว์เลี้ยง topic exists: its change item always)
+        want = ["view", "change", "remove"]                # (the สัตว์เลี้ยง topic exists: its change item always)
         if not locked:
             want += [f"png:{t}" for t in texs] + ["glb"]
         got = [i["a"] + (":" + i["tex"] if i["tex"] else "") for i in m["items"]]
         labels = {i["a"] + (":" + i["tex"] if i["tex"] else ""): i["label"] for i in m["items"]}
-        want_labels = {"remove": "ถอดสัตว์เลี้ยงออก", "change": "เปลี่ยนสัตว์เลี้ยง", "glb": "ดาวน์โหลดโมเดล 3D (GLB)",
+        want_labels = {"view": "ดูชิ้นนี้อย่างเดียว", "remove": "ถอดสัตว์เลี้ยงออก", "change": "เปลี่ยนสัตว์เลี้ยง", "glb": "ดาวน์โหลดโมเดล 3D (GLB)",
                        **{f"png:{t}": "ดาวน์โหลดลาย (PNG)" + (f" {k + 1}" if len(texs) > 1 else "") for k, t in enumerate(texs)}}
         row = ROWS[name]
         head = row["game"] or STEM[name].replace("_", " ")
@@ -469,7 +473,7 @@ async def downloads(b, check, errors):
     # ---- the local copy: every pet downloads
     page = await page_at("")
     # a tile's menu before the pet's file is in (Task 8's review): its downloads all there
-    await tile_menu(page, "smallAnubi", ["wear", "png:Anubi.png", "glb"], "sheep  smallAnubi     tile")
+    await tile_menu(page, "smallAnubi", ["view", "wear", "png:Anubi.png", "glb"], "sheep  smallAnubi     tile")
     for cls, name in (("sheep", "smallAnubi"), ("wolf", "miniAncientBug"), ("sheep", "smallDragonZ")):
         pt = await wear(page, cls, name)
         m = await menu(page, name, f"{cls:6} {name:14}", pt)
@@ -569,7 +573,7 @@ async def downloads(b, check, errors):
     # ---- ?ttolock (the online rule; Review Focus 5): the TTO pet preview only, a BB pet keeps both downloads
     page = await page_at("?ttolock")
     # a tile's menu before the pet's file is in (Task 8's review): still TTO, so no download item
-    await tile_menu(page, "smallDragonZ", ["wear"], "sheep  smallDragonZ   tile ?ttolock")
+    await tile_menu(page, "smallDragonZ", ["view", "wear"], "sheep  smallDragonZ   tile ?ttolock")
     for cls, name, locked in (("sheep", "smallDragonZ", True), ("sheep", "smallAnubi", False)):
         pt = await wear(page, cls, name)
         m = await menu(page, name, f"{cls:6} {name:14} ?ttolock", pt)
@@ -1195,6 +1199,25 @@ async def main():
         await page.wait_for_function("() => wardrobe.debug().Showcase.phase === 'off'", timeout=30000)
         st = await placed("TianlongA", "whale", "after Showcase's exit ")
         await page.screenshot(path=str(OUT / "whale_tianlong.png"))
+
+        # ---- ชมชิ้นส่วน on the pet: its idle playing, no bob, its root on or over the floor
+        await page.evaluate("() => { const { Showcase, C } = wardrobe.debug(); Showcase.enter('Pet', C.state.Pet); }")
+        await page.wait_for_function("() => { const { Showcase: S } = wardrobe.debug(); return S.phase === 'on' && S.piece?.kind === 'pets' && !S.pieceTw; }", timeout=60000)
+        VIEWED = """() => { const { Showcase: S, C, THREE } = wardrobe.debug(), p = S.piece, pa = p.view.userData.propAnim;
+          return { item: S.cur.item, y: S.pivot.position.y, rot: S.pivot.rotation.y, t: pa ? pa.act.time : null, mixer: !!p.mixer,
+            rootY: p.view.getWorldPosition(new THREE.Vector3()).y, name: document.querySelector('#showcase .sc-name')?.textContent || '',
+            stage: C.petStage.visible }; }"""
+        a = await page.evaluate(VIEWED)
+        await page.wait_for_timeout(1500)
+        z = await page.evaluate(VIEWED)
+        await page.screenshot(path=str(OUT / "showcase_pet.png"))
+        check(a["item"] == "TianlongA" and a["mixer"] and a["t"] is not None and z["t"] != a["t"] and z["rot"] != a["rot"]
+              and z["y"] == a["y"] and min(a["rootY"], z["rootY"]) >= -1e-6 and z["name"] and not z["stage"],
+              f"Showcase on the pet {a['item']}: idle time {a['t']} -> {z['t']}, turn {a['rot']:.3f} -> {z['rot']:.3f}, "
+              f"height {a['y']} -> {z['y']} (no bob), root y {z['rootY']:.4f}, card {z['name']!r}, stage pet shown {z['stage']}")
+        await page.evaluate("() => wardrobe.debug().Showcase.exit()")
+        await page.wait_for_function("() => wardrobe.debug().Showcase.phase === 'off'", timeout=30000)
+        await placed("TianlongA", "whale", "after the pet's Showcase ")
 
         # ---- skill effects: a move that changes the hero's look or place leaves the pet as it was; a whole-hero hide hides it
         LOOKS = """() => { const { C, FX, THREE } = wardrobe.debug(), o = C.props.Pet;

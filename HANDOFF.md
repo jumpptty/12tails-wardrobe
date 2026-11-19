@@ -5,12 +5,10 @@ go-ahead is needed, says so), and deletes each item once it is done. Empty = not
 
 ## Either PC: pets (built 2026-11-19; NOTES.md "pets: built")
 
-Delete this item when the office has pulled main with the pets, and the user has answered the picks below (move any
-answer still open to its own item).
+Delete this item when the user has answered the picks below (move any answer still open to its own item). The office
+pulled main with the pets on 2026-11-19.
 
 The pet feature is on main since 2026-11-19 (merged and deployed, version 7f8e0a09):
-- **Office PC: pull.** The data is tracked (`wardrobe/data/pets/`, the pet textures and icons, `all/props_trinkets.json`,
-  `placements.json`, `icons.json`), so the page works at once. Nothing to rebuild.
 - **A pet or Bloom Pulse rebuild needs a decrypted TTO 1.7.0 client** (`wardrobe_pets.py`, `wardrobe_tto_trinkets.py`):
   home has it at `D:/12tails-wardrobe/tto_assets/2026-11-18` (made by `py -3 pipeline/wardrobe_tto_fetch.py --out
   tto_assets/2026-11-18 --grep "characters/pets?/" --grep "heroes/all/trinkets/aura_bloompulse" --grep
