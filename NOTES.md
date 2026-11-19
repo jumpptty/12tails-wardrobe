@@ -3977,3 +3977,13 @@ for my input"), so Claude made the picks marked (C) below; the user's own are ma
   passes. Isolated shots of smallAnubi / miniMokBug / kiteChula in the viewer: on their shadows (root y 0.01-0.03), the
   height the same 1.2 s apart, no page errors; TianlongA floats high over its shadow: its 8.67 s idle swings 1.11 m
   below its root, so its root is lifted that much.
+- **Deployed** (user: "commit push deploy"; version `af230bfa-e0d4-400a-8698-7ab54588f65b`, rollback: 7f8e0a09): committed
+  98d5931 (only this change: the skin sessions' files are untracked), unit 157 OK, node 9/9. Published with `--src` = a
+  `git -c core.autocrlf=false archive` of 98d5931's wardrobe/ (no data; its index.html LF, = the working file) and `--data` =
+  this folder's: 9,938 files, `data-707284f874` unchanged (= the pets deploy's), dropped pets 37 / back_trinkets 21 as
+  then, check: no problems; `wardrobe_dist_check.py` errors [], `wardrobe_pets_live_check.py` on the dist 21 ok. From an
+  empty folder with the Worker script: 1 file uploaded (index.html). Live (isolated headless): the pets live check 21 ok;
+  smallAnubi in the viewer: idle time 0.24 -> 0.76 s over 1.5 s, height unchanged, bob 0, card "S. Anubi 9", no page
+  errors. The publish copies only the fx textures fx.json names, so the office's two untracked leftovers
+  `wardrobe/data/fx/tex/nAttack_hit1__whale.webp` / `nAttack_hit2__whale.webp` (from the stashed Whale WIP, named by no
+  fx.json) stayed off the site; they are still in the folder.
