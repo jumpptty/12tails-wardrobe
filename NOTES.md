@@ -4139,3 +4139,7 @@ piece of `setPieces(s)` has its record's `tto` (recOf through `SET_SLOT`); the s
 Bat's Dream V: BB outfits with TTO pieces). Local copy: every class's Halloween set, Rabbit's Moon Goddess, Sheep's Divine
 Goddess. The panel's set ribbon shows no mark (the panel's rings show none either). `wardrobe_sets_check.py` asserts it
 for all 12 classes (no all-TTO set unmarked, no mixed set marked): pass; `wardrobe_tto_check.py` passes. Not committed yet.
+- **Deployed** (user: "commit push deploy"; version `27e539ed-eafa-464b-84e5-ff1464305a6f`, rollback: 07e02140): committed
+  3031628; published from its archive with this folder's data (data-c3a790c0b3 unchanged, the page +476 bytes, check no
+  problems; wardrobe_dist_check errors []); 1 file uploaded. Live: the Bat's, Rabbit's and Sheep's set pickers mark
+  Halloween only (the Goddess sets are not released online), no errors.
