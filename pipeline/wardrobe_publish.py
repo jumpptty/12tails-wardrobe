@@ -136,7 +136,8 @@ def page_edits(data_dir, ui_dir):
          "// the published copy (wardrobe_publish.py) keeps its data in a folder named by a hash of the content: a rebuilt\n"
          "// file gets a new address, so the browser may keep every file it has\n", 1),
         ("no-cache fetch", 'fetch(p, { cache: "no-cache" })', "fetch(p)", 1),
-        ("no-cache effects", 'dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" })', "dataBytes(`${DATA}${cls}/fx.json`)", 1),
+        # dataJSON: the files that may be scrambled (prop lists, pet files, a class's fx.json; 2026-11-19)
+        ("no-cache data JSON", 'dataBytes(p, { cache: "no-cache" })', "dataBytes(p)", 1),
         # the local copy's toolbar ends with a "copy for Claude" button behind a divider: both go
         ("copy button", '<span class="tb-sep" aria-hidden="true"></span><button type="button" class="tb txt" id="copy">คัดลอกให้ Claude</button>',
          "", 1),
@@ -610,6 +611,14 @@ def scramble(data):
     return SCRAMBLE_MARK + (int.from_bytes(data, "little") ^ int.from_bytes(key, "little")).to_bytes(len(data), "little")
 
 
+def unscramble(data):
+    """scramble() undone, as the page's dataBytes() does; a file without the mark comes back as it is (check() reads the
+    published JSON through it: a prop list holding a TTO item and a TTO pet's file are scrambled since 2026-11-19)."""
+    if not data.startswith(SCRAMBLE_MARK):
+        return data
+    return scramble(data[len(SCRAMBLE_MARK):])[len(SCRAMBLE_MARK):]
+
+
 def reborn_rip(bb_rip):
     """The Reborn rip beside the BB rip in the same Bible folder (<bible>\\RippedAssets_Reborn\\ExportedProject\\Assets\\
     Resources for <bible>\\RippedAssets\\ExportedProject\\Assets\\Resources), or None."""
@@ -663,10 +672,13 @@ class Run:
             return default
         return json.loads(p.read_text(encoding="utf-8"))
 
-    def write_json(self, rel, obj):
+    def write_json(self, rel, obj, scrambled=False):
+        """scrambled: a file holding a TTO item's mesh (a prop list with a released TTO prop, a TTO pet's file; user
+        2026-11-19: "yes, scramble" the TTO models too), written scramble()d; the page reads it through dataBytes()."""
         p = self.stage / rel
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(obj, separators=(",", ":")), encoding="utf-8")
+        text = json.dumps(obj, separators=(",", ":")).encode("utf-8")
+        p.write_bytes(scramble(text) if scrambled else text)
 
     def copy(self, rel, scrambled=False):
         p = self.stage / rel
@@ -935,7 +947,8 @@ def publish_clips(run, cls):
 
 
 def publish_props(run, cls, kind):
-    """props_<kind>.json: BB props whose geometry (and clips) equal BB's and whose textures BB has."""
+    """props_<kind>.json: BB props whose geometry (and clips) equal BB's and whose textures BB has, plus the released TTO
+    ones (marked tto); a list holding any TTO prop is written scrambled (its meshes: BB's in the same file go with it)."""
     report_kind, kept = PROP_KINDS[kind], []
     slot = run.load("icons.json", default={}).get(cls, {}).get(kind, {})
     for p in run.load(f"{cls}/props_{kind}.json", default=[]):
@@ -961,7 +974,7 @@ def publish_props(run, cls, kind):
             run.drop(report_kind, name, why)
         else:
             kept.append(p)
-    run.write_json(f"{cls}/props_{kind}.json", kept)
+    run.write_json(f"{cls}/props_{kind}.json", kept, scrambled=any(p.get("tto") for p in kept))
     return kept
 
 
@@ -970,7 +983,7 @@ def publish_pets(run):
     and idle clip equal BB's pet prefab (BBRip.compare_prop, kind "pets"), with their textures and icons (icons/pet/
     <code>.webp = gamegui/icons/items/pet/<code>.png) taken again from the BB rip; a TTO-sourced pet (its tto flag, or a
     file that differs from BB's) only when the released list names it ({"all": {"pets": [names]}}): from the local data,
-    marked tto, its textures scrambled. The index keeps the published pets' rows only and is always written (the page
+    marked tto, its file (the mesh) and textures scrambled. The index keeps the published pets' rows only and is always written (the page
     asks for it). Returns the kept rows."""
     kept = []
     for row in run.load(PET_INDEX, default=[]):
@@ -987,7 +1000,7 @@ def publish_pets(run):
             if miss:
                 run.drop("pets", name, "released TTO pet, but " + miss)
                 continue
-            run.write_json(row["file"], dict(p, tto=True))
+            run.write_json(row["file"], dict(p, tto=True), scrambled=True)
             kept.append(dict(row, tto=True, icon=run.icon(row.get("icon"), local_ok=True)))
             continue
         why = next((w for w in map(run.prop_texture, textures) if w), None)
@@ -1425,7 +1438,7 @@ def _json(folder, rel, problems):
     if not p.is_file():
         return None                                     # reported as missing by the path walk
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        return json.loads(unscramble(p.read_bytes()).decode("utf-8"))
     except (ValueError, UnicodeDecodeError) as e:
         problems.append(f"{rel} is not valid JSON ({e})")
         return None

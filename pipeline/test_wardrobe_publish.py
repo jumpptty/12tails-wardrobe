@@ -54,7 +54,7 @@ const colorIcon = c => `${UI_DIR}recolor${c}.webp`;
 // no-cache = ask the server every time (a 304 when unchanged): a rebuilt outfits.json (the R / V editions, 2026-11-05)
 // was otherwise served stale from the browser's cache
 const getJSON = async p => { const r = await fetch(p, { cache: "no-cache" }); if (!r.ok) throw new Error(p + " " + r.status); return r.json(); };
-const fxData = cls => dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" });
+const dataJSON = async p => JSON.parse(new TextDecoder().decode(await dataBytes(p, { cache: "no-cache" })));
       const t = loadTex(`${DATA}props/tex/${m.tex}`);
 $("shot").onclick = () => {};
 $("copy").onclick = async () => {
@@ -837,7 +837,9 @@ class PublishTest(unittest.TestCase):
         gown = next(o for o in json.loads((d / "cat" / "outfits.json").read_text("utf-8")) if o["name"] == "ttoGown")
         self.assertTrue(gown["tto"])
         self.assertTrue((d / "cat" / "o_ttoGown.bin").is_file() and (d / "cat" / "tex" / "ttoGown1.webp").is_file())
-        flag = next(p for p in json.loads((d / "cat" / "props_trinkets.json").read_text("utf-8")) if p["name"] == "ttoFlag")
+        raw = (d / "cat" / "props_trinkets.json").read_bytes()
+        self.assertEqual(raw[:4], wp.SCRAMBLE_MARK)          # a list holding a released TTO prop: scrambled (its mesh, user 2026-11-19)
+        flag = next(p for p in json.loads(unscramble(raw)) if p["name"] == "ttoFlag")
         self.assertTrue(flag["tto"])
         self.assertTrue((d / "props" / "tex" / "Cat_ttoFlag.png").is_file())
         self.assertEqual(json.loads((d / "all" / "props_trinkets.json").read_text("utf-8")), [])      # ttoWing: not released
@@ -1199,7 +1201,7 @@ class PublishTest(unittest.TestCase):
 
     def test_released_tto_pet_kept_marked_tto(self):
         """A TTO pet the released list names ({"all": {"pets": [...]}}) goes online from the local data, marked tto
-        (preview only): its texture scrambled like TTO's other pictures, its icon plain."""
+        (preview only): its file (the mesh) and its texture scrambled like TTO's other files, its icon plain."""
         w = make_world(self.tmp)
         w.add_pet("ttoDragon", "tdr", "ttoDragon.png", tto=True)
         w.finish()
@@ -1209,7 +1211,9 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(result["dropped"].get("pets", []), [])
         index = json.loads((d / "pets" / "index.json").read_text("utf-8"))
         self.assertEqual([(r["name"], r["tto"], r["icon"]) for r in index], [("ttoDragon", True, "icons/pet/tdr.webp")])
-        self.assertTrue(json.loads((d / "pets" / "ttoDragon.json").read_text("utf-8"))["tto"])
+        raw = (d / "pets" / "ttoDragon.json").read_bytes()
+        self.assertEqual(raw[:4], wp.SCRAMBLE_MARK)          # its mesh scrambled too (user 2026-11-19: "yes, scramble")
+        self.assertTrue(json.loads(unscramble(raw))["tto"])
         got = (d / "props" / "tex" / "ttoDragon.png").read_bytes()
         self.assertEqual(got[:4], wp.SCRAMBLE_MARK)
         self.assertEqual(unscramble(got), (w.data / "props" / "tex" / "ttoDragon.png").read_bytes())

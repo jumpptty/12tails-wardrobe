@@ -56,7 +56,8 @@ folder as their sibling (`<this folder>\..\12tails-video`) and the Bible under e
 - Browser checks are the norm (unlike the Bible's rule): `pipeline\wardrobe_moves_check.py`, `wardrobe_menu_check.py`
   (the piece menu), `wardrobe_sets_check.py`, `wardrobe_weapon_slot_check.py` (the one weapon topic), `wardrobe_nick_check.py` (the pickers' search and the Bible's nicknames), `wardrobe_fx_check.py`, `wardrobe_outfit_alpha_check.py` (outfits opaque, as the game's
   RGB24 + Diffuse), `wardrobe_pet_check.py` (the pet on stage, its picker, camera and downloads), `wardrobe_bloompulse_check.py`,
-  `wardrobe_pets_live_check.py` (the pets on a published copy: the dist folder before a deploy, the live URL after)
+  `wardrobe_pets_live_check.py` (the pets on a published copy: the dist folder before a deploy, the live URL after),
+  `wardrobe_tto_pets_check.py` (the TTO pet picker, `wardrobe/tto_pets.html`)
   (headless Playwright, pinned `uv run --no-project --with playwright==1.65.1 python -I pipeline/<check>.py`), and an isolated Playwright context for anything else so the user's own browser window is left alone.
 - Painting a skin (a reskin / repaint, `pipeline\wardrobe_bat_robe.py` and its like): open the live view for the user
   before the first pass (user 2026-11-12: "please remember the script for this live view, it's really good"):

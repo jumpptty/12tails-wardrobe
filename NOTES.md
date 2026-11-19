@@ -4048,3 +4048,48 @@ too". The CSS block "left panel (2026-11-19 ...)" and `renderTopics` in `wardrob
   empty folder with the Worker script: 49 files uploaded (index.html + 48 portraits). Live (isolated headless, 1366 x 704
   at 1.25): the pets live check 21 ok; the panel's five at 128.8 px from ชุด; the Sheep's potion 2 -> heroes/sheep2.webp
   (150 px, loaded) in the ring and the wash; no failed request, no page error.
+
+## 2026-11-19 (office), the TTO pet picker
+
+User: "create a html picker for TTO pet for me to curate which one to upload, TTO pets model and texture shouldn't be
+downloadable". `wardrobe/tto_pets.html` (local only: the publish copies index.html and its PAGE_FILES / PAGE_DIRS, never
+this page; open through wardrobe.cmd: http://127.0.0.1:8771/wardrobe/tto_pets.html):
+- The 37 TTO pets (index.json rows with `tto`), A-Z, each tile its icon, name (the game's or the prefab's as words) and code;
+  the tile previews, its box ticks. The preview is the real wardrobe in a frame (its panel, toolbar, plate hidden; the
+  viewer's card kept at no height so the fit uses the whole stage), the pet in ชมชิ้นส่วน through `wardrobe.debug().Showcase`
+  (idle playing, no bob); a big button under it ticks the previewed pet; ← → step. Undo / redo (Ctrl+Z / Ctrl+Y, buttons),
+  ย้อนการแก้ไขทั้งหมด, a draft in this browser (`tto_pets.draft`).
+- Saves `wardrobe/tto_released.json` with only `all.pets` changed (sorted as tto_picker.html sorts; none = the key removed),
+  every other released item as the file has it; with no file it will not save (it would drop the others). A save also
+  moves tto_picker.html's unsaved draft (if any) to these pets, so a later save there keeps them. tto_picker.html still
+  lists the pets too (under ทุกอาชีพ, icons only).
+- **Not downloadable online: already the rule.** A pet listed there goes online as TTO props do (publish_pets): the page's
+  TTO lock gives its menu no download or upload item (wardrobe_pet_check.py's ?ttolock part tests it), its textures
+  scrambled. **Its mesh JSON is published plain** (as TTO props' are): no button gives it, but someone reading the network
+  could take the mesh. Said to the user.
+- Bug found while testing: the frame loaded before the module (which awaits the fetches) added its load listener, so the
+  preview never started: the script now sets the frame's src after the listener.
+- `pipeline/wardrobe_tto_pets_check.py` (in CLAUDE.md's list): 6 ok.
+- **The TTO models scrambled too** (user: "yes, scramble"; not deployed yet: it takes effect at the next publish +
+  deploy). `wardrobe_publish.py`: `write_json(rel, obj, scrambled=False)`; a prop list holding any released TTO prop is
+  written scramble()d (BB's props in the same file with it: casual-copy guard only, as fx.json with TTO effects), a
+  released TTO pet's file always; `unscramble()` (check() reads the published JSON through it). The page reads prop lists,
+  pet files and fx.json through `dataJSON()` (dataBytes + parse); the publish's page edit "no-cache data JSON" replaces the
+  old "no-cache effects" anchor. A scratch publish (a copy of wardrobe/ with violeta released; the real tto_released.json
+  untouched): check no problems, 26 of 38 prop lists and violeta.json scrambled, BB pet files plain; wardrobe_dist_check
+  errors []; violeta on stage and in the viewer from its scrambled file, 4 TTO hats parsed from a scrambled list.
+  `wardrobe_pets_live_check.py` now follows tto_released.json (the index's TTO rows = the released pets, unreleased ones
+  404, released ones' files start "TTOx", up to three on stage with the page's TTO_LOCK and their row's tto; Bloom Pulse
+  read unscrambled with the page's own SCR_KEY, and must parse as JSON): 26 ok on the scratch build. Tests: the two publish
+  tests now expect the scrambled files (they failed first, then passed); unit 157 OK, node 9/9; pet --downloads, menu,
+  sets, tto_pets checks pass.
+- The picker hung on "กำลังโหลด…" for the user: opened as file:/// (the path I gave), where the browser reads nothing from
+  data/. The page now says to open it through wardrobe.cmd, with the http link; the link is http://127.0.0.1:8771/wardrobe/tto_pets.html.
+- **The user's TTO pet picks** (pasted from the picker's คัดลอก JSON, 2026-11-19): 20 of the 37 released in
+  `wardrobe/tto_released.json` (`all.pets`: apo, BlueShark, CuteCat_B / O / R / V / W, koalia, miniRabbyB / G / W,
+  MotherFlowerBug, PinkShark, smallDragonZ, smallFlowerDryad, smallSelene, TianlongA, tianlongB, ValkorNoct_Pet, violeta);
+  written by Claude (the file's other keys byte-identical, json indent 1 as the picker writes). Local only: all57-70,
+  GreenShark, MoneyPiggy, halloweenGhost, smallRabbyB / G / S / W. A test publish of the working tree (scratch folder):
+  check no problems, 84 pets (64 BB + 20 TTO), 17 dropped, none of the 20 dropped, all 20 files scrambled;
+  wardrobe_pets_live_check.py 32 ok (index = the released list, the 17 404, BlueShark / CuteCat_B / CuteCat_O on stage,
+  idle playing, TTO_LOCK + row tto), wardrobe_dist_check errors []. Not committed or deployed yet.

@@ -718,6 +718,9 @@ async function dataBytes(url, init) {
   for (let i = 0; i < o.length; i++) o[i] ^= SCR_KEY[i % SCR_KEY.length];
   return o;
 }
+// a data JSON that may be scrambled online (a prop list holding a TTO item, a TTO pet's file: their meshes, user
+// 2026-11-19 "yes, scramble"; a class's fx.json with TTO effects), asked of the server every time like getJSON
+const dataJSON = async p => JSON.parse(new TextDecoder().decode(await dataBytes(p, { cache: "no-cache" })));
 const MIME = { webp: "image/webp", png: "image/png", jpg: "image/jpeg" };
 const imgCache = {}, BLOBS = {};            // BLOBS: a data picture's object URL by its path, for <img> tiles (pic)
 const loadImage = src => imgCache[src] ||= (src.startsWith(DATA)
@@ -911,9 +914,9 @@ const MOUNT_ROT = { R: new THREE.Quaternion(), L: new THREE.Quaternion(), Head: 
 // three before the class's rig and clips arrive (F13), so a first visit's set (R67) does not wait on a second round trip
 const PROP_LISTS = {};
 const fetchProps = (cls, kind) => PROP_LISTS[cls + "|" + kind] ||= Promise.all([
-  getJSON(`${DATA}${cls}/props_${kind}.json`).catch(() => []),
+  dataJSON(`${DATA}${cls}/props_${kind}.json`).catch(() => []),
   // the shared items (heroes/all: fashion wings, seals, Halloween headbands) go on every class
-  kind !== "weapons" ? getJSON(`${DATA}all/props_${kind}.json`).catch(() => []) : []
+  kind !== "weapons" ? dataJSON(`${DATA}all/props_${kind}.json`).catch(() => []) : []
 ]).then(([own, shared]) => own.concat(shared.map(p => ({ ...p, shared: true }))));
 function propList(kind) {
   const K = C;
@@ -1190,7 +1193,7 @@ const PET_FILES = {};
 const PET_ROW = {}, PET_LIST = [];
 const petIndex = () => (PET_ROWS ||= getJSON(DATA + "pets/index.json").then(rs => { for (const r of rs) PET_ROW[r.name] = r; return rs; })
   .catch(e => { PET_ROWS = null; throw e; }));
-const petFile = row => (PET_FILES[row.name] ||= getJSON(DATA + row.file).then(p => { if (!PET_LIST.includes(p)) PET_LIST.push(p); return p; })
+const petFile = row => (PET_FILES[row.name] ||= dataJSON(DATA + row.file).then(p => { if (!PET_LIST.includes(p)) PET_LIST.push(p); return p; })
   .catch(e => { delete PET_FILES[row.name]; throw e; }));
 const petEntry = async name => { const row = (await petIndex()).find(r => r.name === name); return row ? petFile(row) : null; };
 const petName = name => PET_ROW[name]?.game || humanize(name);       // the game's name (TTO's own pets have none here)
@@ -4350,7 +4353,7 @@ FX.stepDur = null;             // the step's length a cycle pool's member gives 
 // the class's cues, then its effects data if it has cues (fxStart reads FX.cueTab, filled here when the class is shown)
 // (and the effect part modules first, so every part is registered before an effect is built)
 const fxData = cls => FX.data[cls] ||= !FX_ON ? Promise.resolve(null) : getJSON(`fx_cues/${cls}.json`).catch(() => ({}))
-  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataBytes(`${DATA}${cls}/fx.json`, { cache: "no-cache" }).then(b => JSON.parse(new TextDecoder().decode(b)))) : null))
+  .then(async t => (FX.cueTab[cls] = t, Object.keys(t).length ? (await loadFxParts(), dataJSON(`${DATA}${cls}/fx.json`)) : null))
   // (said, not swallowed: 2026-11-13, a NaN in the Mole's fx.json made JSON.parse refuse it and every effect read as missing)
   .catch(e => (console.error("effects data", cls, e), null))
   .then(d => (d && (FX.json[cls] = d), d));

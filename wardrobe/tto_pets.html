@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เลือกสัตว์เลี้ยง TTO</title>
+<!-- The TTO pet picker (user 2026-11-19: "create a html picker for TTO pet for me to curate which one to upload, TTO pets
+     model and texture shouldn't be downloadable"). Local only: wardrobe_publish.py copies only index.html and its own
+     files (PAGE_FILES / PAGE_DIRS), never this page. Lists TTO's own pets (data/pets/index.json rows with tto), each
+     previewed live: the real wardrobe (index.html) in a frame, the pet in its viewer (ชมชิ้นส่วน: its idle playing, no
+     bob), driven through its scripting hook (wardrobe.debug().Showcase). Saves wardrobe/tto_released.json with only
+     "all" -> "pets" changed (every other released item kept as the file has it); the next publish puts the ticked pets
+     online as TTO props go: preview only (the page's TTO lock: no download or upload items), textures scrambled. Same
+     file as tto_picker.html: a save here also moves that page's unsaved draft to these pets. Undo: Ctrl+Z / Ctrl+Y. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #150f0c; --raise: #1f1914; --line: #5b4426; --text: #f3e7d3; --muted: #bfae8e; --gold: #d0913e; --gild: #e8c35a;
+  --gold-soft: rgba(208, 145, 62, .14); --gold-ink: #1b1300; --well: #120d0a; --warn: #f0b36a; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 400 14px/1.5 "Prompt", system-ui, sans-serif; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.num { font-family: "JetBrains Mono", "Prompt", monospace; font-variant-numeric: tabular-nums; }
+.app { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(560px, 1.5fr); grid-template-rows: auto minmax(0, 1fr); height: 100vh; }
+header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+h1 { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
+.sum { color: var(--muted); }
+.acts { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.b { height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--well); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.b:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.b:disabled { opacity: .4; cursor: default; }
+.b.primary { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); font-weight: 600; }
+.b.primary:hover:not(:disabled) { color: var(--gold-ink); filter: brightness(1.08); }
+.b svg { width: 17px; height: 17px; }
+.rule { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 12px; }
+.rule b { color: var(--text); font-weight: 600; }
+.rule.warn { color: var(--warn); }
+/* the list: one tile per pet; the tile previews it, its box ticks it */
+.list { overflow-y: auto; padding: 14px 18px 40px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+.it { position: relative; border-radius: 8px; }
+.pv { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 6px 9px; border: 1px solid transparent; border-radius: 8px; background: none; text-align: center; }
+.pv:hover { background: var(--raise); }
+.it.focus .pv { background: var(--raise); border-color: var(--gold); }
+.pv img { width: 72px; height: 72px; object-fit: contain; }
+.pv .nm { max-width: 100%; font-size: 14px; font-weight: 600; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.pv .cd { font-size: 12px; color: var(--muted); }
+.chk { position: absolute; left: 6px; top: 6px; width: 24px; height: 24px; padding: 0; border: 1.5px solid var(--line); border-radius: 5px; background: var(--well);
+  display: grid; place-items: center; }
+.chk svg { width: 15px; height: 15px; color: var(--gold-ink); visibility: hidden; }
+.chk[aria-checked=true] { background: var(--gold); border-color: var(--gold); }
+.chk[aria-checked=true] svg { visibility: visible; }
+.it.changed::after { content: ""; position: absolute; right: 8px; top: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--gild); }
+/* the preview: the wardrobe's own viewer, its chrome hidden; the pet's name and the big tick under it */
+.view { display: flex; flex-direction: column; min-width: 0; border-left: 1px solid var(--line); }
+.stage { position: relative; flex: 1; min-height: 0; background: #fff; }
+.stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.stage .wait { position: absolute; inset: 0; display: grid; place-items: center; color: #6b5a42; background: #fff; }
+.stage .wait[hidden] { display: none; }
+.bar { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--line); }
+.bar img { width: 52px; height: 52px; object-fit: contain; flex: none; }
+.bar .who { min-width: 0; flex: 1; }
+.bar .nm { font-size: 18px; font-weight: 700; line-height: 1.3; }
+.bar .cd { color: var(--muted); font-size: 12px; }
+.nav { width: 40px; padding: 0; justify-content: center; }
+.pick { height: 44px; padding: 0 18px; font-weight: 600; }
+.pick[aria-pressed=true], .pick[aria-pressed=true]:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); }
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 9; background: var(--raise); border: 1px solid var(--line);
+  padding: 9px 14px; border-radius: 6px; white-space: pre-line; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.empty { color: var(--muted); padding: 30px 18px; }
+.empty a { color: var(--gild); }
+@media (max-width: 980px) { .app { grid-template-columns: 1fr; grid-template-rows: auto 46vh minmax(0, 1fr); } .view { grid-row: 2; border-left: 0; border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>เลือกสัตว์เลี้ยง TTO ที่จะขึ้นเว็บ</h1>
+    <span class="sum" id="sum"></span>
+    <div class="acts">
+      <button type="button" class="b" id="undo" title="ย้อนกลับ (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>ย้อนกลับ</button>
+      <button type="button" class="b" id="redo" title="ทำซ้ำ (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>ทำซ้ำ</button>
+      <button type="button" class="b" id="revert" title="กลับไปที่ไฟล์ที่บันทึกไว้ล่าสุด">ย้อนการแก้ไขทั้งหมด</button>
+      <button type="button" class="b" id="copy">คัดลอก JSON</button>
+      <button type="button" class="b primary" id="save">บันทึกไฟล์</button>
+    </div>
+    <p class="rule" id="rule">ตัวที่เลือกจะขึ้นเว็บแบบ<b>ดูได้อย่างเดียว</b> ดาวน์โหลดโมเดลและลายไม่ได้ · คลิกช่องเพื่อดูตัวอย่าง ติ๊กกล่องเพื่อเลือก · ← → ดูตัวถัดไป · บันทึกเป็น wardrobe\tto_released.json แล้วเผยแพร่ใหม่</p>
+  </header>
+  <section class="list" aria-label="สัตว์เลี้ยงของ TTO"><div class="grid" id="grid"><p class="empty">กำลังโหลด…</p></div></section>
+  <section class="view" aria-label="ตัวอย่าง">
+    <div class="stage"><iframe id="frame" title="ตัวอย่างสัตว์เลี้ยง"></iframe><div class="wait" id="wait">กำลังโหลดตัวอย่าง…</div></div>
+    <div class="bar" id="bar"></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script type="module">
+if (location.port === "8771") new EventSource("/__alive");   // keeps wardrobe.cmd's server up while open (pipeline/wardrobe_serve.py)
+const $ = id => document.getElementById(id), DATA = "data/", DRAFT = "tto_pets.draft", MAIN_DRAFT = "tto_picker.draft";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const humanize = n => String(n).replace(/_/g, " ").replace(/([a-z])([A-Z0-9])/g, "$1 $2").replace(/^./, c => c.toUpperCase());
+const TICK = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function toast(t, ms = 2400) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), ms); }
+
+// opened as a file (file:///...) the browser lets it read nothing from data/: say where to open it instead of hanging
+const SERVED = "http://127.0.0.1:8771/wardrobe/tto_pets.html";
+const fail = html => { $("grid").innerHTML = `<p class="empty">${html}</p>`; $("wait").textContent = ""; throw new Error("stopped"); };
+if (location.protocol === "file:") fail(`หน้านี้ต้องเปิดผ่านเซิร์ฟเวอร์: ดับเบิลคลิก wardrobe.cmd แล้วเข้า <a href="${SERVED}">${SERVED}</a>`);
+const rows = (await fetch(DATA + "pets/index.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .catch(() => fail("โหลดรายการสัตว์เลี้ยงไม่ได้: เซิร์ฟเวอร์อาจปิดไปแล้ว ดับเบิลคลิก wardrobe.cmd แล้วรีเฟรชหน้านี้"))).filter(r => r.tto);
+const pets = rows.map(r => r.name).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+const ROW = Object.fromEntries(rows.map(r => [r.name, r]));
+const label = n => ROW[n].game || humanize(n);
+// the saved file (every released TTO item); without it a save could drop the others, so this page then only reads
+const file = await fetch("tto_released.json", { cache: "no-cache" }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+const fromFile = new Set((file?.all?.pets || []).filter(n => ROW[n]));
+let sel = new Set(fromFile);
+try { const d = JSON.parse(localStorage.getItem(DRAFT) || "null"); if (d) sel = new Set(d.filter(n => ROW[n])); } catch (e) {}
+if (!file) { $("rule").className = "rule warn"; $("rule").textContent = "ไม่พบ wardrobe\\tto_released.json: บันทึกไม่ได้ (จะลบของ TTO ตัวอื่นที่เลือกไว้) เปิด tto_picker.html แล้วบันทึกไฟล์ก่อน"; $("save").disabled = true; }
+let focus = pets[0];
+
+// undo / redo: each change keeps the selection it replaced
+const past = [], future = [];
+function change(next) { past.push(sel); future.length = 0; sel = next; keep(); render(); }
+function step(from, to) { if (!from.length) return; to.push(sel); sel = from.pop(); keep(); render(); }
+const keep = () => { try { localStorage.setItem(DRAFT, JSON.stringify([...sel])); } catch (e) {} };
+const toggle = n => { const s = new Set(sel); s.has(n) ? s.delete(n) : s.add(n); change(s); };
+
+function render() {
+  const changed = pets.filter(n => sel.has(n) !== fromFile.has(n)).length;
+  $("sum").innerHTML = `เลือกไว้ <span class="num">${sel.size}</span> จาก <span class="num">${pets.length}</span>` + (changed ? ` · ยังไม่บันทึก <span class="num">${changed}</span>` : "");
+  $("grid").innerHTML = pets.map(n => `<div class="it${n === focus ? " focus" : ""}${sel.has(n) !== fromFile.has(n) ? " changed" : ""}" data-n="${esc(n)}">`
+    + `<button type="button" class="pv" title="ดูตัวอย่าง ${esc(label(n))}"><img loading="lazy" alt="" src="${DATA}${ROW[n].icon}"><span class="nm">${esc(label(n))}</span><span class="cd">${esc(ROW[n].code)}</span></button>`
+    + `<button type="button" class="chk" role="checkbox" aria-checked="${sel.has(n)}" aria-label="เลือก ${esc(label(n))} ขึ้นเว็บ">${TICK}</button></div>`).join("");
+  const r = ROW[focus], on = sel.has(focus), i = pets.indexOf(focus);
+  $("bar").innerHTML = `<img alt="" src="${DATA}${r.icon}"><div class="who"><div class="nm">${esc(label(focus))}</div>`
+    + `<div class="cd">${esc(r.code)} · ตัวที่ <span class="num">${i + 1}</span> / <span class="num">${pets.length}</span></div></div>`
+    + `<button type="button" class="b nav" data-d="-1" title="ตัวก่อนหน้า (←)" aria-label="ตัวก่อนหน้า"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+    + `<button type="button" class="b nav" data-d="1" title="ตัวถัดไป (→)" aria-label="ตัวถัดไป"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+    + `<button type="button" class="b pick" id="pick" aria-pressed="${on}">${on ? TICK + "เลือกขึ้นเว็บแล้ว" : "เลือกตัวนี้ขึ้นเว็บ"}</button>`;
+  $("undo").disabled = !past.length; $("redo").disabled = !future.length;
+}
+
+// the preview: the wardrobe in the frame, its panel, toolbar, plate and the viewer's card hidden (the card keeps its place
+// at no height: the viewer fits the pet above it), the pet shown in its viewer
+const frame = $("frame");
+let W = null;
+const HIDE = `.app { grid-template-columns: 1fr !important; } aside, .bar, .disclaimer, .cm-card, .keyhint, .plate, .toast { display: none !important; }
+  .showcase { visibility: hidden !important; height: 0 !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; overflow: hidden !important; }`;
+frame.addEventListener("load", async () => {
+  const w = frame.contentWindow, d = frame.contentDocument;
+  d.head.append(Object.assign(d.createElement("style"), { textContent: HIDE }));
+  for (let t = 0; t < 600 && !w.wardrobe?.debug().C; t++) await new Promise(r => setTimeout(r, 100));
+  if (!w.wardrobe?.debug().C) { $("wait").textContent = "โหลดตัวอย่างไม่สำเร็จ ลองรีเฟรชหน้านี้"; return; }
+  W = w.wardrobe; show();
+});
+frame.src = "index.html";                // after the listener: a frame loaded before it would never start the preview
+async function show() {
+  if (!W) return;
+  $("wait").hidden = true;
+  await W.debug().Showcase.enter("Pet", focus, pets);
+}
+const go = n => { focus = n; render(); show(); document.querySelector(`.it[data-n="${CSS.escape(n)}"]`)?.scrollIntoView({ block: "nearest" }); };
+
+$("grid").onclick = e => {
+  const it = e.target.closest(".it"); if (!it) return;
+  if (e.target.closest(".chk")) toggle(it.dataset.n); else go(it.dataset.n);
+};
+$("bar").onclick = e => {
+  const nav = e.target.closest(".nav");
+  if (nav) go(pets[(pets.indexOf(focus) + +nav.dataset.d + pets.length) % pets.length]);
+  else if (e.target.closest("#pick")) toggle(focus);
+};
+$("undo").onclick = () => step(past, future);
+$("redo").onclick = () => step(future, past);
+addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+    const k = e.key.toLowerCase();
+    if (k === "z" && !e.shiftKey) { e.preventDefault(); step(past, future); }
+    else if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); step(future, past); }
+    return;
+  }
+  if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); go(pets[(pets.indexOf(focus) + (e.key === "ArrowRight" ? 1 : -1) + pets.length) % pets.length]); }
+});
+
+// the file: tto_released.json as saved, "all" -> "pets" replaced by this selection (sorted; none = the key removed)
+function output() {
+  const out = structuredClone(file), list = [...sel].sort((a, b) => a.localeCompare(b));
+  if (list.length) (out.all ||= {}).pets = list;
+  else if (out.all) { delete out.all.pets; if (!Object.keys(out.all).length) delete out.all; }
+  return JSON.stringify(out, null, 1) + "\n";
+}
+$("save").onclick = async () => {
+  if (!file) return;
+  const text = output();
+  try {
+    if (window.showSaveFilePicker) {
+      const h = await showSaveFilePicker({ suggestedName: "tto_released.json", id: "tto-released", types: [{ description: "JSON", accept: { "application/json": [".json"] } }] });
+      const w = await h.createWritable(); await w.write(text); await w.close();
+    } else {
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([text], { type: "application/json" })), download: "tto_released.json" });
+      document.body.append(a); a.click(); a.remove();
+    }
+  } catch (e) { if (e.name !== "AbortError") toast("บันทึกไม่สำเร็จ: " + e.message); return; }
+  file.all = JSON.parse(text).all || {};
+  fromFile.clear(); for (const n of sel) fromFile.add(n);
+  // tto_picker.html's unsaved draft (if any) takes these pets, so a save there later keeps them
+  try { const d = JSON.parse(localStorage.getItem(MAIN_DRAFT) || "null");
+    if (d) localStorage.setItem(MAIN_DRAFT, JSON.stringify(d.filter(k => !k.startsWith("all|pets|")).concat([...sel].map(n => `all|pets|${n}`)))); } catch (e) {}
+  try { localStorage.removeItem(DRAFT); } catch (e) {}
+  render(); toast("บันทึกแล้ว\nเก็บไว้ที่ wardrobe\\tto_released.json แล้วเผยแพร่ใหม่", 3500);
+};
+$("copy").onclick = async () => { if (!file) return; try { await navigator.clipboard.writeText(output()); toast("คัดลอก JSON แล้ว"); } catch (e) { toast("คัดลอกไม่ได้"); } };
+$("revert").onclick = () => change(new Set(fromFile));
+render();
+window.petPicker = { pets, get sel() { return sel; }, output };      // scripted checks only
+</script>
+</body>
+</html>
