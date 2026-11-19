@@ -4093,3 +4093,7 @@ this page; open through wardrobe.cmd: http://127.0.0.1:8771/wardrobe/tto_pets.ht
   check no problems, 84 pets (64 BB + 20 TTO), 17 dropped, none of the 20 dropped, all 20 files scrambled;
   wardrobe_pets_live_check.py 32 ok (index = the released list, the 17 404, BlueShark / CuteCat_B / CuteCat_O on stage,
   idle playing, TTO_LOCK + row tto), wardrobe_dist_check errors []. Not committed or deployed yet.
+- **Shade Wing taken out of the released list** (user, before the deploy: "remove the shade wing btw, it's not released
+  yet"): `all.trinkets` loses Shade_Wing (online since 2026-11-09; this deploy takes it off the site), the file's _about
+  names it among the exceptions. (index.html's comment example `wardrobe.show("sheep", {Back: "Shade_Wing"}, 160)` is a
+  local scripted call, unchanged.)

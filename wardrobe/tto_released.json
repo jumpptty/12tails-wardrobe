@@ -1,5 +1,5 @@
 {
- "_about": "TTO items released for the public wardrobe (read by pipeline/wardrobe_publish.py). Made 2026-11-09 from the user's rules: every class's Halloween outfit, weapon(s) and hat; Bat Dream Band V and Dream Wand V; the Clap and Wai emotes; every TTO skill motion the Bible documents (not Buiten Offering's sanctumRaise, not Cat shikifujin); the TTO faces already online, no more; no Quotation Flag; every shared item except Aura Bloodmoon, Aura Undead Queen, Champion Wing, Moonlight Rabbit, Pumpkon Headband, White Wing, Witchy Wing.",
+ "_about": "TTO items released for the public wardrobe (read by pipeline/wardrobe_publish.py). Made 2026-11-09 from the user's rules: every class's Halloween outfit, weapon(s) and hat; Bat Dream Band V and Dream Wand V; the Clap and Wai emotes; every TTO skill motion the Bible documents (not Buiten Offering's sanctumRaise, not Cat shikifujin); the TTO faces already online, no more; no Quotation Flag; every shared item except Aura Bloodmoon, Aura Undead Queen, Champion Wing, Moonlight Rabbit, Pumpkon Headband, Shade Wing (not released yet, user 2026-11-19), White Wing, Witchy Wing.",
  "bat": {
   "outfits": [
    "halloween"
@@ -385,7 +385,6 @@
    "Azure_Wing",
    "Ice_Wing",
    "ReaperTrinket",
-   "Shade_Wing",
    "daynightwing"
   ],
   "pets": [
