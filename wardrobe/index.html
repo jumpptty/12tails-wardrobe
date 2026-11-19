@@ -230,14 +230,25 @@ aside { position: relative; isolation: isolate; }
 @media (hover: hover) { .csw:hover { opacity: 1; } }
 .csw[aria-pressed=true]::before { content: ""; position: absolute; left: 24%; right: 24%; bottom: -5px; height: 3px; border-radius: 2px; background: var(--gold); }
 .pots.custom .csw img { opacity: .45; }   /* the outfit wears the visitor's own skin: its colours show again after คืนลายเดิม */
-/* the set: the worn set's name and its piece count, or เลือกเซ็ต and how many there are, between two fading hairlines */
-.topic.set { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 16px; padding: 3px 0; border: 0; background: none; line-height: 1.4; }
-.topic.set::before, .topic.set::after { content: ""; flex: 1 1 12px; min-width: 12px; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
-.topic.set::after { background: linear-gradient(90deg, var(--line), transparent); }
-.set-name { flex: 0 1 auto; min-width: 0; font-size: 14px; font-weight: 600; color: var(--gild); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.set-name.dim { color: var(--muted); font-weight: 500; }
-.set-meta { flex: none; color: var(--muted); font-size: 12.5px; }
-.topic.set[aria-expanded=true] .set-name { text-decoration: underline 2px var(--gold); text-underline-offset: 6px; }
+/* the set (2026-11-19, the user's pick "E Ribbon, with D icon" of plans/left_panel/set_button.html, to make it read as the
+   button it is): a notched gold ribbon across the panel, a little wider than it, the hanger, the worn set's name and its
+   piece count or เลือกเซ็ต and how many sets there are, in dark ink. The ribbon is drawn by ::before (clip-path on the
+   button itself would clip its focus outline away). Open: the name underlined in ink. (Until then: one gold line between
+   two hairlines, which read as a divider.) */
+.topic.set { position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: calc(100% + 12px); height: 40px; margin: 16px -6px 0; padding: 0 24px; border: 0; background: none; color: var(--gold-ink); line-height: 1.4; }
+.topic.set::before { content: ""; position: absolute; inset: 0; z-index: -1; --notch: 14px;
+  background: linear-gradient(90deg, #8f5f22, #e2a54e 18%, #f0c46a 50%, #e2a54e 82%, #8f5f22);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--notch)) 50%, 100% 100%, 0 100%, var(--notch) 50%); }
+.set-ico { flex: none; width: 20px; height: 20px; }
+.set-name, .set-meta { position: relative; top: 1px; }
+/* top: 1px = the ink's middle on the ribbon's middle, by eye (NOTES "Thai text: centring by eye"; measured 2026-11-19 in 2x
+   shots: เลือกเซ็ต 37 เซ็ต sat 1.5 px high on a desktop, 1.25 on a phone, Royal 3 ชิ้น 0.75 / 0.5 (its y hangs lower): one
+   offset for every state, each now within 1 px; the text never jumps when the set changes) */
+.set-name { flex: 0 1 auto; min-width: 0; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.set-name.dim { font-weight: 500; opacity: .75; }
+.set-meta { flex: none; font-size: 12.5px; font-weight: 600; opacity: .8; }
+.topic.set[aria-expanded=true] .set-name { text-decoration: underline 2px; text-underline-offset: 5px; }
 /* the doll: --R from the room it has (the side pieces clear the panel's edges; the group, top icon to bottom name, fits its
    height: 2.39 R + the name, the pieces' own height counted), --cy centres that group; every size follows --R, so a tall
    desktop, the office's short one and a phone share it. At most 440 px: on a tall screen the room left over goes below */
@@ -471,7 +482,9 @@ aside { position: relative; isolation: isolate; }
   .hero-k { font-size: 11px; }
   .pots { grid-area: pots; gap: 10px; margin-top: 0; }
   .csw { width: 28px; height: 28px; }
-  .topic.set { grid-area: set; margin-top: 8px; padding: 0; }
+  .topic.set { grid-area: set; width: calc(100% + 8px); height: 34px; margin: 8px -4px 0; padding: 0 20px; }
+  .topic.set::before { --notch: 11px; }
+  .set-ico { width: 18px; height: 18px; }
   .set-name { font-size: 13px; }
   .set-meta { font-size: 11.5px; }
   .doll { grid-area: doll; flex: none; height: 214px; min-height: 0; max-height: none; margin: 8px -8px 0; }
@@ -3848,6 +3861,8 @@ async function afterLook() { renderTopics(); if (openTopic === "set") await open
 // the panel (B1, the CSS above): the portrait and the face, the colours, the set line, the doll; the wash behind the top
 // is the portrait again. A topic button keeps its .ring (the picture) and .tname (its name; ชุด's for screen readers only)
 const DOLL = new Set(["Head", "outfit", "R", "Back", "Pet", "move"]);
+// the set ribbon's hanger (plans/left_panel/set_button.html's D)
+const HANGER = `<svg class="set-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6.5a2 2 0 1 1 2.6 1.9c-.4.1-.6.5-.6.9V11m0 0-8.4 5.4A1 1 0 0 0 4.1 18h15.8a1 1 0 0 0 .5-1.6L12 11z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function renderTopics() {
   const worn = C && (C.sets || []).find(setWorn), box = $("topics"), a = document.activeElement;
   // a click re-draws the panel: keep the keyboard focus on the same control
@@ -3866,7 +3881,7 @@ function renderTopics() {
       + `<button type="button" class="hero-b" data-t="face" ${open("face")} aria-label="${nm("face")}" title="${nm("face")}"><span class="ring t-face face">${ringContent("face")}</span>`
       + (C ? `<span class="hero-k">หน้า <span class="num">${C.state.face}</span></span>` : "") + `</button></div>`
     + colorTile(nm("color"))
-    + `<button type="button" class="topic set" data-t="set" ${open("set")} aria-label="${nm("set")}${worn ? " " + esc(setName(worn)) : ""}">${setLine}</button>`
+    + `<button type="button" class="topic set" data-t="set" ${open("set")} aria-label="${nm("set")}${worn ? " " + esc(setName(worn)) : ""}">${HANGER}${setLine}</button>`
     + `<div class="doll">${TOPICS.filter(([t]) => DOLL.has(t)).map(([t]) => piece(t)).join("")}</div>`;
   const w = $("wash"), wi = C ? heroImg() : "";
   if (w.dataset.k !== wi) { w.dataset.k = wi; w.innerHTML = wi; }      // only a new colour or class draws it again

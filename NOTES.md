@@ -4106,3 +4106,22 @@ this page; open through wardrobe.cmd: http://127.0.0.1:8771/wardrobe/tto_pets.ht
   (isolated headless): the pets live check 32 ok (84 pets = 64 BB + the 20, the 17 404, the 20 files scrambled, three on
   stage preview only); a probe: 34 back pieces and no Shade_Wing, the TTO hats (halloweenHat, CactonHeadband,
   ChopperTrinket, CoconHeadband) parsed from the scrambled lists, violeta on stage with its idle; no errors.
+
+## 2026-11-19 (office), the set button: mocks (waiting for the user's pick)
+
+User (the live panel's set line circled): "propose several mocks to enchance the visibility of this set button more".
+`plans/left_panel/set_button.html` (+ `set_button.png`, 2x): the panel's top as built, the set control in six looks, each
+with no set (เลือกเซ็ต, 37 sets, the first sets' outfits champion / pvpArmor as the teaser) and with the Bat's Royal set
+(3 pieces): today's line; A a gold-edged pill (hanger, count, arrow); B the set's own pictures fanned with its name and a
+hint ("ใส่ครบทั้งชุดในคลิกเดียว" / "ใส่อยู่ครบ 3 ชิ้น") on a soft gold band; C the Bible's gilded frame, compact; D a solid gold
+button; E a notched gold ribbon. No glow anywhere (the Bible's rule; the design hook caught one on A and D in the first
+draft: plain dark drop shadows now). Claude's pick in the reply: B.
+- **Built: E with D's icon** (user: "E Ribbon, with D icon"). `.topic.set` in index.html: a notched gold ribbon (drawn by
+  ::before with clip-path, so the button's focus outline is not clipped), 12 px wider than the panel's content (6 px out
+  each side; 8 px on a phone), 40 px tall (34 on a phone), the hanger (`HANGER`) + the name (15 px, 700) + the count
+  (12.5 px, 600), all in --gold-ink; open = the name underlined in ink; loading = the name dim. **Centred by eye**: measured
+  in 2x shots, เลือกเซ็ต 37 เซ็ต sat 1.5 px high (desktop) / 1.25 (phone), Royal 3 ชิ้น 0.75 / 0.5: one `top: 1px` on the
+  name and count puts every state within 1 px, and the text never jumps when the set changes.
+  `pipeline/wardrobe_set_ribbon_check.py` (in CLAUDE.md's list) asserts it (gaps within 2 device px at 2x, both states,
+  desktop and phone): 4 ok. Panel checks after it: weapon_slot, pet --ui, sets, menu pass (232 ok). Picture:
+  `plans/left_panel/set_ribbon_built.png`. Not committed or deployed yet.

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set button mocks</title>
+<!-- 2026-11-19, user (a screenshot of the live panel, the set line circled): "propose several mocks to enchance the
+     visibility of this set button more". The panel's top as built (B1), the set control in six looks: today's and five
+     new, each with no set worn (เลือกเซ็ต, 37 sets, the first sets' outfits as a teaser) and with the Bat's Royal set worn
+     (3 pieces). Static: icons from ../../wardrobe/ (opens from file:/// or the served folder) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #150f0c; --line: #5b4426; --text: #f3e7d3; --muted: #bfae8e; --gold: #d0913e; --gild: #e8c35a; --gold-soft: rgba(208, 145, 62, .14);
+  --gold-ink: #1b1300; --well: #120d0a; --skin: #f3e4d9; --mono: "JetBrains Mono", "Prompt", monospace;
+  --cg-gild: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect x='3.5' y='3.5' width='23' height='23' fill='none' stroke='%23c9a227' stroke-opacity='.6'/%3E%3Crect x='6.5' y='6.5' width='17' height='17' fill='none' stroke='%23c9a227' stroke-opacity='.22'/%3E%3Cpath d='M2 12V2h10M18 2h10v10M28 18v10H18M12 28H2V18' fill='none' stroke='%23e8c35a' stroke-width='2'/%3E%3C/svg%3E"); }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0c0907; color: var(--text); font: 400 14px/1.5 "Prompt", sans-serif; }
+.num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+img { display: block; }
+.wall { display: grid; grid-template-columns: repeat(6, 340px); gap: 22px 22px; padding: 20px 24px 28px; width: max-content; }
+.cap { color: var(--muted); font-size: 13px; line-height: 1.45; min-height: 58px; }
+.cap b { color: var(--text); font-size: 16px; font-weight: 700; margin-right: 6px; }
+.row-l { grid-column: 1 / -1; color: var(--muted); font-size: 13px; margin: 6px 0 -12px; }
+.panel { position: relative; width: 340px; height: 470px; overflow: hidden; background: var(--bg); padding: 10px 14px 0; border-radius: 4px; box-shadow: 0 0 0 1px #2a2018; isolation: isolate; }
+.wash { position: absolute; inset: 0 0 auto; height: 320px; z-index: -1; overflow: hidden; }
+.wash img { position: absolute; left: -15%; top: -30%; width: 130%; height: 130%; object-fit: cover; filter: blur(28px) saturate(1.3); opacity: .55; }
+.wash::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(21, 15, 12, .15), var(--bg) 92%); }
+.lockup { display: flex; align-items: center; gap: 11px; }
+.lockup-rule { width: 1px; align-self: stretch; margin: 3px 0; background: var(--line); }
+.brand { display: inline-flex; align-items: center; gap: .22em; font-size: 15px; font-weight: 700; line-height: 1; }
+.brand-mark { display: block; height: 1.7em; width: auto; }
+.brand-spine { align-self: stretch; width: .06em; margin: .1em .06em; background: linear-gradient(transparent, #d4af37 18%, #d4af37 82%, transparent); }
+.brand-word { display: flex; flex-direction: column; gap: .24em; font-size: .66em; }
+.brand-word span { display: block; text-box: trim-both cap alphabetic; }
+.brand-word span:first-child { color: #f4ecdc; }
+.brand-word span:last-child { color: #d4af37; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; }
+.hero { display: flex; justify-content: center; align-items: flex-start; gap: 16px; margin-top: 10px; }
+.hero .por { width: 86px; height: 86px; border-radius: 50%; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); }
+.hero .fb { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 8px; }
+.face { width: 52px; height: 52px; border-radius: 50%; background: var(--skin) no-repeat; background-size: calc(52px * .92 * 256 / 121) auto;
+  background-position: calc(52px * .04 - 52px * .92 * 3 / 121) calc(52px * .04); box-shadow: 0 8px 22px rgba(0, 0, 0, .45); }
+.hero .k { font-size: 12px; font-weight: 500; color: var(--muted); }
+.pots { display: flex; justify-content: center; gap: 13px; margin-top: 12px; }
+.pot { position: relative; opacity: .55; } .pot img { width: 30px; height: 30px; }
+.pot.on { opacity: 1; } .pot.on::after { content: ""; position: absolute; left: 24%; right: 24%; bottom: -5px; height: 3px; border-radius: 2px; background: var(--gold); }
+/* the doll's top for context: the hat on its spotlight, the top of ชุด's ring */
+.ctx { position: relative; height: 200px; margin: 0 -14px; }
+.ctx .hat { position: absolute; left: 50%; top: 28px; translate: -50% 0; display: flex; flex-direction: column; align-items: center; }
+.ctx .hat .pic { position: relative; width: 90px; height: 75px; display: grid; place-items: center; }
+.ctx .hat .pic::before { content: ""; position: absolute; left: 4%; right: 4%; bottom: -6%; height: 28%; border-radius: 50%; background: radial-gradient(closest-side, rgba(208, 145, 62, .26), transparent); }
+.ctx .hat svg, .ctx .hat img { position: relative; }
+.ctx .hat svg { width: 34px; height: 34px; color: var(--muted); opacity: .45; align-self: end; margin-bottom: 12px; }
+.ctx .hat img { width: 75px; height: 75px; object-fit: contain; }
+.ctx .hat .k { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 3px; }
+.ctx .ring { position: absolute; left: 50%; top: 150px; translate: -50% 0; width: 120px; height: 120px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); background: var(--well); }
+
+/* ---- the set control, six looks ---- */
+.set { display: flex; align-items: center; width: 100%; margin-top: 16px; padding: 0; border: 0; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.chev { width: 16px; height: 16px; flex: none; }
+.hanger { width: 20px; height: 20px; flex: none; }
+.name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* 0: today's line between hairlines */
+.s0 { justify-content: center; gap: 10px; padding: 3px 0; }
+.s0::before, .s0::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line)); }
+.s0::after { background: linear-gradient(90deg, var(--line), transparent); }
+.s0 .name { color: var(--gild); font-size: 14px; font-weight: 600; }
+.s0 .meta { color: var(--muted); font-size: 12.5px; }
+/* A: a gold-edged pill, a hanger, the count, an arrow */
+.sA { justify-content: center; gap: 9px; width: auto; margin: 16px auto 0; height: 42px; padding: 0 14px 0 16px; border: 1px solid var(--gold); border-radius: 21px;
+  background: linear-gradient(rgba(208, 145, 62, .16), rgba(208, 145, 62, .08)); color: var(--gild); box-shadow: 0 6px 14px -8px rgba(0, 0, 0, .7); }
+.sA .name { font-size: 15px; padding-top: 1px; }
+.sA .meta { color: var(--muted); font-size: 12.5px; padding-top: 1px; }
+.sA .chev { color: var(--gild); margin-left: 2px; }
+/* B: the set's own pictures fanned, its name and a hint, on a soft gold band */
+.sB { gap: 12px; height: 62px; padding: 0 12px 0 10px; border-radius: 10px; background: linear-gradient(90deg, rgba(208, 145, 62, .20), rgba(208, 145, 62, .05) 75%, transparent); }
+.sB .fan { display: flex; flex: none; padding-left: 4px; }
+.sB .fan img { width: 44px; height: 44px; margin-left: -14px; border-radius: 50%; background: #3a2d22; border: 1.5px solid color-mix(in srgb, var(--gold) 55%, var(--line)); object-fit: contain; padding: 3px; }
+.sB .fan img:first-child { margin-left: 0; }
+.sB .txt { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.3; }
+.sB .name { font-size: 15px; color: var(--gild); }
+.sB .sub { font-size: 12px; color: var(--muted); }
+.sB .chev { color: var(--gild); }
+/* C: the Bible's gilded frame (double gold line, L corners), compact, centred */
+.sC { justify-content: center; gap: 10px; width: auto; margin: 16px auto 0; height: 46px; padding: 0 22px; border-style: solid; border-width: 1px; border-color: transparent;
+  border-image: var(--cg-gild) 14 / 14px / 3px stretch; background: rgba(208, 145, 62, .07); }
+.sC .name { color: var(--gild); font-size: 15px; padding-top: 1px; }
+.sC .meta { color: var(--muted); font-size: 12.5px; padding-top: 1px; }
+/* D: the solid gold button, the strongest call */
+.sD { justify-content: center; gap: 10px; height: 44px; border-radius: 8px; background: linear-gradient(#e2a54e, var(--gold)); color: var(--gold-ink); box-shadow: 0 6px 14px -8px rgba(0, 0, 0, .7); }
+.sD .name { font-size: 15px; padding-top: 1px; }
+.sD .meta { font-size: 12px; font-weight: 600; padding: 1px 8px 0; border-radius: 10px; background: rgba(27, 19, 0, .16); }
+/* E: a notched gold ribbon across the panel */
+.sE { justify-content: center; gap: 10px; height: 40px; margin-left: -6px; margin-right: -6px; width: calc(100% + 12px);
+  background: linear-gradient(90deg, #8f5f22, #e2a54e 18%, #f0c46a 50%, #e2a54e 82%, #8f5f22); color: var(--gold-ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%, 14px 50%); }
+.sE .name { font-size: 15px; padding-top: 1px; }
+.sE .meta { font-size: 12.5px; font-weight: 600; opacity: .8; padding-top: 1px; }
+</style>
+</head>
+<body>
+<div class="wall" id="wall"></div>
+<script>
+const I = "../../wardrobe/";
+const SRC = { por: I + "data/icons/heroes/bat1.webp", face: I + "data/bat/faces/11.webp", pot: n => `${I}ui/recolor${n}.webp` };
+const TEASER = ["all58", "all43", "all15"].map(n => `${I}data/icons/armor/${n}.webp`);
+const ROYAL = [`${I}data/icons/armor/bat50.webp`, `${I}data/icons/weapon/bat50.webp`, `${I}data/icons/accessory/bat50.webp`];
+const CHEV = `<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const HANGER = `<svg class="hanger" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6.5a2 2 0 1 1 2.6 1.9c-.4.1-.6.5-.6.9V11m0 0-8.4 5.4A1 1 0 0 0 4.1 18h15.8a1 1 0 0 0 .5-1.6L12 11z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const HAT = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 17.5h17M6.5 17.5V12a5.5 5.5 0 0 1 11 0v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOCKUP = `<header class="lockup"><span class="brand"><svg class="brand-mark" viewBox="8 6 110 78" aria-hidden="true"><g fill="none" stroke="#d4af37" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M14 24 L30 12 L30 78"/><path d="M48 30 C48 12 78 10 80 28 C82 44 60 54 48 78 L82 78 C98 78 106 66 102 52"/></g><path d="M102 52 C96 40 102 26 116 22 C110 34 114 44 102 52Z" fill="#d4af37"/></svg><span class="brand-spine"></span><span class="brand-word"><span>TAILS</span><span>BIBLE</span></span></span><span class="lockup-rule"></span><h1>ห้องแต่งตัว</h1></header>`;
+// a state: { name, meta (count text), sub (B's hint), pics (B's fan), worn }
+const NONE = { name: "เลือกเซ็ต", meta: `<span class="num">37</span> เซ็ต`, sub: "ใส่ครบทั้งชุดในคลิกเดียว", pics: TEASER, worn: false };
+const WORN = { name: "Royal", meta: `<span class="num">3</span> ชิ้น`, sub: `ใส่อยู่ครบ <span class="num">3</span> ชิ้น`, pics: ROYAL, worn: true };
+const LOOKS = [
+  ["s0", "ตอนนี้", "Today's line between two hairlines: it reads as a divider, not a button.",
+    s => `<span class="name">${s.name}</span><span class="meta">${s.meta}</span>`],
+  ["sA", "A ขอบทอง", "A pill with a gold edge and a soft gold fill, a hanger, the count and an arrow: clearly a button, still quiet.",
+    s => `${HANGER}<span class="name">${s.name}</span><span class="meta">${s.meta}</span>${CHEV}`],
+  ["sB", "B ภาพตัวอย่าง", "The set's own pictures fanned on the left, its name and a one-line hint on a soft gold band.",
+    s => `<span class="fan">${s.pics.map(p => `<img src="${p}" alt="">`).join("")}</span><span class="txt"><span class="name">${s.name}</span><span class="sub">${s.sub}</span></span>${CHEV}`],
+  ["sC", "C กรอบไบเบิล", "The Bible's gilded frame (its special tile) around the label, compact and centred.",
+    s => `<span class="name">${s.name}</span><span class="meta">${s.meta}</span>`],
+  ["sD", "D ปุ่มทอง", "A solid gold button across the panel: the strongest call to action on the page.",
+    s => `${HANGER}<span class="name">${s.name}</span><span class="meta">${s.meta}</span>`],
+  ["sE", "E ริบบิ้น", "A notched gold ribbon across the panel, like a game banner.",
+    s => `<span class="name">${s.name}</span><span class="meta">${s.meta}</span>`]];
+const panel = (cls, inner, s) => `<div class="panel"><div class="wash"><img src="${SRC.por}" alt=""></div>${LOCKUP}
+  <div class="hero"><img class="por" src="${SRC.por}" alt=""><span class="fb"><span class="face" style="background-image:url('${SRC.face}')"></span><span class="k">หน้า <span class="num">11</span></span></span></div>
+  <div class="pots">${[1, 2, 3, 4, 5].map(n => `<span class="pot${n === 1 ? " on" : ""}"><img src="${SRC.pot(n)}" alt=""></span>`).join("")}</div>
+  <button type="button" class="set ${cls}">${inner(s)}</button>
+  <div class="ctx"><div class="hat"><span class="pic">${s.worn ? `<img src="${ROYAL[2]}" alt="">` : HAT}</span><span class="k">หมวก</span></div><div class="ring"></div></div></div>`;
+document.getElementById("wall").innerHTML =
+  LOOKS.map(([, L, cap]) => `<div class="cap"><b>${L}</b>${cap}</div>`).join("")
+  + `<div class="row-l">ยังไม่ได้ใส่เซ็ต</div>` + LOOKS.map(([c, , , f]) => panel(c, f, NONE)).join("")
+  + `<div class="row-l">ใส่เซ็ต Royal อยู่</div>` + LOOKS.map(([c, , , f]) => panel(c, f, WORN)).join("");
+</script>
+</body>
+</html>
