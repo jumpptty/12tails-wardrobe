@@ -1945,6 +1945,10 @@ async function buildSets() {
 // its weapon, hat and back that has one
 const setPieces = s => [["outfits", s.outfit, s.v || ""], ["weapons", s.R || s.L, ""], ["weapons", s.L && s.L !== s.R ? s.L : null, ""],
   ["accessories", s.Head, ""], ["trinkets", s.Back, ""]].filter(p => p[1]);
+// a set whose every piece is TTO's own (its record's tto) carries TTO's mark on its tile, as a TTO piece's tile does (user
+// 2026-11-19: "set equipment from TTO should also carry TTO icon, if all components are TTO"); one BB piece in it: no mark
+const SET_SLOT = { outfits: "outfit", weapons: "R", accessories: "Head", trinkets: "Back" };
+const setTTO = s => setPieces(s).every(([k, n]) => recOf(SET_SLOT[k], n).tto);
 function setNick(s) {
   return [nickOf("outfits", s.outfit, s.v || ""), nickOf("weapons", s.R || s.L), nickOf("accessories", s.Head), nickOf("trinkets", s.Back)].find(r => r?.nick);
 }
@@ -4001,7 +4005,7 @@ async function openPicker(t, opts = {}) {
             return `<button type="button" class="pk-item${nk ? " is-nick" : ""}" data-s="${i}" aria-pressed="${setWorn(s)}" title="${esc(setName(s))}">` +
               `<span class="pic">${pic(setIcon(s), false, noIcon(s.theme))}</span>` +
               (nk ? `<span class="lbl nk-main">${esc(nk)}</span><span class="nk-sub">${setNameHTML(s)}</span>` : `<span class="lbl">${setNameHTML(s)}</span>`) +
-              `<span class="cnt"><span class="num">${s.pieces}</span> ชิ้น</span><span class="parts">${setParts(s)}</span></button>`; }).join(""));
+              `<span class="cnt"><span class="num">${s.pieces}</span> ชิ้น</span><span class="parts">${setParts(s)}</span>${setTTO(s) ? ttoMark("เซ็ตจาก TTO") : ""}</button>`; }).join(""));
       pick(b => (b.dataset.s === "clear" ? stripAll() : equipSet(sets[+b.dataset.s])));
     };
     inp.oninput = draw; draw();

@@ -4,8 +4,10 @@ bow", "Panda doesn't have Worm R in the armor selection, but it can be chosen fr
     wrong w_chm61 = standardBow + legendArrow; the game loads legendBow + legendArrow for w_chm60 / 61)
   - editions: every outfits.json R / V edition, whether a set reaches it and whether the ชุด picker has its tile (one
     per edition since 2026-11-09); Panda's Worm R picked there, undone, and plain Worm dropping the edition
+  - TTO's mark on a set tile exactly when every piece of the set is TTO's (user 2026-11-19: "set equipment from TTO should
+    also carry TTO icon, if all components are TTO"): no all-TTO set unmarked, no set with a BB piece marked
 Writes <out>/sets.json and <out>/panda_outfits.png; exit 1 on a foreign weapon, an edition no set reaches or with no
-ชุด tile, or a wrong pressed tile.
+ชุด tile, a wrong pressed tile, or a set tile's TTO mark wrong.
 uv run --no-project --with playwright python -I pipeline/wardrobe_sets_check.py D:/12tails-wardrobe checks/<dir>"""
 import asyncio, functools, http.server, json, re, sys, threading
 from pathlib import Path
@@ -29,6 +31,14 @@ URL = f"http://127.0.0.1:{srv.server_address[1]}/wardrobe/index.html"
 DUMP = """() => { const { C } = wardrobe.debug();
   return { outfits: C.outfits.map(o => ({ name: o.name, editions: o.editions || {} })),
            sets: C.sets.map(s => ({ theme: s.theme, v: s.v, outfit: s.outfit, R: s.R, L: s.L, Head: s.Head, Back: s.Back })) }; }"""
+
+
+# each set tile of the open set picker: TTO's mark on it, and whether every piece of its set is TTO's (its record's tto)
+SET_MARKS = """() => { const { C } = wardrobe.debug();
+  const rec = (k, n) => (k === 'outfits' ? C.outfits.find(x => x.name === n) : (C.propLists[k] || []).find(x => x.name === n)) || {};
+  const pieces = s => [['outfits', s.outfit], ['weapons', s.R || s.L], ['weapons', s.L && s.L !== s.R ? s.L : null], ['accessories', s.Head], ['trinkets', s.Back]].filter(p => p[1]);
+  return [...document.querySelectorAll('#pkBody .pk-item[data-s]:not([data-s="clear"])')].map(b => { const s = C.sets[+b.dataset.s];
+    return { name: b.title, mark: !!b.querySelector('.tto-mark'), all: pieces(s).every(([k, n]) => rec(k, n).tto) }; }); }"""
 
 
 def stem(n):                       # legendBowR_L -> legendBow
@@ -75,8 +85,14 @@ async def main():
             await open_outfits()
             tiles = set(await page.evaluate("() => [...document.querySelectorAll('#pkBody .pk-item[data-e]:not([data-e=\"\"])')].map(b => b.dataset.o + ' ' + b.dataset.e)"))
             untiled = [f"{o} {e}" for o, e in eds if f"{o} {e}" not in tiles]
-            report[cls] = {**d, "foreign": foreign, "unreached": unreached, "untiled": untiled}
-            bad += len(foreign) + len(unreached) + len(untiled)
+            # the set picker: TTO's mark exactly on the all-TTO sets
+            await page.evaluate("() => wardrobe.debug().openPicker('set')")
+            await page.wait_for_function("() => document.querySelectorAll('#pkBody .pk-item[data-s]').length > 1", timeout=60000)
+            marks = await page.evaluate(SET_MARKS)
+            wrong = [m["name"] for m in marks if m["mark"] != m["all"]]
+            print(f"{cls:10} TTO-marked sets {[m['name'] for m in marks if m['mark']]}{'  WRONG MARK: ' + ', '.join(wrong) if wrong else ''}")
+            report[cls] = {**d, "foreign": foreign, "unreached": unreached, "untiled": untiled, "wrong_tto_mark": wrong}
+            bad += len(foreign) + len(unreached) + len(untiled) + len(wrong)
             print(f"{cls:10} sets {len(d['sets']):3}  editions {len(eds):2} (no set: {len(unreached)}, no outfit-picker tile: {len(untiled)})  foreign weapons {len(foreign)}")
             for x in foreign: print("   foreign:", x)
             for x in unreached: print("   edition no set reaches:", x)

@@ -4130,3 +4130,12 @@ draft: plain dark drop shadows now). Claude's pick in the reply: B.
   unchanged, the page +1.5 KB, check: no problems; wardrobe_dist_check errors [], pets check on the dist 32 ok. 1 file
   uploaded (index.html). Live: the ribbon 40 px with the hanger, "เลือกเซ็ต 37 เซ็ต", a click opens the set picker (the name
   underlined), no errors.
+
+## 2026-11-19 (office), TTO's mark on all-TTO sets
+
+User: "set equipment from TTO should also carry TTO icon, if all components are TTO". index.html: `setTTO(s)` = every
+piece of `setPieces(s)` has its record's `tto` (recOf through `SET_SLOT`); the set picker's tile then carries
+`ttoMark("เซ็ตจาก TTO")`, TTO's logo top right as on a TTO piece's tile. A set with any BB piece: no mark (Champion, the
+Bat's Dream V: BB outfits with TTO pieces). Local copy: every class's Halloween set, Rabbit's Moon Goddess, Sheep's Divine
+Goddess. The panel's set ribbon shows no mark (the panel's rings show none either). `wardrobe_sets_check.py` asserts it
+for all 12 classes (no all-TTO set unmarked, no mixed set marked): pass; `wardrobe_tto_check.py` passes. Not committed yet.
